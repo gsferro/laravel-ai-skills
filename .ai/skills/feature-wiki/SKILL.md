@@ -3,9 +3,9 @@ name: feature-wiki
 description: >
   Cria estrutura de documentação wiki para uma feature antes de implementá-la.
   Invoque SEMPRE ao iniciar implementação de qualquer feature nova.
-  Cria pasta em wikis/{branch} com 3 arquivos obrigatórios: plano de ação (PRD),
-  decisões arquiteturais e tracking de progresso. O plano de ação deve ser minucioso
-  o suficiente para um agente implementar sem ambiguidade.
+  Cria pasta em wikis/{branch} com 4 arquivos obrigatórios: plano de ação (PRD),
+  decisões arquiteturais, tracking de progresso e casos de teste. O plano de ação
+  deve ser minucioso o suficiente para um agente implementar sem ambiguidade.
 ---
 
 # Feature Wiki — Documentação Antes de Implementar
@@ -45,10 +45,11 @@ Antes de escrever qualquer documento:
 - Ler arquivos existentes relevantes com `Read` ou `Grep`
 - Executar `php artisan model:show ModelName` para models relacionados
 - Examinar padrões existentes com `Glob "**/[padrão]/**/*.php"`
+- **Inspecionar APIs de terceiros** antes de escrever CTs — verificar vendor source ou docs oficiais para confirmar nomes de métodos, assinaturas e restrições de schema
 
 ### 4. Criar os Arquivos
 
-Criar os 3 arquivos obrigatórios + extras se necessário.
+Criar os **4 arquivos obrigatórios** + extras se necessário.
 
 ---
 
@@ -70,7 +71,7 @@ Criar os 3 arquivos obrigatórios + extras se necessário.
   - Mapeamentos de campos (ex: API → DB)
   - Tratamento de erros esperados
 - Skills a invocar em cada passo (ver lista abaixo)
-- Testes a escrever (nome do arquivo, cenários)
+- Referência ao `04-casos-de-teste.md` (não duplicar cenários aqui)
 - Passos de verificação (pint, tests, artisan commands)
 - Passos de commit (gitmoji + escopo + mensagem)
 
@@ -120,9 +121,7 @@ Criar os 3 arquivos obrigatórios + extras se necessário.
 
 ## Testes
 
-### {NomeDoTesteTest}
-- {cenário 1}
-- {cenário 2}
+> Ver `04-casos-de-teste.md` para especificação completa dos cenários.
 
 ## Verificação Final
 - [ ] `vendor/bin/pint --dirty`
@@ -182,12 +181,102 @@ Criar os 3 arquivos obrigatórios + extras se necessário.
 - [ ] {Item 1}
 
 ## Testes
-- [ ] `{NomeDoTesteTest}`
+- [ ] `{NomeDoTesteTest}` — CT-01, CT-02, CT-03
 
 ## Verificação Final
 - [ ] `vendor/bin/pint --dirty`
 - [ ] `php artisan test --compact --filter={Feature}`
 - [ ] `git commit`
+```
+
+---
+
+## Arquivo 04: Casos de Teste (CT)
+
+**Path**: `wikis/{branch}/{feature}/04-casos-de-teste.md`
+
+**Propósito**: Especificação completa de cada caso de teste — setup, mocks, dados de entrada e assertions esperadas. Deve ser detalhado o suficiente para um agente escrever os testes sem ambiguidade.
+
+**Por que este arquivo existe**: Escrever os CTs *antes* da implementação força a pesquisa das APIs envolvidas (métodos reais, restrições de schema, contratos de terceiros) na fase de planejamento — não na fase de debug. Previne surpresas como nomes de método incorretos, FKs obrigatórias em fixtures ou restrições de schema de bibliotecas externas.
+
+**Obrigatório incluir por cenário**:
+- ID único (`CT-01`, `CT-02`, ...)
+- Tipo: `Feature` ou `Unit`
+- Path do arquivo de teste
+- Nome do método `it()`
+- Precondições (estado do DB, factories, mocks ativos)
+- Dados de entrada (payload, CSV row, argumentos)
+- Resultado esperado (assertions específicas)
+
+**Setup Global**: documentar uma vez as factories/mocks comuns a vários CTs.
+
+**Template `04-casos-de-teste.md`**:
+```markdown
+# Casos de Teste — {Card}: {Título da Feature}
+
+## Setup Global
+
+### Factories / Fixtures
+- `{Model}::factory()->{state}()->create([...])` — {descrição}
+- ...
+
+### Estratégia de Mock
+- `{ExternalService}`: Mockery via `app()->instance()` — métodos: `{método}()`
+- `Queue::fake()` — verificar dispatch de `{JobClass}`
+- `Http::fake()` — endpoints: `{url}`
+
+---
+
+## CT-01: {Nome do Cenário — Happy Path}
+
+**Tipo**: `Feature` | `Unit`
+**Arquivo**: `tests/{Feature|Unit}/{Path}/{NomeTest}.php`
+**Método**: `it('{descrição legível}')`
+
+### Precondições
+- {O que deve existir no DB antes — model + estado}
+- {Mocks a configurar}
+
+### Dados de Entrada
+```
+{input: payload, CSV row, argumentos de método, etc.}
+```
+
+### Resultado Esperado
+- `{Model}` criado/atualizado com `{campo}` = `{valor}`
+- `{Job}` despachado com `{argumento}` = `{valor}`
+- `{Relacionamento}` existe com `{n}` registros
+
+---
+
+## CT-02: {Nome do Cenário — Falha / Edge Case}
+
+**Tipo**: `Feature`
+**Arquivo**: `tests/Feature/...`
+**Método**: `it('{descrição}')`
+
+### Precondições
+- {Estado inicial que causa a falha}
+
+### Dados de Entrada
+```
+{input inválido ou condição de borda}
+```
+
+### Resultado Esperado
+- Lança `{ExceptionClass}` com mensagem `"{texto}"`
+- `{Model}` NÃO criado (`{Model}::count()` = 0)
+- `{Job}` NÃO despachado
+
+---
+
+## Índice de Casos
+
+| ID | Cenário | Tipo | Arquivo |
+|----|---------|------|---------|
+| CT-01 | {happy path} | Feature | `tests/...` |
+| CT-02 | {falha X} | Feature | `tests/...` |
+| CT-03 | {edge case Y} | Unit | `tests/...` |
 ```
 
 ---
@@ -198,10 +287,10 @@ Criar apenas quando a feature exige:
 
 | Arquivo | Quando criar |
 |---------|-------------|
-| `04-design.md` | Feature com UI significativa (Filament, Livewire, Blade) |
-| `04-api-contract.md` | Feature com API externa (payloads, endpoints, autenticação) |
-| `04-db-schema.md` | Feature com schema complexo (múltiplas tabelas, migrations em cadeia) |
-| `04-fluxo.md` | Feature com fluxo multi-etapas (queues + jobs + callbacks) |
+| `05-design.md` | Feature com UI significativa (Filament, Livewire, Blade) |
+| `05-api-contract.md` | Feature com API externa (payloads, endpoints, autenticação) |
+| `05-db-schema.md` | Feature com schema complexo (múltiplas tabelas, migrations em cadeia) |
+| `05-fluxo.md` | Feature com fluxo multi-etapas (queues + jobs + callbacks) |
 
 ---
 
@@ -212,10 +301,12 @@ Antes de encerrar a invocação:
 - [ ] Branch lida e estrutura de pasta criada
 - [ ] Nome da feature confirmado com usuário
 - [ ] Pesquisa feita (`search-docs`, `database-schema`, leitura de arquivos)
+- [ ] APIs de terceiros inspecionadas (vendor source ou docs) — métodos e schema confirmados
 - [ ] `01-plano-acao.md` escrito com passos numerados + skills referenciadas
 - [ ] `02-decisoes-arquiteturais.md` escrito com justificativas
 - [ ] `03-progresso.md` escrito com checkboxes espelhando o plano
-- [ ] Arquivos extras criados se necessário
+- [ ] `04-casos-de-teste.md` escrito com todos os CTs identificados
+- [ ] Arquivos extras (`05-*`) criados se necessário
 - [ ] Confirmar com usuário se o plano está correto antes de implementar
 
 ## Exemplo de Estrutura Criada
@@ -223,14 +314,11 @@ Antes de encerrar a invocação:
 ```
 wikis/
 └── ferro/
-    └── 501/
-        ├── envio-progresso/
-        │   ├── 01-plano-acao.md
-        │   ├── 02-decisoes-arquiteturais.md
-        │   └── 03-progresso.md
-        └── jobs-progress-tracking/
+    └── 579/
+        └── relatorio-mba-lote/
             ├── 01-plano-acao.md
             ├── 02-decisoes-arquiteturais.md
             ├── 03-progresso.md
-            └── 04-api-contract.md  ← extra quando necessário
+            ├── 04-casos-de-teste.md          ← novo obrigatório
+            └── 05-api-contract.md            ← extra quando necessário
 ```
