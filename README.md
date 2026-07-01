@@ -50,6 +50,7 @@ Isso fará o download automático de todas as pastas de habilidades para o diret
 ```bash
 php artisan boost:update
 ```
+> Após instalar, veja [Padrão de Commit](#padrão-de-commit-ao-instalaratualizar-skills).    
 
 ---
 
@@ -87,6 +88,44 @@ Se você estiver executando o Claude Code em modo interativo de terminal, pode r
 /plugin marketplace add gsferro/laravel-ai-skills
 /plugin install
 ```
+
+---
+
+## 📌 Padrão de Commit ao Instalar/Atualizar Skills
+
+Ao baixar ou atualizar skills deste repositório no seu projeto, use o padrão de commit abaixo para manter o histórico rastreável:
+
+### Instalação (primeira vez)
+
+```
+:package: skills: instala {nome-da-skill} do laravel-ai-skills
+
+- Origem: https://github.com/gsferro/laravel-ai-skills
+- Versão/commit: {sha-curto ou tag}
+```
+
+### Atualização
+
+```
+:arrow_up: skills: atualiza {nome-da-skill} do laravel-ai-skills
+
+- Origem: https://github.com/gsferro/laravel-ai-skills
+- De: {sha-anterior} → Para: {sha-novo}
+- Mudanças relevantes: {resumo em 1 linha}
+```
+
+### Exemplos
+
+```
+:package: skills: instala feature-wiki do laravel-ai-skills
+:arrow_up: skills: atualiza feature-wiki do laravel-ai-skills
+```
+
+> Instalando/atualizando várias skills de uma vez, use o escopo `skills` no plural
+> e liste cada uma no corpo do commit.
+
+Ajustes possíveis: se quiser manter só os gitmojis do seu padrão interno (sem :package:/:arrow_up:), troque por :sparkles: (instala) e :recycle: (atualiza).
+
 
 ---
 
