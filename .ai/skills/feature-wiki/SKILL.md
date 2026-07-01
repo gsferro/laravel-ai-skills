@@ -46,10 +46,24 @@ Antes de escrever qualquer documento:
 - Executar `php artisan model:show ModelName` para models relacionados
 - Examinar padrões existentes com `Glob "**/[padrão]/**/*.php"`
 - **Inspecionar APIs de terceiros** antes de escrever CTs — verificar vendor source ou docs oficiais para confirmar nomes de métodos, assinaturas e restrições de schema
+- Para features médias/grandes: delegar o mapeamento amplo a um agent `Explore` e depois **confirmar os trechos críticos com `Read` direto** (linhas exatas, imports, assinaturas) — não confiar apenas no resumo do agent
+- **Validar dados fornecidos pelo usuário** (CSV, listas, IDs) contra o banco via `database-query` — detectar divergências de título/chave, escolher chave estável (ID) para mapeamentos e documentar as divergências no plano
+- **Verificar existência de factories** (`Glob "database/factories/{Model}*"`) e states disponíveis antes de escrever CTs; se não houver factory, especificar `Model::create([...])` no Setup Global
+- **Confirmar padrões internos citados** no plano com grep/read (ex: seeder-em-migration, guards de environment, `$casts` property vs `casts()`) — citar `arquivo:linha` de referência no plano
 
 ### 4. Criar os Arquivos
 
 Criar os **4 arquivos obrigatórios** + extras se necessário.
+
+### 5. Revisão Profunda Pós-Escrita (OBRIGATÓRIO)
+
+Após escrever os 4 arquivos, **re-validar cada premissa do plano contra o código real** antes de apresentar ao usuário:
+
+- Reler os pontos exatos citados no plano: imports dos arquivos a editar, assinaturas de métodos, relações de models, padrão das migrations-referência, factories/states usados nos CTs
+- **Corrigir a wiki imediatamente** quando a revisão contradisser o plano (ex: plano diz "adicionar import X" → import já existe; plano cita guard genérico → padrão real é `! app()->environment('testing')`)
+- Só então apresentar ao usuário para aprovação / iniciar implementação
+
+> Exemplo real (feature/implementar-carga-horaria): a revisão pós-escrita detectou que o import `MbaTrack` já existia no arquivo a editar e confirmou o padrão exato do guard de environment nas migrations com seeder — ambos corrigidos na wiki antes da implementação.
 
 ---
 
@@ -130,6 +144,7 @@ Criar os **4 arquivos obrigatórios** + extras se necessário.
 
 ## Commits
 - `{gitmoji} {escopo}: {mensagem}`
+- `:memo: {escopo}: wiki da feature {nome}`
 ```
 
 ---
@@ -167,7 +182,7 @@ Criar os **4 arquivos obrigatórios** + extras se necessário.
 
 **Propósito**: Checklist de implementação para rastrear o que foi feito e retomar de onde parou.
 
-**Estrutura**: Seções com checkboxes `- [ ]` agrupadas pelos mesmos passos do `01-plano-acao.md`.
+**Estrutura**: Seções com checkboxes `- [ ]` agrupadas pelos mesmos passos do `01-plano-acao.md`. Atualizar os checkboxes **em tempo real** durante a implementação — não em lote no final.
 
 **Template `03-progresso.md`**:
 ```markdown
@@ -302,11 +317,14 @@ Antes de encerrar a invocação:
 - [ ] Nome da feature confirmado com usuário
 - [ ] Pesquisa feita (`search-docs`, `database-schema`, leitura de arquivos)
 - [ ] APIs de terceiros inspecionadas (vendor source ou docs) — métodos e schema confirmados
+- [ ] Dados fornecidos pelo usuário validados contra o DB (quando aplicável)
+- [ ] Factories confirmadas (existência + states) para todos os CTs
 - [ ] `01-plano-acao.md` escrito com passos numerados + skills referenciadas
 - [ ] `02-decisoes-arquiteturais.md` escrito com justificativas
 - [ ] `03-progresso.md` escrito com checkboxes espelhando o plano
 - [ ] `04-casos-de-teste.md` escrito com todos os CTs identificados
 - [ ] Arquivos extras (`05-*`) criados se necessário
+- [ ] Revisão profunda pós-escrita executada — premissas do plano re-validadas contra o código
 - [ ] Confirmar com usuário se o plano está correto antes de implementar
 
 ## Exemplo de Estrutura Criada
