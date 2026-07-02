@@ -151,7 +151,7 @@ A integração é natural porque elas operam em **fases complementares** do cicl
 
 | Fase | Skill | Responsabilidade |
 |------|-------|------------------|
-| **Planejamento** | feature-wiki | Define o **o quê** e o **porquê**: PRD, decisões arquiteturais, casos de teste, tracking de progresso |
+| **Planejamento** | feature-wiki | Define o **o quê** e o **porquê**: PRD, decisões arquiteturais (ADR), casos de teste, tracking de progresso, padrão de log, channel por feature |
 | **Execução** | Ponytail | Define o **como**: mínimo código possível, sem over-engineering, reutilização antes de criação |
 | **Revisão** | Ponytail (`/ponytail-review`) | Valida o diff contra over-engineering: o que cortar, o que substituir por stdlib |
 
@@ -226,9 +226,13 @@ A partir de agora, para cada feature nova:
 │  • Invocar feature-wiki ao iniciar a feature        │
 │  • Criar wikis/{branch}/{feature}/ com 4 arquivos   │
 │  • 01-plano-acao.md      → PRD detalhado            │
-│  • 02-decisoes-arquiteturais.md → justificativas    │
-│  • 03-progresso.md       → checklist de tracking    │
+│    - Autorização, Rotas, Env, Eventos, Jobs         │
+│    - Impacto, Rollback, Dependências, Riscos        │
+│    - Logs em todas as etapas (channel + padrão)     │
+│  • 02-decisoes-arquiteturais.md → formato ADR       │
+│  • 03-progresso.md       → checklist + Blockers     │
 │  • 04-casos-de-teste.md  → CTs antes do código      │
+│    - CTs de log, autorização, data providers        │
 │  • Revisão profunda pós-escrita                     │
 │  • Confirmar plano com usuário                      │
 └──────────────────────┬──────────────────────────────┘
@@ -269,6 +273,18 @@ A partir de agora, para cada feature nova:
 │  • php artisan test --compact --filter={Feature}    │
 │  • Commit com gitmoji + escopo                      │
 │  • :memo: wiki: atualiza 03-progresso.md            │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│  5. PÓS-IMPLEMENTAÇÃO (feature-wiki)                │
+│  ─────────────────────────────────                  │
+│  • Atualizar 03-progresso.md (checkboxes + data)    │
+│  • Documentar desvios do plano e notas              │
+│  • Linkar wiki no PR                                │
+│  • Arquivar wiki para wikis/archive/{branch}/       │
+│  • Retrospectiva breve                              │
+│  • Ajustar channel de log (level ou remoção)        │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -323,12 +339,16 @@ export PONYTAIL_DEFAULT_MODE=full
 ### Resumo da Integração
 
 ```
-feature-wiki (v1.0.0)          Ponytail
+feature-wiki (v2.0.0)          Ponytail
 ─────────────────              ──────────────────────
 Planejamento minucioso    +    Execução minimalista
-PRD + CTs antes do código      Escada de simplicidade
-Revisão pós-escrita            /ponytail-review pós-código
-03-progresso.md tracking       /ponytail-debt ledger
+PRD + ADR + CTs antes       Escada de simplicidade
+do código
+Padrão de log obrigatório    /ponytail-review pós-código
+Channel por feature          /ponytail-debt ledger
+Revisão pós-escrita          
+Pós-implementação + archive  
+03-progresso.md tracking     
          │                            │
          └────────────┬───────────────┘
                       ▼

@@ -1,20 +1,71 @@
 ---
 name: feature-wiki
+version: 2.0.0
 description: >
   Cria estrutura de documentação wiki para uma feature antes de implementá-la.
   Invoque SEMPRE ao iniciar implementação de qualquer feature nova.
   Cria pasta em wikis/{branch} com 4 arquivos obrigatórios: plano de ação (PRD),
-  decisões arquiteturais, tracking de progresso e casos de teste. O plano de ação
+  decisões arquiteturais (ADR), tracking de progresso e casos de teste. O plano de ação
   deve ser minucioso o suficiente para um agente implementar sem ambiguidade.
+  Inclui padrão de log obrigatório, channel por feature, e etapa de pós-implementação.
 ---
 
 # Feature Wiki — Documentação Antes de Implementar
+
+## Glossário
+
+| Sigla | Significado |
+|-------|-------------|
+| **PRD** | Product Requirements Document — plano de ação detalhado |
+| **ADR** | Architecture Decision Record — registro de decisão arquitetural |
+| **CT** | Caso de Teste — especificação de um cenário de teste |
+| **DB** | Database — banco de dados |
+| **FK** | Foreign Key — chave estrangeira |
+
+## Índice
+
+- [Quando Invocar](#quando-invocar)
+- [Fluxo de Execução](#fluxo-de-execução)
+  - [1. Descobrir Branch](#1-descobrir-branch-e-estrutura-de-pasta)
+  - [2. Definir Nome da Feature](#2-definir-nome-da-feature)
+  - [3. Pesquisa e Contexto](#3-pesquisa-e-contexto-obrigatório-antes-de-escrever)
+  - [4. Criar os Arquivos](#4-criar-os-arquivos)
+  - [5. Revisão Profunda Pós-Escrita](#5-revisão-profunda-pós-escrita-obrigatório)
+  - [6. Pós-Implementação](#6-pós-implementação-obrigatório)
+- [Arquivo 01: PRD](#arquivo-01-plano-de-ação-prd)
+- [Padrão de Log](#padrão-de-log--classeétodo-mensagem)
+- [Arquivo 02: ADR](#arquivo-02-decisões-arquiteturais)
+- [Arquivo 03: Progresso](#arquivo-03-progresso--tracking)
+- [Arquivo 04: Casos de Teste](#arquivo-04-casos-de-teste-ct)
+- [Arquivos Extras](#arquivos-extras-conforme-necessidade)
+- [Checklist Final](#checklist-final-da-skill)
+
+## Ordem de Leitura para o Agente Implementador
+
+Ao implementar, o agente deve ler os arquivos nesta ordem:
+1. **`01-plano-acao.md`** — entende o que fazer e em que ordem
+2. **`04-casos-de-teste.md`** — entende como validar cada passo
+3. **`02-decisoes-arquiteturais.md`** — entende as restrições e justificativas
+4. **`03-progresso.md`** — marca o que já foi feito e retoma de onde parou
+
+---
 
 ## Quando Invocar
 
 - Sempre que o usuário pedir para implementar uma feature nova
 - Ao iniciar qualquer card/ticket/task de desenvolvimento
 - Antes de qualquer `php artisan make:*` ou criação de código
+
+### Quando NÃO Invocar
+
+- **Typo fixes**: correções de texto, mensagens, labels
+- **Mudanças triviais**: ajustes de config simples, tweak de CSS isolado, mudança de 1-2 linhas sem nova lógica
+- **Refactoring puro**: renomear variáveis, extrair método, sem mudança de comportamento
+- **Bump de dependência**: atualizar versão de package sem mudança de API
+- **Adição de seeders/migrations isoladas**: sem lógica de negócio associada
+
+> **Critério**: se a mudança não adiciona nova lógica de negócio, não altera fluxo de dados e não cria novos arquivos de código → não precisa de wiki.
+> **Bug fix com nova lógica**: se o fix introduz nova regra de negócio, novo estado ou novo fluxo → invocar a wiki.
 
 ## Fluxo de Execução
 
@@ -50,6 +101,17 @@ Antes de escrever qualquer documento:
 - **Validar dados fornecidos pelo usuário** (CSV, listas, IDs) contra o banco via `database-query` — detectar divergências de título/chave, escolher chave estável (ID) para mapeamentos e documentar as divergências no plano
 - **Verificar existência de factories** (`Glob "database/factories/{Model}*"`) e states disponíveis antes de escrever CTs; se não houver factory, especificar `Model::create([...])` no Setup Global
 - **Confirmar padrões internos citados** no plano com grep/read (ex: seeder-em-migration, guards de environment, `$casts` property vs `casts()`) — citar `arquivo:linha` de referência no plano
+- **Verificar rotas existentes** — `Grep` em `routes/web.php` e `routes/api.php` para evitar conflito de endpoints e entender naming conventions
+- **Verificar Policies/Gates** — `Glob "app/Policies/*.php"` e `Grep` por `Gate::define` para entender o padrão de autorização do projeto
+- **Verificar config files** — `Read` em `config/*.php` relevantes à feature (services, logging, queue, auth)
+- **Verificar composer.json** — `Read` em `composer.json` para pacotes instalados que poderiam ser reutilizados em vez de criar do zero
+- **Verificar wikis existentes** — `Glob "wikis/**/*.md"` para features relacionadas que já foram documentadas e podem ter decisões relevantes
+- **Verificar git log do branch** — `git log --oneline -20` para contexto do que já foi feito no branch
+- **Verificar scheduled tasks** — `Grep` em `app/Console/Kernel.php` ou `routes/console.php` se a feature envolve cron/scheduling
+- **Verificar eventos/listeners** — `Glob "app/Events/*.php"` e `Glob "app/Listeners/*.php"` se a feature emite ou escuta eventos
+- **Verificar observers** — `Glob "app/Observers/*.php"` para hooks de model existentes
+- **Verificar middleware** — `Grep` em `app/Http/Middleware/` e em `bootstrap/app.php` (Laravel 11+) para middleware stack
+- **Verificar variáveis de ambiente** — `Read` em `.env.example` para chaves existentes e padrão de naming
 
 ### 4. Criar os Arquivos
 
@@ -65,6 +127,20 @@ Após escrever os 4 arquivos, **re-validar cada premissa do plano contra o códi
 
 > Exemplo real (feature/implementar-carga-horaria): a revisão pós-escrita detectou que o import `MbaTrack` já existia no arquivo a editar e confirmou o padrão exato do guard de environment nas migrations com seeder — ambos corrigidos na wiki antes da implementação.
 
+### 6. Pós-Implementação (OBRIGATÓRIO)
+
+Após a implementação ser concluída e testes passarem:
+
+1. **Atualizar `03-progresso.md`**: marcar todos os checkboxes como `[x]`, adicionar data de conclusão
+2. **Adicionar seção "Desvios do Plano"** em `03-progresso.md`: documentar onde a implementação divergiu do PRD e por quê (ex: "Passo 3 alterado: API retornava campo `uuid` em vez de `id` — ajustado mapeamento")
+3. **Adicionar seção "Notas de Implementação"** em `03-progresso.md**: descobertas durante o código que não estavam no plano (ex: "Descoberto que `Enrollment::find()` aplica scope global de tenant — documentado em `02-decisoes-arquiteturais.md`")
+4. **Linkar wiki ao PR**: incluir link da wiki na descrição do PR para rastreabilidade
+5. **Arquivar wiki após merge**: mover `wikis/{branch}/` para `wikis/archive/{branch}/` para manter o diretório limpo
+6. **Retrospectiva breve**: anotar na wiki o que funcionou bem no planejamento e o que faltou — serve para melhorar futuras invocações da skill
+7. **Limpeza de channel de log**: se a feature foi mergeada e está estável, considerar reduzir o level do channel de `debug` para `info` ou remover o channel se não for mais necessário
+
+> **Por que arquivar**: wikis ativas devem refletir apenas features em andamento. Wikis arquivadas servem como histórico de decisões e podem ser consultadas por features futuras.
+
 ---
 
 ## Arquivo 01: Plano de Ação (PRD)
@@ -78,6 +154,15 @@ Após escrever os 4 arquivos, **re-validar cada premissa do plano contra o códi
 - Contexto e problema que resolve
 - Análise dos arquivos/código existente que será tocado
 - **Channel de log da feature** (ver seção "Padrão de Log" abaixo)
+- **Autorização**: policies, gates, middleware, guards — quais serão criados/modificados
+- **Rotas**: endpoints a registrar, middleware aplicado, naming convention
+- **Variáveis de Ambiente**: `.env` keys necessárias, config publish, defaults
+- **Eventos/Listeners/Observers**: se a feature emite ou escuta eventos, hooks de model
+- **Jobs/Queues**: queue connection, timeout, retries, backoff — quando aplicável
+- **Impacto em Features Existentes**: regression risk, o que pode quebrar
+- **Rollback**: como reverter se algo der errado (migration down, feature flag, etc.)
+- **Dependências**: composer/npm packages necessários, versões mínimas
+- **Riscos**: áreas de incerteza, dependências externas, prazos apertados
 - Passos de implementação numerados com:
   - Path exato de cada arquivo a criar/modificar
   - Assinatura de classes, métodos, interfaces
@@ -121,6 +206,56 @@ Após escrever os 4 arquivos, **re-validar cada premissa do plano contra o códi
 
 ### {NomeDoArquivo}
 - {Descrição do que existe e como será afetado}
+
+## Autorização
+
+- **Policies**: {quais criar/modificar, métodos autorizados}
+- **Gates**: {se aplicável}
+- **Middleware**: {rotas protegidas por qual middleware}
+- **Guards**: {se aplicável}
+
+## Rotas
+
+| Método | URI | Name | Middleware |
+|--------|-----|------|------------|
+| {GET/POST/...} | {/path} | {route.name} | {auth,can:...} |
+
+## Variáveis de Ambiente
+
+| Key | Default | Descrição |
+|-----|---------|-----------|
+| {FEATURE_KEY} | {default} | {o que controla} |
+
+## Eventos / Listeners / Observers
+
+- **Eventos emitidos**: {lista}
+- **Listeners**: {lista}
+- **Observers**: {model e métodos hooked}
+
+## Jobs / Queues
+
+- **Job**: {nome} → queue: {connection/name}, timeout: {s}, retries: {n}, backoff: {s}
+
+## Impacto em Features Existentes
+
+- {Feature X}: {o que pode quebrar e por quê}
+- {Feature Y}: {dependência compartilhada}
+
+## Rollback
+
+- **Migration down**: {o que `down()` faz}
+- **Feature flag**: {se aplicável, como desativar}
+- **Reversão de dados**: {se aplicável, como reverter dados migrados}
+
+## Dependências
+
+- **Composer**: {package} {version}
+- **NPM**: {package} {version}
+
+## Riscos
+
+- {Risco 1}: {mitigação}
+- {Risco 2}: {mitigação}
 
 ## Channel de Log da Feature
 
@@ -371,6 +506,78 @@ Para **cada passo de implementação** no PRD, especificar:
 > **Anti-padrão**: NUNCA usar `error` para `fail()` de validação — `fail()` é uma condição esperada de interrupção, usar `warning`.
 > **Anti-padrão**: NUNCA usar `info` para exceptions — exceptions são anomalias, usar no mínimo `warning` (tratada) ou `error` (interrompe).
 
+### Contexto Compartilhado (`Log::shareContext`)
+
+Para contexto que se propaga automaticamente em **todos** os logs da requisição/job (correlation ID, user ID, request ID):
+
+```php
+// No início do lifecycle (middleware, job boot, service provider)
+Log::shareContext([
+    'correlation_id' => Str::uuid()->toString(),
+    'user_id'        => Auth::id(),
+    'request_uri'    => request()->path(),
+]);
+
+// Todos os logs subsequentes incluem automaticamente esses campos
+Log::channel('feature-name')->info('[Controller@handle] Processando requisição');
+// → context mesclado: ['correlation_id' => '...', 'user_id' => 123, 'request_uri' => '...', ...]
+```
+
+> **Quando usar**: em jobs longos, webhooks, fluxos multi-etapas onde o mesmo ID precisa aparecer em todos os logs para rastreabilidade.
+
+### Driver JSON em Produção
+
+O channel `daily` gera arquivos de texto. Para parsing estruturado em produção (ELK, Datadog, Grafana), trocar o driver para `json`:
+
+```php
+'{feature-name}' => [
+    'driver' => 'daily',
+    'path'   => storage_path('logs/{feature-name}.log'),
+    'level'  => env('LOG_LEVEL', 'debug'),
+    'days'   => 14,
+    'replace_placeholders' => true,
+],
+```
+
+> O Laravel 11+ já formata context como JSON automaticamente quando o handler suporta. Para garantir, usar `'driver' => 'json'` ou configurar o handler do channel.
+
+### Testando Logs em Pest
+
+Para verificar que os logs foram emitidos corretamente nos CTs:
+
+```php
+// Spy — verifica que foi chamado sem bloquear
+Log::spy();
+
+it('emite log de sucesso ao associar membro', function () {
+    Log::shouldReceive('channel')
+        ->once()
+        ->with('feature-name')
+        ->andReturn(Mockery::self());
+
+    Log::channel('feature-name')
+        ->shouldReceive('info')
+        ->once()
+        ->with('[AddUserToClassJob@processAddUserToClass] Membro associado com sucesso | enrollment: 280114', \Mockery::on(fn ($context) => $context['enrollment_id'] === 280114));
+
+    // ... executar ação
+});
+
+// Alternativa mais simples — Log::spy() captura tudo
+it('emite log no channel correto', function () {
+    Log::spy();
+
+    // ... executar ação
+
+    Log::shouldHaveReceived('channel')
+        ->with('feature-name')
+        ->atLeast()
+        ->once();
+});
+```
+
+> **Incluir CTs de log** no `04-casos-de-teste.md` para validar: channel correto, nível correto, mensagem no formato `[Classe@Método]`, e context com campos esperados.
+
 ### Trait UnicoLogging (se aplicável)
 
 Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
@@ -382,11 +589,11 @@ Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
 
 ---
 
-## Arquivo 02: Decisões Arquiteturais
+## Arquivo 02: Decisões Arquiteturais (ADR)
 
 **Path**: `wikis/{branch}/{feature}/02-decisoes-arquiteturais.md`
 
-**Propósito**: Registrar o "porquê" das escolhas — não o "o quê".
+**Propósito**: Registrar o "porquê" das escolhas — não o "o quê". Usa formato **ADR (Architecture Decision Record)** para padronizar e facilitar consulta futura.
 
 **Incluir**:
 - Cada decisão não-óbvia com justificativa
@@ -394,16 +601,40 @@ Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
 - Trade-offs aceitos
 - Restrições externas (APIs, limites de parceiros, compliance)
 - Padrões reutilizados de outras partes do sistema
+- Link entre decisões relacionadas (ex: "Refine ADR-01")
+- Decisões overridden (quando uma ADR substitui outra)
 
 **Template `02-decisoes-arquiteturais.md`**:
 ```markdown
 # Decisões Arquiteturais — {Card}
 
-## 1. {Título da Decisão}
+## ADR-01: {Título da Decisão}
 
-{Explicação da decisão e justificativa. Por que essa abordagem e não outra?}
+**Status**: Aceita | Proposta | Deprecada
+**Data**: {YYYY-MM-DD}
 
-## 2. {Título da Decisão}
+### Contexto
+{Por que esta decisão é necessária — problema, restrições, pressões}
+
+### Decisão
+{O que foi decidido — a escolha feita}
+
+### Alternativas Consideradas
+1. {Alternativa A} — {por que foi descartada}
+2. {Alternativa B} — {por que foi descartada}
+
+### Consequências
+- **Positivas**: {benefícios da decisão}
+- **Negativas**: {trade-offs aceitos}
+- **Riscos**: {riscos introduzidos e mitigações}
+
+### Referências
+- {arquivo:linha ou link relacionado}
+- Refine: ADR-{xx} (se aplicável)
+
+---
+
+## ADR-02: {Título da Decisão}
 ...
 ```
 
@@ -416,6 +647,8 @@ Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
 **Propósito**: Checklist de implementação para rastrear o que foi feito e retomar de onde parou.
 
 **Estrutura**: Seções com checkboxes `- [ ]` agrupadas pelos mesmos passos do `01-plano-acao.md`. Atualizar os checkboxes **em tempo real** durante a implementação — não em lote no final.
+
+**Validação de espelho**: verificar que a estrutura de seções do `03-progresso.md` espelha exatamente os passos do `01-plano-acao.md` — se o plano tem 8 passos, o progresso tem 8 seções correspondentes.
 
 **Template `03-progresso.md`**:
 ```markdown
@@ -436,6 +669,23 @@ Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
 - [ ] `vendor/bin/pint --dirty`
 - [ ] `php artisan test --compact --filter={Feature}`
 - [ ] `git commit`
+
+## Blockers
+<!-- Impedimentos encontrados durante implementação -->
+- [ ] {Blocker 1}: {descrição + o que está sendo feito para resolver}
+
+## Desvios do Plano
+<!-- Onde a implementação divergiu do PRD e por quê -->
+- {Passo X alterado}: {motivo}
+
+## Notas de Implementação
+<!-- Descobertas durante o código que não estavam no plano -->
+- {Descoberta 1}: {impacto e onde foi documentado}
+
+## Retrospectiva
+<!-- O que funcionou bem no planejamento e o que faltou -->
+- **Funcionou bem**: {ponto positivo}
+- **Faltou no plano**: {ponto de melhoria para próxima wiki}
 ```
 
 ---
@@ -456,6 +706,35 @@ Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
 - Precondições (estado do DB, factories, mocks ativos)
 - Dados de entrada (payload, CSV row, argumentos)
 - Resultado esperado (assertions específicas)
+- **Estratégia de DB**: `RefreshDatabase` (isola entre tests) vs `DatabaseTransactions` (mais rápido, não recria schema) — especificar qual e por quê
+- **`withoutExceptionHandling()`**: para CTs que precisam validar exception exata (tipo, mensagem, código) — caso contrário o Laravel converte para HTTP error
+
+**Cobertura esperada**: todos os métodos públicos das classes da feature devem ter pelo menos 1 CT. Métodos com branches (if/else, switch) devem ter CTs para cada branch.
+
+**CTs de Autorização** (quando aplicável):
+- Usuário sem permissão → `403 Forbidden`
+- Usuário não autenticado → `401 Unauthorized` ou redirect
+- Policy denial → `403` com mensagem esperada
+
+**CTs de Log** (quando aplicável):
+- Verificar que log foi emitido no channel correto
+- Verificar nível correto (info/warning/error)
+- Verificar formato da mensagem `[Classe@Método]`
+- Verificar context com campos esperados
+- Usar `Log::spy()` ou `Log::shouldReceive()`
+
+**Data Providers (Pest)**: para testar múltiplos inputs no mesmo CT, usar `dataset()`:
+```php
+dataset('valid_enrollments', [
+    ['status' => 'active', 'expected' => true],
+    ['status' => 'pending', 'expected' => true],
+    ['status' => 'cancelled', 'expected' => false],
+]);
+
+it('valida enrollment status', function (string $status, bool $expected) {
+    // ... assertion com $expected
+})->with('valid_enrollments');
+```
 
 **Setup Global**: documentar uma vez as factories/mocks comuns a vários CTs.
 
@@ -473,6 +752,12 @@ Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
 - `{ExternalService}`: Mockery via `app()->instance()` — métodos: `{método}()`
 - `Queue::fake()` — verificar dispatch de `{JobClass}`
 - `Http::fake()` — endpoints: `{url}`
+- `Log::spy()` — verificar logs emitidos (channel, nível, mensagem, context)
+
+### Estratégia de DB
+- `RefreshDatabase` — {justificativa se isolamento total é necessário}
+- `DatabaseTransactions` — {justificativa se performance é crítica}
+- Seeders: {quais rodar no setup}
 
 ---
 
@@ -506,6 +791,7 @@ Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
 
 ### Precondições
 - {Estado inicial que causa a falha}
+- `withoutExceptionHandling()` — {para validar exception exata}
 
 ### Dados de Entrada
 ```
@@ -516,6 +802,49 @@ Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
 - Lança `{ExceptionClass}` com mensagem `"{texto}"`
 - `{Model}` NÃO criado (`{Model}::count()` = 0)
 - `{Job}` NÃO despachado
+- Log `warning` emitido com `{campos do context}`
+
+---
+
+## CT-03: {Nome do Cenário — Autorização}
+
+**Tipo**: `Feature`
+**Arquivo**: `tests/Feature/...`
+**Método**: `it('{descrição}')`
+
+### Precondições
+- Usuário sem permissão `{policy}`
+- {Mocks a configurar}
+
+### Dados de Entrada
+```
+{request para endpoint protegido}
+```
+
+### Resultado Esperado
+- HTTP `403 Forbidden`
+- `{Model}` NÃO modificado
+
+---
+
+## CT-04: {Nome do Cenário — Log Emitido}
+
+**Tipo**: `Unit`
+**Arquivo**: `tests/Unit/...`
+**Método**: `it('{descrição}')`
+
+### Precondições
+- `Log::spy()` ativo
+
+### Dados de Entrada
+```
+{ação que dispara o log}
+```
+
+### Resultado Esperado
+- `Log::shouldHaveReceived('channel')` com `'{feature-name}'`
+- `shouldHaveReceived('info')` com mensagem `[Classe@Método] ...`
+- Context contém `{campo}` = `{valor}`
 
 ---
 
@@ -525,7 +854,9 @@ Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
 |----|---------|------|---------|
 | CT-01 | {happy path} | Feature | `tests/...` |
 | CT-02 | {falha X} | Feature | `tests/...` |
-| CT-03 | {edge case Y} | Unit | `tests/...` |
+| CT-03 | {autorização} | Feature | `tests/...` |
+| CT-04 | {log emitido} | Unit | `tests/...` |
+| CT-05 | {edge case Y} | Unit | `tests/...` |
 ```
 
 ---
@@ -540,6 +871,9 @@ Criar apenas quando a feature exige:
 | `05-api-contract.md` | Feature com API externa (payloads, endpoints, autenticação) |
 | `05-db-schema.md` | Feature com schema complexo (múltiplas tabelas, migrations em cadeia) |
 | `05-fluxo.md` | Feature com fluxo multi-etapas (queues + jobs + callbacks) |
+| `05-rollback.md` | Feature com migrations destrutivas ou mudanças de schema irreversíveis |
+| `05-performance.md` | Feature com volume alto (batch processing, relatórios, imports de CSV) |
+| `05-security.md` | Feature com dados sensíveis (PII, pagamentos, autenticação, LGPD) |
 
 ---
 
@@ -547,33 +881,63 @@ Criar apenas quando a feature exige:
 
 Antes de encerrar a invocação:
 
+### Planejamento
 - [ ] Branch lida e estrutura de pasta criada
 - [ ] Nome da feature confirmado com usuário
 - [ ] Pesquisa feita (`search-docs`, `database-schema`, leitura de arquivos)
+- [ ] Rotas, policies, config, composer, wikis existentes verificados
 - [ ] APIs de terceiros inspecionadas (vendor source ou docs) — métodos e schema confirmados
 - [ ] Dados fornecidos pelo usuário validados contra o DB (quando aplicável)
 - [ ] Factories confirmadas (existência + states) para todos os CTs
+
+### Documentação
 - [ ] `01-plano-acao.md` escrito com passos numerados + skills referenciadas + logs em todas as etapas
-- [ ] `02-decisoes-arquiteturais.md` escrito com justificativas
-- [ ] `03-progresso.md` escrito com checkboxes espelhando o plano
-- [ ] `04-casos-de-teste.md` escrito com todos os CTs identificados
-- [ ] Arquivos extras (`05-*`) criados se necessário
+- [ ] `01-plano-acao.md` inclui seções: Autorização, Rotas, Variáveis de Ambiente, Eventos, Jobs, Impacto, Rollback, Dependências, Riscos
+- [ ] `02-decisoes-arquiteturais.md` escrito em formato ADR (Status, Contexto, Decisão, Alternativas, Consequências)
+- [ ] `03-progresso.md` escrito com checkboxes espelhando o plano + seções Blockers, Desvios, Notas, Retrospectiva
+- [ ] `04-casos-de-teste.md` escrito com todos os CTs identificados (happy path, falha, autorização, log)
+- [ ] `04-casos-de-teste.md` inclui estratégia de DB, data providers e cobertura esperada
+- [ ] Arquivos extras (`05-*`) criados se necessário (rollback, performance, security)
+
+### Log
 - [ ] Channel de log da feature verificado/criado e referenciado em todos os passos do PRD
 - [ ] Padrão de log `[Classe@Método] mensagem` especificado em cada passo de execução do PRD
+- [ ] Context estruturado (array `$context`) especificado em cada log do PRD
+- [ ] CTs de log incluídos no `04-casos-de-teste.md`
+
+### Validação
 - [ ] Revisão profunda pós-escrita executada — premissas do plano re-validadas contra o código
+- [ ] `03-progresso.md` espelha exatamente os passos do `01-plano-acao.md`
 - [ ] Filosofia de Implementação (Ponytail) incluída no PRD
 - [ ] Confirmar com usuário se o plano está correto antes de implementar
 
+### Pós-Implementação (após merge)
+- [ ] `03-progresso.md` atualizado com checkboxes `[x]` + data de conclusão
+- [ ] Desvios do plano e notas de implementação documentados
+- [ ] Wiki linkada no PR
+- [ ] Wiki arquivada para `wikis/archive/{branch}/`
+- [ ] Retrospectiva breve escrita
+- [ ] Channel de log ajustado (level reduzido ou removido)
+
 ## Exemplo de Estrutura Criada
 
-```
+```text
 wikis/
-└── ferro/
-    └── 579/
-        └── relatorio-mba-lote/
-            ├── 01-plano-acao.md
-            ├── 02-decisoes-arquiteturais.md
-            ├── 03-progresso.md
-            ├── 04-casos-de-teste.md          ← novo obrigatório
-            └── 05-api-contract.md            ← extra quando necessário
+├── ferro/
+│   └── 579/
+│       └── relatorio-mba-lote/
+│           ├── 01-plano-acao.md
+│           ├── 02-decisoes-arquiteturais.md      ← formato ADR
+│           ├── 03-progresso.md                   ← + Blockers, Desvios, Retrospectiva
+│           ├── 04-casos-de-teste.md              ← + CTs de log e autorização
+│           ├── 05-api-contract.md                ← extra quando necessário
+│           └── 05-rollback.md                    ← extra quando necessário
+└── archive/
+    └── ferro/
+        └── 501/                                  ← wikis arquivadas pós-merge
+            └── envio-progresso/
+                ├── 01-plano-acao.md
+                ├── 02-decisoes-arquiteturais.md
+                ├── 03-progresso.md
+                └── 04-casos-de-teste.md
 ```
