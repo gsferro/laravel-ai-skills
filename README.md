@@ -129,7 +129,7 @@ Ajustes possíveis: se quiser manter só os gitmojis do seu padrão interno (sem
 
 ---
 
-## 🐴 Integração com Ponytail (Planejar → Executar com Mínimo Esforço)
+## 🐴 Integração com Ponytail + 🦴 Caveman (Planejar → Executar → Comunicar com Mínimo Esforço)
 
 ### O que é o Ponytail?
 
@@ -145,19 +145,43 @@ Ajustes possíveis: se quiser manter só os gitmojis do seu padrão interno (sem
 
 O Ponytail **nunca** corta validação de input em fronteiras de confiança, tratamento de erros que previne perda de dados, segurança ou acessibilidade. Preguiça na solução, nunca na leitura do problema.
 
-### Por que feature-wiki e Ponytail trabalham bem juntas
+### O que é o Caveman?
 
-A integração é natural porque elas operam em **fases complementares** do ciclo de desenvolvimento:
+**Caveman** ([github.com/JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman)) é uma skill de comunicação que corta ~75% dos tokens na prosa do agente — removendo artigos, fillers, pleasantries e hedging — mantendo precisão técnica. Tem níveis de intensidade (lite/full/ultra) e regras de Auto-Clarity que desativam o modo terse em situações críticas.
 
-| Fase | Skill | Responsabilidade |
-|------|-------|------------------|
-| **Planejamento** | feature-wiki | Define o **o quê** e o **porquê**: PRD, decisões arquiteturais (ADR), casos de teste, tracking de progresso, padrão de log, channel por feature |
-| **Execução** | Ponytail | Define o **como**: mínimo código possível, sem over-engineering, reutilização antes de criação |
-| **Revisão** | Ponytail (`/ponytail-review`) | Valida o diff contra over-engineering: o que cortar, o que substituir por stdlib |
+O próprio Ponytail recomenda o pareamento: *"Ponytail governs what you build, not how you talk (pair with Caveman for terse prose)"*.
 
-O Ponytail diz *"leia o problema completamente antes de escolher o rung mais preguiçoso"*. A feature-wiki **é** essa leitura profunda — ela força o agente a pesquisar o codebase, validar premissas, inspecionar APIs e escrever casos de teste **antes** de tocar em código. Quando o Ponytail assume a execução, o agente já tem contexto completo da wiki e pode aplicar a escada de simplicidade com confiança, sem risco de "preguiça que pula compreensão".
+- **Caveman** → prosa. Corta fluff da comunicação.
+- **Ponytail** → código. Corta over-engineering da solução.
 
-Sem a feature-wiki, o Ponytail pode escolher o rung errado por falta de contexto. Sem o Ponytail, a feature-wiki pode produzir um plano detalhado que o agente super-engineering na implementação. Juntas: **planejamento minucioso + execução minimalista**.
+### Por que feature-wiki, Ponytail e Caveman trabalham bem juntas
+
+A integração é natural porque as três skills operam em **camadas complementares** do ciclo de desenvolvimento:
+
+| Camada | Skill | Responsabilidade | Boundary |
+|--------|-------|------------------|----------|
+| **Comunicação** (agent ↔ usuário) | Caveman | Prosa terse — corta fluff, artigos, fillers | **NÃO aplica em arquivos wiki** (01-05), código, commits, PRs |
+| **Planejamento** (documentação) | feature-wiki | Define o **o quê** e o **porquê**: PRD, ADR, CTs, tracking, padrão de log, channel por feature | Arquivos wiki são detalhados por design — compressão cria ambiguidade |
+| **Execução** (código) | Ponytail | Define o **como**: mínimo código possível, sem over-engineering, reutilização antes de criação | Não corta validação, segurança, tratamento de erros |
+| **Revisão** (diff) | Ponytail (`/ponytail-review`) | Valida o diff contra over-engineering: o que cortar, o que substituir por stdlib | — |
+
+O Ponytail diz *"leia o problema completamente antes de escolher o rung mais preguiçoso"*. A feature-wiki **é** essa leitura profunda — ela força o agente a pesquisar o codebase, validar premissas, inspecionar APIs e escrever casos de teste **antes** de tocar em código. Quando o Ponytail assume a execução, o agente já tem contexto completo da wiki e pode aplicar a escada de simplicidade com confiança, sem risco de "preguiça que pula compreensão". O Caveman mantém a comunicação terse durante toda a sessão — mas respeita o boundary dos arquivos wiki.
+
+Sem a feature-wiki, o Ponytail pode escolher o rung errado por falta de contexto. Sem o Ponytail, a feature-wiki pode produzir um plano detalhado que o agente super-engineering na implementação. Sem o Caveman, a sessão perde tokens com fluff na prosa. Juntas: **planejamento minucioso + execução minimalista + comunicação terse**.
+
+### Boundary do Caveman em arquivos wiki
+
+O Caveman tem Auto-Clarity que desativa o modo terse em situações críticas. Mas a feature-wiki torna explícito:
+
+> **Arquivos wiki são boundary do Caveman.**
+>
+> - `01-plano-acao.md` — PRD precisa ser "minucioso o suficiente para um agente implementar sem ambiguidade". Compressão destrói essa propriedade.
+> - `02-decisoes-arquiteturais.md` — ADR é argumentativo por natureza. Fragmentos perdem o raciocínio.
+> - `03-progresso.md` — Checklists e descrições de blockers/desvios precisam de clareza.
+> - `04-casos-de-teste.md` — CTs já são estruturados, mas a prosa explicativa não deve ser comprimida.
+> - `05-*.md` — Arquivos extras (rollback, performance, security) são críticos e não podem ser ambíguos.
+
+**Onde Caveman é bem-vindo**: conversa agent ↔ usuário, resumos de progresso, perguntas e confirmações, respostas a dúvidas rápidas.
 
 ### Passo a Passo da Integração
 
@@ -170,7 +194,7 @@ php artisan boost:update
 
 Isso baixa a skill para `.ai/skills/feature-wiki/` no seu projeto Laravel.
 
-#### 2. Instalar o Ponytail no seu agente de IA
+#### 2. Instalar o Ponytail e o Caveman no seu agente de IA
 
 Escolha **uma** das opções abaixo conforme o agente que você usa:
 
@@ -206,6 +230,27 @@ curl -o .github/copilot-instructions.md https://raw.githubusercontent.com/Dietri
 curl -o AGENTS.md https://raw.githubusercontent.com/DietrichGebert/ponytail/main/AGENTS.md
 ```
 
+**Caveman — Claude Code:**
+```text
+/plugin marketplace add JuliusBrussee/caveman
+```
+Depois, em um segundo prompt:
+```text
+/plugin install caveman@caveman
+```
+
+**Caveman — Windsurf / Cursor / Cline:**
+```bash
+# Windsurf
+curl -o .windsurf/rules/caveman.md https://raw.githubusercontent.com/JuliusBrussee/caveman/main/.windsurf/rules/caveman.md
+
+# Cursor
+curl -o .cursor/rules/caveman.md https://raw.githubusercontent.com/JuliusBrussee/caveman/main/.cursor/rules/caveman.mdc
+
+# Cline
+curl -o .clinerules/caveman.md https://raw.githubusercontent.com/JuliusBrussee/caveman/main/.clinerules/caveman.md
+```
+
 #### 3. Espelhar a skill feature-wiki para o Claude Code (se aplicável)
 
 Se você usa Claude Code junto com Laravel Boost:
@@ -235,6 +280,7 @@ A partir de agora, para cada feature nova:
 │    - CTs de log, autorização, data providers        │
 │  • Revisão profunda pós-escrita                     │
 │  • Confirmar plano com usuário                      │
+│  ⚠️ Caveman OFF nos arquivos wiki                  │
 └──────────────────────┬──────────────────────────────┘
                        │
                        ▼
@@ -242,6 +288,7 @@ A partir de agora, para cada feature nova:
 │  2. EXECUTAR (Ponytail)                             │
 │  ─────────────────────────────────                  │
 │  • Ponytail ativo em modo full (padrão)             │
+│  • Caveman ativo na comunicação agent ↔ usuário    │
 │  • Seguir o 01-plano-acao.md passo a passo          │
 │  • Aplicar a escada de simplicidade em cada passo:  │
 │    - Reutilizar antes de criar                      │
@@ -288,7 +335,7 @@ A partir de agora, para cada feature nova:
 └─────────────────────────────────────────────────────┘
 ```
 
-#### 5. Referenciar o Ponytail no PRD da feature-wiki
+#### 5. Referenciar o Ponytail e o Caveman no PRD da feature-wiki
 
 Ao escrever o `01-plano-acao.md`, incluir uma nota de filosofia de implementação:
 
@@ -305,9 +352,13 @@ Ao escrever o `01-plano-acao.md`, incluir uma nota de filosofia de implementaç�
 >
 > Atalhos deliberados devem ser marcados com `ponytail:` comment.
 > Após implementação, rodar `/ponytail-review` no diff.
+>
+> **Caveman ativo em modo `full`** na comunicação agent ↔ usuário.
+> Arquivos wiki (01-05) são boundary do Caveman — escrever em prosa normal.
+> Código, commits e PRs também são boundary do Caveman.
 ```
 
-#### 6. Comandos do Ponytail durante a implementação
+#### 6. Comandos do Ponytail e Caveman durante a implementação
 
 | Comando | Quando usar |
 |---------|-------------|
@@ -318,6 +369,8 @@ Ao escrever o `01-plano-acao.md`, incluir uma nota de filosofia de implementaç�
 | `/ponytail-review` | Revisar o diff atual por over-engineering |
 | `/ponytail-audit` | Auditar o repo inteiro por complexidade |
 | `/ponytail-debt` | Coletar todos os `ponytail:` comments em um ledger |
+| `/caveman lite\|full\|ultra` | Alternar intensidade da prosa terse |
+| `stop caveman` / `normal mode` | Desativar Caveman temporariamente |
 
 #### 7. Configurar modo padrão do Ponytail (opcional)
 
@@ -339,22 +392,22 @@ export PONYTAIL_DEFAULT_MODE=full
 ### Resumo da Integração
 
 ```
-feature-wiki (v2.0.0)          Ponytail
-─────────────────              ──────────────────────
-Planejamento minucioso    +    Execução minimalista
-PRD + ADR + CTs antes       Escada de simplicidade
-do código
-Padrão de log obrigatório    /ponytail-review pós-código
-Channel por feature          /ponytail-debt ledger
-Revisão pós-escrita          
-Pós-implementação + archive  
-03-progresso.md tracking     
-         │                            │
-         └────────────┬───────────────┘
+feature-wiki (v2.1.0)    Ponytail              Caveman
+─────────────────        ─────────────────     ─────────────────
+Planejamento minucioso   Execução minimalista  Comunicação terse
+PRD + ADR + CTs           Escada de simplicidade  Corta fluff da prosa
+Padrão de log             /ponytail-review      Auto-Clarity ativa
+Channel por feature       /ponytail-debt ledger  Boundary: wiki/code
+Revisão pós-escrita                              /commits = prosa normal
+Pós-implementação + archive
+03-progresso.md tracking
+         │                    │                      │
+         └────────────┬───────┴──────────────────────┘
                       ▼
-          Código correto + enxuto
+          Código correto + enxuto + comunicado com terseza
           Planejado com detalhe,
-          executado com o mínimo necessário
+          executado com o mínimo necessário,
+          comunicado sem fluff
 ```
 
 ---

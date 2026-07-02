@@ -1,13 +1,14 @@
 ---
 name: feature-wiki
-version: 2.0.0
+version: 2.1.0
 description: >
   Cria estrutura de documentação wiki para uma feature antes de implementá-la.
   Invoque SEMPRE ao iniciar implementação de qualquer feature nova.
   Cria pasta em wikis/{branch} com 4 arquivos obrigatórios: plano de ação (PRD),
   decisões arquiteturais (ADR), tracking de progresso e casos de teste. O plano de ação
   deve ser minucioso o suficiente para um agente implementar sem ambiguidade.
-  Inclui padrão de log obrigatório, channel por feature, e etapa de pós-implementação.
+  Inclui padrão de log obrigatório, channel por feature, etapa de pós-implementação,
+  e integração com Caveman (comunicação terse) e Ponytail (execução minimalista).
 ---
 
 # Feature Wiki — Documentação Antes de Implementar
@@ -38,6 +39,7 @@ description: >
 - [Arquivo 03: Progresso](#arquivo-03-progresso--tracking)
 - [Arquivo 04: Casos de Teste](#arquivo-04-casos-de-teste-ct)
 - [Arquivos Extras](#arquivos-extras-conforme-necessidade)
+- [Skills Companheiras](#skills-companheiras)
 - [Checklist Final](#checklist-final-da-skill)
 
 ## Ordem de Leitura para o Agente Implementador
@@ -918,6 +920,64 @@ Antes de encerrar a invocação:
 - [ ] Wiki arquivada para `wikis/archive/{branch}/`
 - [ ] Retrospectiva breve escrita
 - [ ] Channel de log ajustado (level reduzido ou removido)
+
+## Skills Companheiras
+
+A feature-wiki faz parte de um trio de skills que cobrem o ciclo completo de desenvolvimento:
+
+| Camada | Skill | Responsabilidade | Boundary |
+|--------|-------|------------------|----------|
+| **Comunicação** (agent ↔ usuário) | [Caveman](https://github.com/JuliusBrussee/caveman) | Prosa terse — corta ~75% dos tokens removendo fluff, artigos, fillers | **NÃO aplica em arquivos wiki** (01-05), código, commits, PRs |
+| **Planejamento** (estrutura de documentação) | feature-wiki | PRD + ADR + CTs + tracking + padrão de log | Arquivos wiki são detalhados por design — compressão cria ambiguidade |
+| **Execução** (código) | [Ponytail](https://github.com/DietrichGebert/ponytail) | Mínimo código que funciona — escada de simplicidade | Não corta validação, segurança, tratamento de erros |
+
+### Caveman + feature-wiki: fronteira clara
+
+O Caveman tem uma regra de **Auto-Clarity** que desativa o modo terse em situações críticas (security warnings, irreversible actions, multi-step sequences). Mas isso é implícito — a feature-wiki torna explícito:
+
+> **Arquivos wiki são boundary do Caveman.**
+>
+> - `01-plano-acao.md` — PRD precisa ser "minucioso o suficiente para um agente implementar sem ambiguidade". Compressão destrói essa propriedade.
+> - `02-decisoes-arquiteturais.md` — ADR é argumentativo por natureza (Contexto, Decisão, Alternativas, Consequências). Fragmentos perdem o raciocínio.
+> - `03-progresso.md` — Checklists e descrições de blockers/desvios precisam de clareza.
+> - `04-casos-de-teste.md` — CTs já são estruturados (tabelas, code blocks), mas a prosa explicativa entre eles não deve ser comprimida.
+> - `05-*.md` — Arquivos extras (rollback, performance, security) são críticos e não podem ser ambíguos.
+
+**Onde Caveman é bem-vindo**:
+- Conversa agent ↔ usuário durante a sessão de planejamento
+- Resumos de progresso ("CT-01 passou, CT-02 falha em assertion X")
+- Perguntas e confirmações ("Confirmar nome da feature: X?")
+- Respostas a dúvidas rápidas durante a implementação
+
+**Onde Caveman NÃO se aplica** (já definido pelo próprio Caveman):
+- Código/commits/PRs: "write normal"
+- Security warnings e irreversible action confirmations
+
+### Como ativar o trio
+
+```bash
+# 1. feature-wiki (via Laravel Boost)
+php artisan boost:add-skill gsferro/laravel-ai-skills
+php artisan boost:update
+
+# 2. Ponytail (escolha um agente)
+# Claude Code:
+#   /plugin marketplace add DietrichGebert/ponytail
+#   /plugin install ponytail@ponytail
+# Windsurf:
+#   curl -o .windsurf/rules/ponytail.md https://raw.githubusercontent.com/DietrichGebert/ponytail/main/.windsurf/rules/ponytail.md
+
+# 3. Caveman (escolha um agente)
+# Claude Code:
+#   /plugin marketplace add JuliusBrussee/caveman
+#   /plugin install caveman@caveman
+# Windsurf:
+#   curl -o .windsurf/rules/caveman.md https://raw.githubusercontent.com/JuliusBrussee/caveman/main/.windsurf/rules/caveman.md
+```
+
+Sessão com o trio ativo: `caveman full` + `ponytail full` + `feature-wiki` → resposta curta + diff curto + plano detalhado.
+
+---
 
 ## Exemplo de Estrutura Criada
 
