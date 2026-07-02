@@ -50,7 +50,7 @@ Isso fará o download automático de todas as pastas de habilidades para o diret
 ```bash
 php artisan boost:update
 ```
-> Após instalar, veja [Padrão de Commit](#padrão-de-commit-ao-instalaratualizar-skills).    
+> Após instalar, veja [Padrão de Commit](#-padrão-de-commit-ao-instalaratualizar-skills).    
 
 ---
 
