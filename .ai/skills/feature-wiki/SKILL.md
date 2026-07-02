@@ -98,7 +98,10 @@ Após escrever os 4 arquivos, **re-validar cada premissa do plano contra o códi
 - pest-testing             → escrever/editar testes Pest
 - tailwindcss-development  → qualquer Tailwind/Blade/UI
 - livewire-development     → componentes Livewire
+- ponytail                 → execução minimalista (escada de simplicidade)
 ```
+
+> **Integração com Ponytail**: Após a wiki ser aprovada, o Ponytail deve ser a skill de execução ativa durante toda a implementação. Ele garante que cada passo do plano seja executado com o mínimo de código necessário (reutilização → stdlib → feature nativa → uma linha → mínimo que funciona). Após implementar, rodar `/ponytail-review` no diff para validar contra over-engineering. Atalhos deliberados devem ser marcados com `ponytail:` comment. Ver o README do repositório para o passo a passo completo da integração.
 
 **Template `01-plano-acao.md`**:
 ```markdown
@@ -129,6 +132,19 @@ Após escrever os 4 arquivos, **re-validar cada premissa do plano contra o códi
 ### 2. {Nome do Passo}
 ...
 
+## Filosofia de Implementação
+
+> **Ponytail ativo em modo `full`** durante toda a implementação.
+> Cada passo deve aplicar a escada de simplicidade:
+> 1. Reutilizar código existente antes de criar novo
+> 2. Usar stdlib do PHP/Laravel antes de código custom
+> 3. Usar features nativas antes de dependências
+> 4. Uma linha quando possível
+> 5. Mínimo código que funciona
+>
+> Atalhos deliberados devem ser marcados com `ponytail:` comment.
+> Após implementação, rodar `/ponytail-review` no diff.
+
 ## Mapeamentos
 
 {Tabelas de mapeamento de campos, status, etc. — quando aplicável}
@@ -138,6 +154,7 @@ Após escrever os 4 arquivos, **re-validar cada premissa do plano contra o códi
 > Ver `04-casos-de-teste.md` para especificação completa dos cenários.
 
 ## Verificação Final
+- [ ] `/ponytail-review` no diff (validar contra over-engineering)
 - [ ] `vendor/bin/pint --dirty`
 - [ ] `php artisan test --compact --filter={Feature}`
 - [ ] {outros comandos de verificação específicos}
@@ -199,6 +216,7 @@ Após escrever os 4 arquivos, **re-validar cada premissa do plano contra o códi
 - [ ] `{NomeDoTesteTest}` — CT-01, CT-02, CT-03
 
 ## Verificação Final
+- [ ] `/ponytail-review` no diff (validar contra over-engineering)
 - [ ] `vendor/bin/pint --dirty`
 - [ ] `php artisan test --compact --filter={Feature}`
 - [ ] `git commit`
@@ -325,6 +343,7 @@ Antes de encerrar a invocação:
 - [ ] `04-casos-de-teste.md` escrito com todos os CTs identificados
 - [ ] Arquivos extras (`05-*`) criados se necessário
 - [ ] Revisão profunda pós-escrita executada — premissas do plano re-validadas contra o código
+- [ ] Filosofia de Implementação (Ponytail) incluída no PRD
 - [ ] Confirmar com usuário se o plano está correto antes de implementar
 
 ## Exemplo de Estrutura Criada

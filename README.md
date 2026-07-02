@@ -129,6 +129,216 @@ Ajustes possíveis: se quiser manter só os gitmojis do seu padrão interno (sem
 
 ---
 
+## 🐴 Integração com Ponytail (Planejar → Executar com Mínimo Esforço)
+
+### O que é o Ponytail?
+
+**Ponytail** ([github.com/DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail)) é uma skill de execução que faz o agente de IA pensar como o **dev sênior mais preguiçoso da sala** — no bom sentido. Antes de escrever qualquer código, o agente sobe uma "escada de simplicidade":
+
+1. **Isso precisa existir?** (YAGNI) → se não, skip
+2. **Já existe no codebase?** → reutiliza, não reescreve
+3. **A stdlib faz?** → usa
+4. **Feature nativa da plataforma cobre?** → usa (`<input type="date">` em vez de lib de datepicker)
+5. **Dependência já instalada resolve?** → usa
+6. **Pode ser uma linha?** → uma linha
+7. **Só então:** o mínimo de código que funciona
+
+O Ponytail **nunca** corta validação de input em fronteiras de confiança, tratamento de erros que previne perda de dados, segurança ou acessibilidade. Preguiça na solução, nunca na leitura do problema.
+
+### Por que feature-wiki e Ponytail trabalham bem juntas
+
+A integração é natural porque elas operam em **fases complementares** do ciclo de desenvolvimento:
+
+| Fase | Skill | Responsabilidade |
+|------|-------|------------------|
+| **Planejamento** | feature-wiki | Define o **o quê** e o **porquê**: PRD, decisões arquiteturais, casos de teste, tracking de progresso |
+| **Execução** | Ponytail | Define o **como**: mínimo código possível, sem over-engineering, reutilização antes de criação |
+| **Revisão** | Ponytail (`/ponytail-review`) | Valida o diff contra over-engineering: o que cortar, o que substituir por stdlib |
+
+O Ponytail diz *"leia o problema completamente antes de escolher o rung mais preguiçoso"*. A feature-wiki **é** essa leitura profunda — ela força o agente a pesquisar o codebase, validar premissas, inspecionar APIs e escrever casos de teste **antes** de tocar em código. Quando o Ponytail assume a execução, o agente já tem contexto completo da wiki e pode aplicar a escada de simplicidade com confiança, sem risco de "preguiça que pula compreensão".
+
+Sem a feature-wiki, o Ponytail pode escolher o rung errado por falta de contexto. Sem o Ponytail, a feature-wiki pode produzir um plano detalhado que o agente super-engineering na implementação. Juntas: **planejamento minucioso + execução minimalista**.
+
+### Passo a Passo da Integração
+
+#### 1. Instalar a skill feature-wiki no seu projeto
+
+```bash
+php artisan boost:add-skill gsferro/laravel-ai-skills
+php artisan boost:update
+```
+
+Isso baixa a skill para `.ai/skills/feature-wiki/` no seu projeto Laravel.
+
+#### 2. Instalar o Ponytail no seu agente de IA
+
+Escolha **uma** das opções abaixo conforme o agente que você usa:
+
+**Claude Code:**
+```text
+/plugin marketplace add DietrichGebert/ponytail
+```
+Depois, em um segundo prompt:
+```text
+/plugin install ponytail@ponytail
+```
+
+**Windsurf / Cursor / Cline:**
+Copie o arquivo de regras do Ponytail para a pasta do seu agente:
+```bash
+# Windsurf
+curl -o .windsurf/rules/ponytail.md https://raw.githubusercontent.com/DietrichGebert/ponytail/main/.windsurf/rules/ponytail.md
+
+# Cursor
+curl -o .cursor/rules/ponytail.md https://raw.githubusercontent.com/DietrichGebert/ponytail/main/.cursor/rules/ponytail.mdc
+
+# Cline
+curl -o .clinerules/ponytail.md https://raw.githubusercontent.com/DietrichGebert/ponytail/main/.clinerules/ponytail.md
+```
+
+**GitHub Copilot (editor):**
+```bash
+curl -o .github/copilot-instructions.md https://raw.githubusercontent.com/DietrichGebert/ponytail/main/.github/copilot-instructions.md
+```
+
+**AGENTS.md (universal — CodeWhale, Codex, VS Code):**
+```bash
+curl -o AGENTS.md https://raw.githubusercontent.com/DietrichGebert/ponytail/main/AGENTS.md
+```
+
+#### 3. Espelhar a skill feature-wiki para o Claude Code (se aplicável)
+
+Se você usa Claude Code junto com Laravel Boost:
+
+```bash
+mkdir -p .claude/skills/
+cp -R .ai/skills/* .claude/skills/
+```
+
+#### 4. Fluxo de trabalho integrado
+
+A partir de agora, para cada feature nova:
+
+```
+┌─────────────────────────────────────────────────────┐
+│  1. PLANEJAR (feature-wiki)                         │
+│  ─────────────────────────────────                  │
+│  • Invocar feature-wiki ao iniciar a feature        │
+│  • Criar wikis/{branch}/{feature}/ com 4 arquivos   │
+│  • 01-plano-acao.md      → PRD detalhado            │
+│  • 02-decisoes-arquiteturais.md → justificativas    │
+│  • 03-progresso.md       → checklist de tracking    │
+│  • 04-casos-de-teste.md  → CTs antes do código      │
+│  • Revisão profunda pós-escrita                     │
+│  • Confirmar plano com usuário                      │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│  2. EXECUTAR (Ponytail)                             │
+│  ─────────────────────────────────                  │
+│  • Ponytail ativo em modo full (padrão)             │
+│  • Seguir o 01-plano-acao.md passo a passo          │
+│  • Aplicar a escada de simplicidade em cada passo:  │
+│    - Reutilizar antes de criar                      │
+│    - Stdlib antes de código custom                  │
+│    - Feature nativa antes de dependência            │
+│    - Uma linha quando possível                      │
+│  • Marcar atalhos com `ponytail:` comment           │
+│  • Atualizar 03-progresso.md em tempo real          │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│  3. REVISAR (Ponytail-review)                       │
+│  ─────────────────────────────────                  │
+│  • /ponytail-review no diff atual                   │
+│  • Receber lista de cortes: delete, stdlib, native, │
+│    yagni, shrink                                    │
+│  • Aplicar cortes sugeridos                         │
+│  • /ponytail-audit se quiser varrer o repo inteiro  │
+│  • /ponytail-debt para coletar atalhos `ponytail:`  │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│  4. TESTAR E COMMITAR                               │
+│  ─────────────────────────────────                  │
+│  • Rodar testes dos CTs (04-casos-de-teste.md)      │
+│  • vendor/bin/pint --dirty                          │
+│  • php artisan test --compact --filter={Feature}    │
+│  • Commit com gitmoji + escopo                      │
+│  • :memo: wiki: atualiza 03-progresso.md            │
+└─────────────────────────────────────────────────────┘
+```
+
+#### 5. Referenciar o Ponytail no PRD da feature-wiki
+
+Ao escrever o `01-plano-acao.md`, incluir uma nota de filosofia de implementação:
+
+```markdown
+## Filosofia de Implementação
+
+> **Ponytail ativo em modo `full`** durante toda a implementação.
+> Cada passo deve aplicar a escada de simplicidade:
+> 1. Reutilizar código existente antes de criar novo
+> 2. Usar stdlib do PHP/Laravel antes de código custom
+> 3. Usar features nativas (ex: `input[type=date]`) antes de dependências
+> 4. Uma linha quando possível
+> 5. Mínimo código que funciona
+>
+> Atalhos deliberados devem ser marcados com `ponytail:` comment.
+> Após implementação, rodar `/ponytail-review` no diff.
+```
+
+#### 6. Comandos do Ponytail durante a implementação
+
+| Comando | Quando usar |
+|---------|-------------|
+| `/ponytail` | Verificar modo ativo ou alternar intensidade |
+| `/ponytail full` | Modo padrão — escada enforced, stdlib primeiro |
+| `/ponytail ultra` | YAGNI extremo — para features simples ou refactors agressivos |
+| `/ponytail lite` | Constrói o pedido mas sugere alternativa mais simples |
+| `/ponytail-review` | Revisar o diff atual por over-engineering |
+| `/ponytail-audit` | Auditar o repo inteiro por complexidade |
+| `/ponytail-debt` | Coletar todos os `ponytail:` comments em um ledger |
+
+#### 7. Configurar modo padrão do Ponytail (opcional)
+
+Defina o modo padrão para todas as sessões novas:
+
+**Variável de ambiente:**
+```bash
+export PONYTAIL_DEFAULT_MODE=full
+```
+
+**Arquivo de config:**
+- **Linux/macOS:** `~/.config/ponytail/config.json`
+- **Windows:** `%APPDATA%\ponytail\config.json`
+
+```json
+{ "defaultMode": "full" }
+```
+
+### Resumo da Integração
+
+```
+feature-wiki (v1.0.0)          Ponytail
+─────────────────              ──────────────────────
+Planejamento minucioso    +    Execução minimalista
+PRD + CTs antes do código      Escada de simplicidade
+Revisão pós-escrita            /ponytail-review pós-código
+03-progresso.md tracking       /ponytail-debt ledger
+         │                            │
+         └────────────┬───────────────┘
+                      ▼
+          Código correto + enxuto
+          Planejado com detalhe,
+          executado com o mínimo necessário
+```
+
+---
+
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
