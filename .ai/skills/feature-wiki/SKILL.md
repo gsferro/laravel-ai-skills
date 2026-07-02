@@ -77,10 +77,12 @@ Após escrever os 4 arquivos, **re-validar cada premissa do plano contra o códi
 - Objetivo claro em 1-2 parágrafos
 - Contexto e problema que resolve
 - Análise dos arquivos/código existente que será tocado
+- **Channel de log da feature** (ver seção "Padrão de Log" abaixo)
 - Passos de implementação numerados com:
   - Path exato de cada arquivo a criar/modificar
   - Assinatura de classes, métodos, interfaces
   - Lógica de negócio detalhada
+  - **Logs em todas as etapas de execução** — cada passo que executa lógica deve especificar quais logs emitir (ver seção "Padrão de Log" abaixo)
   - Campos de DB com tipos, nullable, índices, constraints
   - Mapeamentos de campos (ex: API → DB)
   - Tratamento de erros esperados
@@ -120,6 +122,34 @@ Após escrever os 4 arquivos, **re-validar cada premissa do plano contra o códi
 ### {NomeDoArquivo}
 - {Descrição do que existe e como será afetado}
 
+## Channel de Log da Feature
+
+### Verificação de Channel Existente
+
+- Buscar em `config/logging.php` por channels já configurados
+- Verificar se já existe um channel com nome relacionado à feature (ex: `feature-{nome}`, `{sistema}-{feature}`)
+- Usar `Grep` em `config/logging.php` e em `app/` por referências a `Log::channel(`
+
+### Decisão
+
+- **Se channel existe**: referenciar no plano como `Log::channel('{nome}')` em todos os passos
+- **Se não existe**: incluir como primeiro passo de implementação a criação do channel em `config/logging.php`, com:
+  - Nome: `{feature-name}` (kebab-case, mesmo nome da pasta da feature)
+  - Driver: `daily` (rotação automática)
+  - Path: `storage/logs/{feature-name}.log`
+  - Level: `debug` (para rastreabilidade completa durante desenvolvimento)
+  - Exemplo de configuração:
+    ```php
+    '{feature-name}' => [
+        'driver' => 'daily',
+        'path' => storage_path('logs/{feature-name}.log'),
+        'level' => 'debug',
+        'days' => 14,
+    ],
+    ```
+
+> **Por que agrupar por channel**: Logs de uma feature ficam isolados em arquivo próprio, facilitando debug, auditoria e remoção futura. Evita poluir o log principal do sistema com ruído de uma feature específica.
+
 ## Estrutura de Implementação
 
 ### 1. {Nome do Passo}
@@ -128,6 +158,9 @@ Após escrever os 4 arquivos, **re-validar cada premissa do plano contra o códi
 
 - **Path**: `app/...`
 - {Detalhes de implementação}
+- **Logs**:
+  - `Log::channel('{feature-name}')->info('[{Classe}@{metodo}] {mensagem da ação} | {parametro principal}')`
+  - Especificar cada ponto de log: início, sucesso, falha, decisões de fluxo
 
 ### 2. {Nome do Passo}
 ...
@@ -163,6 +196,91 @@ Após escrever os 4 arquivos, **re-validar cada premissa do plano contra o códi
 - `{gitmoji} {escopo}: {mensagem}`
 - `:memo: {escopo}: wiki da feature {nome}`
 ```
+
+---
+
+## Padrão de Log — `[Classe@Método] mensagem`
+
+### Por que este padrão
+
+O formato `[Classe@Método] mensagem` é obrigatório em **todos os logs** do projeto. Ele resolve três problemas:
+
+1. **Rastreabilidade**: ao ler um log, sabe-se imediatamente qual classe e método o gerou — sem precisar buscar no código
+2. **Filtragem**: permite `grep` por classe ou método para isolar fluxos específicos
+3. **Consistência**: padroniza a leitura em qualquer nível (info, warning, error) e em qualquer channel
+
+### Formato Obrigatório
+
+```
+[{Classe}@{Método}] {mensagem descritiva} | {parâmetro principal}: {valor} - {contexto adicional}
+```
+
+### Anatomia da Mensagem
+
+| Parte | Descrição | Exemplo |
+|-------|-----------|---------|
+| `{Classe}` | Nome da classe (sem namespace) | `AddUserToClassJob` |
+| `{Método}` | Nome do método que está logando | `processAddUserToClass` |
+| `{mensagem}` | Descrição clara da ação executada | `Membro associado com sucesso` |
+| `{parâmetro}` | ID, status, ou valor principal manipulado | `enrollment: 280114` |
+| `{contexto}` | Informação adicional relevante (opcional) | `evento: enrollment.requested` |
+
+### Regras de Escrita
+
+1. **Prefixo sempre entre colchetes**: `[Classe@Método]` — sem espaços dentro dos colchetes
+2. **Mensagem em português**: descrever a **ação executada**, não o estado (use "Membro associado com sucesso" em vez de "Membro foi associado")
+3. **Pipe `|` como separador**: entre a mensagem e os parâmetros/contexto
+4. **Hífen `-` como separador secundário**: entre múltiplos parâmetros de contexto
+5. **Incluir parâmetro principal sempre que possível**: IDs, slugs, status — valores que identificam o registro manipulado
+6. **Nível de log apropriado**:
+   - `info` → sucesso de operação esperada
+   - `warning` → condição anormal mas não fatal (retry, fallback, dado ausente)
+   - `error` → falha que interrompe o fluxo
+   - `debug` → detalhe intermediário para rastreabilidade
+
+### Exemplos Práticos
+
+```php
+// Início de processamento
+Log::channel('feature-name')->info('[AddUserToClassJob@handle] Iniciando adição do usuário | user_id: 123 - turma_id: 456');
+
+// Sucesso com contexto
+Log::channel('feature-name')->info('[AddUserToClassJob@processAddUserToClass] Membro associado com sucesso | enrollment: 280114 - evento: enrollment.requested');
+
+// Criação de recurso externo
+Log::channel('feature-name')->info('[CreateCurseducaUserJob@createCurseducaAccount] Conta criada com sucesso | aluno_id: 789');
+
+// Webhook recebido
+Log::channel('feature-name')->info('[UnicoWebhookController@handle] Webhook recebido | evento: enrollment.requested');
+
+// Condição de fluxo (warning)
+Log::channel('feature-name')->warning('[ProcessCurseducaAccountCreationJob@handle] Usuário já existe, pulando criação | aluno_id: 789');
+
+// Erro que interrompe fluxo
+Log::channel('feature-name')->error('[AddUserToClassJob@processAddUserToClass] Falha ao associar membro | enrollment: 280114 - erro: API timeout');
+```
+
+### Como Implementar no Plano
+
+Para **cada passo de implementação** no PRD, especificar:
+
+1. **Quais métodos terão logs** — listar cada método e os pontos exatos (início, sucesso, falha, decisão de fluxo)
+2. **Qual channel usar** — `Log::channel('{feature-name}')` em todos os logs da feature
+3. **Qual nível** — info/warning/error/debug conforme a regra acima
+4. **Qual mensagem** — já escrever a string completa no plano, seguindo o formato
+
+> **Anti-padrão**: NUNCA usar `Log::info('...')` sem channel — sempre especificar o channel da feature.
+> **Anti-padrão**: NUNCA usar mensagens genéricas como "Processando..." ou "Erro ocorrido" — sempre incluir `[Classe@Método]` e parâmetro principal.
+> **Anti-padrão**: NUNCA logar apenas em `catch` — logar também no sucesso e nos pontos de decisão de fluxo.
+
+### Trait UnicoLogging (se aplicável)
+
+Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
+
+- `Grep` por `trait UnicoLogging` ou `trait.*Logging` em `app/`
+- Se existir, usar a trait nos classes da feature — ela formata automaticamente o prefixo `[Classe@Método]`
+- Se não existir, implementar o formato manualmente via `Log::channel(...)->info('[Classe@metodo] ...')`
+- Documentar no plano qual abordagem será usada
 
 ---
 
@@ -337,11 +455,13 @@ Antes de encerrar a invocação:
 - [ ] APIs de terceiros inspecionadas (vendor source ou docs) — métodos e schema confirmados
 - [ ] Dados fornecidos pelo usuário validados contra o DB (quando aplicável)
 - [ ] Factories confirmadas (existência + states) para todos os CTs
-- [ ] `01-plano-acao.md` escrito com passos numerados + skills referenciadas
+- [ ] `01-plano-acao.md` escrito com passos numerados + skills referenciadas + logs em todas as etapas
 - [ ] `02-decisoes-arquiteturais.md` escrito com justificativas
 - [ ] `03-progresso.md` escrito com checkboxes espelhando o plano
 - [ ] `04-casos-de-teste.md` escrito com todos os CTs identificados
 - [ ] Arquivos extras (`05-*`) criados se necessário
+- [ ] Channel de log da feature verificado/criado e referenciado em todos os passos do PRD
+- [ ] Padrão de log `[Classe@Método] mensagem` especificado em cada passo de execução do PRD
 - [ ] Revisão profunda pós-escrita executada — premissas do plano re-validadas contra o código
 - [ ] Filosofia de Implementação (Ponytail) incluída no PRD
 - [ ] Confirmar com usuário se o plano está correto antes de implementar
