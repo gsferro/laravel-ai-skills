@@ -233,45 +233,143 @@ O formato `[Classe@Método] mensagem` é obrigatório em **todos os logs** do pr
 4. **Hífen `-` como separador secundário**: entre múltiplos parâmetros de contexto
 5. **Incluir parâmetro principal sempre que possível**: IDs, slugs, status — valores que identificam o registro manipulado
 6. **Nível de log apropriado**:
-   - `info` → sucesso de operação esperada
-   - `warning` → condição anormal mas não fatal (retry, fallback, dado ausente)
-   - `error` → falha que interrompe o fluxo
    - `debug` → detalhe intermediário para rastreabilidade
+   - `info` → sucesso de operação esperada
+   - `notice` → evento significativo mas normal (ex: queue retry agendado)
+   - `warning` → condição anormal mas não fatal — **usar em `fail()` de Livewire**, fallback, retry, dado ausente
+   - `error` → falha que interrompe o fluxo — **usar em `catch` de exceptions** que quebram a execução
+   - `critical` → erro de sistema que exige intervenção imediata (ex: DB inacessível, API crítica fora do ar)
+   - `emergency` → sistema indisponível, intervenção humana urgente
+7. **Máximo de contexto estruturado**: SEMPRE passar o segundo parâmetro `array $context` do Laravel com todos os dados relevantes — IDs, payloads, snapshots de estado, dados do modelo (ver seção "Contexto Estruturado" abaixo)
+8. **Exceptions no contexto**: ao logar uma exception, incluir `'exception' => $e` no array de contexto — o Laravel serializa automaticamente stack trace, mensagem e código
+9. **Nível do log = severidade da ação**: `fail()` → `warning`; `catch` de exception que interrompe → `error`; `catch` de exception tratada/ignorada → `warning`
+
+### Contexto Estruturado (array `$context`)
+
+O Laravel aceita um segundo parâmetro `array $context` em todos os métodos de log. **Sempre usar** — é onde vai o máximo de informação estruturada para debug e auditoria.
+
+#### O que incluir no context
+
+- **IDs**: todos os IDs relacionados ao fluxo (`user_id`, `enrollment_id`, `turma_id`, `job_id`)
+- **Payloads**: dados de entrada que dispararam a ação (`payload`, `request_data`, `webhook_data`)
+- **Snapshots de estado**: valores antes/depois de alterações (`before`, `after`)
+- **Dados do modelo**: atributos relevantes do model manipulado (`attributes`, `changes`)
+- **Exception**: `'exception' => $e` — o Laravel serializa stack trace, mensagem e código automaticamente
+- **Contexto de execução**: `queue`, `attempt`, `connection` em jobs; `route`, `ip` em controllers
+- **Decisões de fluxo**: `reason`, `condition`, `skip_reason` para branches tomados
+
+#### Exemplo de context rico
+
+```php
+Log::channel('feature-name')->info(
+    '[AddUserToClassJob@processAddUserToClass] Membro associado com sucesso | enrollment: 280114',
+    [
+        'enrollment_id' => 280114,
+        'user_id'       => 123,
+        'turma_id'      => 456,
+        'evento'        => 'enrollment.requested',
+        'payload'       => $request->all(),
+        'attributes'    => $enrollment->getAttributes(),
+        'changes'       => $enrollment->getChanges(),
+    ]
+);
+```
+
+> **Regra de ouro**: se a informação pode ajudar a reproduzir ou diagnosticar o problema, vai no `context`. Melhor ter informação demais que de menos.
 
 ### Exemplos Práticos
 
 ```php
 // Início de processamento
-Log::channel('feature-name')->info('[AddUserToClassJob@handle] Iniciando adição do usuário | user_id: 123 - turma_id: 456');
+Log::channel('feature-name')->info('[AddUserToClassJob@handle] Iniciando adição do usuário | user_id: 123 - turma_id: 456', [
+    'user_id'  => 123,
+    'turma_id' => 456,
+    'attempt'  => 1,
+    'queue'    => 'default',
+]);
 
 // Sucesso com contexto
-Log::channel('feature-name')->info('[AddUserToClassJob@processAddUserToClass] Membro associado com sucesso | enrollment: 280114 - evento: enrollment.requested');
+Log::channel('feature-name')->info('[AddUserToClassJob@processAddUserToClass] Membro associado com sucesso | enrollment: 280114 - evento: enrollment.requested', [
+    'enrollment_id' => 280114,
+    'user_id'       => 123,
+    'turma_id'      => 456,
+    'evento'        => 'enrollment.requested',
+    'changes'       => $enrollment->getChanges(),
+]);
 
 // Criação de recurso externo
-Log::channel('feature-name')->info('[CreateCurseducaUserJob@createCurseducaAccount] Conta criada com sucesso | aluno_id: 789');
+Log::channel('feature-name')->info('[CreateCurseducaUserJob@createCurseducaAccount] Conta criada com sucesso | aluno_id: 789', [
+    'aluno_id'        => 789,
+    'external_id'     => $response->json('id'),
+    'response_status' => $response->status(),
+]);
 
 // Webhook recebido
-Log::channel('feature-name')->info('[UnicoWebhookController@handle] Webhook recebido | evento: enrollment.requested');
+Log::channel('feature-name')->info('[UnicoWebhookController@handle] Webhook recebido | evento: enrollment.requested', [
+    'evento'  => 'enrollment.requested',
+    'payload' => $request->all(),
+    'ip'      => $request->ip(),
+    'route'   => $request->path(),
+]);
 
-// Condição de fluxo (warning)
-Log::channel('feature-name')->warning('[ProcessCurseducaAccountCreationJob@handle] Usuário já existe, pulando criação | aluno_id: 789');
+// Condição de fluxo — warning (dado ausente, fallback, retry)
+Log::channel('feature-name')->warning('[ProcessCurseducaAccountCreationJob@handle] Usuário já existe, pulando criação | aluno_id: 789', [
+    'aluno_id'   => 789,
+    'skip_reason'=> 'user_already_exists',
+    'existing_id'=> $existingUser->id,
+]);
 
-// Erro que interrompe fluxo
-Log::channel('feature-name')->error('[AddUserToClassJob@processAddUserToClass] Falha ao associar membro | enrollment: 280114 - erro: API timeout');
+// fail() de Livewire — warning (fluxo interrompido pelo usuário, não é erro de sistema)
+Log::channel('feature-name')->warning('[CreateEnrollmentForm@submit] Validação falhou | user_id: 123', [
+    'user_id'    => 123,
+    'errors'     => $this->getErrorBag()->toArray(),
+    'input'      => $this->form->toArray(),
+]);
+
+// catch de exception que interrompe o fluxo — error
+Log::channel('feature-name')->error('[AddUserToClassJob@processAddUserToClass] Falha ao associar membro | enrollment: 280114', [
+    'enrollment_id' => 280114,
+    'exception'     => $e,  // Laravel serializa stack trace + mensagem + código
+    'attempt'       => $this->attempts(),
+    'payload'       => $this->payload,
+]);
+
+// catch de exception tratada/ignorada — warning (não quebra o fluxo)
+Log::channel('feature-name')->warning('[SyncEnrollmentsJob@handle] Erro ao sincronizar um item, continuando | enrollment: 280114', [
+    'enrollment_id' => 280114,
+    'exception'     => $e,
+    'will_retry'    => true,
+]);
+
+// Erro crítico de sistema — critical
+Log::channel('feature-name')->critical('[ProcessCurseducaAccountCreationJob@handle] API Curseduca indisponível | tentativa: 3', [
+    'attempt'       => 3,
+    'exception'     => $e,
+    'api_endpoint'  => config('services.curseduca.url'),
+    'queue'         => 'default',
+]);
 ```
 
 ### Como Implementar no Plano
 
 Para **cada passo de implementação** no PRD, especificar:
 
-1. **Quais métodos terão logs** — listar cada método e os pontos exatos (início, sucesso, falha, decisão de fluxo)
+1. **Quais métodos terão logs** — listar cada método e os pontos exatos (início, sucesso, falha, decisão de fluxo, catch de exception, fail de validação)
 2. **Qual channel usar** — `Log::channel('{feature-name}')` em todos os logs da feature
-3. **Qual nível** — info/warning/error/debug conforme a regra acima
+3. **Qual nível** — debug/info/notice/warning/error/critical conforme a regra de severidade:
+   - `fail()` de Livewire → `warning`
+   - `catch` de exception que **interrompe** o fluxo → `error`
+   - `catch` de exception **tratada/ignorada** → `warning`
+   - Sistema/API indisponível → `critical`
 4. **Qual mensagem** — já escrever a string completa no plano, seguindo o formato
+5. **Qual context** — listar o array de contexto com todos os campos relevantes (IDs, payloads, snapshots, `exception`)
 
 > **Anti-padrão**: NUNCA usar `Log::info('...')` sem channel — sempre especificar o channel da feature.
 > **Anti-padrão**: NUNCA usar mensagens genéricas como "Processando..." ou "Erro ocorrido" — sempre incluir `[Classe@Método]` e parâmetro principal.
 > **Anti-padrão**: NUNCA logar apenas em `catch` — logar também no sucesso e nos pontos de decisão de fluxo.
+> **Anti-padrão**: NUNCA passar context vazio — incluir o máximo de informação estruturada possível (IDs, payloads, snapshots, exception).
+> **Anti-padrão**: NUNCA usar `error` para `fail()` de validação — `fail()` é uma condição esperada de interrupção, usar `warning`.
+> **Anti-padrão**: NUNCA usar `info` para exceptions — exceptions são anomalias, usar no mínimo `warning` (tratada) ou `error` (interrompe).
 
 ### Trait UnicoLogging (se aplicável)
 
