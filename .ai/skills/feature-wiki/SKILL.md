@@ -1,6 +1,6 @@
 ---
 name: feature-wiki
-version: 2.1.0
+version: 2.2.0
 description: >
   Cria estrutura de documentação wiki para uma feature antes de implementá-la.
   Invoque SEMPRE ao iniciar implementação de qualquer feature nova.
@@ -137,11 +137,8 @@ Após a implementação ser concluída e testes passarem:
 2. **Adicionar seção "Desvios do Plano"** em `03-progresso.md`: documentar onde a implementação divergiu do PRD e por quê (ex: "Passo 3 alterado: API retornava campo `uuid` em vez de `id` — ajustado mapeamento")
 3. **Adicionar seção "Notas de Implementação"** em `03-progresso.md**: descobertas durante o código que não estavam no plano (ex: "Descoberto que `Enrollment::find()` aplica scope global de tenant — documentado em `02-decisoes-arquiteturais.md`")
 4. **Linkar wiki ao PR**: incluir link da wiki na descrição do PR para rastreabilidade
-5. **Arquivar wiki após merge**: mover `wikis/{branch}/` para `wikis/archive/{branch}/` para manter o diretório limpo
-6. **Retrospectiva breve**: anotar na wiki o que funcionou bem no planejamento e o que faltou — serve para melhorar futuras invocações da skill
-7. **Limpeza de channel de log**: se a feature foi mergeada e está estável, considerar reduzir o level do channel de `debug` para `info` ou remover o channel se não for mais necessário
-
-> **Por que arquivar**: wikis ativas devem refletir apenas features em andamento. Wikis arquivadas servem como histórico de decisões e podem ser consultadas por features futuras.
+5. **Retrospectiva breve**: anotar na wiki o que funcionou bem no planejamento e o que faltou — serve para melhorar futuras invocações da skill
+6. **Limpeza de channel de log**: se a feature foi mergeada e está estável, considerar reduzir o level do channel de `debug` para `info` ou remover o channel se não for mais necessário
 
 ---
 
@@ -917,7 +914,6 @@ Antes de encerrar a invocação:
 - [ ] `03-progresso.md` atualizado com checkboxes `[x]` + data de conclusão
 - [ ] Desvios do plano e notas de implementação documentados
 - [ ] Wiki linkada no PR
-- [ ] Wiki arquivada para `wikis/archive/{branch}/`
 - [ ] Retrospectiva breve escrita
 - [ ] Channel de log ajustado (level reduzido ou removido)
 
@@ -992,12 +988,4 @@ wikis/
 │           ├── 04-casos-de-teste.md              ← + CTs de log e autorização
 │           ├── 05-api-contract.md                ← extra quando necessário
 │           └── 05-rollback.md                    ← extra quando necessário
-└── archive/
-    └── ferro/
-        └── 501/                                  ← wikis arquivadas pós-merge
-            └── envio-progresso/
-                ├── 01-plano-acao.md
-                ├── 02-decisoes-arquiteturais.md
-                ├── 03-progresso.md
-                └── 04-casos-de-teste.md
 ```
