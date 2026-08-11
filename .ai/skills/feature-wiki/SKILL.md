@@ -1,10 +1,10 @@
 ---
 name: feature-wiki
-version: 2.3.0
+version: 2.4.0
 description: >
   Cria estrutura de documentação wiki para uma feature antes de implementá-la.
   Invoque SEMPRE ao iniciar implementação de qualquer feature nova.
-  Cria pasta em wikis/{branch} com 4 arquivos obrigatórios: plano de ação (PRD),
+  Cria pasta em wikis/specs/{branch} com 4 arquivos obrigatórios: plano de ação (PRD),
   decisões arquiteturais (ADR), tracking de progresso e casos de teste. O plano de ação
   deve ser minucioso o suficiente para um agente implementar sem ambiguidade.
   Inclui padrão de log obrigatório, channel por feature, etapa de pós-implementação,
@@ -80,9 +80,9 @@ Ao implementar, o agente deve ler os arquivos nesta ordem:
 git rev-parse --abbrev-ref HEAD
 ```
 
-Branch `ferro/501` → pasta base: `wikis/ferro/501/`
-Branch `feature/user-auth` → pasta base: `wikis/feature/user-auth/`
-Branch `fix/boleto-juros` → pasta base: `wikis/fix/boleto-juros/`
+Branch `ferro/501` → pasta base: `wikis/specs/ferro/501/`
+Branch `feature/user-auth` → pasta base: `wikis/specs/feature/user-auth/`
+Branch `fix/boleto-juros` → pasta base: `wikis/specs/fix/boleto-juros/`
 
 ### 2. Definir Nome da Feature
 
@@ -91,7 +91,7 @@ Perguntar ao usuário (ou derivar do contexto):
 - Deve descrever a feature, não o ticket
 - Exemplos: `envio-progresso`, `unico-jobs-progress-tracking`, `api-webhook-payments`
 
-Pasta final: `wikis/{branch}/{feature-name}/`
+Pasta final: `wikis/specs/{branch}/{feature-name}/`
 
 ### 3. Pesquisa e Contexto (OBRIGATÓRIO antes de escrever)
 
@@ -110,7 +110,7 @@ Antes de escrever qualquer documento:
 - **Verificar Policies/Gates** — `Glob "app/Policies/*.php"` e `Grep` por `Gate::define` para entender o padrão de autorização do projeto
 - **Verificar config files** — `Read` em `config/*.php` relevantes à feature (services, logging, queue, auth)
 - **Verificar composer.json** — `Read` em `composer.json` para pacotes instalados que poderiam ser reutilizados em vez de criar do zero
-- **Verificar wikis existentes** — `Glob "wikis/**/*.md"` para features relacionadas que já foram documentadas e podem ter decisões relevantes
+- **Verificar wikis existentes** — `Glob "wikis/specs/**/*.md"` para features relacionadas que já foram documentadas e podem ter decisões relevantes
 - **Verificar git log do branch** — `git log --oneline -20` para contexto do que já foi feito no branch
 - **Verificar scheduled tasks** — `Grep` em `app/Console/Kernel.php` ou `routes/console.php` se a feature envolve cron/scheduling
 - **Verificar eventos/listeners** — `Glob "app/Events/*.php"` e `Glob "app/Listeners/*.php"` se a feature emite ou escuta eventos
@@ -128,10 +128,10 @@ Criar os **4 arquivos obrigatórios** + extras se necessário.
 3. **`04-casos-de-teste.md`** — CTs validam os passos do PRD
 4. **`03-progresso.md`** — espelha os passos do PRD (por isso é o último)
 
-**Wiki já existente**: se `wikis/{branch}/{feature}/` já existe:
+**Wiki já existente**: se `wikis/specs/{branch}/{feature}/` já existe:
 - **Perguntar ao usuário** se deseja sobrescrever, incrementar (v2) ou retomar
 - Se retomar: ler `03-progresso.md` para ver o que já foi feito e continuar de onde parou
-- Se sobrescrever: mover a wiki antiga para `wikis/archive/{branch}/{feature}/` antes de criar a nova
+- Se sobrescrever: backup manual pelo usuário antes de criar a nova (a skill não arquiva automaticamente)
 
 ### 5. Revisão Profunda Pós-Escrita (OBRIGATÓRIO)
 
@@ -150,7 +150,7 @@ Após a revisão profunda (step 5), **invocar automaticamente** `/ponytail:ponyt
 **Por que auditar a wiki**: O plano de ação pode conter over-engineering — passos desnecessários, abstrações prematuras, complexidade que não agrega valor. A auditoria com Ponytail-review identifica esses pontos **antes** da implementação começar, economizando tempo de desenvolvimento.
 
 **Como executar**:
-1. Invocar `/ponytail:ponytail-review` apontando para os arquivos da wiki criada em `wikis/{branch}/{feature}/`
+1. Invocar `/ponytail:ponytail-review` apontando para os arquivos da wiki criada em `wikis/specs/{branch}/{feature}/`
 2. Analisar cada sugestão de corte/simplificação retornada
 3. **Aplicar as sugestões relevantes** diretamente nos arquivos da wiki:
    - Passos desnecessários → remover do `01-plano-acao.md` e `03-progresso.md`
@@ -174,13 +174,12 @@ Após a implementação ser concluída e testes passarem:
 4. **Linkar wiki ao PR**: incluir link da wiki na descrição do PR para rastreabilidade
 5. **Retrospectiva breve**: anotar na wiki o que funcionou bem no planejamento e o que faltou — serve para melhorar futuras invocações da skill
 6. **Limpeza de channel de log**: se a feature foi mergeada e está estável, considerar reduzir o level do channel de `debug` para `info` ou remover o channel se não for mais necessário
-7. **Arquivar wiki**: mover a pasta `wikis/{branch}/{feature}/` para `wikis/archive/{branch}/{feature}/` após o merge — mantém o diretório `wikis/` limpo para features ativas e preserva o histórico
 
 ---
 
 ## Arquivo 01: Plano de Ação (PRD)
 
-**Path**: `wikis/{branch}/{feature}/01-plano-acao.md`
+**Path**: `wikis/specs/{branch}/{feature}/01-plano-acao.md`
 
 **Propósito**: PRD completo — deve ser detalhado o suficiente para um agente implementar sem ambiguidade.
 
@@ -630,7 +629,7 @@ Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
 
 ## Arquivo 02: Decisões Arquiteturais (ADR)
 
-**Path**: `wikis/{branch}/{feature}/02-decisoes-arquiteturais.md`
+**Path**: `wikis/specs/{branch}/{feature}/02-decisoes-arquiteturais.md`
 
 **Propósito**: Registrar o "porquê" das escolhas — não o "o quê". Usa formato **ADR (Architecture Decision Record)** para padronizar e facilitar consulta futura.
 
@@ -681,7 +680,7 @@ Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
 
 ## Arquivo 03: Progresso / Tracking
 
-**Path**: `wikis/{branch}/{feature}/03-progresso.md`
+**Path**: `wikis/specs/{branch}/{feature}/03-progresso.md`
 
 **Propósito**: Checklist de implementação para rastrear o que foi feito e retomar de onde parou.
 
@@ -731,7 +730,7 @@ Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
 
 ## Arquivo 04: Casos de Teste (CT)
 
-**Path**: `wikis/{branch}/{feature}/04-casos-de-teste.md`
+**Path**: `wikis/specs/{branch}/{feature}/04-casos-de-teste.md`
 
 **Propósito**: Especificação completa de cada caso de teste — setup, mocks, dados de entrada e assertions esperadas. Deve ser detalhado o suficiente para um agente escrever os testes sem ambiguidade.
 
@@ -958,7 +957,6 @@ Antes de encerrar a invocação:
 - [ ] Wiki linkada no PR
 - [ ] Retrospectiva breve escrita
 - [ ] Channel de log ajustado (level reduzido ou removido)
-- [ ] Wiki arquivada para `wikis/archive/{branch}/{feature}/`
 
 ## Skills Companheiras
 
@@ -1022,17 +1020,14 @@ Sessão com o trio ativo: `caveman full` + `ponytail full` + `feature-wiki` → 
 
 ```text
 wikis/
-├── ferro/
-│   └── 579/
-│       └── relatorio-mba-lote/
-│           ├── 01-plano-acao.md
-│           ├── 02-decisoes-arquiteturais.md      ← formato ADR
-│           ├── 03-progresso.md                   ← + Blockers, Desvios, Retrospectiva
-│           ├── 04-casos-de-teste.md              ← + CTs de log e autorização
-│           ├── 05-api-contract.md                ← extra quando necessário
-│           └── 05-rollback.md                    ← extra quando necessário
-├── archive/
-│   └── ferro/
-│       └── 501/
-│           └── envio-progresso/                  ← wiki arquivada após merge
+└── specs/
+    └── ferro/
+        └── 579/
+            └── relatorio-mba-lote/
+                ├── 01-plano-acao.md
+                ├── 02-decisoes-arquiteturais.md      ← formato ADR
+                ├── 03-progresso.md                   ← + Blockers, Desvios, Retrospectiva
+                ├── 04-casos-de-teste.md              ← + CTs de log e autorização
+                ├── 05-api-contract.md                ← extra quando necessário
+                └── 05-rollback.md                    ← extra quando necessário
 ```

@@ -269,7 +269,7 @@ A partir de agora, para cada feature nova:
 │  1. PLANEJAR (feature-wiki)                         │
 │  ─────────────────────────────────                  │
 │  • Invocar feature-wiki ao iniciar a feature        │
-│  • Criar wikis/{branch}/{feature}/ com 4 arquivos   │
+│  • Criar wikis/specs/{branch}/{feature}/ com 4 arqs  │
 │  • 01-plano-acao.md      → PRD detalhado            │
 │    - Autorização, Rotas, Env, Eventos, Jobs         │
 │    - Impacto, Rollback, Dependências, Riscos        │
@@ -330,7 +330,6 @@ A partir de agora, para cada feature nova:
 │  • Atualizar 03-progresso.md (checkboxes + data)    │
 │  • Documentar desvios do plano e notas              │
 │  • Linkar wiki no PR                                │
-│  • Arquivar wiki para wikis/archive/{branch}/       │
 │  • Retrospectiva breve                              │
 │  • Ajustar channel de log (level ou remoção)        │
 └─────────────────────────────────────────────────────┘
@@ -393,14 +392,14 @@ export PONYTAIL_DEFAULT_MODE=full
 ### Resumo da Integração
 
 ```
-feature-wiki (v2.3.0)    Ponytail              Caveman
+feature-wiki (v2.4.0)    Ponytail              Caveman
 ─────────────────        ─────────────────     ─────────────────
 Planejamento minucioso   Execução minimalista  Comunicação terse
 PRD + ADR + CTs           Escada de simplicidade  Corta fluff da prosa
 Padrão de log             /ponytail:ponytail-review  Auto-Clarity ativa
 Channel por feature       /ponytail:ponytail-debt    Boundary: wiki/code
 Revisão pós-escrita                              /commits = prosa normal
-Pós-implementação + archive
+Pós-implementação
 03-progresso.md tracking
          │                    │                      │
          └────────────┬───────┴──────────────────────┘
