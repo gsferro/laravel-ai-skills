@@ -163,7 +163,7 @@ A integração é natural porque as três skills operam em **camadas complementa
 | **Comunicação** (agent ↔ usuário) | Caveman | Prosa terse — corta fluff, artigos, fillers | **NÃO aplica em arquivos wiki** (01-05), código, commits, PRs |
 | **Planejamento** (documentação) | feature-wiki | Define o **o quê** e o **porquê**: PRD, ADR, CTs, tracking, padrão de log, channel por feature | Arquivos wiki são detalhados por design — compressão cria ambiguidade |
 | **Execução** (código) | Ponytail | Define o **como**: mínimo código possível, sem over-engineering, reutilização antes de criação | Não corta validação, segurança, tratamento de erros |
-| **Revisão** (diff) | Ponytail (`/ponytail-review`) | Valida o diff contra over-engineering: o que cortar, o que substituir por stdlib | — |
+| **Revisão** (diff) | Ponytail (`/ponytail:ponytail-review`) | Valida o diff contra over-engineering: o que cortar, o que substituir por stdlib | — |
 
 O Ponytail diz *"leia o problema completamente antes de escolher o rung mais preguiçoso"*. A feature-wiki **é** essa leitura profunda — ela força o agente a pesquisar o codebase, validar premissas, inspecionar APIs e escrever casos de teste **antes** de tocar em código. Quando o Ponytail assume a execução, o agente já tem contexto completo da wiki e pode aplicar a escada de simplicidade com confiança, sem risco de "preguiça que pula compreensão". O Caveman mantém a comunicação terse durante toda a sessão — mas respeita o boundary dos arquivos wiki.
 
@@ -279,6 +279,7 @@ A partir de agora, para cada feature nova:
 │  • 04-casos-de-teste.md  → CTs antes do código      │
 │    - CTs de log, autorização, data providers        │
 │  • Revisão profunda pós-escrita                     │
+│  • Auditoria da wiki: /ponytail:ponytail-review     │
 │  • Confirmar plano com usuário                      │
 │  ⚠️ Caveman OFF nos arquivos wiki                  │
 └──────────────────────┬──────────────────────────────┘
@@ -303,12 +304,12 @@ A partir de agora, para cada feature nova:
 ┌─────────────────────────────────────────────────────┐
 │  3. REVISAR (Ponytail-review)                       │
 │  ─────────────────────────────────                  │
-│  • /ponytail-review no diff atual                   │
+│  • /ponytail:ponytail-review no diff atual           │
 │  • Receber lista de cortes: delete, stdlib, native, │
 │    yagni, shrink                                    │
 │  • Aplicar cortes sugeridos                         │
-│  • /ponytail-audit se quiser varrer o repo inteiro  │
-│  • /ponytail-debt para coletar atalhos `ponytail:`  │
+│  • /ponytail:ponytail-audit se quiser varrer o repo  │
+│  • /ponytail:ponytail-debt para coletar atalhos      │
 └──────────────────────┬──────────────────────────────┘
                        │
                        ▼
@@ -351,7 +352,7 @@ Ao escrever o `01-plano-acao.md`, incluir uma nota de filosofia de implementaç�
 > 5. Mínimo código que funciona
 >
 > Atalhos deliberados devem ser marcados com `ponytail:` comment.
-> Após implementação, rodar `/ponytail-review` no diff.
+> Após implementação, rodar `/ponytail:ponytail-review` no diff.
 >
 > **Caveman ativo em modo `full`** na comunicação agent ↔ usuário.
 > Arquivos wiki (01-05) são boundary do Caveman — escrever em prosa normal.
@@ -362,13 +363,13 @@ Ao escrever o `01-plano-acao.md`, incluir uma nota de filosofia de implementaç�
 
 | Comando | Quando usar |
 |---------|-------------|
-| `/ponytail` | Verificar modo ativo ou alternar intensidade |
-| `/ponytail full` | Modo padrão — escada enforced, stdlib primeiro |
-| `/ponytail ultra` | YAGNI extremo — para features simples ou refactors agressivos |
-| `/ponytail lite` | Constrói o pedido mas sugere alternativa mais simples |
-| `/ponytail-review` | Revisar o diff atual por over-engineering |
-| `/ponytail-audit` | Auditar o repo inteiro por complexidade |
-| `/ponytail-debt` | Coletar todos os `ponytail:` comments em um ledger |
+| `/ponytail:ponytail` | Verificar modo ativo ou alternar intensidade |
+| `/ponytail:ponytail full` | Modo padrão — escada enforced, stdlib primeiro |
+| `/ponytail:ponytail ultra` | YAGNI extremo — para features simples ou refactors agressivos |
+| `/ponytail:ponytail lite` | Constrói o pedido mas sugere alternativa mais simples |
+| `/ponytail:ponytail-review` | Revisar o diff atual por over-engineering |
+| `/ponytail:ponytail-audit` | Auditar o repo inteiro por complexidade |
+| `/ponytail:ponytail-debt` | Coletar todos os `ponytail:` comments em um ledger |
 | `/caveman lite\|full\|ultra` | Alternar intensidade da prosa terse |
 | `stop caveman` / `normal mode` | Desativar Caveman temporariamente |
 
@@ -392,12 +393,12 @@ export PONYTAIL_DEFAULT_MODE=full
 ### Resumo da Integração
 
 ```
-feature-wiki (v2.1.0)    Ponytail              Caveman
+feature-wiki (v2.3.0)    Ponytail              Caveman
 ─────────────────        ─────────────────     ─────────────────
 Planejamento minucioso   Execução minimalista  Comunicação terse
 PRD + ADR + CTs           Escada de simplicidade  Corta fluff da prosa
-Padrão de log             /ponytail-review      Auto-Clarity ativa
-Channel por feature       /ponytail-debt ledger  Boundary: wiki/code
+Padrão de log             /ponytail:ponytail-review  Auto-Clarity ativa
+Channel por feature       /ponytail:ponytail-debt    Boundary: wiki/code
 Revisão pós-escrita                              /commits = prosa normal
 Pós-implementação + archive
 03-progresso.md tracking

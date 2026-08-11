@@ -1,6 +1,6 @@
 ---
 name: feature-wiki
-version: 2.2.0
+version: 2.3.0
 description: >
   Cria estrutura de documentação wiki para uma feature antes de implementá-la.
   Invoque SEMPRE ao iniciar implementação de qualquer feature nova.
@@ -8,7 +8,8 @@ description: >
   decisões arquiteturais (ADR), tracking de progresso e casos de teste. O plano de ação
   deve ser minucioso o suficiente para um agente implementar sem ambiguidade.
   Inclui padrão de log obrigatório, channel por feature, etapa de pós-implementação,
-  e integração com Caveman (comunicação terse) e Ponytail (execução minimalista).
+  auditoria automática da wiki via /ponytail:ponytail-review, e integração com
+  Caveman (comunicação terse) e Ponytail (execução minimalista).
 ---
 
 # Feature Wiki — Documentação Antes de Implementar
@@ -32,7 +33,8 @@ description: >
   - [3. Pesquisa e Contexto](#3-pesquisa-e-contexto-obrigatório-antes-de-escrever)
   - [4. Criar os Arquivos](#4-criar-os-arquivos)
   - [5. Revisão Profunda Pós-Escrita](#5-revisão-profunda-pós-escrita-obrigatório)
-  - [6. Pós-Implementação](#6-pós-implementação-obrigatório)
+  - [6. Auditoria da Wiki com Ponytail-review](#6-auditoria-da-wiki-com-ponytail-review-obrigatório)
+  - [7. Pós-Implementação](#7-pós-implementação-obrigatório)
 - [Arquivo 01: PRD](#arquivo-01-plano-de-ação-prd)
 - [Padrão de Log](#padrão-de-log--classeétodo-mensagem)
 - [Arquivo 02: ADR](#arquivo-02-decisões-arquiteturais)
@@ -57,6 +59,7 @@ Ao implementar, o agente deve ler os arquivos nesta ordem:
 - Sempre que o usuário pedir para implementar uma feature nova
 - Ao iniciar qualquer card/ticket/task de desenvolvimento
 - Antes de qualquer `php artisan make:*` ou criação de código
+- Quando o usuário pedir para arquitetar ou analisar uma feature antes de implementá-la
 
 ### Quando NÃO Invocar
 
@@ -119,17 +122,49 @@ Antes de escrever qualquer documento:
 
 Criar os **4 arquivos obrigatórios** + extras se necessário.
 
+**Ordem de criação** (cada arquivo depende do anterior):
+1. **`01-plano-acao.md`** — PRD é a base; tudo deriva dele
+2. **`02-decisoes-arquiteturais.md`** — ADRs justificam escolhas do PRD
+3. **`04-casos-de-teste.md`** — CTs validam os passos do PRD
+4. **`03-progresso.md`** — espelha os passos do PRD (por isso é o último)
+
+**Wiki já existente**: se `wikis/{branch}/{feature}/` já existe:
+- **Perguntar ao usuário** se deseja sobrescrever, incrementar (v2) ou retomar
+- Se retomar: ler `03-progresso.md` para ver o que já foi feito e continuar de onde parou
+- Se sobrescrever: mover a wiki antiga para `wikis/archive/{branch}/{feature}/` antes de criar a nova
+
 ### 5. Revisão Profunda Pós-Escrita (OBRIGATÓRIO)
 
 Após escrever os 4 arquivos, **re-validar cada premissa do plano contra o código real** antes de apresentar ao usuário:
 
 - Reler os pontos exatos citados no plano: imports dos arquivos a editar, assinaturas de métodos, relações de models, padrão das migrations-referência, factories/states usados nos CTs
 - **Corrigir a wiki imediatamente** quando a revisão contradisser o plano (ex: plano diz "adicionar import X" → import já existe; plano cita guard genérico → padrão real é `! app()->environment('testing')`)
-- Só então apresentar ao usuário para aprovação / iniciar implementação
+- Só então avançar para o step 6 (Auditoria da Wiki)
 
 > Exemplo real (feature/implementar-carga-horaria): a revisão pós-escrita detectou que o import `MbaTrack` já existia no arquivo a editar e confirmou o padrão exato do guard de environment nas migrations com seeder — ambos corrigidos na wiki antes da implementação.
 
-### 6. Pós-Implementação (OBRIGATÓRIO)
+### 6. Auditoria da Wiki com Ponytail-review (OBRIGATÓRIO)
+
+Após a revisão profunda (step 5), **invocar automaticamente** `/ponytail:ponytail-review` para auditar a wiki criada. Este step é função direta da skill — o agente NÃO deve esperar o usuário pedir.
+
+**Por que auditar a wiki**: O plano de ação pode conter over-engineering — passos desnecessários, abstrações prematuras, complexidade que não agrega valor. A auditoria com Ponytail-review identifica esses pontos **antes** da implementação começar, economizando tempo de desenvolvimento.
+
+**Como executar**:
+1. Invocar `/ponytail:ponytail-review` apontando para os arquivos da wiki criada em `wikis/{branch}/{feature}/`
+2. Analisar cada sugestão de corte/simplificação retornada
+3. **Aplicar as sugestões relevantes** diretamente nos arquivos da wiki:
+   - Passos desnecessários → remover do `01-plano-acao.md` e `03-progresso.md`
+   - Abstrações prematuras → simplificar ou marcar como YAGNI
+   - Complexidade excessiva → quebrar em passos menores ou simplificar
+   - Over-engineering em CTs → simplificar setup, reduzir mocks desnecessários
+4. **Re-executar** `/ponytail:ponytail-review` se houver mudanças significativas (>3 arquivos alterados)
+5. Só então apresentar ao usuário para aprovação / iniciar implementação
+
+> **Importante**: Esta auditoria revisa o **plano** (a wiki), não o código implementado. A auditoria do código implementado acontece no step 7 (Pós-Implementação) e nos templates de Verificação Final.
+>
+> **Comando correto**: `/ponytail:ponytail-review` (com namespace `ponytail:`). NUNCA usar `/ponytail-review` sem o namespace — o comando não será encontrado.
+
+### 7. Pós-Implementação (OBRIGATÓRIO)
 
 Após a implementação ser concluída e testes passarem:
 
@@ -139,6 +174,7 @@ Após a implementação ser concluída e testes passarem:
 4. **Linkar wiki ao PR**: incluir link da wiki na descrição do PR para rastreabilidade
 5. **Retrospectiva breve**: anotar na wiki o que funcionou bem no planejamento e o que faltou — serve para melhorar futuras invocações da skill
 6. **Limpeza de channel de log**: se a feature foi mergeada e está estável, considerar reduzir o level do channel de `debug` para `info` ou remover o channel se não for mais necessário
+7. **Arquivar wiki**: mover a pasta `wikis/{branch}/{feature}/` para `wikis/archive/{branch}/{feature}/` após o merge — mantém o diretório `wikis/` limpo para features ativas e preserva o histórico
 
 ---
 
@@ -187,7 +223,7 @@ Após a implementação ser concluída e testes passarem:
 - ponytail                 → execução minimalista (escada de simplicidade)
 ```
 
-> **Integração com Ponytail**: Após a wiki ser aprovada, o Ponytail deve ser a skill de execução ativa durante toda a implementação. Ele garante que cada passo do plano seja executado com o mínimo de código necessário (reutilização → stdlib → feature nativa → uma linha → mínimo que funciona). Após implementar, rodar `/ponytail-review` no diff para validar contra over-engineering. Atalhos deliberados devem ser marcados com `ponytail:` comment. Ver o README do repositório para o passo a passo completo da integração.
+> **Integração com Ponytail**: Após a wiki ser aprovada, o Ponytail deve ser a skill de execução ativa durante toda a implementação. Ele garante que cada passo do plano seja executado com o mínimo de código necessário (reutilização → stdlib → feature nativa → uma linha → mínimo que funciona). Após implementar, rodar `/ponytail:ponytail-review` no diff para validar contra over-engineering. Atalhos deliberados devem ser marcados com `ponytail:` comment. Ver o README do repositório para o passo a passo completo da integração.
 
 **Template `01-plano-acao.md`**:
 ```markdown
@@ -310,7 +346,11 @@ Após a implementação ser concluída e testes passarem:
 > 5. Mínimo código que funciona
 >
 > Atalhos deliberados devem ser marcados com `ponytail:` comment.
-> Após implementação, rodar `/ponytail-review` no diff.
+> Após implementação, rodar `/ponytail:ponytail-review` no diff.
+>
+> **Caveman ativo em modo `full`** na comunicação agent ↔ usuário.
+> Arquivos wiki (01-05) são boundary do Caveman — escrever em prosa normal.
+> Código, commits e PRs também são boundary do Caveman.
 
 ## Mapeamentos
 
@@ -321,7 +361,7 @@ Após a implementação ser concluída e testes passarem:
 > Ver `04-casos-de-teste.md` para especificação completa dos cenários.
 
 ## Verificação Final
-- [ ] `/ponytail-review` no diff (validar contra over-engineering)
+- [ ] `/ponytail:ponytail-review` no diff (validar contra over-engineering)
 - [ ] `vendor/bin/pint --dirty`
 - [ ] `php artisan test --compact --filter={Feature}`
 - [ ] {outros comandos de verificação específicos}
@@ -664,7 +704,7 @@ Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
 - [ ] `{NomeDoTesteTest}` — CT-01, CT-02, CT-03
 
 ## Verificação Final
-- [ ] `/ponytail-review` no diff (validar contra over-engineering)
+- [ ] `/ponytail:ponytail-review` no diff (validar contra over-engineering)
 - [ ] `vendor/bin/pint --dirty`
 - [ ] `php artisan test --compact --filter={Feature}`
 - [ ] `git commit`
@@ -882,6 +922,7 @@ Antes de encerrar a invocação:
 
 ### Planejamento
 - [ ] Branch lida e estrutura de pasta criada
+- [ ] Wiki existente verificada (retomar/sobrescrever/incrementar se já existe)
 - [ ] Nome da feature confirmado com usuário
 - [ ] Pesquisa feita (`search-docs`, `database-schema`, leitura de arquivos)
 - [ ] Rotas, policies, config, composer, wikis existentes verificados
@@ -906,6 +947,7 @@ Antes de encerrar a invocação:
 
 ### Validação
 - [ ] Revisão profunda pós-escrita executada — premissas do plano re-validadas contra o código
+- [ ] **Auditoria da wiki executada** — `/ponytail:ponytail-review` invocado e sugestões aplicadas
 - [ ] `03-progresso.md` espelha exatamente os passos do `01-plano-acao.md`
 - [ ] Filosofia de Implementação (Ponytail) incluída no PRD
 - [ ] Confirmar com usuário se o plano está correto antes de implementar
@@ -916,6 +958,7 @@ Antes de encerrar a invocação:
 - [ ] Wiki linkada no PR
 - [ ] Retrospectiva breve escrita
 - [ ] Channel de log ajustado (level reduzido ou removido)
+- [ ] Wiki arquivada para `wikis/archive/{branch}/{feature}/`
 
 ## Skills Companheiras
 
@@ -988,4 +1031,8 @@ wikis/
 │           ├── 04-casos-de-teste.md              ← + CTs de log e autorização
 │           ├── 05-api-contract.md                ← extra quando necessário
 │           └── 05-rollback.md                    ← extra quando necessário
+├── archive/
+│   └── ferro/
+│       └── 501/
+│           └── envio-progresso/                  ← wiki arquivada após merge
 ```
