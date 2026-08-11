@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="art/banner.png" alt="Laravel AI Skills Collection" width="100%">
+</p>
+
 # Laravel AI Skills Collection 🚀
 
 Uma coletânea de diretrizes de inteligência artificial (Skills) personalizadas para o ecossistema Laravel, focada em boas práticas de arquitetura de software e design patterns.
