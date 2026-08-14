@@ -17,7 +17,9 @@ Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude C
 
 O ciclo completo: **planejar** (`feature-wiki`) → **executar** (Ponytail) → **comunicar** (Caveman) → **validar** (Pest 5 + CT-B) → **memorizar** (`requirement-to-rule`).
 
-> Histórico de evolução das duas skills: [CHANGELOG.md](CHANGELOG.md)
+**Em estudo** (sem `SKILL.md` ainda): [`feature-quality-gate`](.ai/skills/feature-quality-gate/README.md) — etapa de QA dentro do agente, com roteamento de achados de volta para especificação, implementação ou teste. O [estudo de viabilidade](.ai/skills/feature-quality-gate/README.md) registra a pesquisa de mercado (incluindo as 50 skills MIT do `qa-skills`), a lacuna que sobra e o critério eliminatório da skill.
+
+> Histórico de evolução das skills: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
