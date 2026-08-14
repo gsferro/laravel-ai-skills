@@ -1,6 +1,6 @@
 ---
 name: feature-wiki
-version: 2.8.0
+version: 2.9.0
 description: >
   Cria estrutura de documentação wiki para uma feature antes de implementá-la.
   Invoque SEMPRE ao iniciar implementação de qualquer feature nova.
@@ -12,7 +12,8 @@ description: >
   Caveman (comunicação terse, modo padrão `ultra`) e Ponytail (execução minimalista).
   Quando a feature tem superfície de UI, cria também 05-casos-de-teste-browser.md
   (CT-B em Pest browser plugin / Playwright) que serve como roteiro de validação
-  desenhado x implementado. Usa Pest 5 (--parallel --tia, --agent) na verificação.
+  desenhado x implementado — com Playwright MCP opcional como ferramenta de
+  observação no loop de correção dos CT-B, nunca como cobertura. Usa Pest 5 (--parallel --tia, --agent) na verificação.
   No fim, avalia se alguma decisão da wiki deve virar Project Rule do Boost e
   submete a decisão ao usuário (skill requirement-to-rule). Exige consulta à
   Documentation API do Boost (search-docs) para cada stack que o PRD toca.
@@ -51,6 +52,7 @@ description: >
 - [Arquivo 03: Progresso](#arquivo-03-progresso--tracking)
 - [Arquivo 04: Casos de Teste](#arquivo-04-casos-de-teste-ct)
 - [Arquivo 05: Casos de Teste de Browser](#arquivo-05-casos-de-teste-de-browser-ct-b--condicional)
+  - [Playwright MCP na validação](#playwright-mcp-na-validação-opcional--ferramenta-de-observação)
 - [Execução de Testes com Pest 5](#execução-de-testes-com-pest-5)
 - [Arquivos Extras](#arquivos-extras-conforme-necessidade)
 - [Skills Companheiras](#skills-companheiras)
@@ -1122,7 +1124,11 @@ Tarefa:
      (a) CT-B errado (seletor/rota/texto especificado errado)  → corrigir o CT-B no arquivo 05
      (b) Implementação divergente do PRD                        → NÃO corrigir; registrar divergência
      (c) Flake (timing/assíncrono)                              → ajustar estratégia de espera e anotar
-  4. Repetir no máximo 3 iterações
+  4. Nas causas (a) e (c), se o Playwright MCP estiver disponível: observar a
+     página ao vivo para descobrir o locator/estado real, e corrigir o CT-B com
+     base no que foi observado (ver "Playwright MCP na validação")
+     Na causa (b): NÃO usar o MCP para "consertar" — a divergência é o achado
+  5. Repetir no máximo 3 iterações
 
 PROIBIDO:
   - Alterar código de aplicação para o teste passar
@@ -1141,6 +1147,84 @@ Saída (formato fixo):
 **Escalada para o usuário**: se após 3 iterações houver CT-B vermelho, parar e reportar — não seguir tentando. Registrar como blocker no `03-progresso.md`.
 
 > **Sondagem rápida dentro do loop**: para confirmar uma premissa de UI antes de escrever o CT-B definitivo, usar `vendor/bin/pest --agent='visit("/rota")->assertSee("...");'`. É efêmero e não fica versionado — serve para descobrir, não para provar.
+
+### Playwright MCP na validação (OPCIONAL — ferramenta de observação)
+
+A regra que resolve a divisão de papéis:
+
+> **O `pest-plugin-browser` atesta. O Playwright MCP observa.**
+>
+> O CT-B é sempre um teste Pest versionado. O MCP nunca produz cobertura, nunca entra no arquivo `05` como evidência e nunca substitui um CT-B — ele existe para o agente **ver** a página quando o teste falha.
+
+#### Por que o pest-plugin-browser não cobre isso sozinho
+
+O plugin tem ferramentas de debug excelentes — e **todas exigem um humano**:
+
+| Ferramenta do plugin | O que faz | Serve para agente autônomo? |
+|---|---|---|
+| `$page->debug()` | abre o browser e **pausa o teste** | ❌ pausa esperando pessoa — agente travaria |
+| `$page->tinker()` | abre sessão Tinker interativa | ❌ interativo |
+| `$page->waitForKey()` | abre no browser e espera tecla | ❌ espera input humano |
+| `--headed` | mostra a janela do navegador | ❌ só útil se alguém estiver olhando |
+| `$page->screenshot()` | salva PNG | ⚠️ funciona, mas é imagem: caro e impreciso para achar seletor |
+| `$page->content()` | devolve o HTML da página | ⚠️ funciona, mas despeja a página inteira no contexto |
+
+Ou seja: para **rodar e atestar**, o plugin basta e é o único caminho. Para o agente **investigar sozinho** por que o seletor não casou, as opções nativas são um PNG ou um dump de HTML. É exatamente aí que o MCP é melhor: `browser_snapshot` devolve a árvore de acessibilidade (~200–400 tokens, texto estruturado) e `browser_generate_locator` converte o elemento observado em locator estável.
+
+Três lacunas concretas, todas dentro do loop:
+
+1. **Descobrir o locator verdadeiro** quando o CT-B falha por seletor (causa **a**)
+2. **Observar quando o elemento realmente aparece** em UI assíncrona (causa **c**) — o plugin não documenta `waitFor(seletor)`, só `wait(segundos)`, então sem observação o agente chuta o tempo
+3. **Extrair seletores de tela existente** no step 3, antes de escrever o CT-B
+
+#### Onde o MCP entra (3 pontos, todos opcionais)
+
+| Etapa | Uso | Tools |
+|---|---|---|
+| **Step 3** — pesquisa | extrair locators reais das telas que a feature vai tocar → alimenta a tabela `### Seletores` do arquivo `05` | `browser_navigate`, `browser_find`, `browser_generate_locator` |
+| **Loop do CT-B** — falha (a)/(c) | observar a página ao vivo, achar o locator/estado real, corrigir o CT-B | `browser_find`, `browser_generate_locator`, `browser_wait_for` |
+| **Step 7** — evidência | anexar console e rede ao roteiro *Desenhado × Implementado* | `browser_console_messages`, `browser_network_requests` |
+
+> O Boost MCP já expõe **`Browser Logs`** ("read logs and errors from the browser"). Para o step 7, verificar primeiro se ele resolve — é uma tool que o projeto provavelmente já tem, sem adicionar servidor novo.
+
+#### Configuração obrigatória
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest",
+               "--isolated", "--headless",
+               "--caps=testing",
+               "--test-id-attribute=data-testid"]
+    }
+  }
+}
+```
+
+- **`--isolated` é obrigatório.** O default do MCP é **perfil persistente**: o login sobrevive entre sessões e, combinado a uma URL errada, o agente pode clicar em produção autenticado.
+- **`--caps=testing`** habilita `browser_generate_locator` e os `browser_verify_*` — é o único grupo que interessa aqui.
+- **Somente `localhost` / `APP_URL` de desenvolvimento.** Apontar para staging ou produção é proibido pela skill.
+
+#### Regras de uso
+
+1. **Ref nunca entra em teste.** `ref=e5` é válido *"until the next page change"* — efêmero. Só o resultado de `browser_generate_locator` vai para o CT-B.
+2. **`browser_find` antes de `browser_snapshot` cru.** Snapshot em loop acumula contexto; `find` devolve só o trecho. Isso preserva o Caveman `ultra`.
+3. **Proibido `browser_run_code_unsafe`.** Se o cenário exige, ele exige um CT-B.
+4. **Proibido `--caps=vision`.** Clique por coordenada XY destrói o determinismo que a wiki exige.
+5. **Sessão MCP não é cobertura.** Nada de "validado via MCP" no `05` sem CT-B correspondente — isso criaria falsa cobertura, que é pior que cobertura ausente.
+6. **Na causa (b), o MCP é só leitura.** Serve para descrever a divergência com precisão, nunca para contorná-la.
+7. **Feature com dado sensível** (PII, pagamento): sem `browser_take_screenshot` versionado; ver `05-security.md`.
+
+#### Se o MCP não estiver disponível
+
+**A skill funciona sem ele.** Fallback dentro do próprio plugin, na ordem:
+
+1. `$page->screenshot()` no ponto da falha — anexar ao relatório do sub-agente
+2. `$page->content()` **filtrado** (`Grep` no HTML salvo, não despejar tudo no contexto)
+3. Ler o Blade/componente Livewire/Filament e derivar o seletor do código-fonte
+4. Após 3 iterações, **escalar ao usuário** com screenshot e sugerir `--headed` para inspeção humana
 
 **Template `05-casos-de-teste-browser.md`**:
 ```markdown
@@ -1396,6 +1480,7 @@ Antes de encerrar a invocação:
 - [ ] Retrospectiva breve escrita
 - [ ] Channel de log ajustado (level reduzido ou removido)
 - [ ] CT-B escritos e rodados via sub-agente; divergências classificadas (CT errado / implementação divergente / flake)
+- [ ] Se o Playwright MCP foi usado: só como observação (`--isolated --headless --caps=testing`), nenhum ref em arquivo de teste, nenhuma sessão MCP registrada como cobertura
 - [ ] Candidatos a rule avaliados nos 4 gates e **apresentados ao usuário** — gravados via `requirement-to-rule` só se aprovados
 
 ## Skills Companheiras
