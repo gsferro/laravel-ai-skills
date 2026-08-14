@@ -12,7 +12,7 @@ Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude C
 
 | Skill | Versão | O que faz | Quando é invocada |
 |---|---|---|---|
-| [`feature-wiki`](.ai/skills/feature-wiki/SKILL.md) | 2.8.0 | Cria a wiki da feature antes de implementar: PRD, ADR, progresso, casos de teste (backend e browser) e padrão de log | ao iniciar qualquer feature nova |
+| [`feature-wiki`](.ai/skills/feature-wiki/SKILL.md) | 2.9.0 | Cria a wiki da feature antes de implementar: PRD, ADR, progresso, casos de teste (backend e browser) e padrão de log | ao iniciar qualquer feature nova |
 | [`requirement-to-rule`](.ai/skills/requirement-to-rule/SKILL.md) | 1.1.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | no fim da feature (step 8 da `feature-wiki`) ou sob pedido |
 
 O ciclo completo: **planejar** (`feature-wiki`) → **executar** (Ponytail) → **comunicar** (Caveman) → **validar** (Pest 5 + CT-B) → **memorizar** (`requirement-to-rule`).
@@ -326,6 +326,73 @@ E a classificação obrigatória de cada falha:
 | (c) Flake (timing/assíncrono) | ajustar estratégia de espera e anotar |
 
 **Teste vermelho por causa (b) é resultado válido, não falha do ciclo** — é exatamente a divergência entre desenhado e implementado que se queria capturar. Sub-agente que "conserta" a aplicação para ficar verde destrói o instrumento de medição. Após 3 iterações com vermelho, para e reporta como blocker.
+
+### Playwright MCP na validação: quem atesta × quem observa
+
+Uma dúvida legítima: se o `pest-plugin-browser` já roda Playwright, o Playwright MCP entra nessa história? **Sim, mas num papel bem estreito.** A regra da skill:
+
+> **O `pest-plugin-browser` atesta. O Playwright MCP observa.**
+>
+> O CT-B é sempre um teste Pest versionado. O MCP nunca produz cobertura, nunca entra no arquivo `05` como evidência e nunca substitui um CT-B — ele existe para o agente **ver** a página quando o teste falha.
+
+#### Por que o pest-plugin-browser não resolve sozinho
+
+O plugin tem ferramentas de debug excelentes — e **todas exigem um humano na frente**:
+
+| Ferramenta do plugin | O que faz | Serve para agente autônomo? |
+|---|---|---|
+| `$page->debug()` | abre o browser e **pausa o teste** | ❌ pausa esperando pessoa — o agente travaria |
+| `$page->tinker()` | abre sessão Tinker interativa | ❌ interativo |
+| `$page->waitForKey()` | abre no browser e espera tecla | ❌ espera input humano |
+| `--headed` | mostra a janela do navegador | ❌ só serve se alguém estiver olhando |
+| `$page->screenshot()` | salva PNG | ⚠️ funciona, mas é imagem: caro e impreciso para achar seletor |
+| `$page->content()` | devolve o HTML da página | ⚠️ funciona, mas despeja a página inteira no contexto |
+
+Para **rodar e atestar**, o plugin basta e é o único caminho. Para o agente **investigar sozinho** por que o seletor não casou, as opções nativas são um PNG ou um dump de HTML. É aí que o MCP ganha: `browser_snapshot` devolve a árvore de acessibilidade (~200–400 tokens de texto estruturado, contra ~3.000–5.000 de um screenshot) e `browser_generate_locator` converte o elemento observado em locator estável.
+
+Três lacunas concretas: **descobrir o locator verdadeiro** numa falha de seletor; **observar quando o elemento realmente aparece** em UI assíncrona (o plugin não documenta `waitFor(seletor)`, só `wait(segundos)` — sem observar, o agente chuta o tempo); e **extrair seletores de tela existente** antes de escrever o CT-B.
+
+#### Os 3 pontos onde o MCP entra (todos opcionais)
+
+| Etapa | Uso | Tools |
+|---|---|---|
+| **Step 3** — pesquisa | extrair locators reais das telas que a feature vai tocar → alimenta a tabela `### Seletores` do arquivo `05` | `browser_navigate`, `browser_find`, `browser_generate_locator` |
+| **Loop do CT-B** — falha de tipo (a) ou (c) | observar a página ao vivo, achar locator/estado real, corrigir o CT-B | `browser_find`, `browser_generate_locator`, `browser_wait_for` |
+| **Step 7** — evidência | anexar console e rede ao roteiro *Desenhado × Implementado* | `browser_console_messages`, `browser_network_requests` |
+
+Na falha de **tipo (b)** — implementação divergente do PRD — o MCP é **só leitura**: serve para descrever a divergência com precisão, nunca para contorná-la. A divergência é o achado da auditoria.
+
+> Para o step 7, verifique primeiro o **`Browser Logs`** do Boost MCP ("read logs and errors from the browser"): é uma tool que o projeto provavelmente já tem, sem adicionar servidor novo.
+
+#### Configuração obrigatória
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest",
+               "--isolated", "--headless",
+               "--caps=testing",
+               "--test-id-attribute=data-testid"]
+    }
+  }
+}
+```
+
+**`--isolated` não é opcional.** O default do Playwright MCP é **perfil persistente**: o login sobrevive entre sessões e, combinado a uma URL errada, o agente pode clicar em produção autenticado. `--caps=testing` habilita `browser_generate_locator` e os `browser_verify_*` — é o único grupo que interessa. E só `localhost`/`APP_URL` de desenvolvimento; apontar para staging ou produção é proibido pela skill.
+
+#### Regras de uso
+
+1. **Ref nunca entra em teste.** `ref=e5` é válido *"until the next page change"* — efêmero. Só o resultado de `browser_generate_locator` vai para o CT-B.
+2. **`browser_find` antes de `browser_snapshot` cru** — snapshot em loop acumula contexto; `find` devolve só o trecho.
+3. **Proibido `browser_run_code_unsafe`** — se o cenário exige, ele exige um CT-B.
+4. **Proibido `--caps=vision`** — clique por coordenada XY destrói o determinismo.
+5. **Sessão MCP não é cobertura** — nada de "validado via MCP" no `05` sem CT-B correspondente. Falsa cobertura é pior que cobertura ausente.
+
+#### Se o MCP não estiver configurado
+
+**A skill funciona sem ele** — MCP é aceleração, não dependência. Fallback dentro do próprio plugin, na ordem: `screenshot()` no ponto da falha → `content()` **filtrado** com `Grep` (não despejar tudo no contexto) → ler o Blade/componente e derivar o seletor do código-fonte → após 3 iterações, escalar ao usuário com screenshot e sugerir `--headed` para inspeção humana.
 
 ### Limitações conhecidas (documentadas na skill)
 
@@ -896,7 +963,7 @@ export PONYTAIL_DEFAULT_MODE=full
 ### Resumo da Integração
 
 ```
-feature-wiki (v2.8.0)    Ponytail              Caveman
+feature-wiki (v2.9.0)    Ponytail              Caveman
 ─────────────────        ─────────────────     ─────────────────
 Planejamento minucioso   Execução minimalista  Comunicação terse
 PRD + ADR + CTs           Escada de simplicidade  Corta fluff da prosa
