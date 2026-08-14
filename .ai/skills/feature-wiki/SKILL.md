@@ -1,11 +1,12 @@
 ---
 name: feature-wiki
-version: 2.9.0
+version: 2.10.0
 description: >
   Cria estrutura de documentação wiki para uma feature antes de implementá-la.
   Invoque SEMPRE ao iniciar implementação de qualquer feature nova.
-  Cria pasta em wikis/specs/{branch} com 4 arquivos obrigatórios: plano de ação (PRD),
-  decisões arquiteturais (ADR), tracking de progresso e casos de teste. O plano de ação
+  Cria pasta em wikis/specs/{branch} com 5 arquivos obrigatórios: requisito bruto
+  imutável (00), plano de ação (PRD), decisões arquiteturais (ADR), tracking de
+  progresso e casos de teste. O plano de ação
   deve ser minucioso o suficiente para um agente implementar sem ambiguidade.
   Inclui padrão de log obrigatório, channel por feature, etapa de pós-implementação,
   auditoria automática da wiki via /ponytail:ponytail-review, e integração com
@@ -14,7 +15,9 @@ description: >
   (CT-B em Pest browser plugin / Playwright) que serve como roteiro de validação
   desenhado x implementado — com Playwright MCP opcional como ferramenta de
   observação no loop de correção dos CT-B, nunca como cobertura. Usa Pest 5 (--parallel --tia, --agent) na verificação.
-  No fim, avalia se alguma decisão da wiki deve virar Project Rule do Boost e
+  Após os testes passarem, aciona a skill feature-quality-gate (etapa de QA no
+  agente), que confronta 00-requisito x PRD x app rodando. No fim, avalia se
+  alguma decisão da wiki deve virar Project Rule do Boost e
   submete a decisão ao usuário (skill requirement-to-rule). Exige consulta à
   Documentation API do Boost (search-docs) para cada stack que o PRD toca.
 ---
@@ -25,6 +28,7 @@ description: >
 
 | Sigla | Significado |
 |-------|-------------|
+| **RQ** | Cláusula de requisito — unidade numerada da decomposição do `00-requisito.md` |
 | **PRD** | Product Requirements Document — plano de ação detalhado |
 | **ADR** | Architecture Decision Record — registro de decisão arquitetural |
 | **CT** | Caso de Teste — especificação de um cenário de teste (backend) |
@@ -45,7 +49,9 @@ description: >
   - [5. Revisão Profunda Pós-Escrita](#5-revisão-profunda-pós-escrita-obrigatório)
   - [6. Auditoria da Wiki com Ponytail-review](#6-auditoria-da-wiki-com-ponytail-review-obrigatório)
   - [7. Pós-Implementação](#7-pós-implementação-obrigatório)
-  - [8. Candidatos a Rule](#8-candidatos-a-rule-de-projeto-decisão-do-usuário)
+  - [8. Quality Gate](#8-quality-gate-obrigatório-quando-houver-superfície-validável)
+  - [9. Candidatos a Rule](#9-candidatos-a-rule-de-projeto-decisão-do-usuário)
+- [Arquivo 00: Requisito](#arquivo-00-requisito--fonte-da-verdade)
 - [Arquivo 01: PRD](#arquivo-01-plano-de-ação-prd)
 - [Padrão de Log](#padrão-de-log--classeétodo-mensagem)
 - [Arquivo 02: ADR](#arquivo-02-decisões-arquiteturais)
@@ -61,11 +67,12 @@ description: >
 ## Ordem de Leitura para o Agente Implementador
 
 Ao implementar, o agente deve ler os arquivos nesta ordem:
-1. **`01-plano-acao.md`** — entende o que fazer e em que ordem
-2. **`04-casos-de-teste.md`** — entende como validar cada passo
-3. **`05-casos-de-teste-browser.md`** — se existir: entende como validar a UI e o fluxo do usuário
-4. **`02-decisoes-arquiteturais.md`** — entende as restrições e justificativas
-5. **`03-progresso.md`** — marca o que já foi feito e retoma de onde parou
+1. **`00-requisito.md`** — entende o que foi **pedido** (fonte da verdade, não o plano)
+2. **`01-plano-acao.md`** — entende o que fazer e em que ordem
+3. **`04-casos-de-teste.md`** — entende como validar cada passo
+4. **`05-casos-de-teste-browser.md`** — se existir: entende como validar a UI e o fluxo do usuário
+5. **`02-decisoes-arquiteturais.md`** — entende as restrições e justificativas
+6. **`03-progresso.md`** — marca o que já foi feito e retoma de onde parou
 
 ---
 
@@ -109,6 +116,25 @@ Perguntar ao usuário (ou derivar do contexto):
 Pasta final: `wikis/specs/{branch}/{feature-name}/`
 
 ### 3. Pesquisa e Contexto (OBRIGATÓRIO antes de escrever)
+
+#### Captura do Requisito (PRIMEIRO ATO — antes de qualquer pesquisa)
+
+O requisito é a **fonte da verdade** de toda a wiki e o oráculo do `feature-quality-gate`. Ele precisa ser capturado **verbatim** antes de o agente interpretar qualquer coisa.
+
+**Como o requisito chega** — identificar qual dos casos e registrar a origem:
+
+| Origem | O que fazer |
+|---|---|
+| **Texto colado no chat** (card do Jira/Azure/GitHub, e-mail, mensagem) | copiar **exatamente** como veio, sem corrigir ortografia, sem resumir, sem reordenar |
+| **Arquivo no projeto** (`.md`, `.pdf`, `.docx`) | `Read` o arquivo; registrar o **path + páginas/seções** e transcrever os trechos normativos literalmente |
+| **Descrição verbal do usuário na conversa** | transcrever o que foi dito literalmente e **marcar como fonte de baixa fidelidade** — pedir confirmação antes de seguir |
+| **Nenhuma das anteriores** (só "implementa X") | **parar e pedir o requisito.** Sem requisito não há oráculo, e a wiki nasce sem linha de base |
+
+**Regra dura**: o texto original é **imutável**. Se estiver ambíguo, incompleto ou contraditório, a ambiguidade é **achado**, não algo a "melhorar" na transcrição. Corrigir o requisito na captura destrói a única linha de base independente do agente.
+
+Em seguida, **decompor em cláusulas numeradas** (`RQ-01`, `RQ-02`, …), cada uma citando o trecho literal de origem. A decomposição é derivada e revisável; o texto bruto não.
+
+> **Por que isso existe**: sem o `00-requisito.md`, o único registro do que foi pedido é o PRD — que é a **interpretação** do agente. Se a interpretação estiver errada, ela contamina plano, testes, código e validação de forma coerente, e nada no ciclo detecta. Ver [Arquivo 00](#arquivo-00-requisito--fonte-da-verdade).
 
 Antes de escrever qualquer documento:
 - Usar `database-schema` se a feature envolve novas tabelas ou alterações
@@ -193,14 +219,17 @@ O Boost expõe a tool MCP **`search-docs`**, que consulta a Documentation API ho
 
 ### 4. Criar os Arquivos
 
-Criar os **4 arquivos obrigatórios** + extras se necessário.
+Criar os **5 arquivos obrigatórios** + extras se necessário.
 
 **Ordem de criação** (cada arquivo depende do anterior):
-1. **`01-plano-acao.md`** — PRD é a base; tudo deriva dele
-2. **`02-decisoes-arquiteturais.md`** — ADRs justificam escolhas do PRD
-3. **`04-casos-de-teste.md`** — CTs validam os passos do PRD
-4. **`05-casos-de-teste-browser.md`** — **condicional**: criar quando o PRD declarar superfície de UI (ver gate na seção do Arquivo 05)
-5. **`03-progresso.md`** — espelha os passos do PRD (por isso é o último; se houver CT-B, o progresso também os lista)
+1. **`00-requisito.md`** — requisito bruto + decomposição em `RQ-##`; é a linha de base de tudo
+2. **`01-plano-acao.md`** — PRD deriva do `00`; cada passo deve citar quais `RQ` atende
+3. **`02-decisoes-arquiteturais.md`** — ADRs justificam escolhas do PRD
+4. **`04-casos-de-teste.md`** — CTs validam os passos do PRD; cada CT cita o `RQ` que cobre
+5. **`05-casos-de-teste-browser.md`** — **condicional**: criar quando o PRD declarar superfície de UI (ver gate na seção do Arquivo 05)
+6. **`03-progresso.md`** — espelha os passos do PRD (por isso é o último; se houver CT-B, o progresso também os lista)
+
+> **Rastreabilidade obrigatória**: todo passo do PRD e todo CT/CT-B referencia o `RQ` de origem. É isso que permite ao `feature-quality-gate` montar a Matriz de Rastreabilidade e detectar cláusula sem plano, sem teste ou sem código.
 
 **Wiki já existente**: se `wikis/specs/{branch}/{feature}/` já existe:
 - **Perguntar ao usuário** se deseja sobrescrever, incrementar (v2) ou retomar
@@ -251,7 +280,34 @@ Após a implementação ser concluída e testes passarem:
 7. **Retrospectiva breve**: anotar na wiki o que funcionou bem no planejamento e o que faltou — serve para melhorar futuras invocações da skill
 8. **Limpeza de channel de log**: se a feature foi mergeada e está estável, considerar reduzir o level do channel de `debug` para `info` ou remover o channel se não for mais necessário
 
-### 8. Candidatos a Rule de Projeto (DECISÃO DO USUÁRIO)
+### 8. Quality Gate (OBRIGATÓRIO quando houver superfície validável)
+
+Após os testes passarem e o step 7 estar concluído, **invocar a skill `feature-quality-gate`**. Este step é função direta da skill — o agente NÃO deve esperar o usuário pedir.
+
+**O que ela faz que os steps 5, 6 e 7 não fazem**: os três tomam o PRD como verdade. O quality gate confronta **`00-requisito.md` × PRD × app rodando** e detecta a classe de defeito que nenhum teste pode pegar — a **omissão silenciosa**: cláusula `RQ` que nunca virou passo, nunca virou CT, nunca virou código. Tudo verde, feature incompleta.
+
+**Entrada que a skill espera**:
+
+- `00-requisito.md` com as cláusulas `RQ-##`
+- `01`–`05` da wiki
+- app servido e acessível
+- `## Natureza da Wiki` do PRD (decide se roda regressão)
+
+**Saída**: `06-relatorio-qa.md` + veredito.
+
+| Veredito | O que o fluxo faz |
+|---|---|
+| `APROVADO` | segue para o step 9 |
+| `APROVADO COM DÉBITO` | segue para o step 9; débito fica registrado no `03-progresso.md` |
+| `REPROVADO → especificação` | volta ao step 4: corrigir `01`/`02`, depois reimplementar |
+| `REPROVADO → implementação` | volta à execução do passo do PRD indicado |
+| `REPROVADO → teste` | volta ao `04`/`05`: escrever o CT que falha **primeiro**, depois corrigir |
+
+**Quando pular**: feature sem nenhuma superfície validável (ex.: só refactor interno já coberto por CT verde) — registrar o motivo no `03-progresso.md`. Não pular por pressa.
+
+> **Teto do loop**: no máximo **3 ciclos** de quality gate por feature. Ao estourar, escalar ao usuário com o que ficou aberto. Ver a skill `feature-quality-gate` para as regras de convergência.
+
+### 9. Candidatos a Rule de Projeto (DECISÃO DO USUÁRIO)
 
 **O problema que este step resolve**: hoje uma decisão registrada em `02-decisoes-arquiteturais.md` só é lida por quem abrir aquela wiki. Na sessão seguinte, em outra feature, o agente não sabe que ela existe e repete o erro que a ADR já resolveu. **Project Rules do Laravel Boost** (`.ai/rules/`) fecham esse ciclo: são carregadas automaticamente por glob de path, para qualquer agente, em qualquer sessão.
 
@@ -302,6 +358,69 @@ Virar rule? (1, 2, ambos, nenhum)
 
 ---
 
+## Arquivo 00: Requisito — Fonte da Verdade
+
+**Path**: `wikis/specs/{branch}/{feature}/00-requisito.md`
+
+**Propósito**: guardar o requisito **como ele chegou**, sem interpretação, e decompô-lo em cláusulas rastreáveis. É a única linha de base independente do agente — todo o resto da wiki é derivado e, portanto, contaminável por interpretação errada.
+
+**Duas seções com regimes opostos**:
+
+| Seção | Regime |
+|---|---|
+| `## Texto Original` | **imutável.** Nunca editar, corrigir, resumir ou reordenar |
+| `## Decomposição em Cláusulas` | derivada e revisável. Pode ser corrigida se a leitura estiver errada |
+
+**Obrigatório incluir**:
+
+- Origem (card, arquivo + página, conversa) com data e autor
+- Texto original verbatim, ou os trechos literais normativos quando a fonte é longa
+- Decomposição em `RQ-##` com: cláusula, trecho literal de origem, tipo (funcional / autorização / não-funcional / restrição)
+- **Ambiguidades e perguntas abertas** — cláusula não-testável é achado, não detalhe
+
+**Template `00-requisito.md`**:
+```markdown
+# Requisito — {Card}: {Título}
+
+## Fonte
+
+- **Origem**: {card FERRO-579 colado no chat | docs/requisitos/RF-231.pdf, p. 3-4 | conversa com {quem}}
+- **Data**: {YYYY-MM-DD}
+- **Autor / solicitante**: {nome ou área}
+- **Fidelidade**: alta (texto escrito) | **baixa** (descrição verbal — confirmar antes de implementar)
+
+## Texto Original
+
+<!-- IMUTÁVEL. Não editar, não corrigir ortografia, não resumir, não reordenar. -->
+
+> {texto colado verbatim, ou trechos literais citados da fonte}
+
+## Decomposição em Cláusulas
+
+| ID | Cláusula | Trecho literal de origem | Tipo |
+|----|----------|--------------------------|------|
+| RQ-01 | {o que deve acontecer, em uma frase} | "{citação literal}" | funcional |
+| RQ-02 | {…} | "{…}" | autorização |
+| RQ-03 | {…} | "{…}" | não-funcional |
+
+## Ambiguidades e Perguntas Abertas
+
+<!-- Cláusula que não dá para testar como está. Perguntar ANTES de implementar. -->
+
+- **RQ-03**: "{precisa ser rápido}" — sem número não é testável. Qual SLA?
+- **RQ-05**: conflita com RQ-02 — {descrever o conflito}
+
+## Fora de Escopo (declarado)
+
+<!-- O que o requisito explicitamente NÃO pede, para o quality gate não acusar omissão indevida. -->
+
+- {item explicitamente fora}
+```
+
+> **Wiki antiga sem `00`**: wikis criadas antes da v2.10.0 não têm o arquivo. Ao retomar uma delas, reconstruir o `00` **pedindo o requisito original ao usuário** — não derivar do PRD. PRD derivado de PRD não é oráculo, e o `feature-quality-gate` vai marcar o relatório como *oráculo degradado*.
+
+---
+
 ## Arquivo 01: Plano de Ação (PRD)
 
 **Path**: `wikis/specs/{branch}/{feature}/01-plano-acao.md`
@@ -309,6 +428,8 @@ Virar rule? (1, 2, ambos, nenhum)
 **Propósito**: PRD completo — deve ser detalhado o suficiente para um agente implementar sem ambiguidade.
 
 **Obrigatório incluir**:
+- **Natureza da Wiki**: nova / evolução / correção / ajuste + wiki ancestral — **decide se o quality gate roda regressão**
+- **Cobertura do requisito**: tabela `RQ` → passos que o atendem; toda cláusula do `00` precisa aparecer
 - Objetivo claro em 1-2 parágrafos
 - Contexto e problema que resolve
 - Análise dos arquivos/código existente que será tocado
@@ -347,6 +468,7 @@ Virar rule? (1, 2, ambos, nenhum)
 - livewire-development     → componentes Livewire
 - ponytail                 → execução minimalista (escada de simplicidade)
 - requirement-to-rule      → transformar decisão da wiki em Project Rule do Boost
+- feature-quality-gate     → QA no agente: confronto requisito × plano × app
 ```
 
 > **Integração com Ponytail**: Após a wiki ser aprovada, o Ponytail deve ser a skill de execução ativa durante toda a implementação. Ele garante que cada passo do plano seja executado com o mínimo de código necessário (reutilização → stdlib → feature nativa → uma linha → mínimo que funciona). Após implementar, rodar `/ponytail:ponytail-review` no diff para validar contra over-engineering. Atalhos deliberados devem ser marcados com `ponytail:` comment. Ver o README do repositório para o passo a passo completo da integração.
@@ -354,6 +476,26 @@ Virar rule? (1, 2, ambos, nenhum)
 **Template `01-plano-acao.md`**:
 ```markdown
 # Plano de Ação — {Card}: {Título da Feature}
+
+> Requisito: `00-requisito.md`
+
+## Natureza da Wiki
+
+- **Tipo**: nova | evolução | correção | ajuste
+- **Wiki ancestral**: `wikis/specs/{branch}/{feature}/` — **obrigatório** se o tipo não for "nova"
+- **Motivo**: {o que mudou desde a ancestral}
+
+> O tipo decide o escopo do `feature-quality-gate`: `nova` valida só a feature; os outros três disparam **regressão** contra os CT/CT-B da wiki ancestral.
+
+## Cobertura do Requisito
+
+<!-- Toda cláusula do 00-requisito.md precisa aparecer aqui. Cláusula sem passo é omissão. -->
+
+| RQ | Cláusula | Passo(s) que atende(m) | Observação |
+|----|----------|------------------------|------------|
+| RQ-01 | {resumo} | 3, 4 | — |
+| RQ-02 | {resumo} | 5 | — |
+| RQ-03 | {resumo} | — | ⚠️ fora de escopo desta entrega — justificar |
 
 ## Objetivo
 
@@ -485,7 +627,7 @@ Virar rule? (1, 2, ambos, nenhum)
 > Após implementação, rodar `/ponytail:ponytail-review` no diff.
 >
 > **Caveman ativo em modo `ultra`** (padrão) na comunicação agent ↔ usuário.
-> Arquivos wiki (01-05) são boundary do Caveman — escrever em prosa normal.
+> Arquivos wiki (00-06) são boundary do Caveman — escrever em prosa normal.
 > Código, commits e PRs também são boundary do Caveman.
 
 ## Mapeamentos
@@ -1434,6 +1576,14 @@ Criar apenas quando a feature exige:
 
 Antes de encerrar a invocação:
 
+### Requisito
+- [ ] `00-requisito.md` criado com Fonte, Texto Original **verbatim** e Fidelidade declarada
+- [ ] Requisito decomposto em cláusulas `RQ-##`, cada uma citando o trecho literal de origem
+- [ ] Ambiguidades e perguntas abertas listadas — e perguntadas ao usuário antes de implementar
+- [ ] Fora de escopo declarado (evita o quality gate acusar omissão indevida)
+- [ ] `## Natureza da Wiki` preenchida no PRD (+ wiki ancestral se não for "nova")
+- [ ] `## Cobertura do Requisito` no PRD mapeia **toda** cláusula `RQ` a passo(s) ou justificativa
+
 ### Planejamento
 - [ ] Branch lida e estrutura de pasta criada
 - [ ] Wiki existente verificada (retomar/sobrescrever/incrementar se já existe)
@@ -1481,6 +1631,8 @@ Antes de encerrar a invocação:
 - [ ] Channel de log ajustado (level reduzido ou removido)
 - [ ] CT-B escritos e rodados via sub-agente; divergências classificadas (CT errado / implementação divergente / flake)
 - [ ] Se o Playwright MCP foi usado: só como observação (`--isolated --headless --caps=testing`), nenhum ref em arquivo de teste, nenhuma sessão MCP registrada como cobertura
+- [ ] **`feature-quality-gate` invocado** (step 8) e veredito registrado no `03-progresso.md`
+- [ ] Se `REPROVADO`: achado roteado para o destino correto (especificação / implementação / teste) e reciclado
 - [ ] Candidatos a rule avaliados nos 4 gates e **apresentados ao usuário** — gravados via `requirement-to-rule` só se aprovados
 
 ## Skills Companheiras
@@ -1489,9 +1641,10 @@ A feature-wiki faz parte de um trio de skills que cobrem o ciclo completo de des
 
 | Camada | Skill | Responsabilidade | Boundary |
 |--------|-------|------------------|----------|
-| **Comunicação** (agent ↔ usuário) | [Caveman](https://github.com/JuliusBrussee/caveman) — modo padrão `ultra` | Prosa terse — corta ~75% dos tokens removendo fluff, artigos, fillers | **NÃO aplica em arquivos wiki** (01-05), código, commits, PRs |
+| **Comunicação** (agent ↔ usuário) | [Caveman](https://github.com/JuliusBrussee/caveman) — modo padrão `ultra` | Prosa terse — corta ~75% dos tokens removendo fluff, artigos, fillers | **NÃO aplica em arquivos wiki** (00-06), código, commits, PRs |
 | **Planejamento** (estrutura de documentação) | feature-wiki | PRD + ADR + CTs + tracking + padrão de log | Arquivos wiki são detalhados por design — compressão cria ambiguidade |
 | **Execução** (código) | [Ponytail](https://github.com/DietrichGebert/ponytail) | Mínimo código que funciona — escada de simplicidade | Não corta validação, segurança, tratamento de erros |
+| **Qualidade** (QA no agente) | `feature-quality-gate` | Confronta `00-requisito` × PRD × app rodando; roteia achado para especificação / implementação / teste | Não corrige nada — só lê, reproduz e reporta |
 | **Memória de projeto** (rules) | `requirement-to-rule` | Decisão da wiki vira Project Rule do Boost em `.ai/rules/` | Só o que é específico da aplicação; ecossistema é guideline do Boost |
 
 ### Caveman + feature-wiki: fronteira clara
@@ -1505,6 +1658,7 @@ O Caveman tem uma regra de **Auto-Clarity** que desativa o modo terse em situaç
 
 > **Arquivos wiki são boundary do Caveman.**
 >
+> - `00-requisito.md` — o texto original é **verbatim por definição**. Comprimir aqui é falsificar a fonte da verdade.
 > - `01-plano-acao.md` — PRD precisa ser "minucioso o suficiente para um agente implementar sem ambiguidade". Compressão destrói essa propriedade.
 > - `02-decisoes-arquiteturais.md` — ADR é argumentativo por natureza (Contexto, Decisão, Alternativas, Consequências). Fragmentos perdem o raciocínio.
 > - `03-progresso.md` — Checklists e descrições de blockers/desvios precisam de clareza.
@@ -1555,11 +1709,13 @@ wikis/
     └── ferro/
         └── 579/
             └── relatorio-mba-lote/
+                ├── 00-requisito.md                  ← requisito bruto imutável + RQ-##
                 ├── 01-plano-acao.md
                 ├── 02-decisoes-arquiteturais.md      ← formato ADR
                 ├── 03-progresso.md                   ← + Blockers, Desvios, Retrospectiva
                 ├── 04-casos-de-teste.md              ← backend: + CTs de log e autorização
                 ├── 05-casos-de-teste-browser.md      ← CT-B + roteiro desenhado × implementado
                 ├── 05-api-contract.md                ← extra quando necessário
-                └── 05-rollback.md                    ← extra quando necessário
+                ├── 05-rollback.md                    ← extra quando necessário
+                └── 06-relatorio-qa.md                ← saída do feature-quality-gate
 ```
