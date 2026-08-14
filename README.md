@@ -12,12 +12,13 @@ Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude C
 
 | Skill | Versão | O que faz | Quando é invocada |
 |---|---|---|---|
-| [`feature-wiki`](.ai/skills/feature-wiki/SKILL.md) | 2.9.0 | Cria a wiki da feature antes de implementar: PRD, ADR, progresso, casos de teste (backend e browser) e padrão de log | ao iniciar qualquer feature nova |
-| [`requirement-to-rule`](.ai/skills/requirement-to-rule/SKILL.md) | 1.1.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | no fim da feature (step 8 da `feature-wiki`) ou sob pedido |
+| [`feature-wiki`](.ai/skills/feature-wiki/SKILL.md) | 2.10.0 | Cria a wiki da feature antes de implementar: requisito bruto, PRD, ADR, progresso, casos de teste (backend e browser) e padrão de log | ao iniciar qualquer feature nova |
+| [`feature-quality-gate`](.ai/skills/feature-quality-gate/SKILL.md) | 1.0.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa e roteia cada achado para especificação, implementação ou teste | step 8 da `feature-wiki`, após os testes passarem |
+| [`requirement-to-rule`](.ai/skills/requirement-to-rule/SKILL.md) | 1.1.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | step 9 da `feature-wiki` ou sob pedido |
 
-O ciclo completo: **planejar** (`feature-wiki`) → **executar** (Ponytail) → **comunicar** (Caveman) → **validar** (Pest 5 + CT-B) → **memorizar** (`requirement-to-rule`).
+O ciclo completo: **planejar** (`feature-wiki`) → **executar** (Ponytail) → **comunicar** (Caveman) → **testar** (Pest 5 + CT-B) → **validar** (`feature-quality-gate`) → **memorizar** (`requirement-to-rule`).
 
-**Em estudo** (sem `SKILL.md` ainda): [`feature-quality-gate`](.ai/skills/feature-quality-gate/README.md) — etapa de QA dentro do agente, com roteamento de achados de volta para especificação, implementação ou teste. O [estudo de viabilidade](.ai/skills/feature-quality-gate/README.md) registra a pesquisa de mercado (incluindo as 50 skills MIT do `qa-skills`), a lacuna que sobra e o critério eliminatório da skill.
+Cada skill tem sua própria documentação para humanos: [motivação e estudo do `feature-quality-gate`](.ai/skills/feature-quality-gate/README.md) — pesquisa de mercado (incluindo as 50 skills MIT do `qa-skills`), lacuna verificada e critério eliminatório.
 
 > Histórico de evolução das skills: [CHANGELOG.md](CHANGELOG.md)
 
@@ -143,6 +144,139 @@ Ao baixar ou atualizar skills deste repositório no seu projeto, use o padrão d
 
 Ajustes possíveis: se quiser manter só os gitmojis do seu padrão interno (sem :package:/:arrow_up:), troque por :sparkles: (instala) e :recycle: (atualiza).
 
+
+---
+
+## 📥 Como informar o requisito para a `feature-wiki`
+
+A partir da **v2.10.0**, a `feature-wiki` cria um arquivo antes do PRD: **`00-requisito.md`** — o requisito **como ele chegou**, sem interpretação.
+
+### Por que isso existe
+
+O mesmo agente lê o requisito, escreve o PRD, escreve os testes, implementa e roda os testes. Se ele **entendeu o requisito errado**, erra coerentemente cinco vezes e tudo fica verde. O PRD não serve como linha de base porque **ele é a interpretação** — validar contra o PRD confirma o erro em vez de expô-lo.
+
+O `00-requisito.md` é a única linha de base independente do agente. É também o oráculo do [`feature-quality-gate`](#-quality-gate-o-qa-dentro-do-agente): sem ele, a etapa de QA não tem contra o que confrontar.
+
+### Como passar o requisito
+
+| Forma | O que fazer |
+|---|---|
+| **Colar o texto no chat** (card do Jira/Azure/GitHub, e-mail, mensagem) | cole o texto do card **como está**. O agente transcreve verbatim — não corrige ortografia, não resume, não reordena |
+| **Arquivo no projeto** (`.md`, `.pdf`, `.docx`) | aponte o caminho: *"o requisito está em `docs/requisitos/RF-231.pdf`, páginas 3 e 4"*. O agente lê, registra o path + páginas e transcreve os trechos normativos |
+| **Descrever na conversa** | funciona, mas é marcado como **fidelidade baixa** e o agente pede confirmação antes de implementar |
+| **Não informar** | a skill **para e pede**. Sem requisito não há linha de base, e a wiki nasce cega |
+
+Exemplo de invocação:
+
+```text
+/feature-wiki
+
+Card FERRO-579:
+"Precisamos gerar os relatórios de MBA em lote, por turma. Apenas o coordenador
+da turma pode disparar. Avisar o coordenador quando terminar. Precisa ser rápido."
+```
+
+### O que a skill faz com isso
+
+1. **`## Texto Original`** — verbatim, **imutável**. Nunca editado, nem para "melhorar"
+2. **`## Decomposição em Cláusulas`** — cada exigência vira um `RQ-##` citando o trecho literal:
+
+| ID | Cláusula | Trecho literal | Tipo |
+|----|----------|----------------|------|
+| RQ-01 | gerar relatório por turma em lote | "em lote, por turma" | funcional |
+| RQ-02 | só coordenador da turma dispara | "Apenas o coordenador da turma pode disparar" | autorização |
+| RQ-03 | notificar coordenador ao concluir | "Avisar o coordenador quando terminar" | funcional |
+| RQ-04 | ⚠️ "rápido" sem número | "Precisa ser rápido" | não-funcional |
+
+3. **`## Ambiguidades e Perguntas Abertas`** — a RQ-04 já entrega valor **antes de qualquer código**: *"rápido" não é testável; qual o SLA?* Vira pergunta para você em vez de suposição silenciosa do agente
+4. **`## Fora de Escopo`** — o que o requisito explicitamente não pede, para o quality gate não acusar omissão indevida
+
+Depois disso, **todo passo do PRD e todo CT/CT-B cita o `RQ` que atende**. É essa amarração que permite detectar cláusula sem plano, sem teste ou sem código.
+
+> **Wiki antiga sem `00`**: ao retomar uma wiki criada antes da v2.10.0, a skill pede o requisito original **a você** — nunca deriva do PRD. PRD derivado de PRD não é oráculo.
+
+---
+
+## 🛡️ Quality Gate: o QA dentro do agente
+
+A skill [`feature-quality-gate`](.ai/skills/feature-quality-gate/SKILL.md) é a **próxima estação da esteira** — roda no step 8 da `feature-wiki`, depois de implementar e com os testes verdes.
+
+> **Motivação completa, pesquisa de mercado e critério eliminatório**: [`.ai/skills/feature-quality-gate/README.md`](.ai/skills/feature-quality-gate/README.md)
+
+### O defeito que ela existe para pegar
+
+**Omissão silenciosa**: cláusula do requisito que nunca virou passo do plano, nunca virou teste, nunca virou código.
+
+| RQ | Cláusula | Passo PRD | CT | CT-B | Código | Veredito |
+|----|----------|-----------|----|------|--------|----------|
+| RQ-01 | gerar relatório em lote | 3, 4 | CT-01 | CT-B01 | `GerarRelatorioLoteJob` | OK |
+| RQ-03 | notificar coordenador | — | — | — | — | ❌ **omissão silenciosa** |
+
+Nenhum teste falhou porque **nunca existiu teste** — e nunca existiu teste porque a cláusula nunca entrou no plano. CT e CT-B só podem falhar no que foi especificado; o `ponytail-review` audita **excesso**, nunca **falta**; o TIA mede impacto do diff, não cobertura do requisito. **É uma classe de defeito estruturalmente invisível para o resto do ciclo.**
+
+### As 10 dimensões
+
+| # | Dimensão | Exemplo do que pega |
+|---|---|---|
+| A | Cobertura do requisito | cláusula sem plano/teste/código |
+| B | Fronteiras e dados | `-1`, string de 500 chars, upload de 0 byte, 29/02 |
+| C | Matriz de permissão | 3 papéis × 4 ações = 12 células; o CT cobre 1 |
+| D | Observabilidade real | o PRD manda logar `[Classe@Método]` — **e ninguém confere**. Inclui **PII vazando no context** |
+| E | Performance | N+1, query sem índice, `->get()` onde cabia paginação |
+| F | UX de erro | "Erro ao processar" em vez de "CPF já inscrito na turma X" |
+| G | Tema e cor | **texto branco em fundo branco: `assertSee()` PASSA** |
+| H | Acessibilidade | teclado, foco, contraste, `alt` |
+| I | Segurança da superfície nova | IDOR, mass assignment, rota sem `can:` |
+| J | Regressão adjacente | só em wiki de evolução/correção |
+
+A dimensão **D** é auto-referente e reveladora: a `feature-wiki` exige log em toda etapa de execução, com channel dedicado e context estruturado — e nada no ciclo verificava se isso acontecia. O quality gate fecha o laço da própria skill principal.
+
+### Roteamento: 5 destinos, não 2
+
+Esta é a peça que **não existe em nenhuma skill de QA do mercado** — verificado na pesquisa.
+
+| Achado | Diagnóstico | Volta para |
+|---|---|---|
+| requisito ambíguo/incompleto | defeito de **especificação** | escrita da wiki (`00`/`01`/`02`) |
+| implementação diverge do PRD | defeito de **código** | execução do passo |
+| comportamento errado sem CT que cubra | defeito de **teste** | `04`/`05`, **depois** implementação |
+| ambiente, dado, build | não é defeito do produto | infra |
+| comportamento correto, expectativa errada | não é defeito | fecha, registrando o porquê |
+
+Prioridade quando há vários: **especificação > teste > implementação**. Corrigir código contra especificação ambígua é retrabalho garantido.
+
+E no destino "teste", a ordem importa: **escrever o CT que falha primeiro**, só então corrigir. Invertido, perde-se a prova e o defeito volta na feature seguinte.
+
+### Regras que impedem a skill de virar teatro
+
+| Princípio | Efeito prático |
+|---|---|
+| **Oráculo externo** | o PRD é **alegação a ser testada**, não verdade |
+| **Separação de poderes** | **não corrige nada** — lê, reproduz, reporta. Quem julga não conserta |
+| **Convergência** | teto de **3 ciclos**; ciclo sem achado novo encerra; estourar escala a você |
+| **Teto por risco** | 3 perfis: `ajuste` sem UI roda 3 dimensões, não 10 |
+| **Degradação graciosa** | sem MCP, sem `qa-skills`, sem Pest 5 ela roda — e **declara no relatório** o que não pôde verificar |
+
+### Saída
+
+`06-relatorio-qa.md` na wiki, com veredito (`APROVADO` / `APROVADO COM DÉBITO` / `REPROVADO → destino`), achados com repro mínima e evidência, a Matriz de Rastreabilidade (**impressa só se houver lacuna**, para não virar métrica de vaidade) e uma seção **"Não Verificado"** declarando o alcance real da execução.
+
+### Dependências
+
+**Obrigatórias:** `feature-wiki` ≥ 2.10.0 (pelo `00-requisito.md`), app servido, Pest.
+
+**Opcionais** — a skill degrada sem cada uma: Pest 5 (`--parallel --tia` para regressão), `pest-plugin-agent` (sondagem), `pest-plugin-browser` (CT-B), Playwright MCP (inventário de elementos, tema, console/rede), Boost MCP (`Browser Logs`, `database-query`), PCOV/Xdebug (pré-requisito do `--tia`).
+
+**Técnica de QA delegada** (MIT, instalar só as usadas):
+
+```bash
+# NÃO instalar as 50 — inflação de contexto. Copiar só as pastas necessárias.
+# risk-based-testing · exploratory-testing · ai-bug-triage
+# bug-reproduction · ai-qa-review · test-reliability
+npx skills add petrkindlmann/qa-skills
+```
+
+Cada delegação tem **fallback inline** documentado na skill: se a skill externa não estiver instalada, o agente aplica a técnica resumida em 2-3 linhas e registra no relatório qual caminho usou.
 
 ---
 
@@ -706,7 +840,7 @@ A integração é natural porque as três skills operam em **camadas complementa
 
 | Camada | Skill | Responsabilidade | Boundary |
 |--------|-------|------------------|----------|
-| **Comunicação** (agent ↔ usuário) | Caveman | Prosa terse — corta fluff, artigos, fillers | **NÃO aplica em arquivos wiki** (01-05), código, commits, PRs |
+| **Comunicação** (agent ↔ usuário) | Caveman | Prosa terse — corta fluff, artigos, fillers | **NÃO aplica em arquivos wiki** (00-06), código, commits, PRs |
 | **Planejamento** (documentação) | feature-wiki | Define o **o quê** e o **porquê**: PRD, ADR, CTs, tracking, padrão de log, channel por feature | Arquivos wiki são detalhados por design — compressão cria ambiguidade |
 | **Execução** (código) | Ponytail | Define o **como**: mínimo código possível, sem over-engineering, reutilização antes de criação | Não corta validação, segurança, tratamento de erros |
 | **Revisão** (diff) | Ponytail (`/ponytail:ponytail-review`) | Valida o diff contra over-engineering: o que cortar, o que substituir por stdlib | — |
@@ -816,8 +950,12 @@ A partir de agora, para cada feature nova:
 │  1. PLANEJAR (feature-wiki)                         │
 │  ─────────────────────────────────                  │
 │  • Invocar feature-wiki ao iniciar a feature        │
-│  • Criar wikis/specs/{branch}/{feature}/ com 4 arqs  │
+│  • Criar wikis/specs/{branch}/{feature}/ com 5 arqs  │
+│  • 00-requisito.md       → requisito bruto IMUTÁVEL  │
+│    - Decomposição em cláusulas RQ-##                │
+│    - Ambiguidades = pergunta, não suposição         │
 │  • 01-plano-acao.md      → PRD detalhado            │
+│    - Natureza da wiki + Cobertura do Requisito      │
 │    - Autorização, Rotas, Env, Eventos, Jobs         │
 │    - Impacto, Rollback, Dependências, Riscos        │
 │    - Logs em todas as etapas (channel + padrão)     │
@@ -890,7 +1028,20 @@ A partir de agora, para cada feature nova:
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  6. MEMORIZAR (requirement-to-rule)                 │
+│  6. VALIDAR (feature-quality-gate)                  │
+│  ─────────────────────────────────                  │
+│  • Confronta 00-requisito × PRD × app rodando       │
+│  • Audita ambiguidades do requisito PRIMEIRO        │
+│  • Matriz de Rastreabilidade → omissão silenciosa   │
+│  • 10 dimensões (perfil por risco: mín/padrão/full) │
+│  • Roteia achado: especificação | código | teste    │
+│  • Escreve 06-relatorio-qa.md + veredito            │
+│  ⚠️ NÃO corrige nada · teto de 3 ciclos             │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│  7. MEMORIZAR (requirement-to-rule)                 │
 │  ─────────────────────────────────                  │
 │  • Varrer ADRs + Notas + PRD por candidatos a rule  │
 │  • Aplicar os 4 gates: durável, escopável,          │
@@ -922,7 +1073,7 @@ Ao escrever o `01-plano-acao.md`, incluir uma nota de filosofia de implementaç�
 > Após implementação, rodar `/ponytail:ponytail-review` no diff.
 >
 > **Caveman ativo em modo `ultra`** (padrão) na comunicação agent ↔ usuário.
-> Arquivos wiki (01-05) são boundary do Caveman — escrever em prosa normal.
+> Arquivos wiki (00-06) são boundary do Caveman — escrever em prosa normal.
 > Código, commits e PRs também são boundary do Caveman.
 ```
 
@@ -965,20 +1116,24 @@ export PONYTAIL_DEFAULT_MODE=full
 ### Resumo da Integração
 
 ```
-feature-wiki (v2.9.0)    Ponytail              Caveman
+feature-wiki (v2.10.0)   Ponytail              Caveman
 ─────────────────        ─────────────────     ─────────────────
 Planejamento minucioso   Execução minimalista  Comunicação terse
-PRD + ADR + CTs           Escada de simplicidade  Corta fluff da prosa
-CT-B (browser, se UI)     /ponytail:ponytail-review  Auto-Clarity ativa
-Padrão de log             /ponytail:ponytail-debt    Boundary: wiki/code
-Channel por feature                              /commits = prosa normal
+00-requisito (oráculo)    Escada de simplicidade  Corta fluff da prosa
+PRD + ADR + CTs           /ponytail:ponytail-review  Auto-Clarity ativa
+CT-B (browser, se UI)     /ponytail:ponytail-debt    Boundary: wiki/code
+Padrão de log                                    /commits = prosa normal
 Revisão pós-escrita
 Pest 5: --parallel --tia
-Pós-implementação        requirement-to-rule (v1.0.0)
-03-progresso.md tracking ─────────────────
-                         Decisão da wiki → .ai/rules/
-                         4 gates + aprovação do usuário
-                         Gravado via record-rule (Boost)
+03-progresso.md tracking
+
+feature-quality-gate (v1.0.0)      requirement-to-rule (v1.1.0)
+─────────────────                  ─────────────────
+Requisito × plano × app rodando    Decisão da wiki → .ai/rules/
+Omissão silenciosa (Matriz)        4 gates + aprovação do usuário
+10 dimensões, perfil por risco     Gravado via record-rule (Boost)
+Roteia: spec | código | teste      Índice .ai/rules/index.md
+Não corrige · teto de 3 ciclos
          │                    │                      │
          └────────────┬───────┴──────────────────────┘
                       ▼
