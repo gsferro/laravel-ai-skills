@@ -1,9 +1,11 @@
-# feature-quality-gate — Estudo de Viabilidade
+# feature-quality-gate — Motivação e Estudo de Viabilidade
 
-> **Status: em estudo. A skill ainda não existe.**
-> Este documento é o registro da pesquisa que precede a implementação: qual problema ela resolve, o que já existe no mercado (incluindo alternativas MIT), qual lacuna sobra, e por que essa lacuna justifica uma skill nova em vez de instalar o que já está pronto.
+> **Status: implementada — [`SKILL.md`](SKILL.md) v1.0.0.**
+> Requer `feature-wiki` ≥ **2.10.0** (que introduziu o `00-requisito.md`, o oráculo desta skill).
 >
-> Quando o `SKILL.md` for escrito, este arquivo continua sendo o documento **para humanos** — vantagens, escopo, dependências e limitações. O `SKILL.md` fala com o agente; este README fala com a pessoa.
+> Este documento é o registro da pesquisa que precedeu a implementação: qual problema ela resolve, o que já existe no mercado (incluindo alternativas MIT), qual lacuna sobra, e por que essa lacuna justificou uma skill nova em vez de instalar o que estava pronto. Ele continua sendo o documento **para humanos** — vantagens, escopo, dependências e limitações.
+>
+> **`SKILL.md` fala com o agente; este README fala com a pessoa.** Procedimento, gates e templates estão no `SKILL.md` e não são duplicados aqui.
 
 ---
 
@@ -365,6 +367,24 @@ Registrado para evitar autoengano no futuro:
 > A skill só se justifica **se** o `00-requisito.md` existir e for tratado como linha de base, com o PRD rebaixado a **alegação a ser testada**.
 
 Por isso o `00-requisito.md` na `feature-wiki` é **pré-requisito**, não melhoria opcional.
+
+**Como o `SKILL.md` v1.0.0 honra o critério**, ponto por ponto:
+
+| Exigência do estudo | Onde está implementada |
+|---|---|
+| Oráculo externo, PRD rebaixado a alegação | Princípio 1 — declarado como inegociável |
+| Wiki antiga sem `00` não passa em silêncio | seção "Oráculo degradado" — pede o requisito ao usuário, proíbe derivar do PRD, e estampa o aviso no topo do relatório |
+| Detectar omissão silenciosa | Dimensão A + Matriz de Rastreabilidade, marcada como **"nunca pular"** |
+| Roteamento em 5 destinos | seção "Classificação e Roteamento", com a tabela padrão-da-lacuna → destino |
+| Não corrigir o que julga | Princípio 2 + 10 proibições explícitas |
+| Convergência | Princípio 3 + seção própria: teto de 3, sem-achado-novo, dedupe contra o `06` anterior |
+| Teto por risco | Gate de esforço com 3 perfis (mínimo / padrão / completo) |
+| Degradação graciosa | Princípio 5 + coluna "Fallback inline" na tabela de delegação + seção "Não Verificado" no relatório |
+| Dark mode inverte a regra visão × estrutura | Dimensão G, com o aviso destacado e os 3 níveis de verificação |
+| MCP como confronto, não como cobertura | seção "Playwright MCP como Confronto" — 3 confrontos + a regra dos dois destinos obrigatórios |
+| Não reinventar técnica de QA | tabela de delegação ao `qa-skills`, com a ressalva de instalar só as usadas |
+| Relatório que não morre de tamanho | teto de ~150 linhas; "cortar detalhe, não cortar achado" |
+| Matriz não virar métrica de vaidade | matriz só é impressa **se houver lacuna** |
 
 ---
 
