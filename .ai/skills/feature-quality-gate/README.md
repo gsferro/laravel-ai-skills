@@ -144,11 +144,13 @@ Efeito colateral valioso: cláusula ambígua (*"precisa ser rápido"* sem SLA) �
 
 ## Ganho real 1 — Omissão silenciosa e a Matriz de Rastreabilidade
 
-**RTM** (*Requirements Traceability Matrix*, ou simplesmente Matriz de Rastreabilidade) amarra cada cláusula do requisito a tudo que dela derivou:
+A **Matriz de Rastreabilidade** amarra cada cláusula do requisito a tudo que dela derivou:
 
 ```
 cláusula → passo do PRD → CT → CT-B → código → resultado → veredito
 ```
+
+> **Nomenclatura.** O termo adotado nesta coletânea — em documentos, no `06-relatorio-qa.md` e na futura `SKILL.md` — é **Matriz de Rastreabilidade**. A sigla **RTM** (*Requirements Traceability Matrix*) fica disponível como referência quando o contexto pedir: vocabulário de QA formal (ISTQB), conversa com time de qualidade, ou auditoria de setor regulado, onde o artefato é conhecido por esse nome. Em prosa corrente, escrever por extenso.
 
 O valor não está em documentar o que existe — está em **expor a célula vazia**. E ela é **bidirecional**:
 
@@ -172,7 +174,7 @@ A linha **RQ-02** é a razão de existir da skill: **nenhum teste falhou porque 
 
 | # | Dimensão | Por que escapa hoje | Como verificar |
 |---|---|---|---|
-| **A** | Cobertura do requisito | CT só falha no especificado | a RTM acima |
+| **A** | Cobertura do requisito | CT só falha no especificado | a Matriz de Rastreabilidade acima |
 | **B** | Fronteiras e dados | CT cobre o caso do PRD, não os vizinhos | 0, -1, vazio, 500 chars, unicode/emoji, upload 0 byte, 29/02, timezone |
 | **C** | Matriz de permissão | o CT de autorização testa **1** papel | papéis × ações — 3 × 4 = 12 células, o CT cobre 1 |
 | **D** | Observabilidade real | o PRD **manda** logar `[Classe@Método]` — **quem confere?** | rodar o fluxo, ler `storage/logs/{feature}.log`, comparar com o especificado; checar PII no context |
@@ -201,7 +203,7 @@ A taxonomia que não existe no mercado. Cinco destinos, não dois:
 
 O destino **3** é o mais valioso e o mais fácil de errar: a ordem correta é **escrever o CT que falha primeiro**, depois corrigir. Invertido, perde-se a prova e o caso reaparece na feature seguinte.
 
-**A RTM alimenta o roteamento.** O formato da lacuna determina o destino — deixa de ser opinião do agente e passa a ser consequência de uma célula vazia:
+**A Matriz de Rastreabilidade alimenta o roteamento.** O formato da lacuna determina o destino — deixa de ser opinião do agente e passa a ser consequência de uma célula vazia:
 
 | Padrão da lacuna | Destino |
 |---|---|
@@ -348,8 +350,8 @@ Rodar os CT da ancestral **por ID** é o que garante que a evolução não silen
 |---|---|
 | **Custo por ciclo** — 10 dimensões × 3 ciclos numa feature pequena é desproporcional | gate de esforço agressivo por risco |
 | **Cegueira correlacionada residual** — requisito original já ambíguo pode ser interpretado igual duas vezes | forçar a listagem das **ambiguidades do `00`** como achado tipo 1 **antes** de validar qualquer coisa |
-| **Relatório que ninguém lê** — `06` com 400 linhas morre | teto: veredito + tabela de achados + RTM. Detalhe vai em anexo ou não vai |
-| **RTM como métrica de vaidade** — "98% de cobertura" em planilha morta | a RTM existe só como **detector de lacuna**; ciclo sem lacuna não imprime tabela, só o veredito |
+| **Relatório que ninguém lê** — `06` com 400 linhas morre | teto: veredito + tabela de achados + Matriz de Rastreabilidade. Detalhe vai em anexo ou não vai |
+| **Matriz como métrica de vaidade** — "98% de cobertura" em planilha morta | ela existe só como **detector de lacuna**; ciclo sem lacuna não imprime tabela, só o veredito |
 | **Quarta camada de revisão** virar burocracia | cada dimensão precisa justificar por que as 3 camadas atuais não a cobrem |
 
 ---
