@@ -12,8 +12,8 @@ Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude C
 
 | Skill | Versão | O que faz | Quando é invocada |
 |---|---|---|---|
-| [`feature-wiki`](.ai/skills/feature-wiki/SKILL.md) | 2.7.0 | Cria a wiki da feature antes de implementar: PRD, ADR, progresso, casos de teste (backend e browser) e padrão de log | ao iniciar qualquer feature nova |
-| [`requirement-to-rule`](.ai/skills/requirement-to-rule/SKILL.md) | 1.0.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | no fim da feature (step 8 da `feature-wiki`) ou sob pedido |
+| [`feature-wiki`](.ai/skills/feature-wiki/SKILL.md) | 2.8.0 | Cria a wiki da feature antes de implementar: PRD, ADR, progresso, casos de teste (backend e browser) e padrão de log | ao iniciar qualquer feature nova |
+| [`requirement-to-rule`](.ai/skills/requirement-to-rule/SKILL.md) | 1.1.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | no fim da feature (step 8 da `feature-wiki`) ou sob pedido |
 
 O ciclo completo: **planejar** (`feature-wiki`) → **executar** (Ponytail) → **comunicar** (Caveman) → **validar** (Pest 5 + CT-B) → **memorizar** (`requirement-to-rule`).
 
@@ -349,6 +349,71 @@ wikis/specs/ferro/579/relatorio-mba-lote/
 
 ---
 
+## 🔎 Documentation API do Boost (`search-docs`) nas skills
+
+O Boost expõe a tool MCP **`search-docs`**, que consulta a Documentation API hospedada da Laravel — **17.000+ trechos** com busca semântica por embeddings, **filtrada pelos pacotes que o projeto realmente tem instalados**. As duas skills passaram a tratar isso como fonte primária, antes de vendor source e antes de doc na web.
+
+### Cobertura oficial
+
+| Stack | Versões cobertas |
+|---|---|
+| Laravel Framework | 10.x, 11.x, 12.x, **13.x** |
+| Filament | 2.x, 3.x, 4.x, **5.x** |
+| Livewire | 1.x, 2.x, 3.x, **4.x** |
+| Inertia | 1.x, 2.x |
+| Flux UI | 2.x Free, 2.x Pro |
+| Nova | 4.x, 5.x |
+| Pest | 3.x, **4.x** |
+| Tailwind CSS | 3.x, 4.x |
+
+### Na `feature-wiki`: obrigatório antes de escrever o PRD
+
+O step 3 (Pesquisa e Contexto) ganhou uma seção dedicada, com um mapa do que consultar para cada trecho do plano:
+
+| O que vai escrever no PRD | Consultar `search-docs` sobre |
+|---|---|
+| Rotas, middleware, policies, validação | Laravel Framework (versão do projeto) |
+| Componente de UI, tabela, form, modal | Filament / Livewire / Flux |
+| Jobs, queues, batching, scheduling | Laravel Framework — queues |
+| CTs do arquivo `04` | Pest — expectations, mocking, datasets |
+| CT-B do arquivo `05` | Livewire/Filament (comportamento assíncrono) + Pest browser |
+| Broadcasting, eventos, Reverb/Echo | Laravel Framework |
+
+**Como consultar bem**: uma pergunta específica por consulta (*"Filament 5 table bulk action confirmation modal"* vence *"Filament tabelas"*); citar a versão do pacote; **confirmar no código antes de escrever no PRD** — a doc diz o que a API oferece, o `Grep` diz o que o **seu** projeto faz, e divergência entre os dois vira ADR; e citar a origem no plano (*"conforme doc do Filament 5 (search-docs)"*) para dar rastreabilidade e evitar re-pesquisa na próxima wiki.
+
+### Lacunas — e o fallback de cada uma
+
+| Stack | Situação | Fallback |
+|---|---|---|
+| **Pest 5** | a API cobre até **4.x** | `pestphp.com/docs` — `--tia`, `--agent`, sharding e os matchers novos **não** estão no `search-docs` |
+| **Playwright / `pest-plugin-browser`** | não coberto | `pestphp.com/docs/browser-testing` + `playwright.dev` |
+| Pacotes de terceiros | não coberto | vendor source (`Read vendor/{vendor}/{pkg}/src/...`), já obrigatório no step 3 |
+| Código da sua aplicação | não coberto por design | `Grep`/`Read` + `.ai/rules/` do projeto |
+
+Isso é importante justamente porque a skill agora **recomenda** Pest 5: consultar `search-docs` sobre `--tia` devolveria informação de Pest 4. A skill declara essa lacuna em vez de deixar o agente confiar numa resposta desatualizada.
+
+### Na `requirement-to-rule`: `search-docs` é o teste empírico do gate 4
+
+O gate "não-redundante" deixou de ser opinião e passou a ser verificável:
+
+```text
+Candidato: "Form Requests devem ter authorize() retornando a policy"
+→ search-docs: "Laravel 13 form request authorize method"
+→ A doc oficial já explica exatamente isso
+→ REPROVA no gate 4: é guideline do ecossistema, não rule da aplicação
+
+Candidato: "Enrollment::find() aplica scope global de tenant"
+→ search-docs: "Laravel global scope Enrollment tenant"
+→ Só a doc genérica de global scopes; nada sobre este model
+→ APROVA no gate 4: o fato é da aplicação
+```
+
+Fora da cobertura da API (Pest 5, Playwright, pacotes de terceiros), o gate 4 é avaliado contra a doc oficial do pacote — e uma restrição sobre pacote de terceiro **pode** legitimamente virar rule, porque não existe guideline do Boost para ela.
+
+> **Dois anti-padrões** que as skills passaram a proibir: escrever assinatura de método, nome de opção de config ou comportamento de componente no PRD **sem** confirmar em `search-docs` (causa nº 1 de plano que não sobrevive à implementação); e usar `search-docs` para descobrir comportamento do **seu próprio** código — ele documenta o ecossistema, o seu código é `Grep`, e as suas convenções são `.ai/rules/`.
+
+---
+
 ## 📐 Do Requisito para a Rule (skill `requirement-to-rule`)
 
 ### O problema
@@ -439,6 +504,44 @@ A doc do Boost é explícita, e a skill obedece:
 > "You should always record rules using the `record-rule` tool rather than creating rule files by hand. Boost regenerates `.ai/rules/index.md` as part of recording a rule (...). A rule file that is added manually will not be discovered until the index is next regenerated."
 
 Ou seja: escrever o `.md` à mão com o Boost ativo produz uma rule **invisível**. Existe fallback documentado na skill para quando `BOOST_RULES_ENABLED=false` ou o Boost não está instalado — incluindo atualizar o `index.md` na mão e registrar isso no commit.
+
+### O índice é obrigatório: `.ai/rules/index.md`
+
+Os agentes são instruídos a **consultar o índice antes de planejar ou editar qualquer arquivo**. Uma rule que não está no índice existe no disco e é invisível — não importa quão bem escrita esteja. A skill trata o índice como parte da entrega, não como detalhe.
+
+Modelo oficial do Boost, que a skill usa literalmente ao criar o arquivo:
+
+```markdown
+# Project Rules Index
+
+Before planning or editing, find the row whose globs match the file's path and read that rule file.
+
+| Applies to | Rule file |
+| --- | --- |
+| app/Http/Controllers/** | .ai/rules/controllers.md |
+| app/Models/** | .ai/rules/models.md |
+```
+
+> O cabeçalho e a frase de instrução são preservados **exatamente**. Aquela linha não é decoração: é a instrução que o agente lê para saber o que fazer com a tabela. Traduzir ou reescrever quebra o contrato com os agentes que esperam o formato do Boost.
+
+**O que a skill faz, e quando:**
+
+| Momento | Ação |
+|---|---|
+| Passo 2 — diagnóstico | `Read .ai/rules/index.md`. Classifica em 3 cenários: índice existe / `.ai/rules/` existe sem índice (rules **órfãs e invisíveis**) / nada existe. **Não escreve nada** — nenhum arquivo é criado antes do "sim" do usuário |
+| Passo 7 — após aprovação | Cria o índice no modelo oficial se não existir; adiciona **uma linha por glob**; se havia rules órfãs, inclui todas; confere que cada path do índice corresponde a arquivo real |
+| Passo 8 — commit | Commita `.ai/rules/` **inteiro** — rule + índice no mesmo commit |
+
+Se a rule cobre 2 globs, são **2 linhas** apontando para o mesmo arquivo:
+
+```markdown
+| app/Models/** | .ai/rules/models.md |
+| app/Services/Billing/** | .ai/rules/models.md |
+```
+
+**Regras de manutenção**: uma linha por glob (nunca globs concatenados numa célula); path sempre relativo à raiz começando em `.ai/rules/`; ordenar do glob mais estreito para o mais amplo, para o agente achar a rule mais específica primeiro; nenhuma linha órfã, duplicada ou de exemplo; e o índice nunca recebe conteúdo de rule — é só o mapa.
+
+Detalhe importante para o fallback: quando o Boost voltar a estar ativo, `record-rule` **regenera** o índice e sobrescreve edições manuais. Por isso a skill exige registrar no commit que a gravação foi manual — para reconciliar depois.
 
 ### Modelo base da rule
 
@@ -793,7 +896,7 @@ export PONYTAIL_DEFAULT_MODE=full
 ### Resumo da Integração
 
 ```
-feature-wiki (v2.7.0)    Ponytail              Caveman
+feature-wiki (v2.8.0)    Ponytail              Caveman
 ─────────────────        ─────────────────     ─────────────────
 Planejamento minucioso   Execução minimalista  Comunicação terse
 PRD + ADR + CTs           Escada de simplicidade  Corta fluff da prosa
