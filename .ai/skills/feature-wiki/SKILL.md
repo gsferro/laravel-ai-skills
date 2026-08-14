@@ -1,6 +1,6 @@
 ---
 name: feature-wiki
-version: 2.7.0
+version: 2.8.0
 description: >
   Cria estrutura de documentação wiki para uma feature antes de implementá-la.
   Invoque SEMPRE ao iniciar implementação de qualquer feature nova.
@@ -14,7 +14,8 @@ description: >
   (CT-B em Pest browser plugin / Playwright) que serve como roteiro de validação
   desenhado x implementado. Usa Pest 5 (--parallel --tia, --agent) na verificação.
   No fim, avalia se alguma decisão da wiki deve virar Project Rule do Boost e
-  submete a decisão ao usuário (skill requirement-to-rule).
+  submete a decisão ao usuário (skill requirement-to-rule). Exige consulta à
+  Documentation API do Boost (search-docs) para cada stack que o PRD toca.
 ---
 
 # Feature Wiki — Documentação Antes de Implementar
@@ -38,6 +39,7 @@ description: >
   - [1. Descobrir Branch](#1-descobrir-branch-e-estrutura-de-pasta)
   - [2. Definir Nome da Feature](#2-definir-nome-da-feature)
   - [3. Pesquisa e Contexto](#3-pesquisa-e-contexto-obrigatório-antes-de-escrever)
+    - [Documentation API do Boost](#documentation-api-do-boost-search-docs)
   - [4. Criar os Arquivos](#4-criar-os-arquivos)
   - [5. Revisão Profunda Pós-Escrita](#5-revisão-profunda-pós-escrita-obrigatório)
   - [6. Auditoria da Wiki com Ponytail-review](#6-auditoria-da-wiki-com-ponytail-review-obrigatório)
@@ -108,7 +110,7 @@ Pasta final: `wikis/specs/{branch}/{feature-name}/`
 
 Antes de escrever qualquer documento:
 - Usar `database-schema` se a feature envolve novas tabelas ou alterações
-- Usar `search-docs` para tecnologias envolvidas (Filament, Livewire, Queue, etc.)
+- **Usar `search-docs` para toda stack envolvida** — obrigatório antes de escrever o PRD (ver [Documentation API](#documentation-api-do-boost-search-docs) para cobertura e como consultar)
 - Ler arquivos existentes relevantes com `Read` ou `Grep`
 - Executar `php artisan model:show ModelName` para models relacionados
 - Examinar padrões existentes com `Glob "**/[padrão]/**/*.php"`
@@ -138,6 +140,54 @@ Antes de escrever qualquer documento:
 - **Playwright instalado?** — `Grep "playwright" package.json`; browsers baixados via `npx playwright install`
 - **Como o app é servido em teste** — `Read` no `.env.example`/`.env.testing` para `APP_URL`; confirmar se o projeto usa Herd, `php artisan serve`, Sail ou Vite dev server. Registrar isso nos pré-requisitos do `05-casos-de-teste-browser.md`
 - **Traits globais** — `Read tests/Pest.php` para ver se `RefreshDatabase` está aplicado globalmente e se há `pest()->browser()` ou `pest()->tia()` configurado
+
+#### Documentation API do Boost (`search-docs`)
+
+O Boost expõe a tool MCP **`search-docs`**, que consulta a Documentation API hospedada da Laravel — 17.000+ trechos com busca semântica por embeddings, **filtrada pelos pacotes que o projeto realmente tem instalados**. É a primeira fonte a consultar, antes de vendor source e antes de doc na web.
+
+**Cobertura oficial da Documentation API** (versões suportadas):
+
+| Stack | Versões cobertas |
+|---|---|
+| Laravel Framework | 10.x, 11.x, 12.x, **13.x** |
+| Filament | 2.x, 3.x, 4.x, **5.x** |
+| Livewire | 1.x, 2.x, 3.x, **4.x** |
+| Inertia | 1.x, 2.x |
+| Flux UI | 2.x Free, 2.x Pro |
+| Nova | 4.x, 5.x |
+| Pest | 3.x, **4.x** |
+| Tailwind CSS | 3.x, 4.x |
+
+**Quando é obrigatório consultar** — antes de escrever qualquer um destes trechos do PRD:
+
+| O que vai escrever | Consultar `search-docs` sobre |
+|---|---|
+| Rotas, middleware, policies, validação | Laravel Framework (versão do projeto) |
+| Componente de UI, tabela, form, modal | Filament / Livewire / Flux (versão do projeto) |
+| Jobs, queues, batching, scheduling | Laravel Framework — queues |
+| CTs do arquivo `04` | Pest — expectations, mocking, datasets |
+| CT-B do arquivo `05` | Livewire/Filament (comportamento assíncrono) + Pest browser |
+| Broadcasting, eventos, Reverb/Echo | Laravel Framework |
+
+**Como consultar bem**:
+
+1. **Uma pergunta por consulta**, específica: *"Filament 5 table bulk action confirmation modal"* vence *"Filament tabelas"*
+2. **Citar a versão** do pacote na consulta — a busca é filtrada pelos pacotes instalados, mas a versão desambigua o trecho retornado
+3. **Confirmar no código antes de escrever no PRD**: a doc diz o que a API oferece; o `Grep`/`Read` diz o que o **seu** projeto faz. Divergência entre os dois vai para `02-decisoes-arquiteturais.md`
+4. **Citar a origem no PRD** quando a decisão veio da doc: *"conforme doc do Filament 5 (search-docs)"* — dá rastreabilidade e evita re-pesquisa na próxima wiki
+
+**Lacunas conhecidas — o que `search-docs` NÃO cobre**:
+
+| Stack | Situação | Fallback |
+|---|---|---|
+| **Pest 5** | API cobre até **4.x** | doc oficial em `pestphp.com/docs` — `--tia`, `--agent`, sharding e os matchers novos **não** estão no `search-docs` |
+| **Playwright / `pest-plugin-browser`** | não coberto | `pestphp.com/docs/browser-testing` + `playwright.dev` |
+| Pacotes de terceiros | não coberto | vendor source (`Read vendor/{vendor}/{pkg}/src/...`) — já obrigatório no step 3 |
+| Código da sua aplicação | não coberto por design | `Grep`/`Read` + `.ai/rules/` do projeto |
+
+> **Anti-padrão**: escrever no PRD assinatura de método, nome de opção de config ou comportamento de componente **sem** confirmar em `search-docs` (ou, nas lacunas acima, na doc oficial). É a causa nº 1 de plano que não sobrevive à implementação.
+>
+> **Anti-padrão**: usar `search-docs` para descobrir comportamento do **seu** código. Ele documenta o ecossistema; o seu código é `Grep`, e as suas convenções são `.ai/rules/`.
 
 ### 4. Criar os Arquivos
 
@@ -1305,6 +1355,8 @@ Antes de encerrar a invocação:
 - [ ] Wiki existente verificada (retomar/sobrescrever/incrementar se já existe)
 - [ ] Nome da feature confirmado com usuário
 - [ ] Pesquisa feita (`search-docs`, `database-schema`, leitura de arquivos)
+- [ ] `search-docs` consultado para **cada stack** que o PRD toca (Laravel, Filament, Livewire, Inertia, Pest, Tailwind) e origem citada no plano
+- [ ] Lacunas do `search-docs` cobertas por doc oficial: Pest 5, Playwright/`pest-plugin-browser`, pacotes de terceiros
 - [ ] Rotas, policies, config, composer, wikis existentes verificados
 - [ ] APIs de terceiros inspecionadas (vendor source ou docs) — métodos e schema confirmados
 - [ ] Dados fornecidos pelo usuário validados contra o DB (quando aplicável)
