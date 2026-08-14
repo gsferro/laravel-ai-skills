@@ -1,6 +1,6 @@
 ---
 name: feature-wiki
-version: 2.4.0
+version: 2.7.0
 description: >
   Cria estrutura de documentação wiki para uma feature antes de implementá-la.
   Invoque SEMPRE ao iniciar implementação de qualquer feature nova.
@@ -9,7 +9,12 @@ description: >
   deve ser minucioso o suficiente para um agente implementar sem ambiguidade.
   Inclui padrão de log obrigatório, channel por feature, etapa de pós-implementação,
   auditoria automática da wiki via /ponytail:ponytail-review, e integração com
-  Caveman (comunicação terse) e Ponytail (execução minimalista).
+  Caveman (comunicação terse, modo padrão `ultra`) e Ponytail (execução minimalista).
+  Quando a feature tem superfície de UI, cria também 05-casos-de-teste-browser.md
+  (CT-B em Pest browser plugin / Playwright) que serve como roteiro de validação
+  desenhado x implementado. Usa Pest 5 (--parallel --tia, --agent) na verificação.
+  No fim, avalia se alguma decisão da wiki deve virar Project Rule do Boost e
+  submete a decisão ao usuário (skill requirement-to-rule).
 ---
 
 # Feature Wiki — Documentação Antes de Implementar
@@ -20,9 +25,11 @@ description: >
 |-------|-------------|
 | **PRD** | Product Requirements Document — plano de ação detalhado |
 | **ADR** | Architecture Decision Record — registro de decisão arquitetural |
-| **CT** | Caso de Teste — especificação de um cenário de teste |
+| **CT** | Caso de Teste — especificação de um cenário de teste (backend) |
+| **CT-B** | Caso de Teste de Browser — cenário E2E validado em navegador real |
 | **DB** | Database — banco de dados |
 | **FK** | Foreign Key — chave estrangeira |
+| **TIA** | Test Impact Analysis — engine do Pest 5 que roda só os testes afetados |
 
 ## Índice
 
@@ -35,11 +42,14 @@ description: >
   - [5. Revisão Profunda Pós-Escrita](#5-revisão-profunda-pós-escrita-obrigatório)
   - [6. Auditoria da Wiki com Ponytail-review](#6-auditoria-da-wiki-com-ponytail-review-obrigatório)
   - [7. Pós-Implementação](#7-pós-implementação-obrigatório)
+  - [8. Candidatos a Rule](#8-candidatos-a-rule-de-projeto-decisão-do-usuário)
 - [Arquivo 01: PRD](#arquivo-01-plano-de-ação-prd)
 - [Padrão de Log](#padrão-de-log--classeétodo-mensagem)
 - [Arquivo 02: ADR](#arquivo-02-decisões-arquiteturais)
 - [Arquivo 03: Progresso](#arquivo-03-progresso--tracking)
 - [Arquivo 04: Casos de Teste](#arquivo-04-casos-de-teste-ct)
+- [Arquivo 05: Casos de Teste de Browser](#arquivo-05-casos-de-teste-de-browser-ct-b--condicional)
+- [Execução de Testes com Pest 5](#execução-de-testes-com-pest-5)
 - [Arquivos Extras](#arquivos-extras-conforme-necessidade)
 - [Skills Companheiras](#skills-companheiras)
 - [Checklist Final](#checklist-final-da-skill)
@@ -49,8 +59,9 @@ description: >
 Ao implementar, o agente deve ler os arquivos nesta ordem:
 1. **`01-plano-acao.md`** — entende o que fazer e em que ordem
 2. **`04-casos-de-teste.md`** — entende como validar cada passo
-3. **`02-decisoes-arquiteturais.md`** — entende as restrições e justificativas
-4. **`03-progresso.md`** — marca o que já foi feito e retoma de onde parou
+3. **`05-casos-de-teste-browser.md`** — se existir: entende como validar a UI e o fluxo do usuário
+4. **`02-decisoes-arquiteturais.md`** — entende as restrições e justificativas
+5. **`03-progresso.md`** — marca o que já foi feito e retoma de onde parou
 
 ---
 
@@ -118,6 +129,16 @@ Antes de escrever qualquer documento:
 - **Verificar middleware** — `Grep` em `app/Http/Middleware/` e em `bootstrap/app.php` (Laravel 11+) para middleware stack
 - **Verificar variáveis de ambiente** — `Read` em `.env.example` para chaves existentes e padrão de naming
 
+#### Verificação do stack de testes (define se haverá CT-B)
+
+- **Versão do Pest** — `Grep "pestphp/pest" composer.json`. Pest 5 habilita `--tia`, `--agent` e sharding por tempo; Pest 4 tem browser plugin mas não TIA
+- **Browser plugin instalado?** — `Grep "pest-plugin-browser" composer.json` e `Glob "tests/Browser/**"`
+  - Se a feature tem UI e o plugin **não** está instalado: incluir a instalação como passo explícito no PRD (`## Dependências`), não assumir que existe
+  - Se `tests/Browser/` já existe: ler 1-2 testes para herdar o padrão do projeto (helper de login, traits no `Pest.php`, seletores usados)
+- **Playwright instalado?** — `Grep "playwright" package.json`; browsers baixados via `npx playwright install`
+- **Como o app é servido em teste** — `Read` no `.env.example`/`.env.testing` para `APP_URL`; confirmar se o projeto usa Herd, `php artisan serve`, Sail ou Vite dev server. Registrar isso nos pré-requisitos do `05-casos-de-teste-browser.md`
+- **Traits globais** — `Read tests/Pest.php` para ver se `RefreshDatabase` está aplicado globalmente e se há `pest()->browser()` ou `pest()->tia()` configurado
+
 ### 4. Criar os Arquivos
 
 Criar os **4 arquivos obrigatórios** + extras se necessário.
@@ -126,7 +147,8 @@ Criar os **4 arquivos obrigatórios** + extras se necessário.
 1. **`01-plano-acao.md`** — PRD é a base; tudo deriva dele
 2. **`02-decisoes-arquiteturais.md`** — ADRs justificam escolhas do PRD
 3. **`04-casos-de-teste.md`** — CTs validam os passos do PRD
-4. **`03-progresso.md`** — espelha os passos do PRD (por isso é o último)
+4. **`05-casos-de-teste-browser.md`** — **condicional**: criar quando o PRD declarar superfície de UI (ver gate na seção do Arquivo 05)
+5. **`03-progresso.md`** — espelha os passos do PRD (por isso é o último; se houver CT-B, o progresso também os lista)
 
 **Wiki já existente**: se `wikis/specs/{branch}/{feature}/` já existe:
 - **Perguntar ao usuário** se deseja sobrescrever, incrementar (v2) ou retomar
@@ -171,9 +193,60 @@ Após a implementação ser concluída e testes passarem:
 1. **Atualizar `03-progresso.md`**: marcar todos os checkboxes como `[x]`, adicionar data de conclusão
 2. **Adicionar seção "Desvios do Plano"** em `03-progresso.md`: documentar onde a implementação divergiu do PRD e por quê (ex: "Passo 3 alterado: API retornava campo `uuid` em vez de `id` — ajustado mapeamento")
 3. **Adicionar seção "Notas de Implementação"** em `03-progresso.md**: descobertas durante o código que não estavam no plano (ex: "Descoberto que `Enrollment::find()` aplica scope global de tenant — documentado em `02-decisoes-arquiteturais.md`")
-4. **Linkar wiki ao PR**: incluir link da wiki na descrição do PR para rastreabilidade
-5. **Retrospectiva breve**: anotar na wiki o que funcionou bem no planejamento e o que faltou — serve para melhorar futuras invocações da skill
-6. **Limpeza de channel de log**: se a feature foi mergeada e está estável, considerar reduzir o level do channel de `debug` para `info` ou remover o channel se não for mais necessário
+4. **Preencher o roteiro "Desenhado × Implementado"** em `05-casos-de-teste-browser.md` (se existir): rodar os CT-B, conferir cada linha da tabela `## Superfície de UI` do PRD contra a tela real e marcar ✅/⚠️/❌. Divergências vão para "Desvios do Plano" no `03-progresso.md`
+5. **Confirmar impacto real com TIA**: `vendor/bin/pest --parallel --tia` e comparar o que foi marcado como afetado com a seção `## Impacto em Features Existentes` do PRD — divergência é nota de implementação
+6. **Linkar wiki ao PR**: incluir link da wiki na descrição do PR para rastreabilidade
+7. **Retrospectiva breve**: anotar na wiki o que funcionou bem no planejamento e o que faltou — serve para melhorar futuras invocações da skill
+8. **Limpeza de channel de log**: se a feature foi mergeada e está estável, considerar reduzir o level do channel de `debug` para `info` ou remover o channel se não for mais necessário
+
+### 8. Candidatos a Rule de Projeto (DECISÃO DO USUÁRIO)
+
+**O problema que este step resolve**: hoje uma decisão registrada em `02-decisoes-arquiteturais.md` só é lida por quem abrir aquela wiki. Na sessão seguinte, em outra feature, o agente não sabe que ela existe e repete o erro que a ADR já resolveu. **Project Rules do Laravel Boost** (`.ai/rules/`) fecham esse ciclo: são carregadas automaticamente por glob de path, para qualquer agente, em qualquer sessão.
+
+Após o step 7, **varrer a wiki em busca de candidatos** e **apresentar ao usuário para decisão**. A skill nunca grava rule sem aprovação explícita.
+
+**Fontes de candidatos dentro da wiki**:
+
+| Fonte | O que procurar | Exemplo |
+|---|---|---|
+| `02-decisoes-arquiteturais.md` | ADR cuja **consequência generaliza** além desta feature | "Todo valor monetário é `integer` em centavos" |
+| `03-progresso.md` → Notas de Implementação | **Armadilha descoberta no código** que não se infere lendo o arquivo | "`Enrollment::find()` aplica scope global de tenant" |
+| `01-plano-acao.md` | Padrão obrigatório que a wiki repetiu e que vale para o projeto todo | Padrão de log `[Classe@Método]` + channel por feature |
+
+**Os 4 gates — candidato só passa se cumprir TODOS**:
+
+1. **Durável** — vale além desta feature e desta sprint? (decisão de fluxo/negócio pontual → não é rule)
+2. **Escopável por path** — dá para expressar em glob (`app/Models/**`, `app/Http/Controllers/**`)? Se não se consegue nomear os paths, não é rule — é ADR.
+3. **Não-inferível** — um agente competente, lendo o código ao redor, erraria? Se ele acertaria sozinho, a rule é só imposto de contexto.
+4. **Não-redundante** — não é default do framework, não é coberto por Pint/Rector/PHPStan, não está nas guidelines do Boost e não duplica rule existente em `.ai/rules/index.md`.
+
+**Antes de propor**: `Read .ai/rules/index.md` e as rules dos globs afetados. **Atualizar rule existente é sempre preferível a criar uma nova.**
+
+**Teto**: no máximo **3 candidatos por feature**. Cada rule é imposto permanente de contexto em todo arquivo que casa com o glob — inflação de rules degrada o agente em vez de ajudar.
+
+**Preferir enforcement automático à prosa** (escada do Ponytail aplicada a rules): se a restrição pode ser verificada por teste de arquitetura (`pest --arch`), PHPStan ou Rector, implementar a verificação **e** deixar a rule curta apontando para ela. Prosa só onde a máquina não alcança.
+
+**Como apresentar**:
+
+```text
+Candidatos a rule desta feature (decisão sua):
+
+1. [ADR-02] Valores monetários em centavos (integer)
+   Glob: app/Models/**, app/Services/Billing/**
+   Evidência: 02-decisoes-arquiteturais.md ADR-02 + app/Models/Invoice.php:34
+   Gates: durável ✅ | escopável ✅ | não-inferível ✅ | não-redundante ✅
+
+2. [Nota] Enrollment::find() aplica scope global de tenant
+   Glob: app/Models/Enrollment.php, app/Services/Enrollment/**
+   Evidência: 03-progresso.md → Notas de Implementação
+   Gates: durável ✅ | escopável ✅ | não-inferível ✅ | não-redundante ✅
+
+Virar rule? (1, 2, ambos, nenhum)
+```
+
+**Se aprovado**: invocar a skill `requirement-to-rule`, que grava via a tool MCP `record-rule` do Boost (nunca escrevendo o arquivo à mão — o Boost regenera o `.ai/rules/index.md`, e rule criada manualmente não é descoberta até a próxima regeneração).
+
+**Se recusado**: não insistir. A decisão continua registrada na ADR, que é o comportamento atual e já é válido.
 
 ---
 
@@ -190,6 +263,7 @@ Após a implementação ser concluída e testes passarem:
 - **Channel de log da feature** (ver seção "Padrão de Log" abaixo)
 - **Autorização**: policies, gates, middleware, guards — quais serão criados/modificados
 - **Rotas**: endpoints a registrar, middleware aplicado, naming convention
+- **Superfície de UI**: telas/componentes que o usuário vê ou opera (Filament, Livewire, Blade, Inertia) — **é esta seção que decide se haverá `05-casos-de-teste-browser.md`**. Se não houver UI, declarar explicitamente "Sem superfície de UI"
 - **Variáveis de Ambiente**: `.env` keys necessárias, config publish, defaults
 - **Eventos/Listeners/Observers**: se a feature emite ou escuta eventos, hooks de model
 - **Jobs/Queues**: queue connection, timeout, retries, backoff — quando aplicável
@@ -216,10 +290,11 @@ Após a implementação ser concluída e testes passarem:
 - eloquent-best-practices  → models, queries, relacionamentos
 - laravel-specialist       → Sanctum, queues, Livewire, API resources
 - laravel-11-12-app-guidelines → features, bugs, UI
-- pest-testing             → escrever/editar testes Pest
+- pest-testing             → escrever/editar testes Pest (backend e browser)
 - tailwindcss-development  → qualquer Tailwind/Blade/UI
 - livewire-development     → componentes Livewire
 - ponytail                 → execução minimalista (escada de simplicidade)
+- requirement-to-rule      → transformar decisão da wiki em Project Rule do Boost
 ```
 
 > **Integração com Ponytail**: Após a wiki ser aprovada, o Ponytail deve ser a skill de execução ativa durante toda a implementação. Ele garante que cada passo do plano seja executado com o mínimo de código necessário (reutilização → stdlib → feature nativa → uma linha → mínimo que funciona). Após implementar, rodar `/ponytail:ponytail-review` no diff para validar contra over-engineering. Atalhos deliberados devem ser marcados com `ponytail:` comment. Ver o README do repositório para o passo a passo completo da integração.
@@ -253,6 +328,16 @@ Após a implementação ser concluída e testes passarem:
 | Método | URI | Name | Middleware |
 |--------|-----|------|------------|
 | {GET/POST/...} | {/path} | {route.name} | {auth,can:...} |
+
+## Superfície de UI
+
+<!-- Preencher "Sem superfície de UI" quando a feature for só backend (job, webhook, command) -->
+
+| Tela / Componente | Tipo | Rota | Interação do usuário | Depende de JS? |
+|---|---|---|---|---|
+| {NomeDoComponente} | Filament \| Livewire \| Blade \| Inertia | {/path} | {o que o usuário faz} | Sim \| Não |
+
+**Gate de CT-B**: se houver ao menos uma linha nesta tabela **e** (`Depende de JS? = Sim` **ou** a interação envolve ≥ 2 telas/etapas) → criar `05-casos-de-teste-browser.md`.
 
 ## Variáveis de Ambiente
 
@@ -347,7 +432,7 @@ Após a implementação ser concluída e testes passarem:
 > Atalhos deliberados devem ser marcados com `ponytail:` comment.
 > Após implementação, rodar `/ponytail:ponytail-review` no diff.
 >
-> **Caveman ativo em modo `full`** na comunicação agent ↔ usuário.
+> **Caveman ativo em modo `ultra`** (padrão) na comunicação agent ↔ usuário.
 > Arquivos wiki (01-05) são boundary do Caveman — escrever em prosa normal.
 > Código, commits e PRs também são boundary do Caveman.
 
@@ -357,12 +442,15 @@ Após a implementação ser concluída e testes passarem:
 
 ## Testes
 
-> Ver `04-casos-de-teste.md` para especificação completa dos cenários.
+> Ver `04-casos-de-teste.md` para especificação completa dos cenários de backend.
+> Ver `05-casos-de-teste-browser.md` para os cenários de UI (quando a feature tem superfície de UI).
 
 ## Verificação Final
 - [ ] `/ponytail:ponytail-review` no diff (validar contra over-engineering)
 - [ ] `vendor/bin/pint --dirty`
-- [ ] `php artisan test --compact --filter={Feature}`
+- [ ] `vendor/bin/pest --filter={Feature} --compact` (CTs de backend)
+- [ ] `vendor/bin/pest tests/Browser --filter={Feature}` (CT-B — só se houver `05-*-browser.md`)
+- [ ] `vendor/bin/pest --parallel --tia` (Pest 5 — confirma que nada mais no suite quebrou, rodando só o afetado)
 - [ ] {outros comandos de verificação específicos}
 
 ## Commits
@@ -701,11 +789,15 @@ Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
 
 ## Testes
 - [ ] `{NomeDoTesteTest}` — CT-01, CT-02, CT-03
+- [ ] `tests/Browser/{Nome}Test.php` — CT-B01, CT-B02 <!-- só se houver 05-*-browser.md -->
 
 ## Verificação Final
 - [ ] `/ponytail:ponytail-review` no diff (validar contra over-engineering)
 - [ ] `vendor/bin/pint --dirty`
-- [ ] `php artisan test --compact --filter={Feature}`
+- [ ] `vendor/bin/pest --filter={Feature} --compact`
+- [ ] `vendor/bin/pest tests/Browser --filter={Feature}` <!-- se houver CT-B -->
+- [ ] `vendor/bin/pest --parallel --tia` — nada mais no suite quebrou
+- [ ] Roteiro "Desenhado × Implementado" do `05-*-browser.md` preenchido <!-- se houver CT-B -->
 - [ ] `git commit`
 
 ## Blockers
@@ -775,6 +867,18 @@ it('valida enrollment status', function (string $status, bool $expected) {
 ```
 
 **Setup Global**: documentar uma vez as factories/mocks comuns a vários CTs.
+
+### Fronteira com os CT-B (browser)
+
+Este arquivo é **backend**: regra de negócio, persistência, autorização, jobs, logs. Não colocar cenários de navegador aqui.
+
+| Pergunta | Arquivo | Tipo |
+|---|---|---|
+| A regra de negócio está correta? | `04-casos-de-teste.md` | `Feature` / `Unit` |
+| O usuário consegue chegar até a regra? | `05-casos-de-teste-browser.md` | `Browser` |
+
+> **Regra**: se um `CT-B` falha e nenhum `CT` de backend falha, o defeito é de UI. Se ambos falham, corrigir o backend primeiro.
+> **Não duplicar**: um `CT-B` não repete as assertions de regra de negócio do `04` — ele confirma que o fluxo do usuário alcança o resultado, e no máximo faz **uma** assertion de persistência como âncora.
 
 **Template `04-casos-de-teste.md`**:
 ```markdown
@@ -899,12 +1003,289 @@ it('valida enrollment status', function (string $status, bool $expected) {
 
 ---
 
+## Arquivo 05: Casos de Teste de Browser (CT-B) — Condicional
+
+**Path**: `wikis/specs/{branch}/{feature}/05-casos-de-teste-browser.md`
+
+**Propósito**: Roteiro de validação da UI em navegador real — CTs executáveis via `pest-plugin-browser` (Playwright) **e**, no mesmo documento, o roteiro de auditoria *desenhado × implementado*. O arquivo é simultaneamente especificação de teste e checklist de conferência do que o PRD prometeu.
+
+### Gate — quando criar
+
+Criar **somente** se a tabela `## Superfície de UI` do `01-plano-acao.md` tiver ao menos uma linha **e** pelo menos uma destas condições:
+
+1. `Depende de JS? = Sim` (Livewire, Filament, Alpine, Inertia, upload, modal, polling), **ou**
+2. a interação atravessa ≥ 2 telas/etapas (wizard, fluxo de checkout, aprovação em duas mãos)
+
+Se o gate não passar: **não criar o arquivo** e registrar no `04-casos-de-teste.md` a linha *"Sem CT-B: {motivo}"*. Feature de job, webhook, command ou import não gera CT-B.
+
+### Por que arquivo separado do 04
+
+- **Metadados incompatíveis**: CT-B precisa de URL, viewport/device, estratégia de login, build de assets e baseline de screenshot. Enfiar isso no `04` polui o template de backend, que é o arquivo mais lido.
+- **Ciclo de vida diferente**: CT de backend roda em qualquer máquina com `vendor/bin/pest`. CT-B exige Node, browsers do Playwright e app servido — dá para pular sem invalidar o `04`.
+- **Duplo uso**: o `05` serve como roteiro manual de QA/auditoria quando a automação não roda (ambiente sem Node, revisão em homologação). O `04` não tem essa função.
+- **Custo de execução**: browser é ordens de magnitude mais lento. Separar o arquivo separa também o comando (`pest tests/Browser`) e permite excluir do loop rápido de desenvolvimento.
+
+### Dependências obrigatórias do projeto
+
+Se ausentes, incluir a instalação como **passo numerado** no `## Dependências` do PRD:
+
+```bash
+composer require pestphp/pest-plugin-browser --dev
+npm install playwright@latest
+npx playwright install
+```
+
+E adicionar `tests/Browser/Screenshots` ao `.gitignore`.
+
+### Regras de escrita dos CT-B
+
+1. **Teto de quantidade**: no máximo **1 happy path + 1 erro visível ao usuário** por feature (Ponytail). Matriz de regra de negócio fica no `04`, que é muito mais rápido.
+2. **Seletores estáveis**: preferir `data-test` / texto visível a classe de CSS. Registrar no PRD a criação do atributo se ele não existir ainda.
+3. **`assertNoSmoke()` em todo CT-B** — pega `console.log` esquecido e erro de JS de graça.
+4. **`assertNoAccessibilityIssues()`** quando a tela é de uso público ou operacional (o Ponytail não corta acessibilidade).
+5. **`assertScreenshotMatches()`** só se houver baseline versionado e revisado; sem baseline, é flake garantido.
+6. **Uma única âncora de persistência** por CT-B (`assertDatabaseHas` ou equivalente) — o resto da regra é do `04`.
+7. **Login**: usar o padrão real do projeto. A doc do plugin demonstra login **pela própria UI** (factory + preencher formulário + `press`) e `$this->assertAuthenticated()`. Se o projeto já tem helper de login em `tests/Browser/`, herdar. Não inventar `actingAs()` em teste de browser sem confirmar que funciona no projeto.
+8. **Espera de conteúdo assíncrono**: documentar a estratégia escolhida. O plugin expõe `wait(segundos)`; para conteúdo dinâmico, preferir assertions sobre o estado final visível a `wait()` fixo. Registrar no CT-B qual foi usada e por quê.
+
+### Ciclo de escrita e auditoria dos CT-B (loop + sub-agente)
+
+Os CT-B são o único ponto da wiki onde o teste **é** o instrumento de auditoria: ele executa o que o PRD desenhou contra a UI que existe de fato. Por isso a escrita deles roda em **loop delegado a um sub-agente**, e não inline.
+
+**Por que sub-agente**:
+
+1. **Ruído**: falha de browser despeja HTML, dump de snapshot, stack de Playwright e path de screenshot. Isso polui o contexto principal e briga com o Caveman `ultra`. O sub-agente absorve o ruído e devolve só o veredito.
+2. **Iteração**: acertar seletor e timing de UI exige tentativa e erro. Loop isolado evita que cada tentativa consuma o contexto do agente principal.
+3. **Independência de julgamento**: quem escreve o CT-B a partir do `05` não deve ser quem escreveu a implementação — reduz o viés de "testar o que eu fiz" em vez de "testar o que foi especificado".
+
+**Contrato do sub-agente** (passar explicitamente na delegação):
+
+```text
+Entrada:
+  - wikis/specs/{branch}/{feature}/05-casos-de-teste-browser.md  (os CT-B a implementar)
+  - wikis/specs/{branch}/{feature}/01-plano-acao.md  (seção ## Superfície de UI — o que foi desenhado)
+
+Tarefa:
+  1. Escrever tests/Browser/{Feature}/{Nome}Test.php a partir dos CT-B
+  2. Rodar: vendor/bin/pest tests/Browser --filter={Feature}
+  3. Se falhar, classificar a causa antes de mexer em qualquer coisa:
+     (a) CT-B errado (seletor/rota/texto especificado errado)  → corrigir o CT-B no arquivo 05
+     (b) Implementação divergente do PRD                        → NÃO corrigir; registrar divergência
+     (c) Flake (timing/assíncrono)                              → ajustar estratégia de espera e anotar
+  4. Repetir no máximo 3 iterações
+
+PROIBIDO:
+  - Alterar código de aplicação para o teste passar
+  - Relaxar assertion para "ficar verde"
+  - Remover CT-B que não passou
+
+Saída (formato fixo):
+  - Arquivos de teste criados/alterados
+  - Status por CT-B: verde | vermelho + causa classificada (a/b/c)
+  - Tabela "Desenhado × Implementado" preenchida
+  - Lista de divergências para "Desvios do Plano" do 03-progresso.md
+```
+
+**A regra que dá valor à auditoria**: teste vermelho por causa (b) é **resultado válido**, não falha do ciclo. É exatamente a divergência entre desenhado e implementado que se queria capturar. Sub-agente que "conserta" a aplicação para ficar verde destrói o instrumento de medição.
+
+**Escalada para o usuário**: se após 3 iterações houver CT-B vermelho, parar e reportar — não seguir tentando. Registrar como blocker no `03-progresso.md`.
+
+> **Sondagem rápida dentro do loop**: para confirmar uma premissa de UI antes de escrever o CT-B definitivo, usar `vendor/bin/pest --agent='visit("/rota")->assertSee("...");'`. É efêmero e não fica versionado — serve para descobrir, não para provar.
+
+**Template `05-casos-de-teste-browser.md`**:
+```markdown
+# Casos de Teste de Browser — {Card}: {Título da Feature}
+
+> Referência: `01-plano-acao.md` seção `## Superfície de UI`
+> Runtime: `pest-plugin-browser` (Playwright) — `vendor/bin/pest tests/Browser`
+
+## Pré-requisitos de Ambiente
+
+- [ ] `pestphp/pest-plugin-browser` instalado (`composer require --dev`)
+- [ ] `npm install playwright@latest && npx playwright install` executados
+- [ ] App acessível em `{APP_URL}` — servido por: {Herd | php artisan serve | Sail | Vite dev}
+- [ ] Assets compilados (`npm run build`) ou dev server ativo
+- [ ] `tests/Browser/Screenshots` no `.gitignore`
+- [ ] Seeders determinísticos: {quais} — sem factory aleatória em campo assertado
+
+## Setup Global
+
+### Autenticação
+- {Padrão do projeto: login via UI com `User::factory()->create([...])` + `type`/`press`, ou helper existente em `tests/Browser/`}
+
+### Estratégia de DB
+- `RefreshDatabase` aplicado em `tests/Pest.php` — {confirmar}
+- Dados fixos necessários: {lista}
+
+### Device / Viewport
+- Default: desktop. Variações a cobrir: {`->on()->mobile()` | `->inDarkMode()` | nenhuma}
+
+### Seletores
+| Elemento | Seletor | Já existe? |
+|---|---|---|
+| {Botão Salvar} | `data-test="salvar"` | Sim \| Criar no passo {N} do PRD |
+
+---
+
+## CT-B01: {Fluxo do usuário — happy path}
+
+**Arquivo**: `tests/Browser/{Feature}/{Nome}Test.php`
+**Método**: `it('{descrição legível}')`
+**Rota inicial**: `{/path}`
+
+### Precondições
+- {Usuário/role e estado do DB}
+
+### Roteiro (passo a passo executável)
+| # | Ação | Código Pest | Resultado visível esperado |
+|---|---|---|---|
+| 1 | Abrir a tela | `visit('/{rota}')` | {título/heading visível} |
+| 2 | Preencher {campo} | `->type('{seletor}', '{valor}')` | {campo preenchido} |
+| 3 | Confirmar | `->press('{Botão}')` | {mensagem de sucesso} |
+
+### Assertions
+- `assertSee('{texto de sucesso}')`
+- `assertPathIs('{/rota-destino}')`
+- `assertNoSmoke()` — sem console log e sem erro de JS
+- `assertNoAccessibilityIssues()` — {se tela pública/operacional}
+- Âncora de persistência: `{Model}` com `{campo}` = `{valor}`
+
+---
+
+## CT-B02: {Erro visível ao usuário}
+
+**Arquivo**: `tests/Browser/{Feature}/{Nome}Test.php`
+**Método**: `it('{descrição}')`
+
+### Precondições
+- {Estado que provoca o erro — validação, permissão, indisponibilidade}
+
+### Roteiro
+| # | Ação | Código Pest | Resultado visível esperado |
+|---|---|---|---|
+| 1 | {ação} | `visit('/{rota}')` | {estado inicial} |
+| 2 | {input inválido} | `->type(...)->press(...)` | {mensagem de erro} |
+
+### Assertions
+- `assertSee('{mensagem de erro}')`
+- `assertPathIs('{/rota-original}')` — não avançou
+- `{Model}` NÃO criado
+- `assertNoJavaScriptErrors()` — erro de negócio não deve virar erro de JS
+
+---
+
+## Roteiro de Validação: Desenhado × Implementado
+
+<!-- Preencher durante a implementação. Serve como auditoria do PRD contra a realidade. -->
+
+| # | O que o PRD desenhou (`01`, seção) | O que foi implementado | Confere? | Evidência |
+|---|---|---|---|---|
+| 1 | {Superfície de UI: tela X com campos A, B} | {o que existe de fato} | ✅ / ⚠️ / ❌ | CT-B01 / screenshot / nota |
+| 2 | {Rotas: POST /x com middleware can:y} | | | |
+| 3 | {Logs: `[Classe@metodo]` no channel Z} | | | `browser`/`storage/logs` |
+
+**Divergências encontradas**: registrar aqui e replicar em `03-progresso.md` → seção "Desvios do Plano".
+
+## Índice de CT-B
+
+| ID | Cenário | Rota | Arquivo |
+|----|---------|------|---------|
+| CT-B01 | {happy path} | {/path} | `tests/Browser/...` |
+| CT-B02 | {erro visível} | {/path} | `tests/Browser/...` |
+```
+
+---
+
+## Execução de Testes com Pest 5
+
+Detectar a versão do Pest no step 3. Se o projeto está em **Pest 5** (requer **PHP 8.4+** e PHPUnit 13), usar os recursos abaixo; em Pest 4, cair para `vendor/bin/pest --filter`.
+
+Instalação/upgrade (conforme a doc oficial — **não existe `php artisan pest:install`**):
+
+```bash
+composer remove phpunit/phpunit
+composer require pestphp/pest --dev --with-all-dependencies
+./vendor/bin/pest --init          # cria tests/Pest.php
+```
+
+Vindo de Pest 4: `"pestphp/pest": "^5.0"` no `composer.json` + todos os plugins para `^5.0`.
+
+### TIA — Test Impact Analysis (`--tia`)
+
+Roda apenas os testes afetados pelo diff e replica o resultado em cache para o restante. Exige driver de cobertura (**PCOV ou Xdebug**) instalado.
+
+**Forma canônica: `--parallel --tia`.** O `--parallel` **não** é pré-requisito técnico do `--tia` (o `--tia` funciona sozinho), mas é a invocação que a doc oficial usa, e os dois são complementares: o TIA corta **quanto** roda, o parallel corta **quanto tempo** o que sobrou leva. Usar sempre juntos como padrão da skill.
+
+```bash
+vendor/bin/pest --parallel --tia    # PADRÃO da skill
+vendor/bin/pest --tia               # sozinho funciona (sem ganho de paralelismo)
+vendor/bin/pest --tia --fresh       # descarta o grafo e re-grava do zero
+vendor/bin/pest --tia --filtered    # carrega no PHPUnit só os arquivos afetados
+vendor/bin/pest --no-tia            # desativa em uma execução
+vendor/bin/pest --baseline          # imprime o path do storage do grafo
+```
+
+> **Replay não é atalho que pula trabalho.** A doc é explícita: cada teste em cache guarda tudo que produziu, **inclusive as linhas e branches cobertos** — um run replayado reporta a mesma cobertura de um run completo. É por isso que o `--tia` pode ser usado na Verificação Final sem perder confiança.
+
+**Cuidado com `--parallel` + CT-B**: browser em paralelo multiplica processos de navegador e exige DB por worker. Antes de adotar `--parallel` no comando de browser, confirmar que o projeto isola o DB por processo; se houver flake, rodar os CT-B em série (`vendor/bin/pest tests/Browser`) e deixar o `--parallel --tia` para o suite de backend.
+
+**Onde encaixa no fluxo da skill**:
+
+- **Durante a implementação** (passo a passo do PRD): `--parallel --tia` a cada passo concluído. Feedback em segundos em vez de minutos, o que torna viável rodar o suite **a cada passo** e não só no final.
+- **Na Verificação Final**: `--tia` responde "o que mais no sistema meu diff afetou?" — isto é exatamente a seção `## Impacto em Features Existentes` do PRD, agora verificável em vez de especulativa. Divergência entre o previsto no PRD e o que o TIA marcou como afetado → registrar em "Desvios do Plano" do `03-progresso.md`.
+- **CT-B**: o TIA mapeia assets de browser. Se o projeto tem CT-B, registrar o watch no `tests/Pest.php`:
+
+  ```php
+  pest()->tia()->watch([
+      'public/build/**/*' => 'tests/Browser',
+  ]);
+  ```
+
+- **Ativação sem flag** (recomendado pela doc do Pest): `pest()->tia()->locally()` no `tests/Pest.php` — liga localmente e desliga sozinho em CI.
+
+> ⚠️ **Nunca usar `--tia` no comando que roda o suite em CI.** A doc do Pest é explícita: o pipeline deve rodar o suite completo. O TIA em CI existe só num job dedicado de baseline (`--tia --coverage --fresh`, artefato `pest-tia-baseline`).
+>
+> Cache fica em `~/.pest/tia/<project-key>/` (caminho via `--baseline`). Edições cosméticas (whitespace, comentários, docblocks) são normalizadas e **não** disparam testes.
+
+### Agent plugin (`--agent`) — verificação pontual durante a implementação
+
+```bash
+composer require pestphp/pest-plugin-agent --dev
+```
+
+Executa um snippet PHP dentro da configuração real do Pest do projeto e devolve pass/fail definitivo — em vez de o agente "achar" que funcionou:
+
+```bash
+# backend
+vendor/bin/pest --agent='$u = \App\Models\User::factory()->create(); $this->actingAs($u)->get("/dashboard")->assertOk();'
+
+# UI + backend na mesma verificação (requer pest-plugin-browser)
+vendor/bin/pest --agent='visit("/contato")->type("email", "a@b.com")->press("Enviar")->assertSee("Mensagem enviada");'
+```
+
+Regras: aspas simples envolvendo o snippet, aspas duplas para strings PHP internas, **classes sempre com FQN** (`\App\Models\User`). Vários `--agent` na mesma chamada rodam isolados.
+
+**Onde encaixa**: durante a implementação de um passo do PRD, para confirmar uma premissa antes de escrever o teste definitivo. **Não substitui** os CTs do `04`/`05` — o `--agent` é efêmero e não fica versionado. Uma verificação via `--agent` que se mostre valiosa deve virar CT no arquivo correspondente.
+
+### Outros recursos do Pest 5 úteis à skill
+
+| Recurso | Comando | Uso na skill |
+|---|---|---|
+| Sharding por tempo real | `pest --update-shards` / `--shard=1/4` | CI de features grandes com muitos CT-B |
+| Profiling | `pest --profile` | Investigar CT lento antes de aceitar o tempo como normal |
+| Type coverage | `pest --type-coverage` | Verificação Final em features com muito DTO/enum |
+| Mutation testing | `pest --mutate` | Features de regra de negócio crítica (cálculo, cobrança) |
+| Novos matchers | `toBeEmail()`, `toBeUlid()`, `toBeIpAddress()`, `toBeMacAddress()`, `toBeHostname()`, `toBeDomain()`, `toBeBase64()`, `toBeHexadecimal()` | Substituem regex custom nos CTs — aplicar a escada do Ponytail |
+
+---
+
 ## Arquivos Extras (conforme necessidade)
 
 Criar apenas quando a feature exige:
 
 | Arquivo | Quando criar |
 |---------|-------------|
+| `05-casos-de-teste-browser.md` | Feature que passa no gate de CT-B — ver [Arquivo 05](#arquivo-05-casos-de-teste-de-browser-ct-b--condicional) |
 | `05-design.md` | Feature com UI significativa (Filament, Livewire, Blade) |
 | `05-api-contract.md` | Feature com API externa (payloads, endpoints, autenticação) |
 | `05-db-schema.md` | Feature com schema complexo (múltiplas tabelas, migrations em cadeia) |
@@ -928,6 +1309,7 @@ Antes de encerrar a invocação:
 - [ ] APIs de terceiros inspecionadas (vendor source ou docs) — métodos e schema confirmados
 - [ ] Dados fornecidos pelo usuário validados contra o DB (quando aplicável)
 - [ ] Factories confirmadas (existência + states) para todos os CTs
+- [ ] Stack de testes verificado: versão do Pest, `pest-plugin-browser`, Playwright, `APP_URL`, traits em `tests/Pest.php`
 
 ### Documentação
 - [ ] `01-plano-acao.md` escrito com passos numerados + skills referenciadas + logs em todas as etapas
@@ -936,6 +1318,9 @@ Antes de encerrar a invocação:
 - [ ] `03-progresso.md` escrito com checkboxes espelhando o plano + seções Blockers, Desvios, Notas, Retrospectiva
 - [ ] `04-casos-de-teste.md` escrito com todos os CTs identificados (happy path, falha, autorização, log)
 - [ ] `04-casos-de-teste.md` inclui estratégia de DB, data providers e cobertura esperada
+- [ ] `01-plano-acao.md` tem a seção `## Superfície de UI` preenchida (ou "Sem superfície de UI" declarado)
+- [ ] Gate de CT-B avaliado → `05-casos-de-teste-browser.md` criado **ou** motivo da ausência registrado no `04`
+- [ ] Se houver CT-B: dependências (`pest-plugin-browser`, Playwright) confirmadas ou incluídas como passo no PRD
 - [ ] Arquivos extras (`05-*`) criados se necessário (rollback, performance, security)
 
 ### Log
@@ -953,10 +1338,13 @@ Antes de encerrar a invocação:
 
 ### Pós-Implementação (após merge)
 - [ ] `03-progresso.md` atualizado com checkboxes `[x]` + data de conclusão
+- [ ] Roteiro "Desenhado × Implementado" do `05-*-browser.md` preenchido, com divergências replicadas em "Desvios do Plano"
 - [ ] Desvios do plano e notas de implementação documentados
 - [ ] Wiki linkada no PR
 - [ ] Retrospectiva breve escrita
 - [ ] Channel de log ajustado (level reduzido ou removido)
+- [ ] CT-B escritos e rodados via sub-agente; divergências classificadas (CT errado / implementação divergente / flake)
+- [ ] Candidatos a rule avaliados nos 4 gates e **apresentados ao usuário** — gravados via `requirement-to-rule` só se aprovados
 
 ## Skills Companheiras
 
@@ -964,11 +1352,17 @@ A feature-wiki faz parte de um trio de skills que cobrem o ciclo completo de des
 
 | Camada | Skill | Responsabilidade | Boundary |
 |--------|-------|------------------|----------|
-| **Comunicação** (agent ↔ usuário) | [Caveman](https://github.com/JuliusBrussee/caveman) | Prosa terse — corta ~75% dos tokens removendo fluff, artigos, fillers | **NÃO aplica em arquivos wiki** (01-05), código, commits, PRs |
+| **Comunicação** (agent ↔ usuário) | [Caveman](https://github.com/JuliusBrussee/caveman) — modo padrão `ultra` | Prosa terse — corta ~75% dos tokens removendo fluff, artigos, fillers | **NÃO aplica em arquivos wiki** (01-05), código, commits, PRs |
 | **Planejamento** (estrutura de documentação) | feature-wiki | PRD + ADR + CTs + tracking + padrão de log | Arquivos wiki são detalhados por design — compressão cria ambiguidade |
 | **Execução** (código) | [Ponytail](https://github.com/DietrichGebert/ponytail) | Mínimo código que funciona — escada de simplicidade | Não corta validação, segurança, tratamento de erros |
+| **Memória de projeto** (rules) | `requirement-to-rule` | Decisão da wiki vira Project Rule do Boost em `.ai/rules/` | Só o que é específico da aplicação; ecossistema é guideline do Boost |
 
 ### Caveman + feature-wiki: fronteira clara
+
+**Modo padrão: `ultra`.** Ao iniciar uma sessão de planejamento com esta skill, ativar `/caveman:caveman ultra` — a compressão máxima da prosa vale porque o conteúdo denso vive nos arquivos wiki, não na conversa. Se a resposta ficar ambígua num ponto crítico, descer para `/caveman:caveman full` apenas naquele trecho (o Auto-Clarity do Caveman já faz isso automaticamente em security warnings, ações irreversíveis e sequências multi-etapas).
+
+> **Comando correto**: `/caveman:caveman {modo}` (com namespace `caveman:`, igual ao `/ponytail:ponytail`). NUNCA usar `/caveman` sem o namespace — o comando não será encontrado.
+> Modos disponíveis: `lite` | `full` | `ultra` | `off`.
 
 O Caveman tem uma regra de **Auto-Clarity** que desativa o modo terse em situações críticas (security warnings, irreversible actions, multi-step sequences). Mas isso é implícito — a feature-wiki torna explícito:
 
@@ -1012,7 +1406,7 @@ php artisan boost:update
 #   curl -o .windsurf/rules/caveman.md https://raw.githubusercontent.com/JuliusBrussee/caveman/main/.windsurf/rules/caveman.md
 ```
 
-Sessão com o trio ativo: `caveman full` + `ponytail full` + `feature-wiki` → resposta curta + diff curto + plano detalhado.
+Sessão com o trio ativo: `/caveman:caveman ultra` + `/ponytail:ponytail full` + `feature-wiki` → resposta curta + diff curto + plano detalhado.
 
 ---
 
@@ -1027,7 +1421,8 @@ wikis/
                 ├── 01-plano-acao.md
                 ├── 02-decisoes-arquiteturais.md      ← formato ADR
                 ├── 03-progresso.md                   ← + Blockers, Desvios, Retrospectiva
-                ├── 04-casos-de-teste.md              ← + CTs de log e autorização
+                ├── 04-casos-de-teste.md              ← backend: + CTs de log e autorização
+                ├── 05-casos-de-teste-browser.md      ← CT-B + roteiro desenhado × implementado
                 ├── 05-api-contract.md                ← extra quando necessário
                 └── 05-rollback.md                    ← extra quando necessário
 ```
