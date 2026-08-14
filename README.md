@@ -8,6 +8,17 @@ Uma coletânea de diretrizes de inteligência artificial (Skills) personalizadas
 
 Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude Code, Cursor e Copilot) a gerarem códigos exatamente de acordo com os padrões definidos neste repositório.
 
+## 📚 Skills desta coletânea
+
+| Skill | Versão | O que faz | Quando é invocada |
+|---|---|---|---|
+| [`feature-wiki`](.ai/skills/feature-wiki/SKILL.md) | 2.7.0 | Cria a wiki da feature antes de implementar: PRD, ADR, progresso, casos de teste (backend e browser) e padrão de log | ao iniciar qualquer feature nova |
+| [`requirement-to-rule`](.ai/skills/requirement-to-rule/SKILL.md) | 1.0.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | no fim da feature (step 8 da `feature-wiki`) ou sob pedido |
+
+O ciclo completo: **planejar** (`feature-wiki`) → **executar** (Ponytail) → **comunicar** (Caveman) → **validar** (Pest 5 + CT-B) → **memorizar** (`requirement-to-rule`).
+
+> Histórico de evolução das duas skills: [CHANGELOG.md](CHANGELOG.md)
+
 ---
 
 ## 🏗️ Estrutura do Repositório (Como criar novas Skills)
@@ -133,6 +144,365 @@ Ajustes possíveis: se quiser manter só os gitmojis do seu padrão interno (sem
 
 ---
 
+## 🧪 Testes de Browser na feature-wiki (Pest + Playwright)
+
+A partir da **v2.6.0** (refinado na v2.7.0), a `feature-wiki` cria — **quando pertinente** — um quinto arquivo dedicado a casos de teste de navegador: `05-casos-de-teste-browser.md`.
+
+### Por que isso existe
+
+Até a v2.5.0 o `04-casos-de-teste.md` era 100% backend: `RefreshDatabase`, `Queue::fake()`, `Http::fake()`, `Log::spy()`, factories. Uma feature Filament/Livewire saía da wiki com CTs provando que o Job despachou e o log saiu — e **nada** provando que o botão renderiza, que o `wire:model` persiste ou que o modal fecha. O arquivo `05` fecha essa lacuna.
+
+Ele tem **duplo uso**:
+
+1. **Especificação de teste** — CT-B executáveis via `pest-plugin-browser`
+2. **Roteiro de auditoria** — tabela *Desenhado × Implementado*, preenchida na pós-implementação, que confere linha por linha o que o PRD prometeu contra a tela que existe de fato
+
+### Quando o arquivo é criado (gate)
+
+O `01-plano-acao.md` passou a ter uma seção obrigatória `## Superfície de UI`:
+
+| Tela / Componente | Tipo | Rota | Interação do usuário | Depende de JS? |
+|---|---|---|---|---|
+| `RelatorioLoteForm` | Livewire | `/relatorios/lote` | seleciona turma, dispara geração | Sim |
+
+O `05-casos-de-teste-browser.md` só é criado se houver ao menos uma linha nessa tabela **e** pelo menos uma destas condições:
+
+1. `Depende de JS? = Sim` (Livewire, Filament, Alpine, Inertia, upload, modal, polling), **ou**
+2. a interação atravessa ≥ 2 telas/etapas (wizard, checkout, aprovação em duas mãos)
+
+Se o gate não passar, a skill **não cria o arquivo** e registra no `04` a linha *"Sem CT-B: {motivo}"*. Feature de job, webhook, command ou import de CSV **não** gera CT-B — isso é deliberado, para a seção não virar burocracia morta.
+
+### Fronteira entre o 04 e o 05
+
+| Pergunta | Arquivo | Tipo de teste |
+|---|---|---|
+| A regra de negócio está correta? | `04-casos-de-teste.md` | `Feature` / `Unit` |
+| O usuário consegue chegar até a regra? | `05-casos-de-teste-browser.md` | `Browser` |
+
+Se um `CT-B` falha e nenhum `CT` de backend falha → o defeito é de UI. Se ambos falham → corrigir o backend primeiro.
+
+**Teto deliberado (Ponytail)**: no máximo **1 happy path + 1 erro visível ao usuário** por feature. A matriz de regras de negócio continua no `04`, que é ordens de magnitude mais rápido. Browser é caro; usar como bisturi, não como rede de arrasto.
+
+### Dependências que o projeto precisa ter
+
+O runtime dos CT-B é o **Pest Browser plugin**, que roda **Playwright** por baixo. A skill não assume que está instalado: se faltar, ela inclui a instalação como passo numerado na seção `## Dependências` do PRD.
+
+```bash
+# 1. Plugin de browser do Pest
+composer require pestphp/pest-plugin-browser --dev
+
+# 2. Playwright + browsers
+npm install playwright@latest
+npx playwright install
+```
+
+E adicione ao `.gitignore`:
+
+```gitignore
+tests/Browser/Screenshots
+```
+
+**Requisitos de ambiente para rodar os CT-B:**
+
+| Item | Detalhe |
+|---|---|
+| Node.js | necessário para o Playwright |
+| Browsers | baixados por `npx playwright install` |
+| App servido | acessível na `APP_URL` — Herd, `php artisan serve`, Sail ou Vite dev server. **Registrar no `05` qual é o do projeto** |
+| Assets | `npm run build` executado, ou dev server ativo |
+| DB | seeders determinísticos; `RefreshDatabase` no `tests/Pest.php` |
+
+**Opcional, mas recomendado (Pest 5):**
+
+```bash
+# Verificação pontual de mudança pelo próprio agente de IA
+composer require pestphp/pest-plugin-agent --dev
+
+# Driver de cobertura — pré-requisito do --tia
+pecl install pcov     # ou Xdebug
+```
+
+**Instalação/upgrade do Pest 5** (a doc oficial não usa `php artisan pest:install`):
+
+```bash
+composer remove phpunit/phpunit
+composer require pestphp/pest --dev --with-all-dependencies
+./vendor/bin/pest --init          # cria tests/Pest.php
+```
+
+Vindo do Pest 4: `"pestphp/pest": "^5.0"` no `composer.json` e todos os plugins para `^5.0`. Requer **PHP 8.4+** e PHPUnit 13.
+
+**CI (GitHub Actions)** — os CT-B exigem Node e browsers no runner:
+
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    node-version: lts/*
+- run: npm ci
+- name: Install Playwright Browsers
+  run: npx playwright install --with-deps
+```
+
+### Comandos
+
+| Comando | Uso |
+|---|---|
+| `vendor/bin/pest --filter={Feature} --compact` | CTs de backend (arquivo `04`) |
+| `vendor/bin/pest tests/Browser --filter={Feature}` | CT-B (arquivo `05`) |
+| `vendor/bin/pest --parallel --tia` | Loop rápido durante a implementação (Pest 5) |
+| `vendor/bin/pest --headed` | Ver o browser abrindo, para depurar um CT-B |
+| `vendor/bin/pest --browser firefox` | Rodar CT-B em outro navegador |
+| `vendor/bin/pest --agent='...'` | Verificação pontual e efêmera pelo agente (Pest 5) |
+
+### O que o Pest 5 trouxe para a skill
+
+A `feature-wiki` incorpora três recursos do Pest 5 (requer **PHP 8.4 + PHPUnit 13**):
+
+**1. TIA — Test Impact Analysis (`--parallel --tia`)**
+
+Roda só os testes afetados pelo diff e replica do cache o restante. Exige PCOV ou Xdebug. O suite de 19.000+ testes do Laravel Cloud caiu de ~3 minutos para ~5 segundos.
+
+**Sobre o `--parallel`**: ele **não** é pré-requisito técnico do `--tia` — `vendor/bin/pest --tia` funciona sozinho. Mas a invocação canônica da doc oficial é `./vendor/bin/pest --parallel --tia`, e os dois são complementares: o TIA corta **quanto** roda, o `--parallel` corta **quanto tempo** o que sobrou leva. A skill adotou `--parallel --tia` como padrão.
+
+> **Cuidado com `--parallel` + CT-B**: browser em paralelo multiplica processos de navegador e exige DB por worker. Se houver flake, rodar os CT-B em série e deixar o `--parallel --tia` para o backend.
+
+E um ponto que a doc faz questão de deixar claro — replay **não** é atalho: *"each cached test stores everything it produced, including the exact lines and branches it covered, so a replayed run reports the same code coverage as a full run"*. É o que autoriza usar `--tia` na Verificação Final sem perder confiança.
+
+Na skill, o TIA muda duas coisas:
+
+- **Durante a implementação**: `--parallel --tia` a cada passo concluído do PRD. Rodar o suite **a cada passo** passa a ser viável, em vez de só no final.
+- **Na verificação da seção `## Impacto em Features Existentes` do PRD**: essa seção sempre foi especulativa — "o que pode quebrar". O TIA responde com fatos quais testes o diff realmente afetou. Divergência entre o previsto e o medido vira "Desvios do Plano" no `03-progresso.md`.
+
+Ativação sem flag, no `tests/Pest.php`:
+
+```php
+pest()->tia()->locally();   // liga local, desliga sozinho em CI
+
+// mapeia assets de browser para os CT-B
+pest()->tia()->watch([
+    'public/build/**/*' => 'tests/Browser',
+]);
+```
+
+> ⚠️ **Nunca** colocar `--tia` no comando que roda o suite em CI — a doc do Pest é explícita: o pipeline roda o suite completo. TIA em CI existe só num job dedicado de baseline (`--tia --coverage --fresh`).
+
+**2. Agent plugin (`--agent`)**
+
+Executa um snippet PHP dentro da configuração real do Pest e devolve pass/fail definitivo — em vez de o agente de IA *achar* que funcionou:
+
+```bash
+vendor/bin/pest --agent='visit("/contato")->type("email", "a@b.com")->press("Enviar")->assertSee("Mensagem enviada");'
+```
+
+Regras: aspas simples no snippet, aspas duplas nas strings PHP, classes sempre com FQN (`\App\Models\User`). **Não substitui CT** — o `--agent` é efêmero e não fica versionado. Verificação que se mostre valiosa deve virar CT no `04` ou no `05`.
+
+**3. Recursos pontuais**
+
+`--profile` (investigar CT lento), `--type-coverage` (features com muito DTO/enum), `--mutate` (regra de negócio crítica: cálculo, cobrança), sharding por tempo real (`--update-shards` / `--shard=1/4`) e os novos matchers `toBeEmail()`, `toBeUlid()`, `toBeIpAddress()`, `toBeMacAddress()`, `toBeHostname()`, `toBeDomain()`, `toBeBase64()`, `toBeHexadecimal()` — que substituem regex custom nos CTs.
+
+### Escrita dos CT-B: loop com sub-agente como auditoria
+
+Os CT-B são o único ponto da wiki onde o teste **é** o instrumento de auditoria — ele executa o que o PRD desenhou contra a UI que existe de fato. Por isso a skill delega a escrita deles a um **sub-agente em loop**, em vez de escrever inline:
+
+1. **Ruído**: falha de browser despeja HTML, snapshot, stack do Playwright e path de screenshot. O sub-agente absorve isso e devolve só o veredito — o contexto principal fica limpo (e o Caveman `ultra` continua fazendo sentido).
+2. **Iteração**: acertar seletor e timing de UI é tentativa e erro. Loop isolado, no máximo 3 iterações.
+3. **Independência**: quem escreve o CT-B a partir do `05` não deve ser quem escreveu a implementação — reduz o viés de "testar o que eu fiz" em vez de "testar o que foi especificado".
+
+O contrato passado ao sub-agente tem uma proibição central:
+
+```text
+PROIBIDO:
+  - Alterar código de aplicação para o teste passar
+  - Relaxar assertion para "ficar verde"
+  - Remover CT-B que não passou
+```
+
+E a classificação obrigatória de cada falha:
+
+| Causa | O que fazer |
+|---|---|
+| (a) CT-B especificado errado (seletor/rota/texto) | corrigir o CT-B no arquivo `05` |
+| (b) **Implementação divergente do PRD** | **não corrigir** — registrar divergência |
+| (c) Flake (timing/assíncrono) | ajustar estratégia de espera e anotar |
+
+**Teste vermelho por causa (b) é resultado válido, não falha do ciclo** — é exatamente a divergência entre desenhado e implementado que se queria capturar. Sub-agente que "conserta" a aplicação para ficar verde destrói o instrumento de medição. Após 3 iterações com vermelho, para e reporta como blocker.
+
+### Limitações conhecidas (documentadas na skill)
+
+Levantadas na análise da doc oficial do plugin, para o agente não inventar API:
+
+- **Login**: a doc demonstra autenticação **pela própria UI** (factory + preencher formulário + `press`) e `$this->assertAuthenticated()`. `actingAs()` em teste de browser **não** está documentado — a skill manda herdar o padrão real do projeto em vez de assumir.
+- **Espera assíncrona**: o plugin expõe `wait(segundos)`; não há `waitFor(seletor)` documentado. Para Livewire/Filament, a skill manda preferir assertion sobre o estado final visível a `wait()` fixo, e registrar a estratégia escolhida no CT-B.
+- **Servidor**: a doc não explicita se o plugin sobe o app ou exige servidor externo. A skill obriga a registrar no `05` como o projeto serve o app em teste.
+- **Boost**: as guidelines e a Documentation API do Laravel Boost cobrem Pest `core, 3.x, 4.x`. Se o projeto está em Pest 5, o `search-docs` pode devolver informação de versão anterior — confirmar na doc oficial.
+
+### Estrutura resultante
+
+```text
+wikis/specs/ferro/579/relatorio-mba-lote/
+├── 01-plano-acao.md                 ← + seção ## Superfície de UI (gate do CT-B)
+├── 02-decisoes-arquiteturais.md
+├── 03-progresso.md                  ← + checkboxes de CT-B
+├── 04-casos-de-teste.md             ← backend: Feature/Unit, log, autorização
+└── 05-casos-de-teste-browser.md     ← CT-B + roteiro Desenhado × Implementado
+```
+
+---
+
+## 📐 Do Requisito para a Rule (skill `requirement-to-rule`)
+
+### O problema
+
+Hoje uma decisão registrada em `02-decisoes-arquiteturais.md` só é lida por quem abrir **aquela** wiki. Na sessão seguinte, em outra feature, o agente não sabe que a decisão existe e repete o erro que a ADR já resolveu. A wiki tem memória; o **agente** não.
+
+**Project Rules do Laravel Boost** (`.ai/rules/`) fecham esse ciclo: são carregadas automaticamente por glob de path, para qualquer agente, em qualquer sessão. A skill `requirement-to-rule` faz a ponte entre as duas coisas.
+
+### As três camadas — não confundir
+
+| Camada | Ensina | Carregamento | Quem mantém |
+|---|---|---|---|
+| **Guidelines** (`.ai/guidelines/`) | como escrever **Laravel** | upfront, sempre presente | Boost (`boost:update`) |
+| **Skills** (`.ai/skills/`) | padrões de um **domínio/tarefa** | on-demand | Boost + você |
+| **Rules** (`.ai/rules/`) | como escrever **a sua aplicação** | por glob, quando o arquivo casa | **você**, versionado no git |
+
+> **Regra de ouro**: conhecimento de ecossistema **nunca** vira rule. O Boost já cobre e atualiza via `boost:update`; a sua rule apodreceria na próxima versão do framework. Rule é só o que é específico da sua aplicação.
+
+### De onde vêm os candidatos
+
+O **step 8** da `feature-wiki` varre a wiki recém-concluída em três lugares:
+
+| Fonte | O que procurar | Exemplo real |
+|---|---|---|
+| `02-decisoes-arquiteturais.md` | ADR cuja **consequência generaliza** além desta feature | "Todo valor monetário é `integer` em centavos" |
+| `03-progresso.md` → Notas de Implementação | **armadilha descoberta no código**, invisível para quem lê o arquivo | "`Enrollment::find()` aplica scope global de tenant" |
+| `01-plano-acao.md` | padrão obrigatório que a wiki repete e que vale para o projeto todo | padrão de log `[Classe@Método]` + channel por feature |
+
+A terceira linha é reveladora: o padrão de log é reescrito em **toda** wiki desde a v1. Isso é a definição literal de rule pelo Boost — *"anything you would otherwise need to explain again in every new session"*.
+
+### Os 4 gates
+
+Candidato só vira rule se passar em **todos**:
+
+| # | Gate | Pergunta | Reprova quando |
+|---|---|---|---|
+| 1 | **Durável** | vale além desta feature e desta sprint? | regra de negócio de um fluxo → fica na ADR |
+| 2 | **Escopável por path** | dá para expressar em glob? | "vale para o projeto todo" → glob `**` é anti-padrão |
+| 3 | **Não-inferível** | um agente competente, lendo o código ao redor, erraria? | se ele acertaria sozinho, a rule é só imposto de contexto |
+| 4 | **Não-redundante** | não é default do framework, não é coberto por Pint/Rector/PHPStan, não duplica rule existente? | qualquer duplicação |
+
+O gate 3 é o que mais elimina candidatos — e é o mais importante. `"Controllers ficam em app/Http/Controllers"` reprova; `"Enrollment::find() aplica scope global de tenant"` passa.
+
+### Escada de enforcement (Ponytail aplicado a rules)
+
+Antes de escrever prosa, subir a escada:
+
+1. **Teste de arquitetura** (`pest --arch`) resolve? → escrever o teste; a rule fica em 1 linha apontando para ele
+2. **PHPStan / Larastan** pega? → configurar; sem rule em prosa
+3. **Rector** reescreve automaticamente? → adicionar ao `rector.php`
+4. **Pint** normaliza? → configurar o preset
+5. **Só então**: rule em prosa
+
+Exemplo: *"Controllers devem estender `BaseController`"* é um arch test de uma linha —
+
+```php
+arch()->expect('App\Http\Controllers')->toExtend('App\Http\Controllers\BaseController');
+```
+
+— e a rule então diz apenas: *"Enforçado em `tests/Arch/ControllersTest.php` — não contornar."*
+
+### Decisão é sempre do usuário
+
+A skill **nunca** grava rule sem aprovação explícita. Formato de apresentação:
+
+```text
+Candidato 1 — [origem: ADR-02]
+  Título:    Valores monetários são inteiros em centavos
+  Glob:      app/Models/**, app/Services/Billing/**
+  Regra:     Campo monetário é integer em centavos, nunca float
+  Por quê:   float acumula erro de arredondamento em fechamento
+  Evidência: 02-decisoes-arquiteturais.md ADR-02 + app/Models/Invoice.php:34
+  Gates:     durável ✅ | escopável ✅ | não-inferível ✅ | não-redundante ✅
+  Enforcement: pest --arch em tests/Arch/MoneyTest.php + prosa
+
+Descartados:
+  - "Controllers em app/Http/Controllers": falhou no gate 3 — o agente infere
+
+Gravar? (número, "todos", "nenhum")
+```
+
+**Teto: 3 candidatos por feature.** Cada rule é imposto permanente de contexto em todo arquivo que casa com o glob — inflação de rules degrada o agente em vez de ajudar.
+
+### Gravação: sempre via `record-rule`
+
+A doc do Boost é explícita, e a skill obedece:
+
+> "You should always record rules using the `record-rule` tool rather than creating rule files by hand. Boost regenerates `.ai/rules/index.md` as part of recording a rule (...). A rule file that is added manually will not be discovered until the index is next regenerated."
+
+Ou seja: escrever o `.md` à mão com o Boost ativo produz uma rule **invisível**. Existe fallback documentado na skill para quando `BOOST_RULES_ENABLED=false` ou o Boost não está instalado — incluindo atualizar o `index.md` na mão e registrar isso no commit.
+
+### Modelo base da rule
+
+```markdown
+---
+paths:
+  - app/Models/**
+  - app/Services/Billing/**
+---
+
+# Models
+
+## Valores monetários são inteiros em centavos
+
+Todo campo monetário é persistido como `integer` representando centavos — nunca
+`float` ou `decimal`. Converter na borda (Form Request na entrada, cast na saída).
+Usar `float` introduz erro de arredondamento que se acumula em relatórios de
+fechamento e não é detectado pelos testes unitários de cada operação isolada.
+
+Enforçado parcialmente por `tests/Arch/MoneyTest.php`. Origem: ADR-02 de
+`wikis/specs/ferro/579/cobranca-lote/02-decisoes-arquiteturais.md`.
+```
+
+Anatomia obrigatória: **título imperativo** + **restrição em 1-2 frases** + **consequência concreta** + **escape hatch** (se houver) + **enforcement/origem**.
+
+A consequência é a parte mais importante. O exemplo oficial do Boost termina exatamente assim — *"will leak data across tenants"* — porque é a consequência que faz o agente obedecer em vez de "otimizar" por cima.
+
+### Dependências
+
+```bash
+composer require laravel/boost --dev
+php artisan boost:install
+```
+
+- Rules ficam em `.ai/rules/` e **devem ser commitadas** (diferente de `.mcp.json`, `CLAUDE.md` e `boost.json`, que o Boost regenera)
+- Desativar tudo: `BOOST_RULES_ENABLED=false` no `.env` (remove a tool `record-rule`)
+
+### Relação com o `infer-conventions` do Boost
+
+São caminhos opostos e complementares:
+
+| | `infer-conventions` (Boost) | `requirement-to-rule` (esta coletânea) |
+|---|---|---|
+| Direção | **código existente** → rules | **requisito/decisão** → rules |
+| Quando rodar | uma vez, ao adotar o Boost num projeto legado | continuamente, a cada feature concluída |
+| O que documenta | o que o código **faz** hoje | o que foi **decidido** que o código fará |
+
+Ordem recomendada: rodar `infer-conventions` uma vez para bootstrapar a base, e usar `requirement-to-rule` como incremento a partir daí.
+
+### Anti-padrões
+
+| Anti-padrão | Por que é ruim |
+|---|---|
+| Glob `**` ou `app/**` | carrega em quase toda edição; imposto permanente de contexto |
+| Rule sem consequência | o agente trata como sugestão e otimiza por cima |
+| Rule que repete guideline do Boost | duplicação que apodrece na próxima versão do framework |
+| Rule que Pint/Rector/PHPStan já garante | prosa onde a máquina resolve; viola a escada |
+| Gravar sem aprovação do usuário | rules entram no git e afetam todo o time |
+| Escrever o arquivo à mão com Boost ativo | `index.md` não é regenerado → rule invisível |
+| Mais de 3 rules por feature | quanto mais rules, menos cada uma é respeitada |
+| Rule narrando história ("decidimos em reunião...") | isso é ADR; rule é imperativa e atemporal |
+
+---
+
 ## 🐴 Integração com Ponytail + 🦴 Caveman (Planejar → Executar → Comunicar com Mínimo Esforço)
 
 ### O que é o Ponytail?
@@ -183,6 +553,7 @@ O Caveman tem Auto-Clarity que desativa o modo terse em situações críticas. M
 > - `02-decisoes-arquiteturais.md` — ADR é argumentativo por natureza. Fragmentos perdem o raciocínio.
 > - `03-progresso.md` — Checklists e descrições de blockers/desvios precisam de clareza.
 > - `04-casos-de-teste.md` — CTs já são estruturados, mas a prosa explicativa não deve ser comprimida.
+> - `05-casos-de-teste-browser.md` — o roteiro de CT-B é seguido passo a passo por humano ou agente; ambiguidade aqui invalida a auditoria.
 > - `05-*.md` — Arquivos extras (rollback, performance, security) são críticos e não podem ser ambíguos.
 
 **Onde Caveman é bem-vindo**: conversa agent ↔ usuário, resumos de progresso, perguntas e confirmações, respostas a dúvidas rápidas.
@@ -282,6 +653,9 @@ A partir de agora, para cada feature nova:
 │  • 03-progresso.md       → checklist + Blockers     │
 │  • 04-casos-de-teste.md  → CTs antes do código      │
 │    - CTs de log, autorização, data providers        │
+│  • 05-casos-de-teste-browser.md → CT-B (se tem UI)  │
+│    - Gate: ## Superfície de UI no 01 + JS/multi-tela│
+│    - + roteiro Desenhado × Implementado             │
 │  • Revisão profunda pós-escrita                     │
 │  • Auditoria da wiki: /ponytail:ponytail-review     │
 │  • Confirmar plano com usuário                      │
@@ -293,7 +667,7 @@ A partir de agora, para cada feature nova:
 │  2. EXECUTAR (Ponytail)                             │
 │  ─────────────────────────────────                  │
 │  • Ponytail ativo em modo full (padrão)             │
-│  • Caveman ativo na comunicação agent ↔ usuário    │
+│  • Caveman ativo (ultra) na comunicação c/ usuário  │
 │  • Seguir o 01-plano-acao.md passo a passo          │
 │  • Aplicar a escada de simplicidade em cada passo:  │
 │    - Reutilizar antes de criar                      │
@@ -322,7 +696,9 @@ A partir de agora, para cada feature nova:
 │  ─────────────────────────────────                  │
 │  • Rodar testes dos CTs (04-casos-de-teste.md)      │
 │  • vendor/bin/pint --dirty                          │
-│  • php artisan test --compact --filter={Feature}    │
+│  • vendor/bin/pest --filter={Feature} --compact     │
+│  • vendor/bin/pest tests/Browser (se houver CT-B)   │
+│  • vendor/bin/pest --tia → confirma impacto real    │
 │  • Commit com gitmoji + escopo                      │
 │  • :memo: wiki: atualiza 03-progresso.md            │
 └──────────────────────┬──────────────────────────────┘
@@ -332,10 +708,26 @@ A partir de agora, para cada feature nova:
 │  5. PÓS-IMPLEMENTAÇÃO (feature-wiki)                │
 │  ─────────────────────────────────                  │
 │  • Atualizar 03-progresso.md (checkboxes + data)    │
+│  • CT-B via sub-agente em loop (máx. 3 iterações)   │
+│    - Preencher Desenhado × Implementado             │
 │  • Documentar desvios do plano e notas              │
 │  • Linkar wiki no PR                                │
 │  • Retrospectiva breve                              │
 │  • Ajustar channel de log (level ou remoção)        │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│  6. MEMORIZAR (requirement-to-rule)                 │
+│  ─────────────────────────────────                  │
+│  • Varrer ADRs + Notas + PRD por candidatos a rule  │
+│  • Aplicar os 4 gates: durável, escopável,          │
+│    não-inferível, não-redundante                    │
+│  • Preferir enforcement (pest --arch) à prosa       │
+│  • APRESENTAR ao usuário — decisão é dele           │
+│  • Se aprovado: gravar via record-rule (Boost)      │
+│  • Commitar .ai/rules/ (artefato de equipe)         │
+│  ⚠️ Teto: 3 rules por feature                       │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -357,7 +749,7 @@ Ao escrever o `01-plano-acao.md`, incluir uma nota de filosofia de implementaç�
 > Atalhos deliberados devem ser marcados com `ponytail:` comment.
 > Após implementação, rodar `/ponytail:ponytail-review` no diff.
 >
-> **Caveman ativo em modo `full`** na comunicação agent ↔ usuário.
+> **Caveman ativo em modo `ultra`** (padrão) na comunicação agent ↔ usuário.
 > Arquivos wiki (01-05) são boundary do Caveman — escrever em prosa normal.
 > Código, commits e PRs também são boundary do Caveman.
 ```
@@ -373,8 +765,13 @@ Ao escrever o `01-plano-acao.md`, incluir uma nota de filosofia de implementaç�
 | `/ponytail:ponytail-review` | Revisar o diff atual por over-engineering |
 | `/ponytail:ponytail-audit` | Auditar o repo inteiro por complexidade |
 | `/ponytail:ponytail-debt` | Coletar todos os `ponytail:` comments em um ledger |
-| `/caveman lite\|full\|ultra` | Alternar intensidade da prosa terse |
-| `stop caveman` / `normal mode` | Desativar Caveman temporariamente |
+| `/caveman:caveman ultra` | **Modo padrão** — compressão máxima da prosa |
+| `/caveman:caveman lite\|full\|ultra` | Alternar intensidade da prosa terse |
+| `/caveman:caveman off` / `stop caveman` | Desativar Caveman temporariamente |
+
+> ⚠️ **Namespace obrigatório no Claude Code**: comandos vindos de plugin exigem o prefixo `{plugin}:` — `/caveman:caveman` e `/ponytail:ponytail`. Sem o namespace (`/caveman`, `/ponytail-review`) o comando não é encontrado.
+>
+> Os READMEs upstream documentam `/caveman` e `/ponytail` sem prefixo porque cobrem também a instalação via arquivo de regras (Windsurf / Cursor / Cline), onde não existe namespace de plugin. Se você instalou via `/plugin install caveman@caveman`, use sempre `/caveman:caveman`. O mesmo vale para os demais comandos do plugin: `/caveman:caveman-review`, `/caveman:caveman-stats`, `/caveman:caveman-init`.
 
 #### 7. Configurar modo padrão do Ponytail (opcional)
 
@@ -396,15 +793,20 @@ export PONYTAIL_DEFAULT_MODE=full
 ### Resumo da Integração
 
 ```
-feature-wiki (v2.4.0)    Ponytail              Caveman
+feature-wiki (v2.7.0)    Ponytail              Caveman
 ─────────────────        ─────────────────     ─────────────────
 Planejamento minucioso   Execução minimalista  Comunicação terse
 PRD + ADR + CTs           Escada de simplicidade  Corta fluff da prosa
-Padrão de log             /ponytail:ponytail-review  Auto-Clarity ativa
-Channel por feature       /ponytail:ponytail-debt    Boundary: wiki/code
-Revisão pós-escrita                              /commits = prosa normal
-Pós-implementação
-03-progresso.md tracking
+CT-B (browser, se UI)     /ponytail:ponytail-review  Auto-Clarity ativa
+Padrão de log             /ponytail:ponytail-debt    Boundary: wiki/code
+Channel por feature                              /commits = prosa normal
+Revisão pós-escrita
+Pest 5: --parallel --tia
+Pós-implementação        requirement-to-rule (v1.0.0)
+03-progresso.md tracking ─────────────────
+                         Decisão da wiki → .ai/rules/
+                         4 gates + aprovação do usuário
+                         Gravado via record-rule (Boost)
          │                    │                      │
          └────────────┬───────┴──────────────────────┘
                       ▼

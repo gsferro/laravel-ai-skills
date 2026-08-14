@@ -1,0 +1,167 @@
+# Changelog
+
+Histórico de evolução das skills desta coletânea.
+
+Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); cada skill segue [Semantic Versioning](https://semver.org/lang/pt-BR/) de forma **independente**.
+
+## Convenção de tags
+
+A partir da v2.7.0 da `feature-wiki`, as tags são **namespaced por skill**, porque a coletânea passou a ter mais de uma skill com versionamento próprio:
+
+```
+feature-wiki-v2.7.0
+requirement-to-rule-v1.0.0
+```
+
+**Tags legadas** (`v1.0.0`, `v2.0.0`, `v2.1.0`, `v2.2.0`, `v2.4.0`) referem-se **exclusivamente à `feature-wiki`**, quando ela era a única skill do repositório. Elas foram preservadas; nada foi reescrito.
+
+| Versão | Tag | Situação |
+|---|---|---|
+| 1.0.0 – 2.4.0 | `v1.0.0` … `v2.4.0` | série legada (só `feature-wiki`) |
+| 2.3.0 | — | liberada sem tag |
+| 2.5.0, 2.6.0 | — | versões intermediárias, nunca commitadas isoladamente — consolidadas na 2.7.0 |
+| 2.7.0 em diante | `feature-wiki-vX.Y.Z` | série namespaced |
+
+---
+
+# feature-wiki
+
+Cria a estrutura de documentação de uma feature **antes** de implementá-la: PRD, ADR, tracking de progresso, casos de teste e padrão de log.
+
+## [2.7.0] — 2026-08-14
+
+Consolida as versões 2.5.0 e 2.6.0 (nunca commitadas isoladamente) e adiciona a etapa de geração de rules.
+
+### Adicionado
+
+- **Arquivo `05-casos-de-teste-browser.md` (condicional)** — casos de teste de navegador (`CT-B`) executáveis via `pest-plugin-browser` (Playwright), com duplo uso: especificação de teste **e** roteiro de auditoria *Desenhado × Implementado*
+- **Seção `## Superfície de UI` no PRD (`01`)** — tabela obrigatória de telas/componentes que funciona como **gate** do arquivo `05`: só cria CT-B se houver linha na tabela **e** (`Depende de JS? = Sim` **ou** interação com ≥ 2 telas/etapas)
+- **Ciclo de escrita e auditoria dos CT-B via sub-agente em loop** — contrato explícito com máximo de 3 iterações, classificação obrigatória de falha (CT-B errado / implementação divergente / flake) e proibição de alterar código de aplicação para o teste passar
+- **Seção "Execução de Testes com Pest 5"** — TIA (`--parallel --tia`), Agent plugin (`--agent`), sharding por tempo, `--profile`, `--type-coverage`, `--mutate` e os 8 matchers novos
+- **Step 8 — Candidatos a Rule de Projeto** — varre `01`/`02`/`03` por candidatos a Project Rule do Boost, aplica 4 gates (durável, escopável por path, não-inferível, não-redundante), respeita teto de 3 por feature e **submete a decisão ao usuário**; se aprovado, delega à skill `requirement-to-rule`
+- **Bloco "Verificação do stack de testes" no step 3** — detecta versão do Pest, `pest-plugin-browser`, Playwright, `APP_URL` e traits em `tests/Pest.php`
+- **Seção "Fronteira com os CT-B" no arquivo `04`** — separa "a regra está correta?" (backend) de "o usuário chega até a regra?" (browser), com regra de não-duplicação
+- Glossário: `CT-B` e `TIA`
+- `requirement-to-rule` na lista de skills do PRD e na tabela de Skills Companheiras (camada nova: **Memória de projeto**)
+
+### Alterado
+
+- **Caveman: modo padrão `full` → `ultra`** na comunicação agent ↔ usuário. Arquivos wiki (01-05) permanecem boundary
+- **Invocação do Caveman corrigida para `/caveman:caveman {modo}`** (namespace de plugin), com nota espelhando a que já existia para o `/ponytail:ponytail`
+- **Comando canônico de teste passa a ser `vendor/bin/pest --parallel --tia`** na Verificação Final, no template do `03` e no step 7
+- **Step 7 ganha 2 itens**: preencher o roteiro *Desenhado × Implementado* e confirmar impacto real com TIA contra a seção `## Impacto em Features Existentes` do PRD
+- Ordem de leitura do agente implementador inclui o `05` (entre o `04` e o `02`)
+- Ordem de criação dos arquivos inclui o `05` como condicional
+- Checklist final, tabela de arquivos extras e exemplo de estrutura atualizados
+
+### Corrigido
+
+- Numeração duplicada dos itens do step 7 (havia dois `5.` e dois `6.`)
+- Documentação de instalação do Pest: **não existe `php artisan pest:install`** — o caminho oficial é `composer remove phpunit/phpunit` + `composer require pestphp/pest --dev --with-all-dependencies` + `./vendor/bin/pest --init`
+
+## [2.4.0] — 2026-08-11
+
+### Alterado
+
+- Estrutura de pastas: `wikis/{branch}/` → **`wikis/specs/{branch}/`**, encapsulando as features da skill em subpasta dedicada e liberando `wikis/` para outros documentos
+
+### Removido
+
+- Todas as referências a `wikis/archive/` — sobrescrever wiki existente passa a exigir backup manual do usuário
+
+## [2.3.0] — 2026-08-10
+
+### Adicionado
+
+- **Step 6 — Auditoria da Wiki com `/ponytail:ponytail-review`** (obrigatório): invocação automática após a revisão profunda, sem depender de pedido do usuário; aplica sugestões de corte nos arquivos da wiki e re-executa se houver mudança significativa
+- Ordem de criação dos arquivos no step 4
+- Tratamento de wiki já existente: retomar / sobrescrever / incrementar
+- Caveman na "Filosofia de Implementação" do template do PRD
+- "Arquitetar/analisar feature" no *Quando Invocar*
+
+### Corrigido
+
+- **Namespace dos comandos Ponytail**: `/ponytail-*` → `/ponytail:ponytail-*`
+
+## [2.2.0] — 2026-07-03
+
+### Removido
+
+- Etapa de arquivamento `/archive` — o histórico já fica registrado no `03-progresso.md`
+
+## [2.1.0] — 2026-07-02
+
+### Adicionado
+
+- **Integração com o Caveman** e boundary explícito: arquivos wiki (01-05), código, commits e PRs escapam da compressão terse
+- Trio documentado: `feature-wiki` (planejar) + Ponytail (executar) + Caveman (comunicar)
+
+## [2.0.0] — 2026-07-02
+
+### Adicionado
+
+- **Formato ADR** no `02-decisoes-arquiteturais.md` (Status, Contexto, Decisão, Alternativas, Consequências, Referências)
+- **Step de pós-implementação**: desvios do plano, notas de implementação, retrospectiva, link no PR, limpeza do channel de log
+- **CTs de log e de autorização** no `04-casos-de-teste.md`
+- **Padrão de log obrigatório `[Classe@Método] mensagem`** com channel por feature, níveis por severidade e context estruturado (`array $context`) rico
+- Níveis de log para `fail()` de Livewire (`warning`) e `catch` de exception (`error` / `warning`)
+- `Log::shareContext`, driver JSON em produção e testes de log em Pest (`Log::spy()`)
+- Pesquisa e contexto expandidos: rotas, policies, config, composer, wikis existentes, git log, scheduled tasks, eventos, observers, middleware, `.env.example`
+- Seções novas no PRD: Autorização, Rotas, Variáveis de Ambiente, Eventos/Listeners/Observers, Jobs/Queues, Impacto em Features Existentes, Rollback, Dependências, Riscos
+- Seções novas no `03-progresso.md`: Blockers, Desvios do Plano, Notas de Implementação, Retrospectiva
+- Integração com Ponytail (escada de simplicidade durante a execução, `ponytail:` comment, review no diff)
+
+## [1.0.0] — 2026-07-01
+
+### Adicionado
+
+- Release inicial da skill: cria `wikis/{branch}/{feature}/` com **4 arquivos obrigatórios** — `01-plano-acao.md` (PRD), `02-decisoes-arquiteturais.md`, `03-progresso.md` e `04-casos-de-teste.md`
+- **Revisão profunda pós-escrita** — re-valida cada premissa do plano contra o código real antes de apresentar ao usuário
+- Validações de pesquisa obrigatórias antes de escrever (`database-schema`, `search-docs`, `model:show`, leitura de arquivos existentes)
+- Critérios de *Quando NÃO Invocar* (typo fix, mudança trivial, refactoring puro, bump de dependência)
+
+---
+
+# requirement-to-rule
+
+Transforma decisões e restrições de um requisito em **Project Rules do Laravel Boost** (`.ai/rules/`), com aprovação explícita do usuário.
+
+## [1.0.0] — 2026-08-14
+
+### Adicionado
+
+- Release inicial da skill
+- **Tabela das três camadas** — Guidelines (ecossistema, upfront) × Skills (domínio, on-demand) × Rules (a sua aplicação, por glob) — com a regra de ouro: conhecimento de ecossistema nunca vira rule
+- **Os 4 gates**: durável, escopável por path, não-inferível, não-redundante — candidato só vira rule se passar em todos, e descarte é comunicado com o gate que falhou
+- **Escada de enforcement** (Ponytail aplicado a rules): teste de arquitetura (`pest --arch`) → PHPStan → Rector → Pint → só então prosa
+- **Modelo base do conteúdo da rule** com anatomia obrigatória: título imperativo + restrição + **consequência concreta** + escape hatch + enforcement/origem
+- Fluxo de 7 passos: coletar candidatos → ler `.ai/rules/index.md` → aplicar gates → subir a escada de enforcement → apresentar e esperar decisão → gravar via `record-rule` → verificar índice e commitar
+- **Gravação exclusiva via a tool MCP `record-rule` do Boost** — escrever o arquivo à mão não regenera o `.ai/rules/index.md` e produz rule invisível
+- 8 áreas sugeridas de agrupamento com globs (`models`, `controllers`, `requests`, `jobs`, `migrations`, `testing`, `livewire`, `filament`)
+- Fallback documentado para `BOOST_RULES_ENABLED=false` ou projeto sem Boost, incluindo atualização manual do índice
+- 8 anti-padrões, com destaque para glob `**`, rule sem consequência e inflação de rules
+- Teto de **3 rules por feature** e preferência explícita por atualizar rule existente em vez de criar nova
+- Delimitação em relação ao `infer-conventions` do Boost: aquele varre o **código existente** (rodar uma vez), este parte do **requisito** (incremento contínuo)
+
+---
+
+# Repositório
+
+Mudanças que não pertencem a uma skill específica.
+
+## 2026-08-14
+
+- **`CHANGELOG.md`** criado, com histórico das duas skills e convenção de tags namespaced
+
+## 2026-08-11
+
+- Banner gerado pelo [beyondco.de](https://banners.beyondco.de/) adicionado ao README, com o comando de instalação correto
+
+## 2026-07-02
+
+- Padrão de commit para instalar/atualizar skills documentado no README
+- `.idea/` no `.gitignore`
+
+## 2026-06-25
+
+- Commit inicial, documentação de instalação (Laravel Boost e Claude Code) e padrão de estrutura de pastas para novas skills
