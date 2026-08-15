@@ -1,6 +1,6 @@
 ---
 name: feature-test-design
-version: 1.8.0
+version: 1.9.0
 description: >
   Deriva casos de teste que MATAM defeito, a partir do requisito — não do plano e
   nunca do código. Invoque no step 4 da feature-wiki (antes de implementar), quando
@@ -12,9 +12,12 @@ description: >
   pairwise), checklist de taxonomia de defeito (IDOR, idempotencia, concorrencia,
   timezone, nulo/vazio/ausente, paginacao, soft delete), cenários em Gherkin pt-BR
   (Funcionalidade > Regra > Cenário) e um gate de falsificabilidade: toda regra
-  declara os mutantes plausíveis e aponta qual cenário mata cada um, e nenhum cenário
-  positivo passa sem situação de partida declarada. A matriz estado x evento é uma só,
-  produto cartesiano fechado, com o total de células declarado. Escolhe a
+  declara os mutantes plausíveis e aponta qual cenário mata cada um, nenhum cenário
+  positivo passa sem situação de partida declarada, e nenhuma asserção de ausência
+  vale em mundo sem destinatário. A matriz estado x evento é uma só, produto cartesiano
+  fechado, com o total de células declarado e a legenda auditada. Premissa de escopo
+  apaga o cenário, de mecanismo escolhe qual escrever, e de comportamento tem a direção
+  fixada por falha fechado com o invariante afirmado junto. Escolhe a
   camada mais barata que prova (Unit < Feature < componente Livewire/Filament <
   Browser) — com um cenário por fora da UI obrigatório em toda regra de autorização e
   de validação, porque teste de componente não distingue a regra da chamada dela.
@@ -108,6 +111,10 @@ exemplos. Escrever cenário direto produz variações do mesmo eixo e buracos no
 Regra que o requisito não determina não vira cenário com valor chutado. Vira pergunta
 registrada no `00-requisito.md` **e** um cenário marcado `@premissa` com a suposição explícita —
 para que, quando a resposta vier, se saiba exatamente o que muda.
+
+**A suposição não é livre**: quando ela decide se o sistema aceita ou recusa, a direção é
+[falha fechado](#premissa-escopo-apaga-mecanismo-escolhe-comportamento-falha-fechado) e o
+invariante das duas leituras é afirmado no mesmo cenário. Não escrever o cenário nunca é a saída.
 
 ---
 
@@ -361,13 +368,38 @@ enquanto falta uma etapa.
 Um cenário com `Esquema do Cenário` e uma linha por valor do enum resolve. Se o enum tem 5 casos,
 a tabela tem 5 linhas.
 
-### Atomicidade: `assertNothingSent()` em pré-validação não prova nada
+### Não-efeito só discrimina se o mundo tiver destinatário
 
-Para verificar que o efeito colateral não escapa quando a gravação falha, é preciso **falhar
-depois do ponto de notificação** — constraint violada, mock do `save`, evento de model lançando.
-Afirmar `assertNothingSent()` num caminho de **pré-validação** (onde nada seria enviado de
-qualquer forma) parece cobrir atomicidade e não distingue as duas implementações. É um falso ✅
-clássico, e os dois conjuntos medidos caíram nele.
+Afirmar que um efeito **não** aconteceu só separa duas implementações se, naquela configuração, o
+efeito **poderia** ter acontecido. Num mundo sem ninguém a notificar, sem registro a auditar, sem
+saldo a debitar, o mutante e a implementação correta produzem o **mesmo** observável.
+
+**Todo cenário que afirma não-efeito declara, no `Dado`, o destinatário/alvo que existe.** Se o
+`Dado` não põe alguém no mundo, o `Então` de ausência é decorativo.
+
+| Cenário de não-efeito | Configuração que **não** discrimina | Configuração que discrimina |
+|---|---|---|
+| "nenhuma notificação é enviada" | o centro não tem gestor; a organização não tem diretor | o aprovador existe e seria notificado no caminho feliz |
+| "nenhuma linha de auditoria é criada" | a entidade auditada não existe no `Dado` | a entidade existe e o caminho feliz gravaria a linha |
+| "nenhum job é despachado" | a fila roda em `sync` no ambiente de teste | `Queue::fake()` com o worker que o caminho feliz usaria |
+| "o saldo não foi debitado" | o saldo de partida é zero | saldo positivo, e o valor afirmado |
+
+**A partição de cardinalidade do destinatário (0 / 1 / N) não substitui esta regra.** O cenário de
+zero destinatários é uma partição legítima — e é justamente o que **não pode** ser citado como
+prova de atomicidade ou de não-efeito.
+
+E a atomicidade continua exigindo **falhar depois do ponto do efeito** — constraint violada, mock
+do `save`, evento de model lançando. Afirmar ausência num caminho de **pré-validação**, onde nada
+seria enviado de qualquer forma, é a mesma falha por outro lado. As duas condições valem juntas:
+falha depois do ponto **e** destinatário real. Cumprir uma só é falso ✅.
+
+> Medido: um conjunto de 49 cenários fechou 21 de 21 células da matriz e marcou atomicidade como
+> coberta em dois lugares do texto, citando um cenário de centro **sem gestor** e outro de
+> organização **sem diretor** — argumentando, corretamente, que a falha acontecia no mesmo ponto em
+> que o caminho feliz notificaria. O mutante *"o e-mail sai com a gravação da aprovação falhando"*
+> atravessou intacto: **não havia ninguém para notificar nas duas configurações**. O juiz cego:
+> *"os cenários que 'provam' atomicidade o fazem em configurações de zero destinatários, onde o
+> mutante e a implementação correta produzem o mesmo observável."*
 
 ### Estado × **operação**, não estado × visibilidade
 
@@ -388,6 +420,26 @@ da lista de verbos, não a partir do mapa de regras.
 N células`), quantas são válidas e quantas inválidas, e provar que **cada** célula tem `CT-nn`,
 `não se aplica: {motivo}` ou `lacuna declarada: {o que foi tentado}`. Matriz sem total declarado
 não é auditável: ninguém consegue dizer se falta linha.
+
+**A legenda da matriz é uma asserção, e é auditada.** Escrever `❌ = recusa e não-efeito` obriga a
+que **toda** célula inválida afirme **todos** os efeitos que aquela operação dispara no caminho
+feliz — não um efeito qualquer, escolhido por coluna. Se o `enviar` notifica, e o `aprovar` notifica
+e grava histórico, a coluna de `aprovar` tem as duas asserções de ausência e a de `enviar` tem a
+sua. Uma coluna com o não-efeito de histórico e sem o de notificação torna a legenda **falsa** e a
+contagem de células **não auditável**.
+
+Isso não cria matriz nova: as direções do rastreio de efeito são **colunas do `Esquema` de cada
+operação**, dentro da matriz única. Um `Esquema` continua contando como 1 cenário, então o custo é
+em colunas, não em teto de perfil. E cada coluna de ausência só vale se
+[o mundo tiver destinatário](#não-efeito-só-discrimina-se-o-mundo-tiver-destinatário) — o escopo é
+**os efeitos que aquela operação dispara no caminho feliz**, e nada além, senão a grade vira
+asserção de vácuo.
+
+> Medido: um conjunto declarou a legenda `❌ = recusa e não-efeito` nas 8 colunas da matriz. A
+> revisão adversarial do próprio braço achou a legenda **falsa** em duas delas — `enviar` sem o
+> não-efeito de notificação e `rejeitar` sem o de histórico —, o que invalidava a atribuição do
+> mutante *"grava a etapa e só depois recusa a transição"* em 10 células marcadas como cobertas. A
+> coluna `aprovar` seguiu sem o não-efeito de notificação até o juiz.
 
 > Medido: um conjunto de 63 cenários fechou dez células de papel × verbo, afirmou o não-efeito em
 > cada uma, e ainda assim executou **17 das 21** células inválidas. As quatro ausentes eram o mesmo
@@ -471,6 +523,8 @@ um resultado diferente com este valor?** Se produz o mesmo, o exemplo é decorat
 | **autorização por identidade** | solicitante = gestor = quem chama, tudo na **mesma pessoa** | três pessoas distintas, e o ator sendo cada uma delas por vez |
 | **canal do efeito** | "uma notificação foi enviada" | o **canal** que o requisito nomeia (`mail`, e não `database`) |
 | **valor do requisito parametrizado** | injetar o limite por `config()` em todo cenário | ao menos um cenário com o **número literal do requisito** |
+| **não-efeito** | "nenhuma notificação foi enviada" num mundo sem destinatário | o destinatário existe no `Dado` e o caminho feliz o notificaria |
+| **direção da premissa** | `@premissa` que assume "aceito" onde o requisito é silencioso | a direção vem da regra de **falha fechado**, e o invariante é afirmado junto |
 
 As três últimas linhas são a versão não-numérica do valor redondo. **Persona colapsada** é o caso
 mais comum: quando o mesmo usuário é dono, aprovador e chamador, nenhuma barreira de identidade é
@@ -498,6 +552,10 @@ Antes de fixar o instante ou o ambiente, calcular **onde as duas implementaçõe
 escolher um ponto lá dentro. E o `Então` precisa afirmar mais do que "aceito": o valor comparado,
 o registro ou o estado.
 
+**A discriminância vale para o `Dado`, não só para os `Exemplos:`.** O valor da coluna é o parâmetro
+óbvio; a **configuração do mundo** é o parâmetro esquecido. Antes de fechar um cenário, perguntar
+também: *nesta fixture, a implementação defeituosa produziria observável diferente?*
+
 ### Fechar uma lacuna declarada sem discriminar é **piorar**
 
 Ao converter uma lacuna declarada em cenário, o gate é mais duro que o normal: **provar que o
@@ -510,18 +568,56 @@ de cenários suba.
 > registradas* para *item ✅ do checklist apontando um cenário que não mata o mutante*. A taxa de
 > detecção não mudou; a honestidade do conjunto, sim — para pior.
 
-### Premissa sobre mecanismo escolhe **qual** cenário, nunca **se** ele existe
+### Premissa: escopo apaga, mecanismo escolhe, comportamento **falha fechado**
 
-Duas coisas diferentes andam com o mesmo nome:
+Três coisas diferentes andam com o mesmo nome:
 
 | Tipo de premissa | O que ela decide | Efeito legítimo no conjunto |
 |---|---|---|
 | **de escopo** | o comportamento **está fora** desta entrega (o agregado `Pedido` não existe) | o cenário é **inexpressável** → lacuna declarada + pergunta ao usuário |
 | **de mecanismo** | **como** o sistema faz o que o requisito pede (a exclusão é física; `ativo` é derivado; o valor vem por `config`) | o cenário **continua obrigatório** → a premissa só fixa em que mecanismo ele é escrito |
+| **de comportamento** | **se** o sistema aceita ou recusa algo que o requisito não decidiu (cadastrar cupom já vencido; percentual de 150; reduzir o limite abaixo dos usos feitos) | o cenário **continua obrigatório e afirmativo** → a direção vem da regra abaixo, e o invariante é afirmado junto |
 
-Premissa de mecanismo não tira comportamento nenhum do escopo. Usá-la para apagar o cenário é
-converter uma escolha de implementação em cobertura — e o resultado é sempre o pior dos dois
-mundos: item ✅ no checklist com o defeito dentro.
+**A direção da premissa de comportamento é escolhida por regra, não por conveniência: falha
+fechado.** Quando o requisito não decide se um estado pode ser criado, e **outra cláusula do mesmo
+requisito já trata esse estado como inválido no uso**, a premissa é que a **gravação recusa**.
+Assumir "aceita" cria por decisão um estado que o sistema depois precisa saber tratar — e é a
+suposição que, quando erra, deixa o cenário **vermelho contra a implementação correta**.
+
+**E o invariante das duas leituras é afirmado no mesmo cenário**, porque ele vale qualquer que seja
+a resposta: *seja qual for a decisão sobre gravar um cupom vencido, ele **não pode** ser aplicável*;
+*seja qual for a decisão sobre reduzir o limite abaixo dos usos, o contador **não** é corrigido e a
+trilha **não** é truncada*. O invariante é a parte do oráculo que nenhuma resposta à pergunta
+inverte — e é ela que impede a lacuna de virar cega.
+
+| Premissa de comportamento | Direção por falha fechado | Invariante a afirmar junto |
+|---|---|---|
+| "cadastrar cupom já vencido é permitido?" | **recusa** — a cláusula da aplicação já trata o vencido como inválido | gravado por qualquer via, ele não é aplicável |
+| "percentual de 150 é erro ou desconto?" | **recusa** — o total não pode ficar negativo | aplicado, o desconto nunca excede o total |
+| "reduzir o limite abaixo dos usos feitos?" | **recusa** — cria `usos > limite`, estado que a comparação de uso já trata como esgotado | o contador não é corrigido; a trilha não é truncada |
+| "qualquer papel pode executar a ação?" | **recusa** — ausência de barreira nunca se assume | nenhum cenário afirma que a barreira não existe |
+
+O cenário continua marcado `@premissa`, a pergunta continua bloqueando, e a linha *"se negado,
+CT-nn inverte"* continua obrigatória. **Premissa de comportamento nunca autoriza a não escrever o
+cenário**: um `@premissa` rotulado é dívida visível; um cenário ausente é buraco na partição, e o
+item do passo 4 (*"valor abaixo do mínimo, acima do máximo e no limite — na gravação"*) fica sem
+matador.
+
+> Medido: um braço fixou *"cadastrar cupom já vencido é permitido"* e escreveu a linha da partição
+> com o `Então` **aceito**. O defeito plantado era exatamente *"validade no passado aceita na
+> criação"* — a premissa coincidiu com o defeito, e o cenário, materializado, ficaria **vermelho
+> contra a implementação correta**. Na rodada anterior, o mesmo braço assumiu o contrário e
+> **detectou**. No mesmo conjunto, a premissa de domínio numérico foi assumida como **recusa** e
+> matou dois defeitos. Nas três premissas de comportamento cuja verdade foi medida, a resposta certa
+> foi sempre **recusar**.
+>
+> O juiz cego: *"onde o card não decide, o conjunto fixa uma suposição e escreve o cenário em cima
+> dela. […] ele mora na escolha do oráculo, não na escolha do valor."* A correção não é deixar de
+> escrever o cenário — é **fixar o sinal por regra**.
+
+Premissa de mecanismo, por sua vez, não tira comportamento nenhum do escopo. Usá-la para apagar o
+cenário é converter uma escolha de implementação em cobertura — e o resultado é sempre o pior dos
+dois mundos: item ✅ no checklist com o defeito dentro.
 
 | Premissa de mecanismo | A pergunta que ela **não** dispensa |
 |---|---|
@@ -581,6 +677,7 @@ não a palavra "sim".
 | campo cujo domínio depende de outro campo | fronteira **por combinação** (tipo × valor), não fronteira do campo isolado |
 | todo campo, em **todo ponto de entrada** | valor abaixo do mínimo, acima do máximo e no limite — **na gravação**, não só no uso |
 | contador, saldo, estoque, limite de uso | **concorrência**: duas execuções simultâneas não ultrapassam o limite |
+| efeito colateral com destinatário variável | **cardinalidade do destinatário (0 / 1 / N)** — e o cenário de **zero** nunca é citado como prova de não-efeito ou de atomicidade |
 | campo opcional | **ausente ≠ `null` ≠ `""`** — três casos, com semântica declarada |
 | listagem | **paginação**: 0, 1, limite, além do limite; e item inserido entre a página 1 e a 2 |
 | ordenação por coluna | coluna inexistente (injeção via `orderBy`), coluna nullable, empate sem desempate determinístico |
@@ -632,7 +729,7 @@ Funcionalidade: {título da feature}
 | **3 a 5 passos; nunca mais de 9** | setup mecânico que esconde a regra |
 | **Ator nomeado em 3ª pessoa** (`o coordenador`, `o comprador`), nunca "eu" | ambiguidade de quem faz a ação |
 | **`Então` sobre saída observável**, com o valor concreto | `Então funciona` — que não é oráculo |
-| **Cenário de recusa afirma o não-efeito.** "Recusado" sozinho não basta: afirmar também que o estado **não** mudou e que nenhum registro/notificação foi criado | implementação que recusa **depois** de gravar passa no cenário |
+| **Cenário de recusa afirma o não-efeito, e nomeia quais.** "Recusado" sozinho não basta: afirmar que o estado **não** mudou e que **cada efeito que a operação dispara no caminho feliz** não aconteceu — notificação, histórico, trilha, job, contador. "Nenhum registro" genérico não é asserção | implementação que recusa **depois** de gravar, ou **depois** de avisar alguém, passa no cenário |
 | **`Dado` fixa a situação de partida** sempre que a entidade tem ciclo de vida — inclusive nos cenários positivos | cenário que aprova "uma solicitação criada por X" sem dizer que ela foi enviada: materializado, ele **certifica** a transição ilegal (ver [gate, item 6](#passo-6--gate-de-falsificabilidade-obrigatório)) |
 | **Nenhum termo de domínio não definido no `Então`** — use o campo, o estado ou o valor | `Então o aprovador da vez é o Rui` / `Então o acesso é concedido` (que é `assertOk` com outro nome) |
 | **Título descreve o comportamento** | `Cenário: teste 3` / `Cenário: criar, editar e excluir` |
@@ -702,6 +799,11 @@ morre com cada uma.
    nenhum" (item 4, que manda cortar): esse mata ao contrário, e precisa ser **corrigido**, não
    podado — o `Dado` recebe o estado, e a célula que ele estava ocupando na matriz volta a ficar
    vazia
+7. **Toda asserção de ausência é auditada contra o `Dado`.** Cenário que afirma "nenhum X foi
+   criado/enviado" numa configuração onde X não teria destinatário, alvo ou saldo é **falso ✅** e é
+   barrado — corrigido pela fixture, não podado
+8. **A legenda da matriz é verificada célula a célula**: cada `❌` afirma os efeitos que aquela
+   operação dispara no caminho feliz. Legenda não conferida vale como célula **não resolvida**
 
 > Medido: `CT-22` de um conjunto dizia *"Dado uma solicitação de valor 3.000,00 criada pela
 > Beatriz / Quando a Beatriz aprova a solicitação / Então a solicitação fica aprovada"* — sem
@@ -1265,6 +1367,7 @@ cujos achados ninguém fecha é teatro caro.
 - [ ] Entidade com `status` → tabela **estado × evento**, com 100% das células inválidas no perfil completo
 - [ ] A matriz é **uma só** e é o produto cartesiano `todos os estados × todas as operações`, montada do enum e não do mapa de regras — com o **total de células declarado** e cada uma resolvida
 - [ ] Nenhuma premissa de **mecanismo** foi usada para apagar cenário — ela fixa qual escrever, e o mecanismo descartado virou lacuna declarada
+- [ ] Toda premissa de **comportamento** teve a direção fixada por **falha fechado**, com o invariante das duas leituras afirmado no mesmo cenário e a linha "se negado, CT-nn inverte" escrita
 - [ ] Partições inválidas isoladas uma por cenário
 - [ ] Checklist de taxonomia percorrido item a item, com dispensa justificada
 
@@ -1273,6 +1376,8 @@ cujos achados ninguém fecha é teatro caro.
 - [ ] Um único `Quando` por cenário; 3–5 passos; ator nomeado em 3ª pessoa
 - [ ] Todo `Então` afirma saída observável com valor concreto
 - [ ] Todo cenário de entidade com ciclo de vida tem a **situação de partida fixada no `Dado`** — inclusive os positivos
+- [ ] Todo cenário de recusa afirma o não-efeito de **cada** efeito que a operação dispara no caminho feliz — nomeados, não "nenhum registro"
+- [ ] Todo `Então` de ausência tem, no `Dado`, o destinatário/alvo que tornaria o efeito possível
 - [ ] `Esquema do Cenário` só onde há classe de equivalência ou borda, com a coluna do rótulo
 
 ### Gate
@@ -1280,6 +1385,8 @@ cujos achados ninguém fecha é teatro caro.
 - [ ] Todo mutante tem cenário matador **ou** lacuna declarada com motivo
 - [ ] Cenário que não mata mutante nenhum foi cortado ou justificado
 - [ ] Nenhum **oráculo invertido** — cenário positivo sem situação de partida foi corrigido, não podado
+- [ ] Nenhuma asserção de ausência em mundo vazio — atomicidade provada com falha **depois** do ponto do efeito **e** destinatário real
+- [ ] Legenda da matriz conferida célula a célula contra os efeitos daquela operação
 - [ ] Cada cenário na camada mais barata que o prova
 - [ ] Toda regra de autorização e de validação de domínio tem **≥1 cenário por fora do componente de UI**
 - [ ] Teto do perfil respeitado, ou estouro justificado

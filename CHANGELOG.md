@@ -9,7 +9,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 | Skill | Versão | Tag |
 |---|---|---|
 | `feature-wiki` | 3.0.0 | `feature-wiki-v3.0.0` |
-| `feature-test-design` | 1.8.0 | `feature-test-design-v1.8.0` |
+| `feature-test-design` | 1.9.0 | `feature-test-design-v1.9.0` |
 | `feature-quality-gate` | 1.1.0 | `feature-quality-gate-v1.1.0` |
 | `requirement-to-rule` | 1.2.0 | `requirement-to-rule-v1.2.0` |
 
@@ -261,6 +261,61 @@ Consolida as versões 2.5.0 e 2.6.0 (nunca commitadas isoladamente) e adiciona a
 # feature-test-design
 
 Deriva casos de teste que **matam defeito**, a partir do requisito — nunca do plano e nunca do código.
+
+## [1.9.0] — 2026-08-15
+
+**Rodada 6** — a primeira medida num projeto-cobaia **novo** (kit recriado do zero: Laravel 13.25,
+Filament 5.6, **Pest 5.1**, com as suítes `Kit`/`Tenancy` que não existiam antes), com o oráculo
+congelado desde o baseline. Testa também se as regras sobrevivem fora do projeto que as originou.
+Material em [`experimentos/2026-08-15-rodada-6/`](experimentos/2026-08-15-rodada-6/vereditos.md).
+
+| | Baseline | Rodada 5 (1.7.0) | **Rodada 6 (1.8.0)** |
+|---|---|---|---|
+| C1 · cupons (de 18) | 7 | 14 | **16 — zero lacuna cega** |
+| C2 · aprovação (de 18) | 11 | 17 | **17** |
+| C2 · células estado × evento | 9/21 | 17/21 | **21/21** |
+| Total | 18 / 36 | 31 / 36 | **33 / 36 (91,7%)** |
+
+As quatro regras da 1.8.0 mataram cada uma o seu alvo: o gate de camada matou *policy só no form*,
+a premissa de mecanismo matou *cupom excluído ainda aplicável*, a matriz cartesiana fechou 21 de 21
+células **com menos cenários** que a rodada anterior (49 contra 63), e o gate de oráculo invertido
+barrou 5 cenários antes do juiz. De quebra, o **fuso horário morreu pela primeira vez em seis
+rodadas** — lacuna declarada desde o baseline, agora com o instante escolhido dentro da janela de 3 h.
+
+As regras abaixo passaram por **revisão adversarial dedicada**, que rejeitou a candidata mais óbvia:
+bloquear o cenário quando a premissa decide o sinal derrubaria esta mesma rodada de 16/18 para
+14/18, porque dois defeitos foram detectados justamente por cenários `@premissa` afirmativos.
+
+### Adicionado
+
+- **Premissa de comportamento: a direção é `falha fechado`.** A 1.8.0 separou premissa de escopo
+  (apaga o cenário) de premissa de mecanismo (escolhe qual escrever). Falta o terceiro tipo: a que
+  decide **se** o sistema aceita ou recusa algo que o requisito não decidiu. Ela **não** autoriza a
+  não escrever o cenário — fixa a direção por regra: quando outra cláusula do mesmo requisito já
+  trata aquele estado como inválido no uso, a gravação **recusa**. E o **invariante das duas
+  leituras** é afirmado no mesmo cenário, porque nenhuma resposta à pergunta o inverte
+- **Não-efeito só discrimina se o mundo tiver destinatário.** Afirmar "nenhuma notificação foi
+  enviada" num centro sem gestor, "nenhuma linha de auditoria" sem entidade auditada ou "o saldo não
+  foi debitado" com saldo zero é falso ✅: o mutante e a implementação correta produzem o mesmo
+  observável. Substitui a regra de atomicidade, que julgava pelo **ponto da falha** e por isso não
+  pegava o **mundo vazio** — as duas condições agora valem juntas. A partição de cardinalidade
+  (0/1/N) é legítima e **não** substitui a exigência
+- **A discriminância vale para o `Dado`, não só para os `Exemplos:`** — a configuração do mundo é o
+  parâmetro esquecido
+- **A legenda da matriz é uma asserção, e é auditada.** `❌ = recusa e não-efeito` obriga cada célula
+  inválida a afirmar **todos** os efeitos que aquela operação dispara no caminho feliz — não um
+  efeito qualquer, escolhido por coluna. Sem matriz nova: as direções são colunas do `Esquema`
+  dentro da matriz única, então o custo é em colunas e não em teto de perfil
+- Dois itens novos no gate do passo 6 (asserção de ausência auditada contra o `Dado`; legenda
+  verificada célula a célula), uma linha no checklist de taxonomia, duas na tabela de discriminância
+  e cinco no Checklist Final
+
+### Alterado
+
+- A regra de escrita do passo 5 passa a exigir que o cenário de recusa **nomeie** os efeitos:
+  "nenhum registro" genérico deixa de ser asserção
+- Princípio Inegociável 5 ganha a fronteira: a suposição não é livre, e não escrever o cenário nunca
+  é a saída
 
 ## [1.8.0] — 2026-08-15
 
