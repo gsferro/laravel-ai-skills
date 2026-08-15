@@ -8,9 +8,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 
 | Skill | Versão | Tag |
 |---|---|---|
-| `feature-wiki` | 2.10.0 | `feature-wiki-v2.10.0` |
-| `feature-quality-gate` | 1.0.0 | `feature-quality-gate-v1.0.0` |
-| `requirement-to-rule` | 1.1.0 | `requirement-to-rule-v1.1.0` |
+| `feature-wiki` | 3.0.0 | `feature-wiki-v3.0.0` |
+| `feature-test-design` | 1.7.0 | `feature-test-design-v1.7.0` |
+| `feature-quality-gate` | 1.1.0 | `feature-quality-gate-v1.1.0` |
+| `requirement-to-rule` | 1.2.0 | `requirement-to-rule-v1.2.0` |
 
 ## Convenção de tags
 
@@ -34,7 +35,76 @@ requirement-to-rule-v1.0.0
 
 # feature-wiki
 
-Cria a estrutura de documentação de uma feature **antes** de implementá-la: requisito bruto, PRD, ADR, tracking de progresso, casos de teste e padrão de log.
+Cria a estrutura de documentação de uma feature **antes** de implementá-la: requisito bruto, PRD, ADR, tracking de progresso e padrão de log.
+
+## [3.0.0] — 2026-08-14
+
+**Breaking.** A derivação dos casos de teste sai desta skill e passa para a
+[`feature-test-design`](.ai/skills/feature-test-design/README.md).
+
+### Motivação — medida, não suposta
+
+Auditoria de 9 wikis reais produzidas por esta skill em produção (125 casos de teste, 164 testes Pest):
+
+| Medida | Resultado |
+|---|---|
+| Casos nos 4 arquétipos que o próprio template nomeava (happy/falha/autz/log) | **52%**, e nada além |
+| Análise de valor limite genuína | **1 em 125** |
+| Tabela de decisão implementada · pairwise | **0** · **0** |
+| Cláusulas `RQ` rastreáveis sem nenhum caso | **9 de 19** |
+| Casos com oráculo fraco | **19 de 125**; 7 graves cobrindo 52 telas |
+| Telas `create` cobertas só por `visit()` | **5** |
+
+Duas causas estruturais, ambas dentro da própria skill:
+
+1. **O `04` era derivado do PRD** ("os CTs validam os passos do PRD"). O PRD é a interpretação do
+   requisito — testar a interpretação a confirma. Medido sobre 318 defeitos reais com 11 modelos:
+   derivar teste do código/plano em vez da especificação multiplica por ~8 os testes que codificam
+   o bug como comportamento esperado e corta por ~3 os que o detectam.
+2. **O critério de suficiência era cobertura de código** ("todo método público tem 1 CT, cada
+   branch tem um CT") — sobre um código que **ainda não existe** quando o `04` é escrito. Isso
+   obriga o agente a imaginar a implementação e testá-la.
+
+### Removido
+
+- Seção "Arquivo 04: Casos de Teste (CT)" e seu template de 4 arquétipos
+- Seção "Arquivo 05" com o template de CT-B
+- Critério de suficiência por cobertura de método/branch
+- ~455 linhas do `SKILL.md` (1.722 → 1.467)
+
+### Adicionado
+
+- Seção **"Arquivos 04 e 05 — delegados à `feature-test-design`"**, com o contrato da delegação:
+  o `00-requisito.md` é o oráculo, e o `01-plano-acao.md` entra **apenas** para paths, rotas e
+  `## Superfície de UI`
+- **Gate de tela de escrita**: toda rota `create`/`edit` da `## Superfície de UI` exige um cenário
+  de gravação por componente Livewire no `04` — *uma tela aberta não é uma tela que grava*
+- Degradação declarada: sem a `feature-test-design` instalada, registrar no `03-progresso.md`
+  antes de escrever o `04` à mão
+
+### Alterado
+
+- **Gate do `05` (browser)**: o critério deixa de ser "depende de JS?" e passa a ser
+  **"só o navegador prova?"** — JavaScript executado, console/erro de JS, acessibilidade,
+  cor/tema, layout. Formulário, gravação, tabela, filtro, ação, notificação e autorização na tela
+  passam a ser **teste de componente Livewire**, no `04`
+- Skills Companheiras ganha a camada **Especificação de teste**
+
+### Corrigido — afirmações erradas sobre `pest-plugin-browser`
+
+Três estavam no `SKILL.md` e no README, e levariam o agente a configurar ou escrever coisa errada:
+
+- *"a doc não explicita se o plugin sobe o app ou exige servidor externo"* → **o plugin sobe o
+  próprio servidor** (HTTP in-process, porta aleatória). Nada de Herd, `artisan serve`, Sail ou
+  `APP_URL`. O template do `05` que pedia essa configuração foi removido
+- *"`actingAs()` em teste de browser não está documentado"* → é o **mesmo processo**;
+  `$this->actingAs($user)` antes do `visit()` funciona e é o caminho recomendado
+- *"o plugin expõe `wait(segundos)`"* → certo sobre a API, errado sobre a conclusão: **nunca usar
+  `wait()`**; o plugin reexecuta cada assertion até `pest()->browser()->timeout()`
+
+E três armadilhas que não estavam documentadas: `assertPathIs` **antes** das asserções de
+conteúdo; **nunca `--parallel` com browser** (e `--tia` exige run completo, então os dois não
+convivem numa invocação); `npm run build` como pré-requisito duro.
 
 ## [2.10.0] — 2026-08-14
 
@@ -188,7 +258,376 @@ Consolida as versões 2.5.0 e 2.6.0 (nunca commitadas isoladamente) e adiciona a
 
 ---
 
+# feature-test-design
+
+Deriva casos de teste que **matam defeito**, a partir do requisito — nunca do plano e nunca do código.
+
+## [1.7.0] — 2026-08-15
+
+Medição da v1.5.0 no **cenário 2** — a máquina de estados. 13 regras, 63 cenários, 98 mutantes,
+matriz de 35 células (14 válidas + 21 inválidas); revisão adversarial com **41 achados** e mais 3
+na segunda rodada, todos fechados.
+
+| | Baseline | v1.0.0 | v1.5.0 |
+|---|---|---|---|
+| Defeitos detectados (de 18) | 11 | 15 | **17** |
+| Taxa de detecção | 61,1% | 83,3% | **94,4%** |
+| Lacunas cegas | 7 | 2 | **1** |
+| Lacunas declaradas que custaram defeito | 0 | 1 | **0** |
+
+**Os três defeitos que escapavam de todos os conjuntos anteriores caíram**, cada um pelo mecanismo
+que a versão correspondente introduziu: o ciclo de volta pelo 2-switch com `Então` contrastivo
+(*"passa a ser 'aguardando_gestor', **e não** 'aguardando_diretor'"*); a tela pela partição
+exaustiva do enum na coluna formatada, 5 de 5; e a atomicidade pela **injeção de falha nas duas
+direções** — falhar a gravação e exigir que nenhum e-mail saia, e falhar o e-mail e exigir que a
+etapa continue gravada.
+
+O único sobrevivente é de **dimensão, não de cláusula**: valor alterado depois do envio sem
+reavaliar a alçada — a coluna `editar` foi percorrida por um campo representativo, e a reabertura
+alegada acontecia em `rascunho`, onde a alçada ainda não foi decidida.
+
+### Adicionado
+
+- **A dimensão do campo tem de ser exercitada FORA do estado inicial.** Trocar o campo decisivo em
+  `rascunho` não reabre a dimensão para os estados de trânsito, e a linha inválida de `editar`
+  precisa afirmar o **valor gravado**, não só que a operação foi recusada
+- **Célula só conta se a operação daquela célula for executada.** Apontar para um cenário que
+  executa **outra** operação — a listagem no lugar do detalhe, o `rascunho` no lugar do estado em
+  trânsito — é falso ✅. E **argumentar** que "uma implementação correta se comportaria igual" não
+  é executar: o argumento pressupõe a corretude que a célula existe para testar
+- **Verbo irmão não herda evidência.** "Aprova **ou** rejeita", "edita **ou** exclui": a
+  autorização precisa ser falsificada em **cada verbo**. Uma implementação que confere o ator em
+  `aprovar()` e esquece em `rejeitar()` passa em todo conjunto cuja evidência venha só do primeiro
+- **O cenário do parâmetro entregue não pode depender do ambiente de teste.** `Dado a configuração
+  de fábrica, sem ajuste do teste` é vácuo se o `phpunit.xml` ou o `.env.testing` definirem a
+  chave: o cenário mede o ambiente, e o default errado sobrevive sem nada ficar vermelho
+
+## [1.6.0] — 2026-08-15
+
+Rodada de validação da v1.5.0 nos **dois** cenários, com o recorte para o juiz tirado só **depois**
+da conclusão do agente — corrigindo a contaminação que tornava as medições anteriores um piso.
+
+**Cenário 1 · cupons** — 13 regras, 47 cenários, 79 mutantes; revisão adversarial com **22 achados,
+todos fechados**.
+
+| | Baseline | v1.0.0 | v1.1.0 | v1.5.0 |
+|---|---|---|---|---|
+| Defeitos detectados (de 18) | 7 | 12 | 16 | **16** |
+| Lacunas cegas | 10 | 2 | 1 (float) | **1 (fuso)** |
+| Oráculos fracos | — | — | 7 de 41 | **3 de 47** |
+
+A taxa parou em 88,9%, mas a **composição** mudou: a precisão de ponto flutuante — lacuna cega da
+rodada anterior — fechou pela regra do exemplo discriminante, com o juiz conferindo a aritmética
+(`10000 * 0.29 = 2899,9999…` → `(int)` = 2899, contra 2900 no cálculo inteiro). E os oráculos
+fracos caíram de 17% para 6% do conjunto.
+
+**Em troca, o fuso horário regrediu de lacuna declarada para lacuna cega**: o conjunto escreveu um
+cenário de fuso e escolheu `20:00` — fora da janela de 3 h em que o defeito é observável. Item ✅
+no checklist com o defeito intacto.
+
+### Adicionado
+
+- **O parâmetro livre nem sempre é o dado de entrada.** Em defeito de contexto — fuso, relógio,
+  locale, tenant — o que precisa cair na janela de divergência é o **instante ou o ambiente da
+  observação**. Tabela por classe de defeito de contexto, com a janela em que cada um é observável
+- **Fechar lacuna declarada sem discriminar é piorar.** Ao converter uma lacuna declarada em
+  cenário, o gate é mais duro: provar em uma linha por que a implementação defeituosa produz
+  resultado diferente ali. Sem isso, troca-se dívida conhecida por item ✅ com o defeito dentro
+- **A matriz de estados não é bidimensional.** `persona` e `qual campo muda` são dimensões, não
+  detalhes do exemplo. Percorrer estado × operação com o dono do registro e sempre o mesmo campo
+  produz uma matriz "100% coberta" com a barreira de identidade e o campo que decide o fluxo sem
+  um único cenário
+- **Rastreio de efeito cobra o QUE antes das direções**: canal/tipo exato que o requisito nomeia e
+  destinatário, **depois** aconteceu / não aconteceu / uma só vez / atomicidade. Achado medido:
+  as quatro direções perfeitas, e o efeito entregue por `database` quando o requisito dizia *e-mail*
+- **Três linhas não-numéricas na tabela de exemplos discriminantes**: persona colapsada (o mesmo
+  usuário como dono, aprovador e chamador não exercita barreira de identidade nenhuma), canal do
+  efeito, e valor do requisito parametrizado
+- **O número do requisito é cláusula, mesmo quando o plano o parametrizou.** *Onde* ele mora
+  (`config()`, coluna, constante) é implementação; injetar por `config()->set()` em **todos** os
+  cenários deixa o único valor literal do card sem teste, e qualquer default errado passa
+- **Mutante trazido pela revisão adversarial não conta para o teto** de 3–6 por regra: é achado
+  medido, e desdobrar a regra no fechamento da revisão renumeraria toda a rastreabilidade por
+  motivo cosmético
+
+## [1.5.0] — 2026-08-15
+
+A execução que produziu os 88,9% não parou no recorte que foi medido: a **revisão adversarial**
+(sub-agente independente, com acesso só ao requisito e aos cenários) provou **6 implementações
+erradas atravessando os 41 cenários originais**, e elas foram fechadas com 10 cenários e 11
+mutantes novos. As regras abaixo generalizam esses 6 achados — o número medido é piso, não teto.
+
+### Alterado — a regra de ouro ganhou um terceiro ponto
+
+- **`entrada ≠ uso` vira `criação ≠ edição ≠ uso`.** Fechada a criação, quatro dos seis defeitos
+  novos viviam **só na edição**: normalização, unicidade, autorização e domínio existiam no
+  `create` e sumiam no `save`. A edição tem ainda duas armadilhas próprias que a criação não tem —
+  **unicidade contra si mesmo** (salvar sem alterar o campo único deve passar) e **validação que
+  só roda na criação**
+
+### Adicionado
+
+- **Toda partição de EP se repete em cada rastreio de efeito.** O campo discriminador
+  (`tipo = percentual | valor_fixo`) não particiona só o domínio de valor — particiona também o
+  **comportamento**: consumo, trilha, validação, notificação. Achado mais caro da revisão
+  adversarial: **todos** os cenários de consumo e trilha usavam cupom de porcentagem, e um atalho
+  no ramo `valor_fixo` — ignorando validade, limite e auditoria — ficava verde no conjunto inteiro
+- **A matriz estado × operação cobra as duas metades.** "Toda célula vazia vira cenário negativo"
+  é metade da regra; seguir só ela deixa colunas inteiras sem **nenhuma operação bem-sucedida** —
+  a coluna `editar` fica com três recusas e nenhuma edição que funciona, e a armadilha da
+  unicidade contra o próprio registro passa inteira. Cada coluna precisa de ao menos uma célula
+  válida exercitada
+- **Idempotência com o agregado fora de escopo**: o cenário é **inexpressável**, e escrevê-lo
+  produz um caso tautológico que parece cobertura. O procedimento passa a ser não escrever,
+  declarar a lacuna vinculada à premissa de escopo, e transformá-la em pergunta ao usuário
+- **Rastreio de efeito consome o teto inteiro do perfil** — três cenários obrigatórios (quatro com
+  atomicidade) contra teto de três por regra. Não é estouro, é o custo declarado da técnica; regra
+  de efeito colateral que também tem domínio a particionar é **duas regras**
+
+## [1.4.0] — 2026-08-15
+
+Terceira medição do cenário 1, agora com a skill nova rodando de fato. A progressão completa,
+mesmo requisito e mesmo catálogo de 18 defeitos:
+
+| | Baseline | v1.0.0 | v1.1.0 |
+|---|---|---|---|
+| Defeitos detectados | 7 | 12 | **16** |
+| Taxa de detecção | 38,9% | 66,7% | **88,9%** |
+| Lacunas cegas | 10 | 2 | **1** |
+
+**Cinco dos seis fugitivos históricos fecharam** — e o juiz atribuiu cada um a um mecanismo
+reprodutível, não a sorte: o teto do percentual e o piso do valor caíram pela regra
+*entrada ≠ uso* combinada com *domínio condicionado*; a validade no passado, pela mesma regra
+aplicada à gravação **e à edição**; o cupom excluído ainda aplicável, pela coluna *aplicar* da
+tabela estado × operação.
+
+### Adicionado — as duas cegueiras que sobraram
+
+- **O exemplo tem de ser discriminante.** Um cenário só mata o mutante se os **valores escolhidos**
+  distinguem a implementação certa da errada, e valor redondo é a forma mais comum de um cenário
+  parecer cobrir e não cobrir. Medido: um conjunto marcou "precisão monetária" como coberta,
+  citou dois cenários, e **nenhum dos cinco exemplos numéricos distinguia `float` de inteiro**
+  (10% de 10.000 dá 1.000 nas duas implementações; é preciso 29% de 10.000, onde o float dá 2.899
+  e o inteiro 2.900). Item ✅ no checklist com o defeito intacto é pior que lacuna declarada,
+  porque ninguém volta a olhar. Entra tabela de valores que discriminam × valores que não
+  discriminam, por classe de defeito
+- **Idempotência: o agregado tem de ser o persistido**, não o retorno da chamada. Se o `Então`
+  afirma sobre o valor devolvido por duas chamadas independentes, o cenário passa por construção
+  quando o motor é função pura — o mutante "acumula" nem é expressável ali
+
+## [1.3.0] — 2026-08-14
+
+Contradições internas que só o uso revelou — relatadas pelos próprios agentes que executaram o
+pipeline, não por revisão de escrivaninha.
+
+### Adicionado
+
+- **Um `Esquema do Cenário` conta como 1 cenário**, não como N linhas. Sem isso, o teto de
+  cenários e a exigência de "100% das células inválidas da tabela de estados" ficam
+  aritmeticamente incompatíveis — 21 células contra teto de 5 — e a regra puniria exatamente a
+  técnica que a skill quer
+- **Pós-processo da revisão adversarial**: fechar todos os achados; re-revisar **uma vez**, e só
+  se o fechamento criou cenário novo; teto de 2 rodadas. Revisão cujos achados ninguém fecha é
+  teatro caro
+- **Desempate da camada**: ela sai do **observável que o requisito afirma**, não da estrutura
+  provável do código. Decidir `Unit` ou `Feature` perguntando "existiria um predicado puro para
+  isso?" é palpite de implementação — exatamente o que o princípio 1 proíbe
+- Aviso para confirmar que `pestphp/pest-plugin-mutate` está **declarado no `composer.json`**: ele
+  costuma vir como dependência transitiva do Pest 5, e o comando funciona por acidente da árvore
+  de dependências
+
+## [1.2.0] — 2026-08-14
+
+Segundo cenário do experimento — uma **máquina de estados** (fluxo de aprovação em duas etapas),
+escolhida para exercitar o que o cenário de cálculo não cobre. Mesmo protocolo: 18 defeitos
+plantados antes, juiz cego, citação literal exigida.
+
+| Métrica | Baseline | v1.1.0 |
+|---|---|---|
+| Defeitos detectados (de 18) | 11 | **15** |
+| Taxa de detecção | 61,1% | **83,3%** |
+| Células inválidas da matriz estado × evento **executadas** | 9 de 21 | **21 de 21** |
+| Lacunas cegas | 7 | 2 |
+
+Os três defeitos que ainda atravessaram os dois conjuntos viraram as regras abaixo.
+
+### Adicionado
+
+- **Ciclo de volta exige 2-switch** — quando um estado pode ser **reentrado** (rejeitado volta a
+  rascunho, devolvido volta para correção, estornado volta a pendente), cobrir uma transição por
+  vez não prova nada sobre o **segundo giro**, e é ali que mora o defeito: o ciclo novo herda o
+  que o anterior deixou. O oráculo é sobre o destino do **segundo** evento
+- **Estado exibido: partição exaustiva do enum** — quando o usuário vê um rótulo derivado de um
+  enum de estado, toda partição é classe de equivalência obrigatória. Cobrir dois dos cinco
+  estados permite exatamente o defeito que importa: a tela dizer "Aprovada" faltando uma etapa
+- **Atomicidade exige injeção de falha** — `assertNothingSent()` num caminho de **pré-validação**
+  parece cobrir "o e-mail não sai se a gravação falhar" e não distingue as duas implementações.
+  É preciso falhar **depois** do ponto de notificação. Falso ✅ clássico; os dois conjuntos
+  medidos caíram nele
+- Duas regras novas de escrita de cenário: **cenário de recusa afirma o não-efeito** (recusar
+  "depois de gravar" passa num cenário que só afirma a recusa) e **nenhum termo de domínio não
+  definido no `Então`** (*"o aprovador da vez é o Rui"*, *"o acesso é concedido"* — que é
+  `assertOk` com outro nome)
+
+### Corrigido — a skill estava supervalorizando o `pest --mutate`
+
+Medição direta, contra a **mesma** implementação: as duas suítes materializadas — a do gabarito e
+a deste pipeline — obtiveram **100% de mutation score cada** (24 de 24 mutantes mortos), enquanto o
+juiz cego as separava em 7 × 12 defeitos detectados. **A métrica saturou e não distinguiu nada.**
+
+A causa é estrutural: mutation testing só muta **código que existe**. Os defeitos que separam as
+duas são *comportamentos ausentes* — não há `if ($percentual > 100)` para mutar porque a validação
+nunca foi escrita. **`pest --mutate` é cego à omissão.**
+
+A skill passa a declarar isso: o mutation score é **piso de qualidade de assertion**, não
+indicador de cobertura de requisito. Quem responde por omissão é a rastreabilidade `RQ` → cenário
+e o gate de mutantes **de especificação** — que nascem do requisito, não do código.
+
+Duas armadilhas verificadas na prática, agora documentadas:
+- **`covers(X::class)` restringe o que conta como coberto**: mutante em classe fora do `covers()`
+  é reportado como `uncovered` e o score vai a 0%, **mesmo com os testes executando aquele código
+  em toda chamada** (verificado com `ResultadoDoCupom`, que é o retorno de todos os casos)
+- **`--class=` não casa de forma confiável**; `--path=` é o filtro que funciona
+
+## [1.1.0] — 2026-08-14
+
+Correções vindas de **medição**, não de revisão. A v1.0.0 foi submetida a um experimento
+controlado: mesmo requisito, mesmo projeto, mesmo `00-requisito.md`, dois agentes independentes —
+um seguindo a `feature-wiki` 2.10.0 e outro a `feature-test-design` 1.0.0 —, e um juiz cego
+pontuando os dois conjuntos contra um catálogo de **18 defeitos plantados antes** de qualquer
+conjunto existir.
+
+| Métrica | Baseline | v1.0.0 |
+|---|---|---|
+| Defeitos detectados (de 18) | 7 | **12** |
+| Taxa de detecção | 38,9% | **66,7%** |
+| Lacunas **cegas** (nem detecta nem menciona) | 10 | **2** |
+| Lacunas **declaradas** | 1 | 4 |
+| Casos de teste | 12 | 37 |
+
+Veredito do juiz sobre o mecanismo: *"C1 deriva de fronteiras, C2 deriva de superfície de código —
+organiza os casos por método público e declara cobertura quando todo método tem um caso. Isso
+garante que nada fique sem teste e não garante nada sobre valores."*
+
+**Seis defeitos atravessaram os dois conjuntos.** Cada regra abaixo fecha um deles.
+
+### Adicionado
+
+- **Regra "entrada ≠ uso"** — derivar partição e valor limite tanto no ponto de **gravação**
+  quanto no de **uso**. Os dois conjuntos testaram exaustivamente o mesmo campo pelo lado do
+  cálculo e deixaram passar três defeitos de cadastro (valor negativo, valor acima do teto, data
+  no passado). O requisito costuma descrever só o ponto de uso, e é isso que induz o erro
+- **Domínio condicionado** — quando o domínio válido de um campo depende de outro campo
+  (`valor` depende de `tipo`), a fronteira é por combinação. Tratar como domínio único faz o teto
+  de 100% desaparecer enquanto os cenários "cobrem o campo"
+- **Estado × operação, não estado × visibilidade** — a tabela de estados leva **todas** as
+  operações nas colunas. A célula que mais escapa é "entidade excluída × operação de escrita":
+  provam que sumiu da listagem, não que deixou de funcionar
+- **Idempotência ancorada no agregado afetado**, não no recurso consumido — o oráculo é "o total
+  do pedido é o mesmo depois da segunda aplicação", não "o contador foi a 2"
+- **Impossibilidade de arnês é hipótese, não conclusão** — antes de declarar mutante sem matador,
+  tentar mudar o arnês (`config(['app.timezone'])`, `travelTo()`, gravar estado inválido direto).
+  A lacuna só é real depois de tentada, e é declarada com **o que foi tentado**
+- **Teto de mutantes por regra** (2–5 no padrão, 3–6 no completo) e **teste de plausibilidade**:
+  *um dev competente, lendo só o requisito e sem má-fé, escreveria isso?* Impede inflar o gate
+  com mutantes triviais
+- **O gate vence o teto de cenários** — mutante vivo é pior que cenário a mais
+- Seções `## Fronteira com o Plano` (o que veio do PRD e foi **recusado** como oráculo) e
+  **cogitado e cortado** (candidatos além do teto, com o motivo do corte)
+- **Precedência**: Project Rule do projeto vence a skill, com a divergência declarada
+- Escape para `00-requisito.md` somente leitura: perguntas em bloco pronto para colagem no `04`
+
+### Alterado
+
+- **`sim` deixa de ser resposta válida no checklist de taxonomia.** Cada item recebe o ID do
+  cenário que o mata, `não se aplica: {motivo}` ou `lacuna declarada: {o que foi tentado}`.
+  No experimento, **os dois conjuntos marcaram itens como cobertos com o defeito intacto**
+  (*"Idempotência: sim"*, *"Timezone: parcialmente coberto"*) — é o "falso ✅" que faz o requisito
+  parecer verde
+- **Perfil é orçamento, não teto de rigor**: escalar a técnica acima do perfil da área é permitido
+  e declarado; rebaixar não. O mapeamento área → regra passa a ser explícito no Mapa de Regras
+- **"Camada mais barata"** vira **"camada mais barata que existe no projeto"** — confirmar as
+  ligações do `tests/Pest.php` antes de alocar; a escada teórica não vale se o arnês não a sustenta
+- Novo item no checklist de taxonomia: **autorização exercida na ação**, não só `can()` — policy
+  correta que o Resource nunca consulta passa em todo teste de `can()`
+
+## [1.0.0] — 2026-08-14
+
+Skill nova. Extrai da `feature-wiki` a responsabilidade de escrever o `04` e o `05`, e substitui o
+preenchimento de gabarito por um pipeline de derivação com gate de auditoria.
+
+### Adicionado
+
+- **Pipeline de 7 passos**: perfil de esforço por risco (P×I) → varredura **SFDIPOT** →
+  mapa de regras (**Example Mapping**) → técnica formal por regra → checklist de taxonomia de
+  defeito → cenários em **Gherkin pt-BR** → alocação de camada e poda
+- **Gate de falsificabilidade** — o passo que não existia. Toda `Regra:` declara as
+  implementações erradas plausíveis (mutantes) e aponta o cenário que mata cada uma. Mutante sem
+  matador é lacuna declarada, e cenário que não mata mutante nenhum é candidato a corte
+- **Técnicas formais nomeadas**, escolhidas pelo tipo da regra: particionamento de equivalência,
+  valor limite 3-valores (com o incremento do tipo certo), tabela de decisão colapsada,
+  **tabela estado × evento** (matriz, não diagrama — as células vazias são os cenários negativos),
+  matriz papel × ação, pairwise e rastreio de efeito colateral
+- **Checklist de taxonomia** para o que a especificação nunca menciona: IDOR/autorização
+  horizontal, idempotência, concorrência, ausente ≠ `null` ≠ `""`, paginação, ordenação por coluna
+  nullable/inexistente, timezone/DST, unicode e limite de `varchar`, unicidade + soft delete, CRUD
+  combinado, mass assignment, upload, precisão monetária. Tabela **viva**: defeito que escapa vira
+  linha nova
+- **Gherkin como linguagem de especificação, sem runner** — `Funcionalidade` → `Regra` →
+  `Cenário`, com 10 regras de escrita, cada uma corrigindo um anti-padrão catalogado. Não há
+  plugin Gherkin viável para Pest, e Behat exigiria uma ponte Laravel abandonada
+- **Tabela de escolha de camada** para Laravel/Filament, com a **camada de componente Livewire**
+  que faltava, e a **regra do par** (*uma tela aberta não é uma tela que grava*)
+- **Lista de assertions proibidas como oráculo único**: `assertNoJavaScriptErrors()` sozinho,
+  `assertOk()` sozinho, `assertSee` de texto de layout, `assertDatabaseHas` só com a chave,
+  "não lança exceção", `->not->toBe()` sem valor esperado
+- **Tabela de armadilhas de API** que invalidam CT: `Mail::assertSent` em mailable `ShouldQueue`,
+  `Event::fake()` antes das factories, `Http::fake()` sem `preventStrayRequests`,
+  `withoutExceptionHandling()` + `assertForbidden()`, `RefreshDatabase` + `afterCommit()`,
+  `travel()` sem `travelBack()`, `Repeater::fake()` no Filament
+- **Fechamento do ciclo com `pest --mutate`**: cada mutante sobrevivente é traduzido de volta para
+  a lacuna de derivação que o deixou vivo, e vira cenário novo
+- **Revisão adversarial** por sub-agente independente no perfil completo — proibida a
+  autorrevisão, porque modelos são comprovadamente melhores em gerar oráculos do que em
+  classificar se um oráculo está correto
+
+---
+
 # feature-quality-gate
+
+## [1.1.0] — 2026-08-14
+
+### Adicionado
+
+- **Dimensão K — Adequação da Suíte**: as dimensões A–J perguntam se o **produto** está certo;
+  esta pergunta se o **instrumento de medição** presta. Dois passos:
+  1. **Estático** (nunca pulado, custa segundos): varrer os testes novos do diff procurando
+     oráculo ausente ou fraco — teste sem assertion, `assertOk()` sozinho,
+     `assertNoJavaScriptErrors()` como assertion única de um CT-B, `assertSee` de texto de layout,
+     `assertDatabaseHas` só com a chave, "não lança exceção", `->not->toBe()` sem valor esperado
+  2. **Medido** (perfil completo): `pest --mutate` nas classes que o diff introduziu, com cada
+     mutante sobrevivente traduzido de volta para a lacuna de derivação que o deixou vivo
+- Todo achado da dimensão K vai para o **destino 3**, e a correção é invocar a
+  `feature-test-design` com o mutante como entrada — ela fecha a **classe** de lacuna, não só o caso
+- Driver de cobertura entra na tabela de entradas, como dependência **opcional** com degradação declarada
+
+### Alterado
+
+- **Destino 3 deixa de terminar no CT que reproduz o achado.** O achado é um mutante que
+  sobreviveu; a pergunta seguinte é qual lacuna de derivação o deixou vivo. Fechar só o caso
+  garante que o vizinho dele volte na próxima feature
+- Achado recorrente entre features vira **linha nova no checklist de taxonomia** da
+  `feature-test-design`, e candidato a rule no step 9
+
+### Corrigido
+
+- A skill sugeria `--mutate --covered-only --class="App\\..."`. Medido no projeto de validação:
+  **`--class=` não casa de forma confiável** (`--path=` funciona), e **`covers(X::class)` restringe
+  o que conta como coberto** — mutante em classe fora do `covers()` vira `uncovered` e o score vai
+  a 0% mesmo com os testes executando aquele código em toda chamada
+- **Aviso obrigatório sobre o alcance da métrica**: mutation testing só muta código que existe, e
+  por isso é **cego à omissão**. Medido: duas suítes com **100% de mutation score cada**
+  detectaram 7 e 12 de 18 defeitos plantados. Score alto **não** absolve a dimensão A
 
 Etapa de QA dentro do agente — a próxima estação da esteira depois de implementar e rodar os testes. Confronta requisito × plano × app rodando e roteia cada achado.
 
@@ -220,6 +659,19 @@ Etapa de QA dentro do agente — a próxima estação da esteira depois de imple
 # requirement-to-rule
 
 Transforma decisões e restrições de um requisito em **Project Rules do Laravel Boost** (`.ai/rules/`), com aprovação explícita do usuário.
+
+## [1.2.0] — 2026-08-15
+
+### Adicionado
+
+- **`feature-test-design` como fonte de candidatos**, e a de evidência mais forte: linha nova do
+  **checklist de taxonomia de defeito**, nascida de defeito que escapou para produção. Se
+  generaliza além da feature, é rule — de preferência com enforcement em `pest --arch`
+
+### Corrigido
+
+- Referência ao step da `feature-wiki` que invoca esta skill: era **step 8**, é **step 9** desde a
+  `feature-wiki` 2.10.0, quando o quality gate assumiu o 8
 
 ## [1.1.0] — 2026-08-14
 

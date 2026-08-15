@@ -12,11 +12,43 @@ Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude C
 
 | Skill | Versão | O que faz | Quando é invocada |
 |---|---|---|---|
-| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 2.10.0 | Cria a wiki da feature antes de implementar: requisito bruto, PRD, ADR, progresso e casos de teste (backend e browser), com padrão de log | ao iniciar qualquer feature nova |
-| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.0.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa e roteia cada achado para especificação, implementação ou teste | step 8 da `feature-wiki`, após os testes passarem |
-| **[requirement-to-rule](.ai/skills/requirement-to-rule/README.md)** | 1.1.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | step 9 da `feature-wiki` ou sob pedido |
+| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 3.0.0 | Cria a wiki da feature antes de implementar: requisito bruto, PRD, ADR e progresso, com padrão de log. Delega os casos de teste | ao iniciar qualquer feature nova |
+| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.7.0 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes | step 4 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
+| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.1.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa e roteia cada achado para especificação, implementação ou teste | step 8 da `feature-wiki`, após os testes passarem |
+| **[requirement-to-rule](.ai/skills/requirement-to-rule/README.md)** | 1.2.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | step 9 da `feature-wiki` ou sob pedido |
 
-O ciclo completo: **planejar** (`feature-wiki`) → **executar** (Ponytail) → **comunicar** (Caveman) → **testar** (Pest 5 + CT-B) → **validar** (`feature-quality-gate`) → **memorizar** (`requirement-to-rule`).
+O ciclo completo: **planejar** (`feature-wiki`) → **especificar teste** (`feature-test-design`) → **executar** (Ponytail) → **comunicar** (Caveman) → **testar** (Pest 5) → **validar** (`feature-quality-gate`) → **memorizar** (`requirement-to-rule`).
+
+### Por que a derivação do teste virou skill própria
+
+O `04-casos-de-teste.md` era escrito logo depois do PRD, pelo mesmo agente, para *"validar os
+passos do PRD"*. É a direção invertida: o PRD é a **interpretação** do requisito, e testar a
+interpretação a confirma.
+
+Auditoria de 9 wikis reais desta coletânea, 125 casos de teste e 164 testes Pest em produção:
+
+| Medida | Resultado |
+|---|---|
+| Casos que caem nos 4 arquétipos que o próprio template nomeava | **52%** — e nada além |
+| Análise de valor limite genuína | **1 ocorrência em 125** |
+| Tabela de decisão implementada · pairwise | **0** · **0** |
+| Cláusulas `RQ` rastreáveis sem nenhum caso | **9 de 19** (razão CT/RQ = 1,11) |
+| Casos com oráculo fraco (implementação defeituosa passa) | **19 de 125**; 7 graves cobrindo 52 telas |
+| Telas `create` cobertas só por `visit()`, sem gravação | **5** |
+| Testes "órfãos" — achados depois, não pelo processo do `04` | **9**, dos quais 5 um particionamento formal listaria em minutos |
+
+E o resultado da troca, medido em experimento controlado com 18 defeitos plantados **antes** de
+qualquer conjunto existir, julgados por um agente cego que exigia citação literal da assertion que
+mata cada defeito:
+
+| Cenário | Gabarito | Pipeline novo |
+|---|---|---|
+| **Cupons** — cálculo, dinheiro, datas | 7 de 18 (38,9%) · 10 lacunas cegas | **16 de 18 (88,9%) · 1 lacuna cega** |
+| **Aprovação** — máquina de estados | 11 de 18 (61,1%) · 7 lacunas cegas | **17 de 18 (94,4%) · 1 lacuna cega** |
+
+A causa não era desleixo: o critério de suficiência da skill era *"todo método público tem 1 CT,
+cada branch tem um CT"* — cobertura de um **código que ainda não existe** quando o `04` é escrito.
+Isso obriga o agente a imaginar a implementação e testá-la.
 
 ### Onde está cada documentação
 
@@ -25,6 +57,7 @@ Cada skill tem **dois arquivos com públicos diferentes** — o `README.md` expl
 | Skill | Para você ler | Para o agente seguir |
 |---|---|---|
 | feature-wiki | [README](.ai/skills/feature-wiki/README.md) — requisito, CT-B, Pest 5, `search-docs`, dependências | [SKILL.md](.ai/skills/feature-wiki/SKILL.md) |
+| feature-test-design | [README](.ai/skills/feature-test-design/README.md) — o problema medido, o pipeline de 7 passos, **por que Gherkin sem runner**, a camada Livewire que faltava | [SKILL.md](.ai/skills/feature-test-design/SKILL.md) |
 | feature-quality-gate | [README](.ai/skills/feature-quality-gate/README.md) — uso + **estudo de viabilidade** (pesquisa de mercado, lacuna verificada, critério eliminatório) | [SKILL.md](.ai/skills/feature-quality-gate/SKILL.md) |
 | requirement-to-rule | [README](.ai/skills/requirement-to-rule/README.md) — 4 gates, escada de enforcement, índice de rules | [SKILL.md](.ai/skills/requirement-to-rule/SKILL.md) |
 
@@ -81,7 +114,7 @@ Para instalar **todas as skills de uma vez**, sem prompt de seleção, execute n
 php artisan boost:add-skill gsferro/laravel-ai-skills --all
 ```
 
-Isso baixa as três skills para o diretório `.ai/skills/` do seu projeto. Em seguida, para que o Boost processe as atualizações locais:
+Isso baixa as quatro skills para o diretório `.ai/skills/` do seu projeto. Em seguida, para que o Boost processe as atualizações locais:
 
 ```bash
 php artisan boost:update
@@ -99,10 +132,10 @@ Ou escolha direto pelo nome (o `--skill` aceita repetição):
 
 ```bash
 php artisan boost:add-skill gsferro/laravel-ai-skills \
-  --skill=feature-wiki --skill=feature-quality-gate
+  --skill=feature-wiki --skill=feature-test-design --skill=feature-quality-gate
 ```
 
-> **Atenção**: as três skills são encadeadas. A `feature-quality-gate` **exige** a `feature-wiki` ≥ 2.10.0, porque depende do `00-requisito.md` que ela cria. Instalar só a `feature-quality-gate` não funciona.
+> **Atenção**: as quatro skills são encadeadas pelo `00-requisito.md`. A `feature-test-design` e a `feature-quality-gate` **exigem** a `feature-wiki` ≥ 2.10.0, porque dependem do `00-requisito.md` que ela cria — é o oráculo das duas. Instalar qualquer uma delas isolada não funciona.
 
 ### Todas as opções do `boost:add-skill`
 
@@ -225,12 +258,13 @@ O próprio Ponytail recomenda o pareamento: *"Ponytail governs what you build, n
 
 ### Por que feature-wiki, Ponytail e Caveman trabalham bem juntas
 
-A integração é natural porque as três skills operam em **camadas complementares** do ciclo de desenvolvimento:
+A integração é natural porque cada skill opera em uma **camada complementar** do ciclo de desenvolvimento:
 
 | Camada | Skill | Responsabilidade | Boundary |
 |--------|-------|------------------|----------|
 | **Comunicação** (agent ↔ usuário) | Caveman | Prosa terse — corta fluff, artigos, fillers | **NÃO aplica em arquivos wiki** (00-06), código, commits, PRs |
-| **Planejamento** (documentação) | feature-wiki | Define o **o quê** e o **porquê**: PRD, ADR, CTs, tracking, padrão de log, channel por feature | Arquivos wiki são detalhados por design — compressão cria ambiguidade |
+| **Planejamento** (documentação) | feature-wiki | Define o **o quê** e o **porquê**: requisito, PRD, ADR, tracking, padrão de log, channel por feature | Arquivos wiki são detalhados por design — compressão cria ambiguidade |
+| **Especificação de teste** | feature-test-design | Define **o que provaria que está errado**: técnica formal por regra, e o gate de mutantes | Deriva do requisito, nunca do plano — testar o plano confirma o plano |
 | **Execução** (código) | Ponytail | Define o **como**: mínimo código possível, sem over-engineering, reutilização antes de criação | Não corta validação, segurança, tratamento de erros |
 | **Revisão** (diff) | Ponytail (`/ponytail:ponytail-review`) | Valida o diff contra over-engineering: o que cortar, o que substituir por stdlib | — |
 
@@ -262,7 +296,7 @@ php artisan boost:add-skill gsferro/laravel-ai-skills --all
 php artisan boost:update
 ```
 
-Isso baixa `feature-wiki`, `feature-quality-gate` e `requirement-to-rule` para `.ai/skills/` no seu projeto Laravel.
+Isso baixa `feature-wiki`, `feature-test-design`, `feature-quality-gate` e `requirement-to-rule` para `.ai/skills/` no seu projeto Laravel.
 
 #### 2. Instalar o Ponytail e o Caveman no seu agente de IA
 
@@ -350,11 +384,6 @@ A partir de agora, para cada feature nova:
 │    - Logs em todas as etapas (channel + padrão)     │
 │  • 02-decisoes-arquiteturais.md → formato ADR       │
 │  • 03-progresso.md       → checklist + Blockers     │
-│  • 04-casos-de-teste.md  → CTs antes do código      │
-│    - CTs de log, autorização, data providers        │
-│  • 05-casos-de-teste-browser.md → CT-B (se tem UI)  │
-│    - Gate: ## Superfície de UI no 01 + JS/multi-tela│
-│    - + roteiro Desenhado × Implementado             │
 │  • Revisão profunda pós-escrita                     │
 │  • Auditoria da wiki: /ponytail:ponytail-review     │
 │  • Confirmar plano com usuário                      │
@@ -363,7 +392,33 @@ A partir de agora, para cada feature nova:
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  2. EXECUTAR (Ponytail)                             │
+│  2. ESPECIFICAR TESTE (feature-test-design)         │
+│  ─────────────────────────────────                  │
+│  • Invocada no step 4 da wiki                       │
+│  • Entrada: 00-requisito.md é o ORÁCULO             │
+│    - o PRD entra só para path, rota e superfície    │
+│  • Perfil por risco (P×I) → mínimo/padrão/completo  │
+│  • Varredura SFDIPOT (7 dimensões declaradas)       │
+│  • Mapa de regras: regra / exemplo / pergunta       │
+│  • Técnica formal POR REGRA:                        │
+│    - partição · valor limite 3-valores              │
+│    - tabela de decisão · estado × operação          │
+│    - matriz papel×ação · pairwise · efeito          │
+│  • Checklist de taxonomia (IDOR, idempotência,      │
+│    concorrência, timezone, soft delete, monetário)  │
+│  • Cenários em Gherkin pt-BR (Regra → Cenário)      │
+│  • GATE: toda regra declara os mutantes plausíveis  │
+│    e aponta o cenário que mata cada um              │
+│  • Camada mais barata que prova + poda              │
+│  • Revisão adversarial por sub-agente independente  │
+│  → 04-casos-de-teste.md                             │
+│  → 05-casos-de-teste-browser.md (só o que exige     │
+│     navegador: JS, console, a11y, cor/layout)       │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│  3. EXECUTAR (Ponytail)                             │
 │  ─────────────────────────────────                  │
 │  • Ponytail ativo em modo full (padrão)             │
 │  • Caveman ativo (ultra) na comunicação c/ usuário  │
@@ -379,7 +434,7 @@ A partir de agora, para cada feature nova:
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  3. REVISAR (Ponytail-review)                       │
+│  4. REVISAR (Ponytail-review)                       │
 │  ─────────────────────────────────                  │
 │  • /ponytail:ponytail-review no diff atual           │
 │  • Receber lista de cortes: delete, stdlib, native, │
@@ -391,7 +446,7 @@ A partir de agora, para cada feature nova:
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  4. TESTAR E COMMITAR                               │
+│  5. TESTAR E COMMITAR                               │
 │  ─────────────────────────────────                  │
 │  • Rodar testes dos CTs (04-casos-de-teste.md)      │
 │  • vendor/bin/pint --dirty                          │
@@ -404,7 +459,7 @@ A partir de agora, para cada feature nova:
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  5. PÓS-IMPLEMENTAÇÃO (feature-wiki)                │
+│  6. PÓS-IMPLEMENTAÇÃO (feature-wiki)                │
 │  ─────────────────────────────────                  │
 │  • Atualizar 03-progresso.md (checkboxes + data)    │
 │  • CT-B via sub-agente em loop (máx. 3 iterações)   │
@@ -417,12 +472,12 @@ A partir de agora, para cada feature nova:
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  6. VALIDAR (feature-quality-gate)                  │
+│  7. VALIDAR (feature-quality-gate)                  │
 │  ─────────────────────────────────                  │
 │  • Confronta 00-requisito × PRD × app rodando       │
 │  • Audita ambiguidades do requisito PRIMEIRO        │
 │  • Matriz de Rastreabilidade → omissão silenciosa   │
-│  • 10 dimensões (perfil por risco: mín/padrão/full) │
+│  • 11 dimensões (perfil por risco: mín/padrão/full) │
 │  • Roteia achado: especificação | código | teste    │
 │  • Escreve 06-relatorio-qa.md + veredito            │
 │  ⚠️ NÃO corrige nada · teto de 3 ciclos             │
@@ -430,7 +485,7 @@ A partir de agora, para cada feature nova:
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  7. MEMORIZAR (requirement-to-rule)                 │
+│  8. MEMORIZAR (requirement-to-rule)                 │
 │  ─────────────────────────────────                  │
 │  • Varrer ADRs + Notas + PRD por candidatos a rule  │
 │  • Aplicar os 4 gates: durável, escopável,          │
@@ -505,23 +560,30 @@ export PONYTAIL_DEFAULT_MODE=full
 ### Resumo da Integração
 
 ```
-feature-wiki (v2.10.0)   Ponytail              Caveman
+feature-wiki (v3.0.0)    Ponytail              Caveman
 ─────────────────        ─────────────────     ─────────────────
 Planejamento minucioso   Execução minimalista  Comunicação terse
 00-requisito (oráculo)    Escada de simplicidade  Corta fluff da prosa
-PRD + ADR + CTs           /ponytail:ponytail-review  Auto-Clarity ativa
-CT-B (browser, se UI)     /ponytail:ponytail-debt    Boundary: wiki/code
-Padrão de log                                    /commits = prosa normal
-Revisão pós-escrita
-Pest 5: --parallel --tia
+PRD + ADR                 /ponytail:ponytail-review  Auto-Clarity ativa
+Padrão de log             /ponytail:ponytail-debt    Boundary: wiki/code
+Revisão pós-escrita                              /commits = prosa normal
 03-progresso.md tracking
 
-feature-quality-gate (v1.0.0)      requirement-to-rule (v1.1.0)
+feature-test-design (v1.7.0)
+─────────────────
+Deriva do REQUISITO, nunca do plano
+SFDIPOT · mapa de regras · técnica formal
+Gate: mutante previsto → cenário que mata
+Gherkin pt-BR · camada mais barata que prova
+Revisão adversarial por sub-agente
+
+feature-quality-gate (v1.1.0)      requirement-to-rule (v1.2.0)
 ─────────────────                  ─────────────────
 Requisito × plano × app rodando    Decisão da wiki → .ai/rules/
 Omissão silenciosa (Matriz)        4 gates + aprovação do usuário
-10 dimensões, perfil por risco     Gravado via record-rule (Boost)
-Roteia: spec | código | teste      Índice .ai/rules/index.md
+11 dimensões, perfil por risco     Gravado via record-rule (Boost)
+Dimensão K: a suíte pega defeito?  Índice .ai/rules/index.md
+Roteia: spec | código | teste
 Não corrige · teto de 3 ciclos
          │                    │                      │
          └────────────┬───────┴──────────────────────┘
@@ -541,9 +603,10 @@ Este README é o índice da coletânea. O detalhe de cada skill vive com ela:
 | Documento | O que você encontra |
 |---|---|
 | [**feature-wiki**](.ai/skills/feature-wiki/README.md) | como informar o requisito (card colado, `.pdf`/`.docx`/`.md`), os 6 arquivos da wiki, testes de browser com Pest + Playwright, o que o Pest 5 trouxe (`--parallel --tia`, `--agent`), Playwright MCP como observação, `search-docs` e suas lacunas, dependências e limitações conhecidas |
-| [**feature-quality-gate**](.ai/skills/feature-quality-gate/README.md) | uso da skill (omissão silenciosa, 10 dimensões, roteamento de 5 destinos) **e** o estudo de viabilidade completo: pesquisa de mercado, lacuna verificada, achados técnicos e critério eliminatório |
+| [**feature-test-design**](.ai/skills/feature-test-design/README.md) | o problema medido em 9 wikis reais, o pipeline de 7 passos, **por que Gherkin sem runner**, a camada de componente Livewire que faltava, os fatos corrigidos sobre `pest-plugin-browser`, e o experimento controlado com o catálogo de defeitos plantados |
+| [**feature-quality-gate**](.ai/skills/feature-quality-gate/README.md) | uso da skill (omissão silenciosa, 11 dimensões incluindo mutation score, roteamento de 5 destinos) **e** o estudo de viabilidade completo: pesquisa de mercado, lacuna verificada, achados técnicos e critério eliminatório |
 | [**requirement-to-rule**](.ai/skills/requirement-to-rule/README.md) | as três camadas (guidelines × skills × rules), os 4 gates, escada de enforcement, índice `.ai/rules/index.md`, modelo base da rule e anti-padrões |
-| [**CHANGELOG.md**](CHANGELOG.md) | histórico de evolução das três skills, com versionamento independente e convenção de tags |
+| [**CHANGELOG.md**](CHANGELOG.md) | histórico de evolução das quatro skills, com versionamento independente e convenção de tags |
 
 ---
 
