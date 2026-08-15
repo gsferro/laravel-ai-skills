@@ -1,0 +1,486 @@
+<title>Deslocamento de Orçamento</title>
+<style>
+  :root {
+    --paper:      #FAFAFB;
+    --surface:    #FFFFFF;
+    --surface-2:  #F1F3F4;
+    --ink:        #171B22;
+    --ink-soft:   #4A5460;
+    --ink-faint:  #7E8896;
+    --rule:       #DDE1E4;
+    --rule-soft:  #EAECEF;
+    --accent:     #0F6E70;
+    --accent-ink: #0A4F51;
+    --detect:     #2F7A55;
+    --detect-bg:  #E4F0E9;
+    --escape:     #B03A2B;
+    --escape-bg:  #F7E3DF;
+    --declared:   #97671B;
+    --declared-bg:#F6EBD8;
+    --shadow:     0 1px 2px rgba(23,27,34,.06), 0 8px 24px -16px rgba(23,27,34,.18);
+
+    --serif: "Iowan Old Style", Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "Cascadia Mono", "SF Mono", "JetBrains Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:     #101318;
+      --surface:   #171B21;
+      --surface-2: #1E232B;
+      --ink:       #E7EAEE;
+      --ink-soft:  #A6B0BC;
+      --ink-faint: #77828F;
+      --rule:      #2A3038;
+      --rule-soft: #222831;
+      --accent:    #4FB3B5;
+      --accent-ink:#7ACFD0;
+      --detect:    #58B383;
+      --detect-bg: #1B2C24;
+      --escape:    #E0705C;
+      --escape-bg: #33201C;
+      --declared:  #D2A044;
+      --declared-bg:#2E2618;
+      --shadow:    0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:     #101318;
+    --surface:   #171B21;
+    --surface-2: #1E232B;
+    --ink:       #E7EAEE;
+    --ink-soft:  #A6B0BC;
+    --ink-faint: #77828F;
+    --rule:      #2A3038;
+    --rule-soft: #222831;
+    --accent:    #4FB3B5;
+    --accent-ink:#7ACFD0;
+    --detect:    #58B383;
+    --detect-bg: #1B2C24;
+    --escape:    #E0705C;
+    --escape-bg: #33201C;
+    --declared:  #D2A044;
+    --declared-bg:#2E2618;
+    --shadow:    0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.7);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px 100px; }
+  .col  { max-width: 68ch; }
+
+  /* ---------- masthead ---------- */
+  .mast { padding: 72px 0 40px; border-bottom: 1px solid var(--rule); }
+  .eyebrow {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 18px;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 600; letter-spacing: -.02em;
+    font-size: clamp(38px, 6vw, 60px); line-height: 1.04; margin: 0 0 20px;
+    text-wrap: balance;
+  }
+  .standfirst {
+    font-family: var(--serif); font-size: clamp(19px, 2.2vw, 22px);
+    line-height: 1.5; color: var(--ink-soft); margin: 0; max-width: 62ch;
+  }
+
+  /* ---------- readout strip ---------- */
+  .readout {
+    display: grid; gap: 1px; background: var(--rule);
+    grid-template-columns: repeat(auto-fit, minmax(196px, 1fr));
+    border: 1px solid var(--rule); border-radius: 3px; overflow: hidden;
+    margin: 44px 0 8px;
+  }
+  .cell { background: var(--surface); padding: 20px 22px 18px; }
+  .cell .k {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-faint); margin: 0 0 10px;
+  }
+  .cell .v {
+    font-family: var(--mono); font-variant-numeric: tabular-nums;
+    font-size: 30px; font-weight: 600; line-height: 1; margin: 0 0 6px;
+    letter-spacing: -.02em;
+  }
+  .cell .n { font-size: 13.5px; color: var(--ink-soft); margin: 0; line-height: 1.4; }
+  .up   { color: var(--detect); }
+  .down { color: var(--escape); }
+
+  /* ---------- sections ---------- */
+  section { padding-top: 62px; }
+  h2 {
+    font-family: var(--serif); font-size: clamp(26px, 3.4vw, 33px); font-weight: 600;
+    letter-spacing: -.015em; line-height: 1.16; margin: 0 0 8px; text-wrap: balance;
+  }
+  .sub {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-faint); margin: 0 0 22px;
+  }
+  h3 {
+    font-family: var(--sans); font-size: 17.5px; font-weight: 650; letter-spacing: -.005em;
+    margin: 34px 0 10px;
+  }
+  p { margin: 0 0 17px; }
+  .col p, .col ul, .col ol { max-width: 68ch; }
+  ul, ol { margin: 0 0 17px; padding-left: 22px; }
+  li { margin-bottom: 8px; }
+  strong { font-weight: 650; }
+  code {
+    font-family: var(--mono); font-size: .87em;
+    background: var(--surface-2); padding: .12em .38em; border-radius: 3px;
+  }
+  a { color: var(--accent-ink); text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ---------- defect grid ---------- */
+  .grid-wrap { margin: 26px 0 30px; display: grid; gap: 26px; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+  .grid-block h4 {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 500; margin: 0 0 12px;
+  }
+  .chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 6px; }
+  .chip {
+    border: 1px solid var(--rule); border-radius: 3px; padding: 8px 6px 7px;
+    text-align: center; font-family: var(--mono); font-variant-numeric: tabular-nums;
+    font-size: 12.5px; font-weight: 600; background: var(--surface); color: var(--ink-soft);
+  }
+  .chip.d { background: var(--detect-bg);   color: var(--detect);   border-color: transparent; }
+  .chip.c { background: var(--escape-bg);   color: var(--escape);   border-color: transparent; }
+  .chip.x { background: var(--declared-bg); color: var(--declared); border-color: transparent; }
+  .chip small { display: block; font-size: 9.5px; font-weight: 500; letter-spacing: .06em; opacity: .85; margin-top: 2px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 18px; margin: 4px 0 0; font-size: 13px; color: var(--ink-soft); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .swatch { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+
+  /* ---------- tables ---------- */
+  .scroll { overflow-x: auto; margin: 22px 0 26px; border: 1px solid var(--rule); border-radius: 3px; }
+  table { border-collapse: collapse; width: 100%; background: var(--surface); font-size: 14.5px; }
+  th, td { padding: 11px 15px; text-align: left; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+  thead th {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 500; background: var(--surface-2);
+    border-bottom: 1px solid var(--rule); white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .win { color: var(--detect); font-weight: 650; }
+  .lose { color: var(--escape); font-weight: 650; }
+  .flat { color: var(--ink-faint); }
+
+  /* ---------- pull quote ---------- */
+  blockquote {
+    margin: 30px 0; padding: 0 0 0 22px; border-left: 2px solid var(--accent);
+    font-family: var(--serif); font-size: 19.5px; line-height: 1.5; color: var(--ink-soft);
+    max-width: 62ch;
+  }
+  blockquote cite {
+    display: block; margin-top: 10px; font-family: var(--mono); font-style: normal;
+    font-size: 11.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-faint);
+  }
+
+  /* ---------- note ---------- */
+  .note {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 3px;
+    padding: 20px 22px; margin: 26px 0; font-size: 15.5px; box-shadow: var(--shadow);
+    max-width: 74ch;
+  }
+  .note .lbl {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 9px;
+  }
+  .note p:last-child { margin-bottom: 0; }
+
+  /* ---------- ladder ---------- */
+  .ladder { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+            border-radius: 3px; overflow: hidden; margin: 26px 0; }
+  .rung { background: var(--surface); padding: 20px 22px; display: grid; gap: 14px;
+          grid-template-columns: 88px 1fr; align-items: start; }
+  .rung .ver {
+    font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--accent);
+    padding-top: 2px; letter-spacing: -.01em;
+  }
+  .rung h4 { margin: 0 0 6px; font-size: 15.5px; font-weight: 650; }
+  .rung p  { margin: 0; font-size: 14.5px; color: var(--ink-soft); }
+  .rung .trigger {
+    font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint);
+    margin-top: 9px; display: block;
+  }
+  @media (max-width: 620px) { .rung { grid-template-columns: 1fr; gap: 8px; } }
+
+  footer {
+    margin-top: 76px; padding-top: 26px; border-top: 1px solid var(--rule);
+    font-size: 14px; color: var(--ink-faint); max-width: 68ch;
+  }
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="eyebrow">Rodada 5 · laravel-ai-skills · 15 ago 2026 · quatro versões que nunca tinham sido medidas</p>
+  <h1>Deslocamento de Orçamento</h1>
+  <p class="standfirst">As quatro regras pendentes mataram, cada uma, o defeito que a originou. O que sobrou foi outra coisa: três lacunas cegas novas, em dois cenários e dois juízes independentes, todas na mesma assinatura.</p>
+
+  <div class="readout">
+    <div class="cell">
+      <p class="k">Cenário 1 · detecção</p>
+      <p class="v"><span class="flat">16</span> → <span class="down">14</span></p>
+      <p class="n">de 18 · 88,9% → 77,8%</p>
+    </div>
+    <div class="cell">
+      <p class="k">Cenário 2 · detecção</p>
+      <p class="v"><span class="flat">17</span> = <span class="flat">17</span></p>
+      <p class="n">de 18 · 94,4% mantidos</p>
+    </div>
+    <div class="cell">
+      <p class="k">Regras medidas pela 1ª vez</p>
+      <p class="v"><span class="up">4 de 4</span></p>
+      <p class="n">cada uma matou seu alvo</p>
+    </div>
+    <div class="cell">
+      <p class="k">Lacunas cegas</p>
+      <p class="v"><span class="lose">3</span></p>
+      <p class="n">todas novas · mesma raiz</p>
+    </div>
+  </div>
+</header>
+
+<section class="col">
+  <h2>O que estava em julgamento</h2>
+  <p class="sub">feature-wiki 3.0.0 · feature-test-design 1.7.0 · oráculo fixo desde o baseline</p>
+
+  <p>O relatório anterior fechou com uma dívida explícita: <em>“as regras 1.6.0 e 1.7.0 não foram medidas”</em>, e antes delas a 1.4.0 e a 1.5.0 também não. Quatro versões nascidas de lacunas reais, nenhuma submetida a um braço novo. Esta rodada existe para pagar essa dívida.</p>
+
+  <p>Mesmo protocolo, sem afrouxar nada: o <strong>mesmo</strong> <code>00-requisito.md</code> congelado desde o baseline como oráculo, um agente por cenário sem contexto compartilhado entrando no step 4 da <code>feature-wiki</code>, catálogos de 18 mutantes escritos em agosto de 2026 antes de qualquer conjunto existir, e um juiz cego por cenário com citação literal obrigatória. Os agentes foram proibidos de ler as pastas das rodadas anteriores — e um deles registrou que também evitou <code>tests/Feature/ExpA</code> e <code>ExpB</code>, que são materializações de conjuntos antigos e teriam contaminado igual.</p>
+
+  <p>A correção de protocolo da rodada 4 foi mantida: o recorte para o juiz sai <strong>depois</strong> da conclusão do agente, revisão adversarial incluída.</p>
+</section>
+
+<section>
+  <div class="col">
+    <h2>Os 36 mutantes, um por um</h2>
+    <p class="sub">Verde mata · vermelho passa sem ninguém saber · âmbar passa e alguém escreveu por quê</p>
+  </div>
+
+  <div class="grid-wrap">
+    <div class="grid-block">
+      <h4>Cenário 1 — cupons · 14 de 18</h4>
+      <div class="chips">
+        <div class="chip d">D01<small>teto %</small></div>
+        <div class="chip d">D02<small>negativo</small></div>
+        <div class="chip d">D03<small>validade</small></div>
+        <div class="chip d">D04<small>limite</small></div>
+        <div class="chip d">D05<small>caixa</small></div>
+        <div class="chip d">D06<small>ordem</small></div>
+        <div class="chip d">D07<small>contador</small></div>
+        <div class="chip d">D08<small>corrida</small></div>
+        <div class="chip c">D09<small>policy</small></div>
+        <div class="chip d">D10<small>escopo</small></div>
+        <div class="chip d">D11<small>piso</small></div>
+        <div class="chip d">D12<small>passado</small></div>
+        <div class="chip d">D13<small>autor</small></div>
+        <div class="chip x">D14<small>fuso</small></div>
+        <div class="chip c">D15<small>excluído</small></div>
+        <div class="chip d">D16<small>float</small></div>
+        <div class="chip d">D17<small>espaços</small></div>
+        <div class="chip x">D18<small>idempot.</small></div>
+      </div>
+    </div>
+    <div class="grid-block">
+      <h4>Cenário 2 — aprovação · 17 de 18</h4>
+      <div class="chips">
+        <div class="chip c">E01<small>rascunho</small></div>
+        <div class="chip d">E02<small>editar</small></div>
+        <div class="chip d">E03<small>5.000</small></div>
+        <div class="chip d">E04<small>ordem</small></div>
+        <div class="chip d">E05<small>justif.</small></div>
+        <div class="chip d">E06<small>reset</small></div>
+        <div class="chip d">E07<small>IDOR</small></div>
+        <div class="chip d">E08<small>segreg.</small></div>
+        <div class="chip d">E09<small>cancelar</small></div>
+        <div class="chip d">E10<small>e-mail</small></div>
+        <div class="chip d">E11<small>ausente</small></div>
+        <div class="chip d">E12<small>alçada</small></div>
+        <div class="chip d">E13<small>histór.</small></div>
+        <div class="chip d">E14<small>excluir</small></div>
+        <div class="chip d">E15<small>2 cliques</small></div>
+        <div class="chip d">E16<small>tela</small></div>
+        <div class="chip d">E17<small>zero</small></div>
+        <div class="chip d">E18<small>atomic.</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <p class="legend">
+      <span><i class="swatch" style="background:var(--detect)"></i> detectado com citação literal</span>
+      <span><i class="swatch" style="background:var(--escape)"></i> lacuna cega — falso ✅</span>
+      <span><i class="swatch" style="background:var(--declared)"></i> lacuna declarada</span>
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <h2>O placar</h2>
+    <p class="sub">Contra o baseline e contra a melhor rodada anterior</p>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr><th>Métrica</th><th>Baseline<br><span style="font-weight:400;text-transform:none;letter-spacing:0">feature-wiki 2.10</span></th><th>Melhor anterior</th><th>Rodada 5</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>C1 · cupons</strong> — detectados de 18</td><td class="num">7</td><td class="num">16</td><td class="num">14</td></tr>
+        <tr><td>C1 · lacunas cegas · declaradas</td><td class="num"><span class="lose">10</span> · 1</td><td class="num">1 · 1</td><td class="num">2 · 2</td></tr>
+        <tr><td><strong>C2 · aprovação</strong> — detectados de 18</td><td class="num">11</td><td class="num">17</td><td class="num">17</td></tr>
+        <tr><td>C2 · lacunas cegas · declaradas</td><td class="num"><span class="lose">7</span> · 0</td><td class="num">1 · 0</td><td class="num">1 · 0</td></tr>
+        <tr><td>C2 · células inválidas estado × evento executadas</td><td class="num lose">9 de 21</td><td class="num win">21 de 21</td><td class="num lose">17 de 21</td></tr>
+        <tr><td><strong>Total</strong></td><td class="num">18 / 36 · 50%</td><td class="num">33 / 36 · 91,7%</td><td class="num">31 / 36 · 86,1%</td></tr>
+        <tr><td>Cenários escritos (C1 · C2)</td><td class="num">22 · 27</td><td class="num">41 · —</td><td class="num">51 · 63</td></tr>
+        <tr><td>Densidade — detectados por cenário</td><td class="num">0,32 · 0,41</td><td class="num">0,39</td><td class="num flat">0,27 · 0,27</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="col">
+  <h2>As quatro regras pendentes entregaram</h2>
+  <p class="sub">Cada uma matou o defeito que a fez nascer</p>
+
+  <p>Este é o resultado limpo da rodada, e ele não é ambíguo: toda regra que entrou na skill sem medição desde 14 de agosto matou, agora, exatamente o mutante que a originou.</p>
+</section>
+
+<div class="scroll">
+  <table>
+    <thead><tr><th>Regra</th><th>O defeito que a originou</th><th>Rodada 5</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>1.4.0</strong> — o exemplo tem de ser discriminante</td>
+        <td>D16 · precisão monetária, que era <em>falso ✅</em> na 3ª medição — os cinco exemplos numéricos davam o mesmo resultado em <code>float</code> e inteiro</td>
+        <td class="win">morto por <code>29% de 10.000 → 7.100</code></td>
+      </tr>
+      <tr>
+        <td><strong>1.5.0</strong> — criação ≠ edição ≠ uso, e a partição se repete no efeito</td>
+        <td>o ramo <code>valor_fixo</code> sem nenhuma gravação pela tela</td>
+        <td class="win">achado e fechado pela <strong>revisão adversarial do próprio braço</strong>, antes do juiz</td>
+      </tr>
+      <tr>
+        <td><strong>1.6.0</strong> — fechar lacuna declarada sem discriminar é piorar</td>
+        <td>D14 · fuso, que havia <em>regredido</em> de declarada para cega na 4ª rodada</td>
+        <td class="win">de volta a <strong>lacuna declarada</strong>, com as tentativas de arnês registradas</td>
+      </tr>
+      <tr>
+        <td><strong>1.7.0</strong> — cegueira de dimensão, não de cláusula</td>
+        <td>E12 · valor alterado depois do envio sem reavaliar a alçada — a coluna <code>editar</code> percorrida por um campo representativo</td>
+        <td class="win">morto por <code>CT-27</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<section class="col">
+  <h2>O que sobrou tem uma assinatura só</h2>
+  <p class="sub">Três lacunas cegas · dois cenários · dois juízes que não se falaram</p>
+
+  <blockquote>
+    Os dois erros não declarados têm a mesma assinatura: o conjunto testa exaustivamente o <strong>valor</strong> e o <strong>estado</strong>, e assume o <strong>mecanismo</strong>.
+    <cite>Juiz cego, cenário 1</cite>
+  </blockquote>
+
+  <blockquote>
+    É um buraco de <strong>enquadramento</strong>, não de rigor: o mesmo conjunto que fecha dez células de papel × verbo e afirma o não-efeito em cada uma nunca se perguntou o que acontece se alguém apertar “Aprovar” antes do envio. O conjunto investiu quase todo o orçamento no eixo <strong>ator</strong>.
+    <cite>Juiz cego, cenário 2</cite>
+  </blockquote>
+
+  <p>Os dois juízes receberam catálogos diferentes, conjuntos diferentes e nenhum contexto um do outro. Chegaram à mesma frase por caminhos independentes — e é isso que separa este achado de ruído estatístico.</p>
+
+  <h3>D09 — a autorização que só existe no formulário</h3>
+  <p>Todo cenário de escrita do cenário 1 entra pelo componente Livewire/Filament. O checklist marca <em>“autorização exercida na ação, não só consultada”</em> como coberto, e a matriz papel × ação é dada como exaustiva. Mas <strong>um teste de componente não consegue, por construção, distinguir uma regra que vive no formulário de uma que vive abaixo dele</strong>. Bastaria a policy estar no <code>Resource</code> e não no model para a suíte inteira ficar verde com o backend aberto.</p>
+
+  <div class="note">
+    <p class="lbl">A hipótese incômoda</p>
+    <p>A regra da <strong>camada mais barata</strong> foi uma das melhorias mais celebradas da rodada anterior — ela migrou trabalho do navegador para o componente Livewire e fez o arquivo de browser encolher enquanto o de casos crescia. Esta rodada sugere que ela cobra um pedágio que ninguém tinha medido: ao concentrar toda a escrita numa camada só, apaga a diferença entre <em>a regra existe</em> e <em>a tela chama a regra</em>. Não é motivo para desfazê-la — é motivo para exigir <strong>um</strong> cenário por fora dela em toda regra de autorização e validação.</p>
+  </div>
+
+  <h3>D15 — a premissa que apagou o cenário</h3>
+  <p>O conjunto fixou <em>“a exclusão é física”</em> e, com isso, eliminou por decisão o cenário que revelaria soft delete. O checklist registra <em>“unicidade + exclusão lógica — não se aplica”</em>. A premissa sobre mecanismo deveria escolher <strong>qual</strong> cenário escrever; escolheu <strong>se</strong> ele existe. É a mesma família de erro que a 1.6.0 nomeou — trocar dívida conhecida por ✅ falso —, agora entrando por outra porta.</p>
+
+  <h3>E01 — a matriz que foi decomposta antes de fechar</h3>
+  <p>O cenário 2 montou matrizes por <strong>regra de negócio</strong>: uma para editar/excluir, uma para enviar, uma para o estado terminal, uma para cancelar, e uma de quem decide a <em>etapa corrente</em>. Nenhuma delas é o produto cartesiano estado × evento. Consequência aritmética: os verbos <code>aprovar</code> e <code>rejeitar</code> só aparecem em cenários que já pressupõem uma etapa pendente, e os dois estados sem etapa — <code>rascunho</code> e <code>cancelada</code> — nunca são submetidos a eles. São exatamente as 4 células que faltam para 21, e a raiz do único defeito não detectado.</p>
+
+  <p>Pior que a omissão: o <code>CT-22</code> parte de uma solicitação cuja situação inicial <strong>não é declarada</strong> e afirma que a aprovação funciona. Materializado ao pé da letra, ele não deixa de matar E01 — ele <strong>certifica</strong> E01 como comportamento correto. O próprio índice do conjunto já o marcava com <em>“Mata: —”</em>.</p>
+</section>
+
+<section>
+  <div class="col">
+    <h2>O que isso vira na próxima versão</h2>
+    <p class="sub">Quatro regras candidatas, cada uma com um mutante que a exige</p>
+  </div>
+
+  <div class="ladder">
+    <div class="rung">
+      <span class="ver">R1</span>
+      <div>
+        <h4>Toda regra de autorização e validação precisa de um cenário por fora da UI</h4>
+        <p>Pelo menos um cenário que exercite a escrita no model, no service ou na rota — não no componente. A camada mais barata continua sendo o padrão; o que muda é que ela deixa de ser a <strong>única</strong> onde a regra é afirmada.</p>
+        <span class="trigger">gatilho: D09 · lacuna cega · cenário 1</span>
+      </div>
+    </div>
+    <div class="rung">
+      <span class="ver">R2</span>
+      <div>
+        <h4>Premissa sobre mecanismo escolhe qual cenário, nunca se ele existe</h4>
+        <p>Fixar “a exclusão é física” não elimina a pergunta “o registro removido ainda funciona?”. Ela vira cenário no mecanismo assumido, mais lacuna declarada no mecanismo descartado.</p>
+        <span class="trigger">gatilho: D15 · lacuna cega · cenário 1</span>
+      </div>
+    </div>
+    <div class="rung">
+      <span class="ver">R3</span>
+      <div>
+        <h4>A matriz estado × evento é um produto cartesiano fechado, em uma tabela só</h4>
+        <p>Decompor por regra de negócio deixa de fora as células cujo evento não tem “estado dono” — e são as mais baratas de plantar. A matriz é montada antes das regras, não a partir delas, e a contagem de células é o oráculo da própria matriz.</p>
+        <span class="trigger">gatilho: E01 + 4 células ausentes · cenário 2</span>
+      </div>
+    </div>
+    <div class="rung">
+      <span class="ver">R4</span>
+      <div>
+        <h4>Cenário sem situação de partida declarada é oráculo invertido</h4>
+        <p>Não é oráculo fraco — é pior. Materializado, ele certifica o defeito como comportamento esperado. O gate de falsificabilidade deve barrar todo cenário cujo <code>Dado</code> não fixe o estado inicial.</p>
+        <span class="trigger">gatilho: CT-22 · cenário 2</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="col">
+  <h2>Ressalvas, sem suavizar</h2>
+  <p class="sub">O que esta rodada não prova</p>
+
+  <ul>
+    <li><strong>A queda de 16 para 14 em C1 cabe dentro da variância.</strong> Um braço por cenário, um juiz por cenário. O que não cabe é as três lacunas terem a mesma assinatura estrutural, nomeada de forma independente por dois juízes — é isso, e não o número, que sustenta as regras candidatas.</li>
+    <li><strong>Não sei se D09, D15 e E01 eram detectados nas rodadas anteriores.</strong> Os vereditos antigos não foram preservados como arquivo, só as contagens agregadas. Chamar isso de “regressão” seria afirmar mais do que tenho. A partir desta rodada os vereditos ficam versionados junto com os conjuntos.</li>
+    <li><strong>O volume subiu e a densidade caiu.</strong> 51 e 63 cenários, contra 22 e 27 do baseline, com 0,27 detecções por cenário nos dois. Parte é carga que o catálogo não cobra — multi-tenancy, isolamento, precisão decimal —, mas o custo por defeito morto é de cerca de 3,7 cenários.</li>
+    <li><strong>Os dois braços estouraram o teto de rodadas da revisão adversarial sem convergir</strong>, e os dois escalaram em vez de fechar à força. O diagnóstico coincide: há regras modeladas grossas demais que deveriam ser duas. O teto de 2 rodadas pode estar baixo para perfil completo — e nenhuma medição foi feita sobre isso.</li>
+    <li><strong>A revisão adversarial é hoje o passo mais produtivo da skill</strong> — e é também onde a medição é mais fraca. No cenário 2 ela derrubou 6 implementações erradas na 1ª rodada e mais 5 na 2ª, e descobriu que <strong>3 dos 8 cenários que ela mesma criara não matavam o que diziam matar</strong>. Nada disso aparece no DDR, porque foi corrigido antes do juiz ver.</li>
+    <li><strong>Um dos braços registrou ter quase cometido autorrevisão</strong>: pré-escreveu a seção de revisão adversarial com o próprio raciocínio, reconheceu a proibição nº 9 da skill e apagou antes de delegar. A proibição funcionou porque o agente a leu — não há nada no processo que a imponha se ele não ler.</li>
+    <li><strong>Pairwise continua sem uso real</strong>, cinco rodadas depois. Está no pipeline e nenhum cenário o exercitou.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>Repositório <code>gsferro/laravel-ai-skills</code> · medido em <code>feature-wiki</code> 3.0.0 · <code>feature-test-design</code> 1.7.0 · <code>feature-quality-gate</code> 1.1.0 · <code>requirement-to-rule</code> 1.2.0</p>
+  <p>Material completo em <code>experimentos/</code>: protocolo, catálogos, oráculo fixo, prompt do juiz cego, os conjuntos julgados de todas as rodadas e os vereditos desta.</p>
+</footer>
+
+</div>

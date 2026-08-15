@@ -1,0 +1,524 @@
+<title>Defeitos Plantados</title>
+<style>
+  :root {
+    --paper:      #FAFAFB;
+    --surface:    #FFFFFF;
+    --surface-2:  #F1F3F4;
+    --ink:        #171B22;
+    --ink-soft:   #4A5460;
+    --ink-faint:  #7E8896;
+    --rule:       #DDE1E4;
+    --rule-soft:  #EAECEF;
+    --accent:     #0F6E70;
+    --accent-ink: #0A4F51;
+    --detect:     #2F7A55;
+    --escape:     #B03A2B;
+    --declared:   #97671B;
+    --shadow:     0 1px 2px rgba(23,27,34,.06), 0 8px 24px -16px rgba(23,27,34,.18);
+
+    --serif: "Iowan Old Style", Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "Cascadia Mono", "SF Mono", "JetBrains Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:     #101318;
+      --surface:   #171B21;
+      --surface-2: #1E232B;
+      --ink:       #E7EAEE;
+      --ink-soft:  #A6B0BC;
+      --ink-faint: #77828F;
+      --rule:      #2A3038;
+      --rule-soft: #222831;
+      --accent:    #4FB3B5;
+      --accent-ink:#7ACFD0;
+      --detect:    #58B383;
+      --escape:    #E0705C;
+      --declared:  #D2A044;
+      --shadow:    0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:     #101318;
+    --surface:   #171B21;
+    --surface-2: #1E232B;
+    --ink:       #E7EAEE;
+    --ink-soft:  #A6B0BC;
+    --ink-faint: #77828F;
+    --rule:      #2A3038;
+    --rule-soft: #222831;
+    --accent:    #4FB3B5;
+    --accent-ink:#7ACFD0;
+    --detect:    #58B383;
+    --escape:    #E0705C;
+    --declared:  #D2A044;
+    --shadow:    0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.7);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px 100px; }
+  .col  { max-width: 68ch; }
+
+  /* ---------- masthead ---------- */
+  .mast { padding: 72px 0 40px; border-bottom: 1px solid var(--rule); }
+  .eyebrow {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 18px;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 600; letter-spacing: -.02em;
+    font-size: clamp(38px, 6vw, 60px); line-height: 1.04; margin: 0 0 20px;
+    text-wrap: balance;
+  }
+  .standfirst {
+    font-family: var(--serif); font-size: clamp(19px, 2.2vw, 22px);
+    line-height: 1.5; color: var(--ink-soft); margin: 0; max-width: 62ch;
+  }
+
+  /* ---------- readout strip ---------- */
+  .readout {
+    display: grid; gap: 1px; background: var(--rule);
+    grid-template-columns: repeat(auto-fit, minmax(196px, 1fr));
+    border: 1px solid var(--rule); border-radius: 3px; overflow: hidden;
+    margin: 44px 0 8px;
+  }
+  .cell { background: var(--surface); padding: 20px 22px 18px; }
+  .cell .k {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-faint); margin: 0 0 10px;
+  }
+  .cell .v {
+    font-family: var(--mono); font-variant-numeric: tabular-nums;
+    font-size: 30px; font-weight: 600; line-height: 1; margin: 0 0 6px;
+    letter-spacing: -.02em;
+  }
+  .cell .n { font-size: 13.5px; color: var(--ink-soft); margin: 0; line-height: 1.4; }
+  .up   { color: var(--detect); }
+  .down { color: var(--escape); }
+
+  /* ---------- sections ---------- */
+  section { padding-top: 62px; }
+  h2 {
+    font-family: var(--serif); font-size: clamp(26px, 3.4vw, 33px); font-weight: 600;
+    letter-spacing: -.015em; line-height: 1.16; margin: 0 0 8px; text-wrap: balance;
+  }
+  .sub {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-faint); margin: 0 0 22px;
+  }
+  h3 {
+    font-family: var(--sans); font-size: 17.5px; font-weight: 650; letter-spacing: -.005em;
+    margin: 34px 0 10px;
+  }
+  p { margin: 0 0 17px; }
+  .col p, .col ul, .col ol { max-width: 68ch; }
+  ul, ol { margin: 0 0 17px; padding-left: 22px; }
+  li { margin-bottom: 8px; }
+  strong { font-weight: 650; }
+  code {
+    font-family: var(--mono); font-size: .87em;
+    background: var(--surface-2); padding: .12em .38em; border-radius: 3px;
+  }
+  a { color: var(--accent-ink); text-underline-offset: 2px; }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ---------- tables ---------- */
+  .scroll { overflow-x: auto; margin: 22px 0 26px; border: 1px solid var(--rule); border-radius: 3px; }
+  table { border-collapse: collapse; width: 100%; background: var(--surface); font-size: 14.5px; }
+  th, td { padding: 11px 15px; text-align: left; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+  thead th {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 500; background: var(--surface-2);
+    border-bottom: 1px solid var(--rule); white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .win { color: var(--detect); font-weight: 650; }
+  .lose { color: var(--escape); font-weight: 650; }
+  .flat { color: var(--ink-faint); }
+
+  /* ---------- pull quote ---------- */
+  blockquote {
+    margin: 30px 0; padding: 0 0 0 22px; border-left: 2px solid var(--accent);
+    font-family: var(--serif); font-size: 19.5px; line-height: 1.5; color: var(--ink-soft);
+    max-width: 62ch;
+  }
+  blockquote cite {
+    display: block; margin-top: 10px; font-family: var(--mono); font-style: normal;
+    font-size: 11.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-faint);
+  }
+
+  /* ---------- note ---------- */
+  .note {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 3px;
+    padding: 20px 22px; margin: 26px 0; font-size: 15.5px; box-shadow: var(--shadow);
+    max-width: 74ch;
+  }
+  .note .lbl {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 9px;
+  }
+  .note p:last-child { margin-bottom: 0; }
+
+  /* ---------- iteration ladder ---------- */
+  .ladder { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+            border-radius: 3px; overflow: hidden; margin: 26px 0; }
+  .rung { background: var(--surface); padding: 20px 22px; display: grid; gap: 14px;
+          grid-template-columns: 88px 1fr; align-items: start; }
+  .rung .ver {
+    font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--accent);
+    padding-top: 2px; letter-spacing: -.01em;
+  }
+  .rung h4 { margin: 0 0 6px; font-size: 15.5px; font-weight: 650; }
+  .rung p  { margin: 0; font-size: 14.5px; color: var(--ink-soft); }
+  .rung .trigger {
+    font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint);
+    margin-top: 9px; display: block;
+  }
+  @media (max-width: 620px) { .rung { grid-template-columns: 1fr; gap: 8px; } }
+
+  footer {
+    margin-top: 76px; padding-top: 26px; border-top: 1px solid var(--rule);
+    font-size: 14px; color: var(--ink-faint); max-width: 68ch;
+  }
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="eyebrow">Experimento controlado · laravel-ai-skills · 14–15 ago 2026 · quatro rodadas medidas</p>
+  <h1>Defeitos Plantados</h1>
+  <p class="standfirst">Os casos de teste que a <code>feature-wiki</code> escrevia antes de implementar cobriam alguns erros e deixavam outros passar. Este é o registro de como isso foi medido em vez de discutido — e do que a medição obrigou a mudar.</p>
+
+  <div class="readout">
+    <div class="cell">
+      <p class="k">Cenário 1 · detecção</p>
+      <p class="v"><span class="flat">7</span> → <span class="up">16</span></p>
+      <p class="n">de 18 · 38,9% → 88,9%</p>
+    </div>
+    <div class="cell">
+      <p class="k">Cenário 2 · detecção</p>
+      <p class="v"><span class="flat">11</span> → <span class="up">17</span></p>
+      <p class="n">de 18 · 61,1% → 94,4%</p>
+    </div>
+    <div class="cell">
+      <p class="k">Lacunas cegas</p>
+      <p class="v"><span class="lose">10</span> → <span class="up">1</span></p>
+      <p class="n">nem detecta, nem menciona</p>
+    </div>
+    <div class="cell">
+      <p class="k">Mutation score</p>
+      <p class="v"><span class="flat">100% = 100%</span></p>
+      <p class="n">não distinguiu nada — ver abaixo</p>
+    </div>
+  </div>
+</header>
+
+<section class="col">
+  <h2>O problema, dito com números</h2>
+  <p class="sub">Auditoria forense · 9 wikis reais · 125 casos · 164 testes Pest</p>
+
+  <p>A queixa era concreta: <em>“os CTs que estão sendo escritos cobrem alguns erros, mas outros passam.”</em> Antes de propor qualquer coisa, auditei a saída real da skill em produção — as nove wikis que o starter-kit carrega, escritas por ela em features de verdade.</p>
+</section>
+
+<div class="scroll">
+  <table>
+    <thead><tr><th>Medida</th><th>Resultado</th></tr></thead>
+    <tbody>
+      <tr><td>Casos que caem nos 4 arquétipos que o próprio template nomeava (<em>happy path</em>, falha, autorização, log)</td><td class="num lose">52% — e nada além</td></tr>
+      <tr><td>Análise de valor limite genuína</td><td class="num lose">1 em 125</td></tr>
+      <tr><td>Tabela de decisão implementada · pairwise</td><td class="num lose">0 · 0</td></tr>
+      <tr><td>Busca por “partição”, “equivalência”, “valor limite”, “pairwise” nas wikis</td><td class="num lose">zero resultados</td></tr>
+      <tr><td>Cláusulas de requisito rastreáveis sem nenhum caso de teste</td><td class="num lose">9 de 19</td></tr>
+      <tr><td>Casos com oráculo fraco (implementação defeituosa passaria)</td><td class="num lose">19 de 125 · 7 graves cobrindo 52 telas</td></tr>
+      <tr><td>Telas <code>create</code> cobertas só por <code>visit()</code>, sem gravação</td><td class="num lose">5</td></tr>
+      <tr><td>Testes “órfãos” — achados depois, não pelo processo de escrita do <code>04</code></td><td class="num lose">9</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<section class="col">
+  <p>Os nove testes órfãos são a evidência mais dura: cinco deles são classes de entrada que qualquer particionamento formal listaria em minutos — cor inválida aceita em silêncio, caminho de arquivo órfão, coluna escalar que escapa do filtro de papel. Todos foram descobertos por revisão manual de QA, por leitura de <code>vendor/</code> durante a implementação, ou por falha em execução. <strong>Nenhum pelo processo que existe para descobri-los.</strong></p>
+
+  <h3>Duas causas, ambas dentro da própria skill</h3>
+  <p><strong>Primeira: o caso de teste era derivado do plano.</strong> O arquivo dizia literalmente que “os CTs validam os passos do PRD”. Só que o PRD é a <em>interpretação</em> do requisito, feita pelo mesmo agente que depois escreve o teste e implementa. Testar a interpretação a confirma.</p>
+  <p><strong>Segunda: o critério de suficiência era cobertura de código.</strong> “Todo método público tem pelo menos 1 CT; métodos com <em>branches</em> têm CT para cada <em>branch</em>” — sobre um código que <strong>ainda não existe</strong> no momento em que o arquivo é escrito. A instrução obriga o agente a imaginar a implementação e testá-la.</p>
+
+  <div class="note">
+    <p class="lbl">Evidência externa</p>
+    <p>Não é opinião. Medido sobre <strong>318 defeitos reais</strong> do Defects4J com 11 modelos: derivar teste a partir do <em>código</em> em vez da <em>especificação</em> multiplica por ~8 os testes que codificam o bug como comportamento esperado (0,46% → 3,84%) e derruba por ~3 os que detectam o defeito (8,51% → 2,98%). Trocar o código por uma descrição do comportamento pretendido reverte os dois números.</p>
+  </div>
+</section>
+
+<section class="col">
+  <h2>O experimento</h2>
+  <p class="sub">Protocolo · catálogo antes · dois braços · juiz cego</p>
+
+  <p>Um projeto descartável criado com o próprio starter-kit (Laravel 13 · Filament 5 · Pest 5 com <em>browser</em> e <em>mutate</em>), e um protocolo desenhado para que o resultado não dependesse da minha opinião:</p>
+  <ol>
+    <li><strong>Requisito</strong> — um card curto e realista, com nove ambiguidades plantadas de propósito.</li>
+    <li><strong>Catálogo de defeitos</strong> — 18 mutantes plausíveis, escritos <strong>antes</strong> de qualquer conjunto de teste existir. Cada um é uma implementação que um dev competente escreveria de boa-fé.</li>
+    <li><strong>Dois braços independentes</strong> — mesmo requisito, mesmo projeto, o <strong>mesmo</strong> arquivo de requisito como oráculo fixo, agentes sem contexto compartilhado. Isola a técnica de derivação como única variável.</li>
+    <li><strong>Juiz cego</strong> — recebe só o catálogo e os dois conjuntos anonimizados. Ônus da prova é do conjunto; <strong>citação literal obrigatória</strong> em cada detecção; na dúvida, não detecta; formato não é mérito.</li>
+    <li><strong>Materialização em Pest</strong> contra a <strong>mesma</strong> implementação, escrita por um terceiro agente que nunca viu nenhum dos conjuntos.</li>
+  </ol>
+  <p>Dois cenários, escolhidos para falhar por motivos diferentes: um de <strong>cálculo e valor</strong> (cupons de desconto) e um de <strong>máquina de estados</strong> (aprovação de compra em duas etapas).</p>
+</section>
+
+<section>
+  <div class="col">
+    <h2>O que a medição devolveu</h2>
+    <p class="sub">Dois cenários · 36 defeitos plantados · juiz cego</p>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr><th>Métrica</th><th>Baseline<br><span style="font-weight:400;text-transform:none;letter-spacing:0">feature-wiki 2.10</span></th><th>Pipeline novo</th><th>Δ</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Cenário 1 · cupons</strong> — defeitos detectados</td><td class="num">7 / 18</td><td class="num win">12 / 18</td><td class="num win">+71%</td></tr>
+        <tr><td>Taxa de detecção</td><td class="num">38,9%</td><td class="num win">66,7%</td><td class="num win">+27,8 pp</td></tr>
+        <tr><td>Lacunas cegas · declaradas</td><td class="num"><span class="lose">10</span> · 1</td><td class="num"><span class="win">2</span> · 4</td><td class="num win">−8 cegas</td></tr>
+        <tr><td><strong>Cenário 2 · máquina de estados</strong> — defeitos detectados</td><td class="num">11 / 18</td><td class="num win">17 / 18</td><td class="num win">+55%</td></tr>
+        <tr><td>Taxa de detecção</td><td class="num">61,1%</td><td class="num win">94,4%</td><td class="num win">+33,3 pp</td></tr>
+        <tr><td>Células inválidas da matriz estado × evento <strong>executadas</strong></td><td class="num lose">9 de 21</td><td class="num win">21 de 21</td><td class="num win">+12 células</td></tr>
+        <tr><td>Lacunas cegas · declaradas</td><td class="num"><span class="lose">7</span> · 0</td><td class="num"><span class="win">1</span> · 0</td><td class="num win">−6 cegas</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col">
+    <blockquote>
+      C1 deriva de fronteiras, C2 deriva de superfície de código — organiza os casos por método público e declara cobertura quando todo método tem um caso. Isso garante que nada fique sem teste e não garante nada sobre valores.
+      <cite>Juiz cego, cenário 1</cite>
+    </blockquote>
+
+    <p>A distinção entre <strong>lacuna cega</strong> e <strong>lacuna declarada</strong> acabou sendo mais informativa que a própria taxa de detecção. Uma lacuna declarada é dívida: alguém sabe que existe e escreveu por quê. Uma lacuna cega é um requisito marcado como coberto com o defeito dentro — e é exatamente o que fazia o <em>quality gate</em> aprovar enquanto o erro passava.</p>
+
+    <h3>A terceira medição</h3>
+    <p>Seis defeitos tinham atravessado os dois braços do cenário 1. As regras nascidas deles entraram na skill, e o cenário foi rodado uma terceira vez, do zero, por um agente novo:</p>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Cenário 1 · cupons</th><th>Baseline</th><th>1ª medição</th><th>2ª medição</th></tr></thead>
+      <tbody>
+        <tr><td>Defeitos detectados de 18</td><td class="num">7</td><td class="num">12</td><td class="num win">16</td></tr>
+        <tr><td>Taxa de detecção</td><td class="num">38,9%</td><td class="num">66,7%</td><td class="num win">88,9%</td></tr>
+        <tr><td>Lacunas cegas</td><td class="num lose">10</td><td class="num">2</td><td class="num win">1</td></tr>
+        <tr><td>Lacunas declaradas</td><td class="num">1</td><td class="num">4</td><td class="num">1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col">
+    <p><strong>Cinco dos seis fugitivos fecharam</strong>, e o juiz atribuiu cada um a um mecanismo nomeável, não a sorte: o teto do percentual e o piso do valor caíram pela regra <em>entrada ≠ uso</em> combinada com <em>domínio condicionado</em>; a validade no passado, pela mesma regra aplicada à gravação <strong>e à edição</strong>; o cupom excluído ainda aplicável, pela coluna <em>aplicar</em> da tabela estado × operação.</p>
+
+    <blockquote>
+      Escapou antes porque conjuntos anteriores provaram só a segunda metade — sumir da lista é o oráculo fácil, deixar de funcionar é o que importa.
+      <cite>Juiz cego, terceira medição</cite>
+    </blockquote>
+  </div>
+</section>
+
+<section class="col">
+  <h2>A validação em código real</h2>
+  <p class="sub">Mesma implementação · duas suítes Pest · terceiro agente</p>
+
+  <p>Especificação boa no papel não vale nada. As duas foram materializadas em testes Pest contra a <strong>mesma</strong> implementação do domínio de cupom — escrita por um agente que nunca viu nenhum dos dois arquivos, e instruído a codar “como um dev competente escreveria de boa-fé lendo o card”, sem blindar contra casos que o requisito não menciona.</p>
+  <p>Quem escreveu os testes também foi proibido de ler a implementação: recebeu só o contrato público. E foi instruído a <strong>não corrigir</strong> teste que ficasse vermelho por divergência real — esses vão para uma pasta própria, porque teste vermelho por divergência é o resultado que se queria.</p>
+</section>
+
+<div class="scroll">
+  <table>
+    <thead><tr><th></th><th>Suíte do baseline</th><th>Suíte do pipeline novo</th></tr></thead>
+    <tbody>
+      <tr><td>Testes verdes</td><td class="num">22</td><td class="num win">38</td></tr>
+      <tr><td>Assertions</td><td class="num">55</td><td class="num win">91</td></tr>
+      <tr><td>Defeitos reais encontrados na implementação</td><td class="num">2</td><td class="num">2</td></tr>
+      <tr><td>Mutation score em <code>app/Services</code></td><td class="num flat">100% (24/24)</td><td class="num flat">100% (24/24)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<section class="col">
+  <p>Os dois defeitos reais foram <strong>diferentes</strong>. O baseline pegou “unicidade não imposta quando <code>tenant_id</code> é NULL”; o pipeline novo pegou a <strong>borda exata da validade</strong> — comparação <code>&gt;=</code> onde deveria ser <code>&gt;</code>, o cupom vivendo um instante a mais. Ambos pegaram “trilha de auditoria sobrescrita a cada aplicação”. União: três defeitos reais numa implementação escrita de boa-fé.</p>
+  <p>Vale a ressalva honesta: os agentes que materializaram os testes tinham a mesma liberdade de acrescentar casos além da especificação, e ambos usaram um pouco dela. A comparação de suítes mede “especificação + quem escreveu”, não a especificação isolada. A comparação do juiz cego, essa sim, mede só a especificação.</p>
+</section>
+
+<section class="col">
+  <h2>O achado que derrubou uma premissa minha</h2>
+  <p class="sub">Mutation testing é cego à omissão</p>
+
+  <p>Eu tinha desenhado o fechamento do ciclo em torno do <code>pest --mutate</code>: implementa, mede o <em>mutation score</em>, e cada mutante sobrevivente vira lacuna de derivação. É uma boa ideia, tem validação industrial, e <strong>não funciona para o problema que motivou este trabalho</strong>.</p>
+  <p>As duas suítes obtiveram <strong>100% de mutation score cada</strong> — 24 de 24 mutantes mortos — enquanto o juiz cego as separava em 7 contra 12 defeitos detectados. A métrica saturou e não distinguiu nada.</p>
+
+  <div class="note">
+    <p class="lbl">Por quê</p>
+    <p><strong>Mutation testing só muta código que existe.</strong> Os defeitos que separam as duas suítes são <em>comportamentos ausentes</em>: não há <code>if ($percentual &gt; 100)</code> para mutar porque a validação nunca foi escrita. A técnica é estruturalmente cega à omissão — que é justamente a classe de defeito mais cara e o motivo de o <em>quality gate</em> existir.</p>
+  </div>
+
+  <p>A correção entrou nas duas skills: o <em>mutation score</em> é <strong>piso de qualidade de assertion</strong>, não indicador de cobertura de requisito. Score alto não absolve a dimensão de rastreabilidade. Quem responde por omissão continua sendo a amarração cláusula → cenário e o gate de mutantes <strong>de especificação</strong> — que nascem do requisito, não do código, e por isso enxergam o que nunca foi escrito.</p>
+
+  <h3>Duas armadilhas medidas de passagem</h3>
+  <ul>
+    <li><code>covers(X::class)</code> <strong>restringe o que conta como coberto</strong>: mutante em classe fora do <code>covers()</code> é reportado como <code>uncovered</code> e o score vai a 0% — mesmo com os testes executando aquele código em toda chamada. Verificado com a classe de retorno usada por todos os casos.</li>
+    <li><code>--class=</code> não casa de forma confiável; <code>--path=</code> é o filtro que funciona. E exige <code>XDEBUG_MODE=coverage</code>.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="col">
+    <h2>A escada de iterações</h2>
+    <p class="sub">Cada versão tem um gatilho medido, não uma revisão de escrivaninha</p>
+    <p>Quatro versões em um dia. Nenhuma delas veio de reler a skill: cada uma fecha lacunas que atravessaram <strong>os dois</strong> braços do experimento, ou que os próprios agentes executores relataram como ambiguidade.</p>
+  </div>
+
+  <div class="ladder">
+    <div class="rung">
+      <span class="ver">1.0.0</span>
+      <div>
+        <h4>O pipeline de derivação</h4>
+        <p>Perfil por risco → varredura SFDIPOT → mapa de regras → técnica formal por regra → checklist de taxonomia → Gherkin pt-BR → gate de falsificabilidade → alocação de camada e poda.</p>
+        <span class="trigger">gatilho: auditoria forense de 9 wikis reais</span>
+      </div>
+    </div>
+    <div class="rung">
+      <span class="ver">1.1.0</span>
+      <div>
+        <h4>Entrada ≠ uso, domínio condicionado, estado × operação</h4>
+        <p>Os seis defeitos que escaparam dos dois braços no cenário 1. Três eram de <strong>ponto de gravação</strong> — os dois conjuntos testaram o mesmo campo exaustivamente pelo lado do cálculo e nunca pelo lado do cadastro. E <code>sim</code> deixou de ser resposta válida no checklist: cada item passa a exigir o ID do cenário que o mata.</p>
+        <span class="trigger">gatilho: 6 defeitos comuns · cenário 1</span>
+      </div>
+    </div>
+    <div class="rung">
+      <span class="ver">1.2.0</span>
+      <div>
+        <h4>Ciclo de volta exige 2-switch · enum exaustivo · injeção de falha</h4>
+        <p>Os três defeitos que escaparam dos dois braços no cenário 2. Quando um estado pode ser <strong>reentrado</strong>, cobrir uma transição por vez não prova nada sobre o segundo giro — e é ali que o ciclo novo herda o que o anterior deixou. Aqui também entrou a correção sobre o alcance do <code>--mutate</code>.</p>
+        <span class="trigger">gatilho: 3 defeitos comuns · cenário 2 + saturação do mutation score</span>
+      </div>
+    </div>
+    <div class="rung">
+      <span class="ver">1.3.0</span>
+      <div>
+        <h4>Contradições internas que só o uso revela</h4>
+        <p>O teto de cenários brigava aritmeticamente com “100% das células inválidas” — 21 células contra teto de 5. A revisão adversarial era obrigatória e não dizia o que fazer com os achados. E “camada mais barata” brigava com “não derivar do código”: decidir <code>Unit</code> ou <code>Feature</code> exigia imaginar a estrutura provável do código, que é o palpite proibido.</p>
+        <span class="trigger">gatilho: relatos dos agentes executores</span>
+      </div>
+    </div>
+    <div class="rung">
+      <span class="ver">1.4.0</span>
+      <div>
+        <h4>O exemplo tem de ser discriminante</h4>
+        <p>Na terceira medição, o conjunto marcou “precisão monetária” como coberta e citou dois cenários — e nenhum dos cinco exemplos numéricos distinguia <code>float</code> de inteiro. 10% de 10.000 dá 1.000 nas duas implementações; é preciso 29% de 10.000, onde o float dá 2.899 e o inteiro dá 2.900. Um item marcado como coberto com o defeito intacto é <strong>pior</strong> que lacuna declarada, porque ninguém volta a olhar.</p>
+        <span class="trigger">gatilho: 1 lacuna cega · terceira medição</span>
+      </div>
+    </div>
+    <div class="rung">
+      <span class="ver">1.6.0<br>1.7.0</span>
+      <div>
+        <h4>Cegueira de dimensão, não de cláusula</h4>
+        <p>Medindo a 1.5.0 nos dois cenários, o que sobrou não era regra faltando — era <strong>dimensão fixa</strong>. A matriz de estados percorrida sempre com o dono do registro deixa a barreira de identidade sem cenário; percorrida sempre com o mesmo campo, deixa sem cenário justamente o campo que decide o fluxo. E o fuso horário regrediu de <em>lacuna declarada</em> para <em>lacuna cega</em>, porque o cenário escrito escolheu 20:00 — fora da janela de 3 h em que o defeito é observável. Trocar dívida conhecida por ✅ falso é piorar, mesmo com a taxa igual.</p>
+        <span class="trigger">gatilho: 4ª rodada · 2 cenários · recorte tirado após a conclusão</span>
+      </div>
+    </div>
+    <div class="rung">
+      <span class="ver">1.5.0</span>
+      <div>
+        <h4>Criação ≠ edição ≠ uso · e a partição que se repete no efeito</h4>
+        <p>A regra de ouro tinha dois pontos e o eixo real tem três: fechada a criação, quatro dos seis defeitos que a revisão adversarial provou viviam <strong>só na edição</strong> — normalização, unicidade, autorização e domínio existiam no <code>create</code> e sumiam no <code>save</code>. E o achado mais caro: <strong>todos</strong> os cenários de consumo usavam cupom de porcentagem, então um atalho no ramo de valor fixo ficava verde no conjunto inteiro. O discriminador não particiona só o domínio — particiona o comportamento.</p>
+        <span class="trigger">gatilho: 6 defeitos provados pela revisão adversarial</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="note">
+      <p class="lbl">O instrumento pegando o próprio instrumento</p>
+      <p>A revisão adversarial é um passo da skill: um sub-agente que recebe só o requisito e os cenários, e cuja tarefa é <strong>provar</strong> que o conjunto deixa passar um defeito. Rodando sobre um conjunto que já marcava 88,9%, ela provou mais seis implementações erradas atravessando os 41 cenários. É a mesma lógica de tudo aqui — quem julga não pode ser quem produziu.</p>
+    </div>
+  </div>
+</section>
+
+<section class="col">
+  <h2>O que mudou nas skills</h2>
+  <p class="sub">Quatro skills · a coletânea ganhou uma estação</p>
+
+  <h3>A derivação virou skill própria</h3>
+  <p>A razão mais forte é a mesma que criou o arquivo de requisito imutável e que proíbe o <em>quality gate</em> de corrigir o que julga: <strong>quem escreve o plano não deve derivar o teste do próprio plano</strong>. Uma skill separada torna a fronteira executável — a entrada é o requisito, e o plano entra só para caminhos e superfície de tela. E a derivação é necessária fora do fluxo da wiki: quando o <em>quality gate</em> roteia um achado para “teste”, quando se escreve a regressão de um bug de produção, e para cobrir código legado.</p>
+
+  <h3>A camada que faltava</h3>
+  <p>O arquivo de casos era declarado “100% backend”, e todo cenário de tela ia para o navegador, com teto de um caminho feliz e um erro. O efeito colateral: <strong>a superfície de UI ficava praticamente sem cobertura</strong>, porque o teto do navegador virou o teto da tela inteira. Em Laravel + Filament, a maior parte do que parece exigir navegador é <strong>teste de componente Livewire</strong> — milissegundos, sem Node e sem Playwright.</p>
+  <p>Um sinal de que a mudança pegou: conforme o arquivo de casos cresceu ao longo das iterações (489 → 818 → 1.195 linhas), o arquivo de navegador <strong>encolheu</strong> (278 → 209 → 194). Trabalho migrando do caro para o barato.</p>
+
+  <h3>Erros factuais corrigidos</h3>
+  <p>Três afirmações da documentação estavam erradas e levariam um agente a configurar ou escrever coisa errada num projeto que não tenha regras próprias para compensar:</p>
+</section>
+
+<div class="scroll">
+  <table>
+    <thead><tr><th>Dizia</th><th>É verdade</th></tr></thead>
+    <tbody>
+      <tr><td>“a doc não explicita se o plugin sobe o app ou exige servidor externo — registrar como o projeto serve o app”</td><td><strong>O plugin sobe o próprio servidor</strong>, HTTP <em>in-process</em>, porta aleatória. Nada de Herd, <code>artisan serve</code>, Sail ou <code>APP_URL</code></td></tr>
+      <tr><td>“<code>actingAs()</code> em teste de navegador não está documentado — não assumir”</td><td>É o <strong>mesmo processo</strong>: <code>actingAs()</code> antes do <code>visit()</code> funciona e é o caminho recomendado. Login pela tela custa dezenas de segundos por cenário</td></tr>
+      <tr><td>“o plugin expõe <code>wait(segundos)</code>”</td><td>Certo sobre a API, errado sobre a conclusão: <strong>nunca usar <code>wait()</code></strong>. O plugin reexecuta cada assertion até o teto configurado</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<section class="col">
+  <div class="note">
+    <p class="lbl">Ressalva honesta</p>
+    <p>O braço baseline <strong>acertou</strong> esses três pontos na prática — porque o starter-kit tem regras de projeto próprias com a informação certa, e o agente as leu. As regras do projeto compensaram o erro da skill. A correção continua valendo, porque a skill precisa estar certa sozinha, mas não vou creditá-la com um ganho que ela não teve.</p>
+  </div>
+
+  <h3>O <em>quality gate</em> ganhou uma dimensão</h3>
+  <p>A observação de que ele “só valida o confronto entre requisito e plano” virou a dimensão <strong>K — Adequação da Suíte</strong>: as outras dez perguntam se o produto está certo; esta pergunta se o instrumento de medição presta. O passo estático dela é um <em>grep</em> por oráculo ausente ou fraco, custa segundos, e nunca é pulado.</p>
+  <p>E o roteamento mudou: um achado de “destino teste” deixou de terminar no caso que o reproduz. O achado <strong>é</strong> um mutante que sobreviveu, então a pergunta seguinte é qual lacuna de derivação o deixou vivo. Fechar só o caso garante que o vizinho dele volte na próxima feature.</p>
+</section>
+
+<section class="col">
+  <h2>Sobre Gherkin</h2>
+  <p class="sub">Vale — como linguagem de especificação, e sem runner</p>
+
+  <p>A intuição estava certa, com uma ressalva que importa. <strong>Gherkin ajuda</strong>: força um “Então” sobre saída observável — que é o oráculo —, empurra para linguagem de domínio em vez de mecânica de implementação, e o <code>Regra:</code> dá um lugar de primeira classe para o critério de aceite, que é exatamente o eixo de cobertura. O <code>Esquema do Cenário</code> é a forma canônica de expressar partição e valor limite, com a coluna do rótulo dizendo qual borda cada linha representa.</p>
+  <p><strong>Sem runner</strong>, e isso não é meio-caminho. Não existe plugin Gherkin viável para Pest — o único que promete tem zero estrelas e parou em 2023, e o alternativo está travado numa versão major atrás. Behat exigiria uma ponte Laravel abandonada desde 2022. O BDD se decompõe em descoberta, formulação e automação, e a formulação entrega valor sozinha; o próprio criador do Cucumber é explícito sobre não usar a ferramenta quando tudo o que se precisa é executar teste.</p>
+  <p><strong>E Gherkin sozinho não resolveria o problema.</strong> Ele é formato, não técnica de derivação — escrever Gherkin ruim é tão fácil quanto escrever caso de teste ruim, e os anti-padrões estão catalogados. Por isso ele entra no passo 5 do pipeline, <em>depois</em> da derivação, e não no lugar dela. Trocar de gabarito mantendo o problema teria sido o desfecho mais provável.</p>
+</section>
+
+<section class="col">
+  <h2>O que ainda é cego</h2>
+  <p class="sub">Limitações, sem suavizar</p>
+
+  <ul>
+    <li><strong>Fuso horário continua vivo</strong>, agora como lacuna declarada com quatro tentativas documentadas de contorná-la no arnês. Declarado não é coberto: o defeito de 3 horas de janela continua possível em produção. A saída identificada — um <code>TestCase</code> que fixe o fuso antes do <em>bootstrap</em> — foi recusada por custo.</li>
+    <li><strong>Precisão de ponto flutuante escapou por escolha de valores redondos</strong> — e escapou <em>marcada como coberta</em>. A regra da 1.4.0 endereça isso, mas ainda não foi medida.</li>
+    <li><strong>As três últimas versões não foram medidas.</strong> A 1.2.0 nasceu do cenário 2, a 1.4.0 e a 1.5.0 da terceira medição do cenário 1 — todas endereçam lacunas reais, nenhuma passou ainda por um braço novo. A próxima rodada tem trabalho definido.</li>
+    <li><strong>Os três defeitos mais teimosos do cenário 2 caíram.</strong> Sequência de dois eventos, tela mentindo o estado e efeito fora da transação sobreviveram a <em>dois</em> conjuntos e morreram no terceiro — cada um pelo mecanismo que a versão correspondente introduziu. O que sobrou lá é de dimensão: valor alterado depois do envio sem reavaliar a alçada, porque a coluna <code>editar</code> foi percorrida por um campo representativo.</li>
+    <li><strong>Fuso horário regrediu antes de melhorar.</strong> Era lacuna declarada com quatro tentativas registradas; virou lacuna cega quando o conjunto escreveu um cenário que não discrimina. A regra da 1.6.0 endereça isso e ainda não foi medida.</li>
+    <li><strong>O volume não é mérito.</strong> O conjunto do pipeline novo é 2 a 4× maior, e parte disso é carga de UI, permissão e multi-tenancy que não aparece em nenhum catálogo. Densidade de detecção por caso é <em>maior</em> no baseline — ele é mais afiado por caso e mais cego no conjunto.</li>
+    <li><strong>O juiz é um modelo.</strong> A exigência de citação literal e o viés declarado para “não detecta” reduzem a leniência, mas não a eliminam. Dois cenários, três medições, um juiz por medição — amostra pequena.</li>
+    <li><strong>Pairwise continua sem uso real.</strong> Está no pipeline e nenhum cenário o exercitou — e a literatura é explícita que 2-a-2 deixa passar de 10% a 40% das falhas de interação.</li>
+    <li><strong>As medições 2 e 3 tiveram contaminação conhecida — para menos.</strong> Nas duas, a revisão adversarial provou seis defeitos e os fechou <em>depois</em> que eu tirei o recorte para o juiz. Na quarta rodada isso foi corrigido: o recorte saiu só após a conclusão do agente, e é por isso que ela é a única diretamente comparável ao baseline.</li>
+    <li><strong>As regras 1.6.0 e 1.7.0 não foram medidas.</strong> Nasceram de lacunas nomeadas na quarta rodada e endereçam defeitos concretos, mas nenhum braço novo passou por elas. A próxima volta tem trabalho definido.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>Repositório <code>gsferro/laravel-ai-skills</code> · <code>feature-wiki</code> 3.0.0 · <code>feature-test-design</code> 1.7.0 · <code>feature-quality-gate</code> 1.1.0 · <code>requirement-to-rule</code> 1.1.0</p>
+  <p>Ambiente de validação: projeto criado com <code>composer create-project gsferro/starter-kit-easy</code> — Laravel 13.25 · Filament 5.6 · Pest 5.0.5 · Xdebug com <code>coverage</code>. Suítes do experimento verdes: 60 testes, 146 assertions.</p>
+</footer>
+
+</div>
