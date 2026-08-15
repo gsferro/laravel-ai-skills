@@ -9,7 +9,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 | Skill | Versão | Tag |
 |---|---|---|
 | `feature-wiki` | 3.0.0 | `feature-wiki-v3.0.0` |
-| `feature-test-design` | 1.7.0 | `feature-test-design-v1.7.0` |
+| `feature-test-design` | 1.8.0 | `feature-test-design-v1.8.0` |
 | `feature-quality-gate` | 1.1.0 | `feature-quality-gate-v1.1.0` |
 | `requirement-to-rule` | 1.2.0 | `requirement-to-rule-v1.2.0` |
 
@@ -261,6 +261,56 @@ Consolida as versões 2.5.0 e 2.6.0 (nunca commitadas isoladamente) e adiciona a
 # feature-test-design
 
 Deriva casos de teste que **matam defeito**, a partir do requisito — nunca do plano e nunca do código.
+
+## [1.8.0] — 2026-08-15
+
+**Rodada 5** — a primeira que mede as quatro versões que tinham entrado sem medição (1.4.0 a
+1.7.0), nos **dois** cenários, com o oráculo fixo desde o baseline e um juiz cego por cenário.
+Material completo em [`experimentos/2026-08-15-rodada-5/`](experimentos/2026-08-15-rodada-5/vereditos.md).
+
+| | Baseline | Melhor anterior | **Rodada 5** |
+|---|---|---|---|
+| C1 · cupons (de 18) | 7 | 16 | **14** |
+| C2 · aprovação (de 18) | 11 | 17 | **17** |
+| Total | 18 / 36 | 33 / 36 | **31 / 36** |
+| Lacunas cegas | 17 | 2 | **3** |
+
+**As quatro regras pendentes entregaram**: cada uma matou exatamente o mutante que a originou — a
+1.4.0 a precisão de `float` (`29% de 10.000 → 7.100`), a 1.6.0 devolveu o fuso de lacuna cega para
+**declarada**, a 1.7.0 matou a alçada não recomputada, e a 1.5.0 pegou o ramo `valor_fixo` sem
+gravação pela própria revisão adversarial, antes do juiz.
+
+**O que sobrou foi deslocamento de orçamento.** As três lacunas cegas são novas e vieram de dois
+juízes independentes, em dois cenários, com a mesma leitura: *"o conjunto testa exaustivamente o
+**valor** e o **estado**, e assume o **mecanismo**"* / *"o conjunto investiu quase todo o
+orçamento no eixo **ator**"*. As quatro regras abaixo saem dali, uma por mutante.
+
+### Adicionado
+
+- **Gate de camada da regra.** Toda regra de **autorização** e de **validação de domínio** precisa
+  de ≥1 cenário que exercite a escrita **por fora do componente de UI**. Teste de componente não
+  distingue, por construção, *a regra existe* de *a tela chama a regra* — um conjunto de 51
+  cenários fechou a matriz papel × ação inteira pela tela e deixou passar *policy só no form do
+  Filament; request direto ao backend passa*. É o pedágio, agora medido, da regra da camada mais
+  barata
+- **Premissa sobre mecanismo escolhe qual cenário, nunca se ele existe.** Premissa de **escopo**
+  torna o cenário inexpressável (lacuna declarada legítima); premissa de **mecanismo** ("a exclusão
+  é física", "`ativo` é derivado") só decide **como** escrevê-lo. Usá-la para apagar o cenário é
+  converter escolha de implementação em cobertura — foi assim que *entidade excluída continua
+  aplicável* virou lacuna cega com o checklist marcando a linha como coberta
+- **A matriz estado × evento é montada ANTES das regras, e é UMA tabela.** Produto cartesiano
+  fechado `todos os estados × todas as operações`, derivado do enum e da lista de verbos, nunca do
+  mapa de regras — decompô-la por regra de negócio faz cada operação aparecer só nos estados que a
+  regra dela já pressupõe. **O total de células é declarado no `04`** e cada uma resolve para
+  `CT-nn`, `não se aplica` ou lacuna declarada. Medido: 17 de 21 células inválidas executadas num
+  conjunto de 63 cenários, e as 4 ausentes eram `aprovar`/`rejeitar` em `rascunho` e `cancelada`
+- **Cenário sem situação de partida é oráculo invertido, e o gate o barra** (item 6 do passo 6).
+  Não é oráculo fraco: materializado ao pé da letra, ele **certifica** a transição ilegal como
+  comportamento esperado. É o único caso em que um cenário a mais deixa o conjunto pior que o
+  conjunto vazio. Correção obrigatória — não vale podar pelo item 4
+- Linha nova no checklist de taxonomia: **entidade removível ou desativável** → *o registro
+  removido ainda funciona?*, sobre a operação de escrita e não sobre a ausência na listagem
+- Itens correspondentes no Checklist Final (derivação, escrita e gate)
 
 ## [1.7.0] — 2026-08-15
 

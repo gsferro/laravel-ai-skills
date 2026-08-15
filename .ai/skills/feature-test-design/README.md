@@ -238,6 +238,7 @@ que atravessaram os conjuntos, e a versão seguinte fechou exatamente aqueles:
 | 1.5.0 | criação ≠ **edição** ≠ uso, partição repetida em cada efeito | quatro defeitos que viviam só no `save` |
 | 1.6.0 | parâmetro livre é o instante/contexto; matriz é 3D; canal do efeito | fuso que virou lacuna cega; barreira de identidade nunca exercitada |
 | 1.7.0 | campo fora do estado inicial; célula argumentada não conta; verbo irmão | valor alterado após o envio sem reavaliar a alçada |
+| 1.8.0 | cenário por fora da UI; premissa de mecanismo não apaga cenário; matriz cartesiana fechada; oráculo invertido | policy só no form; excluído ainda aplicável; aprovar em rascunho |
 
 Os três defeitos mais teimosos do cenário 2 — ciclo de volta, tela mentindo o estado e e-mail fora
 da transação — sobreviveram a **dois** conjuntos e caíram no terceiro, cada um pelo mecanismo que

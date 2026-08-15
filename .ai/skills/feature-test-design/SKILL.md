@@ -1,6 +1,6 @@
 ---
 name: feature-test-design
-version: 1.7.0
+version: 1.8.0
 description: >
   Deriva casos de teste que MATAM defeito, a partir do requisito — não do plano e
   nunca do código. Invoque no step 4 da feature-wiki (antes de implementar), quando
@@ -12,9 +12,13 @@ description: >
   pairwise), checklist de taxonomia de defeito (IDOR, idempotencia, concorrencia,
   timezone, nulo/vazio/ausente, paginacao, soft delete), cenários em Gherkin pt-BR
   (Funcionalidade > Regra > Cenário) e um gate de falsificabilidade: toda regra
-  declara os mutantes plausíveis e aponta qual cenário mata cada um. Escolhe a
+  declara os mutantes plausíveis e aponta qual cenário mata cada um, e nenhum cenário
+  positivo passa sem situação de partida declarada. A matriz estado x evento é uma só,
+  produto cartesiano fechado, com o total de células declarado. Escolhe a
   camada mais barata que prova (Unit < Feature < componente Livewire/Filament <
-  Browser). Escreve 04-casos-de-teste.md e, condicionalmente, 05-casos-de-teste-browser.md.
+  Browser) — com um cenário por fora da UI obrigatório em toda regra de autorização e
+  de validação, porque teste de componente não distingue a regra da chamada dela.
+  Escreve 04-casos-de-teste.md e, condicionalmente, 05-casos-de-teste-browser.md.
   Fecha o ciclo com pest --mutate: mutante sobrevivente vira lacuna de derivação.
 ---
 
@@ -372,6 +376,27 @@ Ao montar a tabela de estados, as colunas são **todas as operações** que a en
 mais escapa é *"entidade excluída/desativada × operação de escrita"*: os cenários provam que ela
 some da listagem e ninguém prova que ela **deixou de funcionar**.
 
+**A matriz é montada ANTES das regras, e é UMA tabela.** Decompor o ciclo de vida em matrizes por
+regra de negócio — uma para `editar/excluir`, outra para `enviar`, outra para o estado terminal,
+outra para quem decide a etapa corrente — parece organização e é **perda de cobertura**: cada
+operação só aparece nos estados que a regra dela já pressupõe, e os estados que nenhuma regra
+menciona junto daquela operação somem sem deixar célula vazia para alguém notar. A matriz é o
+**produto cartesiano fechado** `todos os estados × todas as operações`, montada a partir do enum e
+da lista de verbos, não a partir do mapa de regras.
+
+**A contagem é o oráculo da própria matriz.** Escrever no `04` o total (`E estados × O operações =
+N células`), quantas são válidas e quantas inválidas, e provar que **cada** célula tem `CT-nn`,
+`não se aplica: {motivo}` ou `lacuna declarada: {o que foi tentado}`. Matriz sem total declarado
+não é auditável: ninguém consegue dizer se falta linha.
+
+> Medido: um conjunto de 63 cenários fechou dez células de papel × verbo, afirmou o não-efeito em
+> cada uma, e ainda assim executou **17 das 21** células inválidas. As quatro ausentes eram o mesmo
+> par de verbos (`aprovar`/`rejeitar`) nos dois estados que nenhuma regra cita junto deles —
+> `rascunho` e `cancelada`. O mutante *"aprovar solicitação ainda em rascunho"* atravessou intacto,
+> com o checklist marcando a linha como coberta. O juiz cego chamou de **buraco de enquadramento,
+> não de rigor**: o orçamento inteiro foi para o eixo do ator, e o eixo do estado ficou com as
+> células que as regras já sugeriam.
+
 **A matriz cobra as duas metades.** "Toda célula vazia vira cenário negativo" é só metade da
 regra — e seguir só ela deixa colunas inteiras sem **nenhuma operação bem-sucedida**. O caso
 concreto: a coluna `editar` fica com três recusas e nenhuma edição que funciona, e a armadilha da
@@ -485,6 +510,35 @@ de cenários suba.
 > registradas* para *item ✅ do checklist apontando um cenário que não mata o mutante*. A taxa de
 > detecção não mudou; a honestidade do conjunto, sim — para pior.
 
+### Premissa sobre mecanismo escolhe **qual** cenário, nunca **se** ele existe
+
+Duas coisas diferentes andam com o mesmo nome:
+
+| Tipo de premissa | O que ela decide | Efeito legítimo no conjunto |
+|---|---|---|
+| **de escopo** | o comportamento **está fora** desta entrega (o agregado `Pedido` não existe) | o cenário é **inexpressável** → lacuna declarada + pergunta ao usuário |
+| **de mecanismo** | **como** o sistema faz o que o requisito pede (a exclusão é física; `ativo` é derivado; o valor vem por `config`) | o cenário **continua obrigatório** → a premissa só fixa em que mecanismo ele é escrito |
+
+Premissa de mecanismo não tira comportamento nenhum do escopo. Usá-la para apagar o cenário é
+converter uma escolha de implementação em cobertura — e o resultado é sempre o pior dos dois
+mundos: item ✅ no checklist com o defeito dentro.
+
+| Premissa de mecanismo | A pergunta que ela **não** dispensa |
+|---|---|
+| "a exclusão é física" | o registro removido ainda funciona nas operações de escrita? |
+| "`ativo` é estado derivado, não tem coluna" | o derivado desligado (vencido, esgotado) ainda é aplicável? |
+| "o limite vem de `config`, não do banco" | o valor literal do requisito produz o mesmo resultado? |
+| "o histórico é uma tabela própria, não a trilha de auditoria" | o registro sai completo pelo caminho que **não** dispara evento de model? |
+
+O procedimento: escrever o cenário **no mecanismo assumido**, e registrar o mecanismo descartado
+como **lacuna declarada** vinculada à premissa, com a pergunta ao usuário. Duas linhas de custo.
+
+> Medido: um conjunto fixou *"a exclusão é física"* e registrou no checklist *"unicidade +
+> exclusão lógica — não se aplica"*. O mutante *entidade excluída continua aplicável* atravessou
+> como **lacuna cega**, enquanto a linha *"estado × operação de escrita — o inativo ainda
+> funciona?"* aparecia marcada como coberta. A premissa não estava errada; usá-la para não
+> escrever o cenário, sim.
+
 ### Impossibilidade de arnês é hipótese, não conclusão
 
 Antes de declarar um mutante como "sem matador porque o arnês não permite", **tente mudar o
@@ -522,7 +576,7 @@ não a palavra "sim".
 | Gatilho na feature | Cenário obrigatório |
 |---|---|
 | rota/ação que recebe `{id}` de um recurso | **IDOR / autorização horizontal**: usuário A pede o recurso de B → 403/404. Dois usuários no setup |
-| autorização declarada em policy/permission | **a ação disparada fora do caminho feliz** — não basta afirmar `can()`. Policy correta que o Resource nunca consulta passa em todo teste de `can()` |
+| autorização declarada em policy/permission | **a ação disparada fora do caminho feliz** — não basta afirmar `can()`. Policy correta que o Resource nunca consulta passa em todo teste de `can()`. E **ao menos um** dos cenários dispara a ação **por fora do componente de UI** ([gate de camada da regra](#escolha-de-camada-em-laravelfilament)) |
 | qualquer operação de escrita | **idempotência**: a mesma requisição duas vezes (duplo clique, retry, webhook redundante), com a assertion **no agregado afetado** |
 | campo cujo domínio depende de outro campo | fronteira **por combinação** (tipo × valor), não fronteira do campo isolado |
 | todo campo, em **todo ponto de entrada** | valor abaixo do mínimo, acima do máximo e no limite — **na gravação**, não só no uso |
@@ -533,6 +587,7 @@ não a palavra "sim".
 | data/hora | **timezone do app × do banco × do usuário**; virada de meia-noite; DST; `date` comparado com `datetime` |
 | texto livre | acento, emoji (4 bytes), string no limite do `varchar`, só espaços, espaços nas bordas |
 | unicidade + `SoftDeletes` | criar → excluir → recriar com o mesmo valor único |
+| entidade removível ou desativável | **o registro removido/desligado ainda funciona?** — a operação de escrita sobre ele, não a ausência dele na listagem. Premissa de mecanismo ("a exclusão é física") fixa **como** escrever o cenário, [não dispensa escrevê-lo](#premissa-sobre-mecanismo-escolhe-qual-cenário-nunca-se-ele-existe) |
 | CRUD | ler/editar/excluir ID inexistente; excluir duas vezes; editar sem alterar nada |
 | formulário/payload | **mass assignment**: enviar campo não previsto (`is_admin`, `user_id`, `status`) e provar que é ignorado |
 | upload | 0 byte, extensão que mente sobre o conteúdo, acima do limite |
@@ -578,6 +633,7 @@ Funcionalidade: {título da feature}
 | **Ator nomeado em 3ª pessoa** (`o coordenador`, `o comprador`), nunca "eu" | ambiguidade de quem faz a ação |
 | **`Então` sobre saída observável**, com o valor concreto | `Então funciona` — que não é oráculo |
 | **Cenário de recusa afirma o não-efeito.** "Recusado" sozinho não basta: afirmar também que o estado **não** mudou e que nenhum registro/notificação foi criado | implementação que recusa **depois** de gravar passa no cenário |
+| **`Dado` fixa a situação de partida** sempre que a entidade tem ciclo de vida — inclusive nos cenários positivos | cenário que aprova "uma solicitação criada por X" sem dizer que ela foi enviada: materializado, ele **certifica** a transição ilegal (ver [gate, item 6](#passo-6--gate-de-falsificabilidade-obrigatório)) |
 | **Nenhum termo de domínio não definido no `Então`** — use o campo, o estado ou o valor | `Então o aprovador da vez é o Rui` / `Então o acesso é concedido` (que é `assertOk` com outro nome) |
 | **Título descreve o comportamento** | `Cenário: teste 3` / `Cenário: criar, editar e excluir` |
 | **Sem detalhe incidental** — só os dados que afetam a regra | dado mágico que invalida o cenário quando muda |
@@ -639,6 +695,19 @@ morre com cada uma.
    perfil (típico: o teto do `05` é 1 happy path, e o matador é um erro visível), **escreva o
    cenário e justifique o estouro**. Deixar mutante vivo para economizar cenário inverte a razão
    de existir da skill
+6. **Cenário cujo `Dado` não fixa a situação de partida é barrado aqui.** Quando a entidade tem
+   ciclo de vida, um cenário positivo que não declara de que estado parte não é oráculo fraco —
+   é **oráculo invertido**: materializado ao pé da letra, ele **certifica** a transição ilegal
+   como comportamento esperado. O gate não o aceita nem como "cenário que não mata mutante
+   nenhum" (item 4, que manda cortar): esse mata ao contrário, e precisa ser **corrigido**, não
+   podado — o `Dado` recebe o estado, e a célula que ele estava ocupando na matriz volta a ficar
+   vazia
+
+> Medido: `CT-22` de um conjunto dizia *"Dado uma solicitação de valor 3.000,00 criada pela
+> Beatriz / Quando a Beatriz aprova a solicitação / Então a solicitação fica aprovada"* — sem
+> nunca dizer que ela havia sido enviada. O próprio índice do conjunto já o marcava com
+> *"Mata: —"*. Escrito em Pest exatamente como está, ele **exige** que aprovar um rascunho
+> funcione. É o único caso em que um cenário a mais deixa o conjunto pior que o conjunto vazio.
 
 **Fonte dos mutantes** — os operadores que as ferramentas de mutação usam de verdade, porque são
 os erros que os humanos cometem:
@@ -763,6 +832,26 @@ Tela de escrita coberta apenas por visita é **lacuna de gate**, não decisão d
 > quais **5 telas `create` não tinham gravação testada em lugar nenhum** — exatamente o defeito
 > (`Select::make('roles')` derrubando o `save` com o `GET` verde) que a regra do projeto fora
 > escrita para prevenir.
+
+**Gate de camada da regra (obrigatório).** Toda regra de **autorização** e toda regra de
+**validação de domínio** precisa de **ao menos um** cenário que exercite a escrita **por fora do
+componente de UI** — `Feature` chamando o model, o service ou a rota diretamente. O teste de
+componente continua sendo o padrão e a camada mais barata; o que ele não consegue, **por
+construção**, é distinguir duas implementações:
+
+| Implementação | Teste de componente | Cenário por fora da UI |
+|---|---|---|
+| a regra vive no domínio, e a tela a chama | verde | verde |
+| a regra vive **só no formulário** (policy no `Resource`, validação no `->rules()`) | verde | **vermelho** |
+
+Um cenário por regra basta — não é para duplicar a matriz inteira na camada externa. O que o gate
+proíbe é a superfície de escrita **inteira** existir só na camada do componente.
+
+> Medido: um conjunto com 51 cenários fechou a matriz papel × ação pela tela, afirmou o não-efeito
+> em cada célula e marcou *"autorização exercida na ação, não só consultada"* como coberta. O
+> mutante *policy aplicada só no form do Filament; request direto ao backend passa* ficou **verde
+> no conjunto inteiro**. É o pedágio da regra da camada mais barata: economizar a camada externa
+> em toda a superfície apaga a diferença entre **a regra existe** e **a tela chama a regra**.
 
 **Assertion proibida como oráculo único de um cenário:**
 
@@ -1174,6 +1263,8 @@ cujos achados ninguém fecha é teatro caro.
 - [ ] Técnica formal escolhida e **nomeada** por regra
 - [ ] BVA com o incremento do tipo certo (`0,01` em decimal, 1 dia em date)
 - [ ] Entidade com `status` → tabela **estado × evento**, com 100% das células inválidas no perfil completo
+- [ ] A matriz é **uma só** e é o produto cartesiano `todos os estados × todas as operações`, montada do enum e não do mapa de regras — com o **total de células declarado** e cada uma resolvida
+- [ ] Nenhuma premissa de **mecanismo** foi usada para apagar cenário — ela fixa qual escrever, e o mecanismo descartado virou lacuna declarada
 - [ ] Partições inválidas isoladas uma por cenário
 - [ ] Checklist de taxonomia percorrido item a item, com dispensa justificada
 
@@ -1181,13 +1272,16 @@ cujos achados ninguém fecha é teatro caro.
 - [ ] Cenários em Gherkin pt-BR: `Funcionalidade` → `Regra` → `Cenário`
 - [ ] Um único `Quando` por cenário; 3–5 passos; ator nomeado em 3ª pessoa
 - [ ] Todo `Então` afirma saída observável com valor concreto
+- [ ] Todo cenário de entidade com ciclo de vida tem a **situação de partida fixada no `Dado`** — inclusive os positivos
 - [ ] `Esquema do Cenário` só onde há classe de equivalência ou borda, com a coluna do rótulo
 
 ### Gate
 - [ ] **Toda regra declara ≥2 mutantes** (≥3 no perfil completo)
 - [ ] Todo mutante tem cenário matador **ou** lacuna declarada com motivo
 - [ ] Cenário que não mata mutante nenhum foi cortado ou justificado
+- [ ] Nenhum **oráculo invertido** — cenário positivo sem situação de partida foi corrigido, não podado
 - [ ] Cada cenário na camada mais barata que o prova
+- [ ] Toda regra de autorização e de validação de domínio tem **≥1 cenário por fora do componente de UI**
 - [ ] Teto do perfil respeitado, ou estouro justificado
 - [ ] Revisão adversarial executada por sub-agente independente (perfil completo)
 

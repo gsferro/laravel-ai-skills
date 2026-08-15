@@ -13,7 +13,7 @@ Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude C
 | Skill | Versão | O que faz | Quando é invocada |
 |---|---|---|---|
 | **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 3.0.0 | Cria a wiki da feature antes de implementar: requisito bruto, PRD, ADR e progresso, com padrão de log. Delega os casos de teste | ao iniciar qualquer feature nova |
-| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.7.0 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes | step 4 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
+| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.8.0 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes | step 4 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
 | **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.1.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa e roteia cada achado para especificação, implementação ou teste | step 8 da `feature-wiki`, após os testes passarem |
 | **[requirement-to-rule](.ai/skills/requirement-to-rule/README.md)** | 1.2.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | step 9 da `feature-wiki` ou sob pedido |
 
@@ -46,6 +46,10 @@ mata cada defeito:
 | **Cupons** — cálculo, dinheiro, datas | 7 de 18 (38,9%) · 10 lacunas cegas | **16 de 18 (88,9%) · 1 lacuna cega** |
 | **Aprovação** — máquina de estados | 11 de 18 (61,1%) · 7 lacunas cegas | **17 de 18 (94,4%) · 1 lacuna cega** |
 
+> A rodada mais recente (5, com `feature-test-design` 1.7.0) mediu **14 de 18** e **17 de 18** —
+> as regras pendentes mataram cada uma o seu alvo, e as três lacunas cegas que sobraram viraram as
+> quatro regras da 1.8.0. O histórico completo está em [`experimentos/`](experimentos/README.md).
+
 A causa não era desleixo: o critério de suficiência da skill era *"todo método público tem 1 CT,
 cada branch tem um CT"* — cobertura de um **código que ainda não existe** quando o `04` é escrito.
 Isso obriga o agente a imaginar a implementação e testá-la.
@@ -62,6 +66,17 @@ Cada skill tem **dois arquivos com públicos diferentes** — o `README.md` expl
 | requirement-to-rule | [README](.ai/skills/requirement-to-rule/README.md) — 4 gates, escada de enforcement, índice de rules | [SKILL.md](.ai/skills/requirement-to-rule/SKILL.md) |
 
 > Histórico de evolução das skills: [CHANGELOG.md](CHANGELOG.md)
+
+### Como as regras destas skills nascem
+
+Não por releitura de escrivaninha. Cada regra tem um **defeito medido** por trás, num experimento
+controlado: requisito com ambiguidades plantadas → catálogo de mutantes escrito **antes** de
+qualquer conjunto de teste existir → braços independentes sem contexto compartilhado → **juiz cego**
+com citação literal obrigatória → materialização em Pest contra a mesma implementação.
+
+O material completo — protocolo, catálogos, oráculo fixo, prompt do juiz, conjuntos julgados e
+vereditos de cada rodada — vive em **[`experimentos/`](experimentos/README.md)**, e é o que permite repetir
+a medição a cada evolução em vez de discutir a mudança.
 
 ---
 
@@ -569,7 +584,7 @@ Padrão de log             /ponytail:ponytail-debt    Boundary: wiki/code
 Revisão pós-escrita                              /commits = prosa normal
 03-progresso.md tracking
 
-feature-test-design (v1.7.0)
+feature-test-design (v1.8.0)
 ─────────────────
 Deriva do REQUISITO, nunca do plano
 SFDIPOT · mapa de regras · técnica formal
