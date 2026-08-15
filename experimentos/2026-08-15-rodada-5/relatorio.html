@@ -423,13 +423,13 @@
 
 <section>
   <div class="col">
-    <h2>O que isso vira na próxima versão</h2>
-    <p class="sub">Quatro regras candidatas, cada uma com um mutante que a exige</p>
+    <h2>O que isso virou na 1.8.0</h2>
+    <p class="sub">Quatro regras, cada uma com o mutante que a exige — já na skill</p>
   </div>
 
   <div class="ladder">
     <div class="rung">
-      <span class="ver">R1</span>
+      <span class="ver">1.8.0<br>R1</span>
       <div>
         <h4>Toda regra de autorização e validação precisa de um cenário por fora da UI</h4>
         <p>Pelo menos um cenário que exercite a escrita no model, no service ou na rota — não no componente. A camada mais barata continua sendo o padrão; o que muda é que ela deixa de ser a <strong>única</strong> onde a regra é afirmada.</p>
@@ -437,7 +437,7 @@
       </div>
     </div>
     <div class="rung">
-      <span class="ver">R2</span>
+      <span class="ver">1.8.0<br>R2</span>
       <div>
         <h4>Premissa sobre mecanismo escolhe qual cenário, nunca se ele existe</h4>
         <p>Fixar “a exclusão é física” não elimina a pergunta “o registro removido ainda funciona?”. Ela vira cenário no mecanismo assumido, mais lacuna declarada no mecanismo descartado.</p>
@@ -445,7 +445,7 @@
       </div>
     </div>
     <div class="rung">
-      <span class="ver">R3</span>
+      <span class="ver">1.8.0<br>R3</span>
       <div>
         <h4>A matriz estado × evento é um produto cartesiano fechado, em uma tabela só</h4>
         <p>Decompor por regra de negócio deixa de fora as células cujo evento não tem “estado dono” — e são as mais baratas de plantar. A matriz é montada antes das regras, não a partir delas, e a contagem de células é o oráculo da própria matriz.</p>
@@ -453,7 +453,7 @@
       </div>
     </div>
     <div class="rung">
-      <span class="ver">R4</span>
+      <span class="ver">1.8.0<br>R4</span>
       <div>
         <h4>Cenário sem situação de partida declarada é oráculo invertido</h4>
         <p>Não é oráculo fraco — é pior. Materializado, ele certifica o defeito como comportamento esperado. O gate de falsificabilidade deve barrar todo cenário cujo <code>Dado</code> não fixe o estado inicial.</p>
