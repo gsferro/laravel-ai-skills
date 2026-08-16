@@ -65,6 +65,8 @@ auditoria forense da saída real, não só teste sintético.
 | 3 | 2026-08-14 | C1 | 1.3.0 | 16/18 |
 | 4 | 2026-08-15 | C1, C2 | 1.5.0 | ver `2026-08-14-defeitos-plantados/relatorio.html` |
 | 5 | 2026-08-15 | C1, C2 | `feature-wiki` 3.0.0 · `feature-test-design` 1.7.0 | 14/18 e 17/18 — `2026-08-15-rodada-5/vereditos.md` |
+| 6 | 2026-08-15 | C1, C2 | `feature-wiki` 3.0.0 · `feature-test-design` 1.8.0 | 16/18 e 17/18 — `2026-08-15-rodada-6/vereditos.md` |
+| 7 | 2026-08-15 | C1, C2 | `feature-wiki` 3.0.0 · `feature-test-design` 1.9.0 | 15/18 e 18/18 — `2026-08-15-rodada-7/vereditos.md` |
 
 Na rodada 5, as quatro regras que ainda não tinham sido medidas (1.4.0 a 1.7.0) mataram cada uma
 o defeito que a originou. O que sobrou foi **deslocamento de orçamento**: três lacunas cegas
