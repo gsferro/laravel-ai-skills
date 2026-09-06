@@ -8,9 +8,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 
 | Skill | Versão | Tag |
 |---|---|---|
-| `feature-wiki` | 3.0.0 | `feature-wiki-v3.0.0` |
-| `feature-test-design` | 1.9.0 | `feature-test-design-v1.9.0` |
-| `feature-quality-gate` | 1.1.0 | `feature-quality-gate-v1.1.0` |
+| `feature-wiki` | 3.1.0 | `feature-wiki-v3.1.0` |
+| `feature-test-design` | 1.10.0 | `feature-test-design-v1.10.0` |
+| `feature-quality-gate` | 1.2.0 | `feature-quality-gate-v1.2.0` |
 | `requirement-to-rule` | 1.2.0 | `requirement-to-rule-v1.2.0` |
 
 ## Convenção de tags
@@ -36,6 +36,66 @@ requirement-to-rule-v1.0.0
 # feature-wiki
 
 Cria a estrutura de documentação de uma feature **antes** de implementá-la: requisito bruto, PRD, ADR, tracking de progresso e padrão de log.
+
+## [3.1.0] — 2026-09-05
+
+Reconciliação pós-implementação e ordem dura: **quality gate antes do PR**. Motivada por uma
+feature real (`feat/login-unificado` no projeto-cobaia, 2026-09-05) em que a skill 3.0.0 rodou
+inteira, o `03` se declarou "concluída" com PR aberto e quality gate "para o passo seguinte", e
+uma revisão independente achou **31 itens**: 4 quebras reais (teste vermelho, `group` errado em
+teste de browser, chave de env fora do `phpunit.xml`, par de cenário exigido por rule ausente) e
+27 afirmações defasadas na wiki e nas docs.
+
+### O que a 3.0.0 deixou passar — e a causa na skill
+
+| Falha observada | Causa na skill |
+|---|---|
+| PRD e ADR-03 descreviam a guarda antiga (`routeIs('login')`) e "0 painéis → login default"; o código fazia outra coisa | step 7 mandava registrar "Desvios" no `03`, não corrigir a fonte |
+| `Login.php:165` citado; o código está na 169, e o vendor não mudou em nenhum commit | citação só com linha; nenhuma conferência ao escrever nem depois |
+| CT-33…CT-40 só no teste; CT-05 com 4 cenários no teste e "5 linhas" no `04` | nenhuma sincronia `04` ↔ teste além de "índice atualizado" |
+| Requisito novo ("carimbo do painel no log") entrou sem cláusula; cinco testes derivados do código | `00` imutável e só "sobrescrever / incrementar / retomar" — sem procedimento para pedido que chega no meio |
+| Verificação Final fechada em lote; teste marcado verde estava vermelho | "em tempo real" era prosa sem verificação |
+| `group('kit')` em teste de browser, `KIT_LOGIN_UNIFICADO` fora do `phpunit.xml`, par do `fi-auth-layout` ausente | step 3 lê rules antes de planejar; nenhum step confere se o **código** as cumpre |
+| Quality gate nunca rodou; PR aberto antes | "linkar ao PR" no step 7, QG no step 8, checklist intitulado "após merge" |
+| Docs pt/en, CHANGELOG e ADR-08 descrevendo consequência já invalidada | docs de usuário fora da lista de fontes a reconciliar |
+| A rodada de correção acrescentou aviso sobre "SSO externo" em README/docs/CHANGELOG sem `RQ` nem ADR | nenhuma checagem de rastro para texto novo em doc de usuário |
+
+### Adicionado
+
+- **Step 7 reescrito — "Pós-Implementação e Reconciliação (antes do PR)"**, com a lista fechada
+  de fontes a reconciliar (`01`, `02`, `04`, `05`, `03`, docs pt/en, CHANGELOG, README,
+  `.ai/rules`) e seis itens novos: checkbox com evidência inline; desvio corrige a fonte
+  (marca `*(alterado em {data})*`) e o `03` só aponta; reverificação de citações; sincronia
+  `04` ↔ teste nos dois sentidos; tabela `## Conformidade com Rules`; docs × comportamento ×
+  rastro
+- **Step 8 — "Quality Gate e abertura do PR"**: o PR só abre depois do veredito, com o link da
+  wiki e o veredito do `06` na descrição; o `03` só diz "concluída" com a seção `## Quality Gate`
+  preenchida
+- **Adendo ao requisito** (seção nova em Arquivo 00): `## Adendo N — {data}` com Texto Original
+  verbatim (imutável), `RQ` em numeração contínua, `feature-test-design` reinvocada só para o
+  adendo **antes** do código; critério adendo × wiki nova (mesma branch e PR → adendo)
+- **Seção "Citações de código — `arquivo:símbolo:linha`"**: formato obrigatório com símbolo, as
+  duas classes de erro (errada ao nascer × deslocada depois) e o grep que confere as duas
+- **Template do `03`**: Verificação Final com evidência inline e os itens de reconciliação;
+  seções `## Conformidade com Rules` e `## Quality Gate`
+- Checklist Final reorganizado em "Pós-Implementação e Reconciliação (antes do PR)", "Quality
+  Gate e PR" e "Após o merge"
+
+### Alterado
+
+- "Atualizar os checkboxes em tempo real" virou regra verificável: `[x]` sem ` — evidência, data`
+  não conta, e há o grep que lista os que faltam
+- "Linkar wiki ao PR" saiu do step 7 e passou a ser a última ação do step 8
+- Step 4 "Wiki já existente" ganhou o caso "requisito novo no meio da implementação → Adendo"
+- Skills Companheiras: a `feature-quality-gate` passa a auditar consistência documental
+  (dimensão L) e a rodar antes do PR
+
+### Princípio desta versão
+
+Onde a 3.0.0 já tinha a instrução e ela foi ignorada ("em tempo real", "cite `arquivo:linha`"),
+a 3.1.0 não acrescenta prosa: acrescenta o formato que torna a omissão visível e o comando que
+a lista. O que continua sendo julgamento (PRD × código, docs × comportamento, rules × diff) vai
+para quem não escreveu o texto — a dimensão L da `feature-quality-gate` 1.2.0.
 
 ## [3.0.0] — 2026-08-14
 
@@ -261,6 +321,31 @@ Consolida as versões 2.5.0 e 2.6.0 (nunca commitadas isoladamente) e adiciona a
 # feature-test-design
 
 Deriva casos de teste que **matam defeito**, a partir do requisito — nunca do plano e nunca do código.
+
+## [1.10.0] — 2026-09-05
+
+Dois ajustes medidos na mesma feature real que motivou a `feature-wiki` 3.1.0.
+
+### Alterado
+
+- **Gatilho da revisão adversarial**: obrigatória no perfil completo **ou** quando qualquer área
+  tem **Impacto 3**, mesmo com P×I ≤ 6. A adversarial rodou "para a área C" (P×I 9) e o achado
+  que importou — laço de redirecionamento com sessão viva — estava nas áreas D e F, Impacto 3,
+  perfil padrão. A revisão recebe o `04` inteiro, então estender o gatilho custa zero; a saída
+  passa a declarar as áreas/regras percorridas
+
+### Adicionado
+
+- **Proibição 11 — não escrever teste `[CT-nn]` sem o cenário no `04`/`05`.** Cenário
+  descoberto na implementação nasce no `04` (Gherkin, regra, mutante) e depois vira teste;
+  requisito novo entra pelo Adendo do `00`. Medido: oito IDs só no arquivo de teste, todos
+  derivados do código — a Proibição 1 com outro nome
+- **Checklist pós-implementação**: sincronia nos dois sentidos (`[CT-nn]` do teste ⊆ `04` e todo
+  CT do índice aponta teste existente ou "fundido em"), linha de dataset nova como Exemplo no
+  Gherkin, contagem do cabeçalho recalculada ou removida
+- **Teste de arquitetura sugerido** (um por projeto): lê os `[CT-nn]` dos testes e dos `04`/`05`
+  e falha com o ID que existe num lado só
+- Comentário no template do `04`: a linha de contagem é derivada do índice, não mantida à mão
 
 ## [1.9.0] — 2026-08-15
 
@@ -699,6 +784,34 @@ preenchimento de gabarito por um pipeline de derivação com gate de auditoria.
 ---
 
 # feature-quality-gate
+
+## [1.2.0] — 2026-09-05
+
+### Adicionado
+
+- **Dimensão L — Consistência Documental (wiki × código × docs × rules)**, nunca pulada em
+  nenhum perfil. Cinco checagens estáticas: L1 IDs de CT teste × `04`/`05`; L2 citações
+  `arquivo:símbolo:linha`; L3 PRD/ADR × código (afirmação sem marca `*(alterado em …)*`); L4
+  rules cujo glob casa o diff × tabela `## Conformidade com Rules` do `03` × código; L5 docs
+  pt × en × CHANGELOG × README × comportamento, com frase sem `RQ`/ADR de origem tratada como
+  crescimento sem rastro. Tabela de severidade e destino por checagem: rule violada → Major ou
+  Blocker, destino 2; CT só no teste → destino 3 via `feature-test-design`; texto defasado →
+  destino 1
+- Entradas novas: `.ai/rules/index.md` e as rules que casam o diff, docs de usuário e CHANGELOG
+  tocados, e a declaração do implementador no `03`
+
+### Motivação
+
+O step 7 da `feature-wiki` manda registrar desvios, e o agente registra — no `03`. PRD e ADR
+seguem afirmando o que o código não faz, e quem escreveu o texto o lê como certo. Medido numa
+feature real: 31 achados de uma revisão independente pós-"concluída", 27 desta dimensão. A
+autolimpeza fica no step 7 da `feature-wiki`; a auditoria por quem não escreveu fica aqui.
+
+### Alterado
+
+- Descrição, índice e gate de esforço: 12 dimensões; **L** em todos os perfis
+- "Quando Invocar": explicitamente **antes de abrir o PR** e antes de o `03` dizer "concluída"
+- Template do `06` e Checklist Final com a linha da dimensão L
 
 ## [1.1.0] — 2026-08-14
 

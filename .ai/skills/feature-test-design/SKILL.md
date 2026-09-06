@@ -1,6 +1,6 @@
 ---
 name: feature-test-design
-version: 1.9.0
+version: 1.10.0
 description: >
   Deriva casos de teste que MATAM defeito, a partir do requisito — não do plano e
   nunca do código. Invoque no step 4 da feature-wiki (antes de implementar), quando
@@ -23,6 +23,10 @@ description: >
   de validação, porque teste de componente não distingue a regra da chamada dela.
   Escreve 04-casos-de-teste.md e, condicionalmente, 05-casos-de-teste-browser.md.
   Fecha o ciclo com pest --mutate: mutante sobrevivente vira lacuna de derivação.
+  A revisão adversarial é obrigatória no perfil completo E sempre que qualquer área tem
+  Impacto 3 — ela recebe o conjunto inteiro, e o achado cai onde cai. Cenário descoberto na
+  implementação nasce no 04 antes do teste; os IDs de CT do teste e do 04 são sincronizados
+  nos dois sentidos.
 ---
 
 # Feature Test Design — Do Requisito ao Caso de Teste que Mata Defeito
@@ -60,7 +64,7 @@ description: >
 - [Arquivo 05: Browser](#arquivo-05-casos-de-teste-de-browser--condicional)
 - [Armadilhas de API](#armadilhas-de-api-que-invalidam-ct)
 - [Fechamento do Ciclo com Mutation Testing](#fechamento-do-ciclo-com-mutation-testing)
-- [Revisão Adversarial](#revisão-adversarial-obrigatória-no-perfil-completo)
+- [Revisão Adversarial](#revisão-adversarial-obrigatória-no-perfil-completo-ou-com-impacto-3)
 - [Proibições](#proibições)
 - [Checklist Final](#checklist-final)
 
@@ -225,6 +229,14 @@ perfil da área prevê — o caso clássico é uma regra de arredondamento numa 
 BVA 2-valores não distingue truncar de arredondar — **use a técnica mais forte e escreva por quê
 em uma linha**. O perfil é orçamento, não teto de rigor: ele controla *quantos* cenários, não
 *quão cega* é a técnica.
+
+**Gatilho da revisão adversarial: perfil completo em qualquer área, OU Impacto 3 em qualquer
+área**, mesmo com P×I ≤ 6. O P×I decide quantos cenários; a adversarial não é por área — o
+sub-agente recebe o `04` inteiro, e o achado cai onde cai. Caso medido: a adversarial rodou
+"para a área C" (P×I 9) e o achado que importou, um laço de redirecionamento com sessão viva,
+estava nas áreas D e F — Impacto 3, perfil padrão, fora do gatilho antigo. Com Impacto 3 em
+qualquer área, o custo marginal de estender é zero e o risco de não estender é o defeito de
+autorização que passa. A saída da revisão declara quais áreas e regras percorreu.
 
 > Sem este passo o pipeline explode: tabela de decisão e pairwise crescem rápido, e conjunto
 > grande demais é abandonado, o que dá cobertura zero.
@@ -1004,6 +1016,7 @@ passa hoje e quebra no upgrade.
 
 - Técnicas aplicadas: {EP, BVA 3-valores, tabela de decisão, tabela estado × evento}
 - Cenários: {n} · Regras: {n} · Mutantes previstos: {n} · Sem matador: {n}
+<!-- derivado do Índice de Cenários; recalcular a cada cenário novo — ou apagar a linha. Contagem manual defasada é a mentira mais barata de produzir -->
 
 ## Varredura SFDIPOT
 
@@ -1298,7 +1311,10 @@ vendor/bin/pest tests/Feature/{Feature} --mutate --path=app/Services --min=70
 
 ---
 
-## Revisão Adversarial (obrigatória no perfil completo)
+## Revisão Adversarial (obrigatória no perfil completo ou com Impacto 3)
+
+**Disparo**: perfil **completo** em qualquer área, **ou Impacto 3** em qualquer área (ver
+[Passo 0](#passo-0--perfil-de-esforço-por-risco)). Uma única rodada cobre o `04` inteiro.
 
 Delegar a um **sub-agente que não derivou os cenários**, com este contrato:
 
@@ -1314,7 +1330,9 @@ Tarefa: PROVAR que este conjunto deixa passar um defeito.
      assertDatabaseHas só com a chave, ausência de assertion sobre o valor)
   4. Aponte todo cenário sem nenhum "Então" e todo cenário com mais de um "Quando"
 
-Saída: lista de lacunas, cada uma com a regra, a técnica faltante e o cenário sugerido.
+Saída: lista de lacunas, cada uma com a regra, a técnica faltante e o cenário sugerido,
+       + a lista de áreas/regras percorridas (a revisão cobre o conjunto inteiro, não só
+       a área que a disparou — achado em outra área é achado válido)
 PROIBIDO: elogiar o conjunto, reescrever os cenários, dizer "está bom".
 ```
 
@@ -1352,6 +1370,11 @@ cujos achados ninguém fecha é teatro caro.
     no momento da derivação — seguir isso obriga o agente a imaginar a implementação e testá-la,
     que é a definição de teste tautológico. O critério de suficiência aqui é: **toda regra tem
     seus mutantes previstos mortos**.
+11. **Não escrever teste `[CT-nn]` sem o cenário no `04`/`05`.** Cenário descoberto durante a
+    implementação nasce **aqui** — Gherkin, regra, mutante — e só depois vira código de teste.
+    O caminho inverso, teste escrito e "documentado depois", é a Proibição 1 com outro nome, e
+    foi medido: oito IDs de CT só no arquivo de teste, todos derivados do código. Requisito novo
+    entra pelo **Adendo** do `00` (ver `feature-wiki`), não direto no teste.
 
 ---
 
@@ -1396,6 +1419,23 @@ cujos achados ninguém fecha é teatro caro.
 - [ ] `pest --mutate --covered-only --class={escopo da feature}` executado
 - [ ] Mutante sobrevivente traduzido em lacuna de derivação e convertido em cenário novo
 - [ ] Índice de cenários atualizado com o arquivo de teste real de cada CT
+- [ ] **Sincronia nos dois sentidos**: todo `[CT-nn]`/`[CT-Bnn]` do teste existe no `04`/`05`, e todo CT do índice aponta um teste existente ou declara "fundido em CT-nn"; linha de dataset nova existe como Exemplo no Gherkin
+- [ ] Contagem do cabeçalho (`Cenários: {n} · Mutantes: {n}`) recalculada — ou removida, se ninguém a lê
+
+**Teste de arquitetura sugerido** — barato, um por projeto e não por feature: lê os `[CT-nn]` dos
+testes e dos `04`/`05` e falha com o ID que existe num lado só. O dataset é a lista declarada de
+pares (arquivo de teste, pasta da wiki); declará-la à mão é o custo, e é também o que impede um
+teste novo de nascer sem wiki.
+
+```php
+it('todo [CT-nn] de um teste existe no 04/05 da wiki que ele cita', function (string $teste, string $wiki): void {
+    $ids = fn (string $arquivo): array => preg_match_all('/\[(CT-B?\d{2,})\]/', file_get_contents($arquivo), $m) ? array_unique($m[1]) : [];
+    $naWiki    = array_merge([], ...array_map($ids, glob("$wiki/0[45]-*.md")));
+    $soNoTeste = array_diff($ids($teste), $naWiki);
+
+    expect($soNoTeste)->toBeEmpty('IDs só no teste: '.implode(', ', $soNoTeste));
+})->with('pares teste ↔ wiki');
+```
 
 ---
 

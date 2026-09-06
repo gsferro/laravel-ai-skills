@@ -12,9 +12,9 @@ Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude C
 
 | Skill | Versão | O que faz | Quando é invocada |
 |---|---|---|---|
-| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 3.0.0 | Cria a wiki da feature antes de implementar: requisito bruto, PRD, ADR e progresso, com padrão de log. Delega os casos de teste | ao iniciar qualquer feature nova |
-| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.9.0 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes | step 4 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
-| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.1.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa e roteia cada achado para especificação, implementação ou teste | step 8 da `feature-wiki`, após os testes passarem |
+| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 3.1.0 | Cria a wiki da feature antes de implementar: requisito bruto, PRD, ADR e progresso, com padrão de log. Delega os casos de teste | ao iniciar qualquer feature nova |
+| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.10.0 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes | step 4 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
+| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.2.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita a consistência wiki × código × docs × rules e roteia cada achado para especificação, implementação ou teste | step 8 da `feature-wiki`, após os testes passarem e **antes do PR** |
 | **[requirement-to-rule](.ai/skills/requirement-to-rule/README.md)** | 1.2.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | step 9 da `feature-wiki` ou sob pedido |
 
 O ciclo completo: **planejar** (`feature-wiki`) → **especificar teste** (`feature-test-design`) → **executar** (Ponytail) → **comunicar** (Caveman) → **testar** (Pest 5) → **validar** (`feature-quality-gate`) → **memorizar** (`requirement-to-rule`).
@@ -493,7 +493,7 @@ A partir de agora, para cada feature nova:
 │  • Confronta 00-requisito × PRD × app rodando       │
 │  • Audita ambiguidades do requisito PRIMEIRO        │
 │  • Matriz de Rastreabilidade → omissão silenciosa   │
-│  • 11 dimensões (perfil por risco: mín/padrão/full) │
+│  • 12 dimensões (perfil por risco: mín/padrão/full) │
 │  • Roteia achado: especificação | código | teste    │
 │  • Escreve 06-relatorio-qa.md + veredito            │
 │  ⚠️ NÃO corrige nada · teto de 3 ciclos             │
@@ -576,7 +576,7 @@ export PONYTAIL_DEFAULT_MODE=full
 ### Resumo da Integração
 
 ```
-feature-wiki (v3.0.0)    Ponytail              Caveman
+feature-wiki (v3.1.0)    Ponytail              Caveman
 ─────────────────        ─────────────────     ─────────────────
 Planejamento minucioso   Execução minimalista  Comunicação terse
 00-requisito (oráculo)    Escada de simplicidade  Corta fluff da prosa
@@ -585,7 +585,7 @@ Padrão de log             /ponytail:ponytail-debt    Boundary: wiki/code
 Revisão pós-escrita                              /commits = prosa normal
 03-progresso.md tracking
 
-feature-test-design (v1.9.0)
+feature-test-design (v1.10.0)
 ─────────────────
 Deriva do REQUISITO, nunca do plano
 SFDIPOT · mapa de regras · técnica formal
@@ -593,11 +593,11 @@ Gate: mutante previsto → cenário que mata
 Gherkin pt-BR · camada mais barata que prova
 Revisão adversarial por sub-agente
 
-feature-quality-gate (v1.1.0)      requirement-to-rule (v1.2.0)
+feature-quality-gate (v1.2.0)      requirement-to-rule (v1.2.0)
 ─────────────────                  ─────────────────
 Requisito × plano × app rodando    Decisão da wiki → .ai/rules/
 Omissão silenciosa (Matriz)        4 gates + aprovação do usuário
-11 dimensões, perfil por risco     Gravado via record-rule (Boost)
+12 dimensões, perfil por risco     Gravado via record-rule (Boost)
 Dimensão K: a suíte pega defeito?  Índice .ai/rules/index.md
 Roteia: spec | código | teste
 Não corrige · teto de 3 ciclos
@@ -620,7 +620,7 @@ Este README é o índice da coletânea. O detalhe de cada skill vive com ela:
 |---|---|
 | [**feature-wiki**](.ai/skills/feature-wiki/README.md) | como informar o requisito (card colado, `.pdf`/`.docx`/`.md`), os 6 arquivos da wiki, testes de browser com Pest + Playwright, o que o Pest 5 trouxe (`--parallel --tia`, `--agent`), Playwright MCP como observação, `search-docs` e suas lacunas, dependências e limitações conhecidas |
 | [**feature-test-design**](.ai/skills/feature-test-design/README.md) | o problema medido em 9 wikis reais, o pipeline de 7 passos, **por que Gherkin sem runner**, a camada de componente Livewire que faltava, os fatos corrigidos sobre `pest-plugin-browser`, e o experimento controlado com o catálogo de defeitos plantados |
-| [**feature-quality-gate**](.ai/skills/feature-quality-gate/README.md) | uso da skill (omissão silenciosa, 11 dimensões incluindo mutation score, roteamento de 5 destinos) **e** o estudo de viabilidade completo: pesquisa de mercado, lacuna verificada, achados técnicos e critério eliminatório |
+| [**feature-quality-gate**](.ai/skills/feature-quality-gate/README.md) | uso da skill (omissão silenciosa, 12 dimensões incluindo mutation score e consistência documental, roteamento de 5 destinos) **e** o estudo de viabilidade completo: pesquisa de mercado, lacuna verificada, achados técnicos e critério eliminatório |
 | [**requirement-to-rule**](.ai/skills/requirement-to-rule/README.md) | as três camadas (guidelines × skills × rules), os 4 gates, escada de enforcement, índice `.ai/rules/index.md`, modelo base da rule e anti-padrões |
 | [**CHANGELOG.md**](CHANGELOG.md) | histórico de evolução das quatro skills, com versionamento independente e convenção de tags |
 
