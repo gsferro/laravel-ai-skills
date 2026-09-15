@@ -8,9 +8,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 
 | Skill | Versão | Tag |
 |---|---|---|
-| `feature-wiki` | 3.1.0 | `feature-wiki-v3.1.0` |
-| `feature-test-design` | 1.10.0 | `feature-test-design-v1.10.0` |
-| `feature-quality-gate` | 1.2.0 | `feature-quality-gate-v1.2.0` |
+| `feature-wiki` | 3.2.0 | `feature-wiki-v3.2.0` |
+| `feature-test-design` | 1.11.0 | `feature-test-design-v1.11.0` |
+| `feature-quality-gate` | 1.3.0 | `feature-quality-gate-v1.3.0` |
 | `requirement-to-rule` | 1.2.0 | `requirement-to-rule-v1.2.0` |
 
 ## Convenção de tags
@@ -36,6 +36,46 @@ requirement-to-rule-v1.0.0
 # feature-wiki
 
 Cria a estrutura de documentação de uma feature **antes** de implementá-la: requisito bruto, PRD, ADR, tracking de progresso e padrão de log.
+
+## [3.2.0] — 2026-09-15
+
+Superfície do pacote de terceiro e revisão de código do diff. Motivada por uma feature real
+(dashboard dinâmico sobre `mddev31/filament-dynamic-dashboard`, 2026-09-15) que rodou a skill 3.1.0,
+entregou **29 CTs, 11 regras, 38 mutantes, revisão adversarial e suíte verde** — e ainda assim
+liberou **quatro defeitos**, dois deles de escrita cross-tenant. Os quatro moravam na superfície do
+**pacote**, que nenhum step inventariava.
+
+### O que a 3.1.0 deixou passar — e a causa na skill
+
+| Falha observada | Causa na skill |
+|---|---|
+| Ação do pacote apagava widget de outra organização por id cru do cliente (`::find($arguments['widget'])`, guardada só por `canEdit()`) | step 3 varre `app/`, `routes/`, `config/` **do projeto**; a superfície do vendor nunca é inventariada |
+| Propriedade pública Livewire do vendor (`currentDashboardId`) escrita pelo cliente redirecionava a gravação para o dashboard de outra organização | idem — e `#[Session]` foi lido como se travasse, sem conferir o vendor |
+| Global scope falhava **aberto** quando o painel é tenant-aware e o tenant ainda não foi resolvido | nenhum item obrigava o caso **nulo** do discriminante |
+| 403 do vendor na raiz do painel com o fallback devolvendo para ele — usuário sem tela de entrada | cenário de erro fechava sem declarar a saída |
+| Um CT do `04` sem teste correspondente, com o checkbox "testes conforme 04/05" fechado | item 4 do step 7 era leitura, não comando |
+| `06-relatorio-qa.md` inexistente e ninguém percebeu | checklist pedia "quality gate invocado", não a evidência verificável por `ls` |
+
+### Adicionado
+
+- **`#### Superfície do Pacote de Terceiro`** no step 3 (obrigatório quando a feature monta sobre um
+  pacote): tabela `## Superfície do Pacote` no `02` com uma linha por ponto que o cliente alcança
+  (ação com id, propriedade pública, model persistido), a fronteira aplicada e o `arquivo:linha` do
+  vendor. Quatro greps prescritos. Regra dura: **todo model do pacote que a feature persiste tem
+  linha própria**; *"é filho, logo está protegido"* exige o grep que prova
+- **Step 7.5 — Revisão de Código do Diff**, por quem não implementou, antes do quality gate: cinco
+  eixos obrigatórios (fronteira de dado, ponto de entrada do vendor, propriedade pública Livewire,
+  saída do estado de erro, afirmação de comentário), roteamento do achado (Adendo no `00` → CT no
+  `04` → correção) e **falsificabilidade por `git stash`** — CT que passa dos dois lados não é
+  oráculo
+- Checklist: `## Superfície do Pacote` preenchida, revisão do diff executada, falsificabilidade
+  provada, contagens do `03` derivadas por `grep -c`, e **`06-relatorio-qa.md` existe** (blocker)
+
+### Alterado
+
+- **Step 7, item 4** vira comando: `diff` entre os IDs de CT do `04`/`05` e os dos arquivos de
+  teste, saída vazia como critério, colada na `## Verificação Final`. Era "conferir nos dois
+  sentidos" em prosa — e um CT ficou sem teste com o checkbox fechado
 
 ## [3.1.0] — 2026-09-05
 
@@ -321,6 +361,31 @@ Consolida as versões 2.5.0 e 2.6.0 (nunca commitadas isoladamente) e adiciona a
 # feature-test-design
 
 Deriva casos de teste que **matam defeito**, a partir do requisito — nunca do plano e nunca do código.
+
+## [1.11.0] — 2026-09-15
+
+Quatro gatilhos novos no checklist de taxonomia e duas regras de derivação, todos vindos da mesma
+feature real que motivou a `feature-wiki` 3.2.0: 29 CTs derivados por esta skill, quatro defeitos
+entregues, **nenhum deles com cenário correspondente**.
+
+### Adicionado
+
+- **Gatilho "feature monta sobre pacote de terceiro"**: cada linha de `## Superfície do Pacote` do
+  `02` exige um cenário disparando a ação do pacote **com id/argumento de outro tenant/usuário** e
+  um escrevendo a **propriedade pública** do componente pelo cliente. A tabela do `02` passa a ser
+  **entrada obrigatória** da skill
+- **Gatilho "cada entidade que a feature persiste"**: IDOR e mass assignment **por tabela**, não por
+  feature. Fechar a linha do checklist com o CT da tabela-pai é falso ✅ — foi assim que a tabela
+  filha ficou sem fronteira
+- **Gatilho "filtro de escopo"**: cenário do **discriminante nulo**, declarando se a query fecha ou
+  abre (com o aviso de que `where('col', null)` vira `whereNull` e abre para os globais)
+- **Gatilho "cenário cujo `Então` é 4xx/5xx/redirect"**: exige o par que declara a saída
+- **`### Afirmação negativa é hipótese até um `grep` prová-la`**: negativa que dispensa controle de
+  fronteira exige `arquivo:linha` **e** um cenário escrito como se ela fosse falsa. Motivo: a tabela
+  de mutantes só cobre regras escritas, então o que a wiki declara desnecessário escapa do gate de
+  falsificabilidade inteiro
+- **`### Todo estado de erro declara a saída`**: o defeito "A devolve para B, B devolve para A" não
+  aparece em cenário isolado — cada um está certo sozinho
 
 ## [1.10.0] — 2026-09-05
 
@@ -784,6 +849,19 @@ preenchimento de gabarito por um pipeline de derivação com gate de auditoria.
 ---
 
 # feature-quality-gate
+
+## [1.3.0] — 2026-09-15
+
+Dimensão I passa a cobrir a superfície que o projeto **não escreveu**.
+
+### Adicionado
+
+- **Dimensão I — Segurança da Superfície Nova**, quatro checagens novas: ação de pacote de terceiro
+  alcançável por `$wire.mountAction` com id do cliente (conferida contra `## Superfície do Pacote`
+  do `02`); propriedade pública Livewire sem `#[Locked]` que decide **onde** a escrita cai (com a
+  nota de que `#[Session]` não tranca — só repõe no `mount()`); escopo com discriminante nulo
+  (falha aberta × fechada); e estado de erro sem saída, com par de redirect mútuo classificado como
+  **Blocker**
 
 ## [1.2.0] — 2026-09-05
 
