@@ -8,8 +8,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 
 | Skill | Versão | Tag |
 |---|---|---|
-| `feature-wiki` | 3.2.0 | `feature-wiki-v3.2.0` |
-| `feature-test-design` | 1.11.0 | `feature-test-design-v1.11.0` |
+| `feature-wiki` | 3.3.0 | `feature-wiki-v3.3.0` |
+| `feature-test-design` | 1.12.0 | `feature-test-design-v1.12.0` |
 | `feature-quality-gate` | 1.3.0 | `feature-quality-gate-v1.3.0` |
 | `requirement-to-rule` | 1.2.0 | `requirement-to-rule-v1.2.0` |
 
@@ -36,6 +36,65 @@ requirement-to-rule-v1.0.0
 # feature-wiki
 
 Cria a estrutura de documentação de uma feature **antes** de implementá-la: requisito bruto, PRD, ADR, tracking de progresso e padrão de log.
+
+## [3.3.0] — 2026-09-17
+
+O gate que lê o diff, a superfície que o cliente alcança, a classe irmã e o custo. Motivada por uma
+feature real (dashboard de acompanhamento de aprendizagem sobre Filament 5, 2026-09-17) que rodou a
+skill 3.2.0 com **tudo cumprido** — 43 CTs, revisão adversarial fechando cinco implementações
+erradas, auditoria Ponytail com dez cortes aplicados, 61 testes verdes e 2.383 casos de regressão —
+e ainda assim chegou ao step 7.5 com **sete defeitos**, dois deles produzindo 500 em produção.
+
+A diferença para a 3.2.0 é que desta vez **o step 7.5 existia e rodou**. O que a rodada mediu foi
+*quais gates tinham chance de pegar antes e por que não pegaram*.
+
+### Onde cada gate acertou e errou, medido
+
+| Gate | Achados de correção | Por quê |
+|---|---|---|
+| step 5 — revisão profunda | 2 | valida o que o plano **afirma**; nenhum dos sete era afirmação do plano, e ele roda antes do código existir |
+| step 6 — `ponytail-review` | 0 | **por charter**: *"correctness bugs, security holes, and performance are explicitly out of scope"*. Além disso lê o plano, não o diff |
+| revisão adversarial do `04` | 0 de correção, 5 de cobertura | recebe só `00` + `04`: enxerga o que o **requisito** descreve, e nenhum dos sete está no requisito |
+| suíte verde, 2.383 casos | 1 | enforço de arquitetura do próprio projeto (Action nova sem declaração de autorização) |
+| **step 7.5 — `/code-review` no diff** | **7** | é o único que lê o diff atrás de defeito de correção |
+
+### O que a 3.2.0 deixou passar — e a causa na skill
+
+| Falha observada | Causa na skill |
+|---|---|
+| `$rotulos[$situacao]` sem `??` e `Carbon::parse($filtro)` sem guarda → dois **500**, alcançáveis por payload de filtro | o gatilho da superfície do cliente dizia *"feature monta sobre pacote de terceiro"*; a feature montava sobre o **framework**, o agente declarou "não se aplica" e a tabela nunca foi preenchida |
+| Método público de componente devolvendo coluna não exposta ao navegador, e 500 com nome inexistente | nenhum item tratava `public function` de Page/Widget como **ação chamável por `$wire.`** |
+| Página nova ausente de `config/filament-shield.php` → permission gerada que não muda nada quando desmarcada | nenhum gate varre as **listas paralelas** que o projeto mantém à mão; a lista do teste foi atualizada, a do config não |
+| Carga filtrada custando ~384 queries onde a ADR previa uma | a ADR era coerente e assumia *"uma tela = um request"*; com widgets `lazy` são **N requests**, e nenhum campo do PRD obrigava a declarar isso |
+| Duas superfícies da mesma fronteira, uma fechando com log e a outra em silêncio | nenhum eixo de revisão perguntava por **simetria de guarda** |
+
+### Adicionado
+
+- **Bloco de abertura "O gate que mais pega defeito é o step 7.5, e ele vem por último"**, logo
+  abaixo do título, com a tabela medida acima. O step 7.5 estava no fim de um documento de 1.800
+  linhas e é o mais fácil de adiar — e é o mais produtivo.
+- **`#### Varredura da classe irmã`** no step 5, obrigatória para toda classe nova: `grep` pelo FQCN
+  de uma classe **irmã** já existente para achar as listas paralelas (`config/`, seeders,
+  inventários de teste, `->pages()`/`->widgets()` dos providers). "Nenhuma ocorrência além das
+  previstas" é resposta válida e precisa estar escrita no `03`.
+- **`## Modelo de Execução`** no template do PRD: quantos requests a tela custa, o que é adiado e
+  por qual gatilho, o que é memoizado **por request** e o que é cacheado **entre** requests, e o
+  custo do caminho comum × do caminho filtrado. Premissa de custo não escrita produz ADR coerente
+  e errada.
+- **Quatro eixos novos no step 7.5**: método público de componente, valor de estado usado sem
+  validar, lista paralela e simetria de guarda.
+- **Itens de Verificação Final**: custo medido contra o `## Modelo de Execução`, e `/code-review`
+  no diff como linha própria.
+
+### Alterado
+
+- **`#### Superfície do Pacote de Terceiro` → `#### Superfície Livewire`**, e o gatilho deixa de ser
+  *"quando a feature monta sobre um pacote"* para ser **"em toda feature que cria página, widget ou
+  componente"**. A tabela ganha três origens — o código do projeto, o framework (`$filters`,
+  `$pageFilters`, `$tableFilters`) e o pacote —, e os greps do vendor viram uma das duas varreduras.
+  A condição certa é a **superfície**, não a origem dela.
+- Segunda regra dura da seção: todo valor que entra por um desses pontos e vira índice de array,
+  argumento de `parse`, nome de coluna ou operador **é cenário de domínio inválido**.
 
 ## [3.2.0] — 2026-09-15
 
@@ -361,6 +420,36 @@ Consolida as versões 2.5.0 e 2.6.0 (nunca commitadas isoladamente) e adiciona a
 # feature-test-design
 
 Deriva casos de teste que **matam defeito**, a partir do requisito — nunca do plano e nunca do código.
+
+## [1.12.0] — 2026-09-17
+
+Superfície Livewire: o gatilho estava condicionado à origem, e não à exposição.
+
+Mesma feature real que motivou a `feature-wiki` 3.3.0. O checklist de taxonomia tinha a linha
+*"feature monta sobre pacote de terceiro"*; a feature montava sobre o **framework**, o agente leu
+ao pé da letra, declarou *"nenhum pacote persiste entidade → não se aplica"* e o conjunto de 43 CTs
+saiu **sem um único cenário de entrada inválida**. Três defeitos passaram e só apareceram no
+`/code-review` do diff.
+
+### Alterado
+
+- A entrada obrigatória `## Superfície do Pacote` do `02` vira **`## Superfície Livewire`**, exigida
+  **sempre** que a feature cria página, widget ou componente. Pacote de terceiro passa a ser uma das
+  origens, não a condição de a seção existir.
+
+### Adicionado
+
+- **Três gatilhos no checklist de taxonomia**:
+  - *a feature cria página, widget ou componente Livewire* → um cenário por ponto de entrada, com
+    valor **fora do domínio** e com **tipo errado**;
+  - *valor de estado do framework que vira índice, `parse`, coluna ou operador* → `$filters`,
+    `$pageFilters`, `$tableFilters`, `$tableSearch`, `$tableSortColumn` são entrada de usuário não
+    validada. O discriminante é que **a página sanitiza e o widget recebe cru** — o cenário precisa
+    entrar pelo widget;
+  - *método público de componente Livewire* → é ação chamável por `$wire.` e o retorno vai para o
+    navegador; um cenário com argumento fora da lista fechada.
+- Duas linhas novas no checklist do template do `04`.
+- Bloco de evidência com o caso medido, ao lado da tabela de taxonomia.
 
 ## [1.11.0] — 2026-09-15
 
