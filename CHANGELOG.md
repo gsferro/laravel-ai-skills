@@ -8,9 +8,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 
 | Skill | Versão | Tag |
 |---|---|---|
-| `feature-wiki` | 3.3.0 | `feature-wiki-v3.3.0` |
-| `feature-test-design` | 1.12.0 | `feature-test-design-v1.12.0` |
-| `feature-quality-gate` | 1.3.0 | `feature-quality-gate-v1.3.0` |
+| `feature-wiki` | 3.5.0 | `feature-wiki-v3.5.0` |
+| `feature-test-design` | 1.14.0 | `feature-test-design-v1.14.0` |
+| `feature-quality-gate` | 1.5.0 | `feature-quality-gate-v1.5.0` |
 | `requirement-to-rule` | 1.2.0 | `requirement-to-rule-v1.2.0` |
 
 ## Convenção de tags
@@ -36,6 +36,169 @@ requirement-to-rule-v1.0.0
 # feature-wiki
 
 Cria a estrutura de documentação de uma feature **antes** de implementá-la: requisito bruto, PRD, ADR, tracking de progresso e padrão de log.
+
+## [3.5.0] — 2026-09-22
+
+A 3.4.0 desenhou o roteamento por modelo e por cegueira; a 3.5.0 é o que uma **feature completa**
+ensinou ao rodá-lo de ponta a ponta (fluxo de aprovação de compra em Laravel 13 / Filament 5,
+`demo-wiki`, 2026-09-21: 18 `RQ`, 28 premissas, 79 CTs, 182 testes, 14 commits, 48 despachos,
+~4,6 M tokens de sub-agente; quality gate ciclo 1 `REPROVADO → especificação` com 8 achados). As
+duas versões saem juntas: nada da 3.4.0 chegou a ser publicado antes da medição.
+
+### O que a medição confirmou (vira regra dura, com o caso registrado no `SKILL.md`)
+
+| Confirmado | Evidência |
+|---|---|
+| **Cegueira vale mais que modelo** | adversário cego (`opus`) achou 5 implementações erradas sobre 60 CTs derivados por outro `opus`, e uma regra que eram duas; o 6.5 cego produziu 14 achados que mudaram código, `00` e `04` |
+| **O juiz cego acusa a própria sessão** | o step 8 pegou duas alegações falsas da `## Verificação Final` — *"88 citações ok"* sem comando e *"sem PCOV / mutate não instalado"* sem `php -m`. Eram do orquestrador, não do código |
+| **O juiz cego faz a pergunta que ninguém fez** | acumulação gestor × diretor na mesma pessoa; visibilidade de quem já decidiu; link do e-mail em 404 |
+| **6.5 antes do 7** | os 14 achados deslocaram citações, IDs e frases de ADR; o 7 teria sido refeito inteiro |
+| **Contrato a/b/c do executor** | 5 lotes; todo vermelho que sobrou era defeito real (CT-58, CT-59) |
+| **Auditoria do retorno, sobretudo com `haiku`** | 3 de 8 retornos `haiku` com defeito; 1 de 5 itens feitos num lote misto, 3 reportados como feitos |
+
+### Adicionado
+
+- **`### Validado em campo`** na seção *Execução e Delegação*: a tabela acima, com o caso de cada
+  linha, e a lista do que a medição **desmentiu** com o ponteiro para a correção
+- **Rota `executor-ct`** e o agente **`agents/fw-executor-ct.md`** (`sonnet`): o construtor de
+  testes Pest de backend a partir do Gherkin do `04`, generalização do contrato dos CT-B — fonte é
+  o `04`, lê `app/` só para nomes, fixture por transições reais, classifica cada vermelho em
+  a/b/c, **nunca toca `app/`**, saída em formato fixo, reporta "estado parcial" se interrompido.
+  Seção nova **`### Contrato do construtor de testes (executor-ct)`**
+- **Pré-requisitos do lote 6.5**: a sessão roda no repositório do projeto (o `/code-review` não
+  alcança outro diretório; substituto é `analista` cego com degradação declarada) e a
+  `## Superfície Livewire` do `02` foi **re-varrida sobre o código final** — a tabela do
+  planejamento envelhece (negava superfície de vendor; as Pages herdavam trait com 4 métodos
+  `$wire.` que recebem índice de array)
+- **Ordem step 6 × step 4**: Ponytail sobre `01`/`02` **antes** de invocar a `feature-test-design`;
+  se o `04` já existe quando um corte muda a `## Superfície de UI`, **re-sincronizar** no mesmo
+  passo (CT atingido vira `@obsoleto` ou é re-derivado). Caso: CT-42 órfão de um filtro cortado,
+  descoberto só no `diff` de IDs do step 7
+- **Terceira saída da falsificabilidade**: *"não falsificável nesta pilha — guarda mantida, dívida
+  declarada"* (SQLite ignora `VARCHAR(255)` e `RESTRICT`). 3 de 5 CTs novos caíram nela; lida como
+  regra absoluta, *"decoração"* mandaria apagar guardas corretas
+- **Sinais que reprovam o retorno antes da amostragem**: número sem comando; `git diff --stat`
+  como prova de arquivo untracked; "não encontrado/não instalado" sem prova negativa; "sem
+  ocorrências" em grep com FQCN; conclusão de custo sob paginação. **Auditoria reprovada é linha
+  do quadro**; interrupção (429) → `git status` antes de retomar o **mesmo** agente por
+  `SendMessage`
+- **Regras da rota `mecânico`**: um item por despacho (lote misto → `construtor`); `grep -F` para
+  FQCN; `Explore` só para feature grande (139 k tokens contra 40–60 k por `haiku`)
+- **Verificação de agentes antes do primeiro despacho** (`ls .claude/agents/fw-*.md`): eles só
+  carregam do diretório onde a sessão foi aberta; o fallback `general-purpose`/{model} vai na
+  coluna *Modelo* do quadro. Segurou uma feature inteira
+- **Tier abstrato** (econômico / intermediário / topo) como conceito portável para outro provedor;
+  o alias Claude é a implementação
+- **Perguntas obrigatórias do `00`** (comentário do template *Ambiguidades*): acumulação de papéis
+  **par a par**; participante histórico × recorte de visibilidade; destino do link de toda
+  notificação; teto de todo texto livre — as quatro que o juiz cego fez e a sessão não
+- **Pest 5 — duas armadilhas medidas**: `--testsuite=A --testsuite=B` só honra o último; e
+  **`pest --mutate` dá 100 % falso no Windows** — o plugin relança `argv[0]` (script sh) que o
+  `cmd` não executa, e conta saída não-zero como mutante morto (*206 mutantes em 3 s*). Regra:
+  score só vale com `Duration` plausível e lista de sobreviventes; lançador `.cmd` poliglota
+  documentado. Medido de verdade: 206 mutantes, 196 mortos, 7 timeout, 3 sobreviventes, 98,54 %
+  em 594 s
+- **Templates do `01`/`03`**: baseline da suíte em `{base}` antes do primeiro commit (falhas
+  pré-existentes por nome); linha do `--mutate` com score, duração e sobreviventes; custo medido
+  com N acima da página; falsificabilidade com a terceira saída; e o comentário do `03` passa a
+  exigir **o comando** ao lado de todo número e **a prova negativa** ao lado de toda degradação
+- **Filosofia de Implementação**: model novo declara `$table` quando o nome não é o plural inglês
+  inferido (nasceu como defeito: `centro_custos`)
+
+### Alterado
+
+- **Log não vira CT.** O checklist pedia *"CTs de log incluídos no `04`"* e a
+  `feature-test-design` deriva só do `00` — conflito medido (helper de log morto, zero CT de log,
+  17 logs conferidos pela dimensão D do gate). *Testando Logs em Pest* vira técnica opcional; quem
+  confere log é a dimensão D
+- Mapa de roteamento: linha de teste Pest passa de `construtor` para `executor-ct`; linhas novas
+  para re-sincronização do `04` (step 6) e re-varredura da Superfície Livewire (pré-6.5)
+- Checklist Final: +12 itens (perguntas obrigatórias do `00`, baseline, `$table`, ordem 6 × 4,
+  Superfície re-varrida, número com comando, `--mutate` plausível, `ls .claude/agents`, `mecânico`
+  um item, retorno reprovado registrado, falsificabilidade com terceira saída, log fora do `04`)
+
+## [3.4.0] — 2026-09-21
+
+O gate do diff muda de lugar, e a skill aprende a despachar. Duas motivações, ambas de uso real:
+
+1. **O `/code-review` continua achando defeito** mesmo com a skill na 3.3.0 e tudo cumprido. Isso
+   não é falha dos outros gates — é o que a medição de 2026-09-17 já dizia: ele é o único que lê
+   o diff atrás de defeito de correção. Mas ele rodava como **step 7.5, depois da reconciliação**,
+   e cada achado confirmado (Adendo no `00` → CT no `04` → correção) invalidava citações, IDs de CT
+   e frases de doc que o step 7 tinha acabado de conferir. Reconciliar antes de revisar era
+   reconciliar duas vezes.
+2. **O modelo de roteamento do PO** — sessão principal orquestra, decide e audita; construção e
+   volume vão para sub-agente com o modelo roteado pela complexidade (`haiku` mecânico, `sonnet`
+   construtor, `opus` analista); paralelo é o padrão; todo disparo é visível num quadro; nunca
+   `general-purpose` sem `model`. A coletânea já tinha três lugares que pediam *"por quem não
+   implementou / não derivou / não escreveu"* e os executava **na mesma sessão**. Sub-agente
+   resolve os dois problemas de uma vez: custo e independência.
+
+### Onde o `/code-review` roda agora, e por quê
+
+| Antes (3.3.0) | Agora (3.4.0) | Motivo |
+|---|---|---|
+| step **7.5**, depois da reconciliação (7) e antes do quality gate (8) | step **6.5**, logo após os testes passarem e **antes** da reconciliação | achado confirmado muda código, cláusula e CT; a reconciliação precisa ler o diff **pós-revisão**, e a dimensão L do step 8 precisa vir logo depois dela |
+| `/code-review` "ou sub-agente equivalente", sem alvo, sem nível | **dois passes no mesmo lote**: `/code-review high {base}...HEAD` + passe de eixos por sub-agente `fw-revisor-diff` (`opus`, sem Edit/Write, cego ao PRD) | o comando genérico não conhece os eixos Laravel/Livewire/multi-tenant e **não aceita foco em texto livre** (o que vem depois do nível é lido como alvo); os eixos precisam de agente próprio |
+| — | **alvo explícito obrigatório** | sem alvo, o comando compara com o merge-base do **upstream**: numa branch já pushada o "diff atual" é só o não-commitado, e a revisão sai vazia parecendo limpa |
+| — | **`--fix` proibido** | quem julga não conserta; o roteamento exige Adendo → CT → correção, e o `--fix` entrega correção sem oráculo |
+| — | nível `high` | achado incerto é bem-vindo porque o roteamento obriga a rejeitar com motivo |
+| — | **checkpoint opcional** `/code-review medium` no diff não-commitado após passo do PRD que cria fronteira | achado aqui custa uma linha; no 6.5 custa Adendo, CT, correção e re-teste |
+| — | re-revisão única se a correção tocou eixo de fronteira; teto 2 rodadas | correção é código novo do mesmo agente |
+
+A ordem oficial passa a ser **6.5 → 7 → 8 → PR**. O conteúdo do gate (eixos, roteamento,
+falsificabilidade por `git stash`) não mudou.
+
+### Adicionado
+
+- **`## Execução e Delegação (Claude Code) — roteamento por modelo e por cegueira`**, seção nova
+  antes do Fluxo de Execução. Adapta o modelo do PO com **um segundo eixo**: além da complexidade
+  (que escolhe o modelo), a **cegueira** — o que o executor não pode ter visto para o resultado
+  valer como prova — que escolhe o contexto e proíbe rodar em linha. É a propriedade que a
+  coletânea inteira persegue (cegueira correlacionada), e sub-agente a entrega **por construção**:
+  ele nasce sem o contexto da sessão.
+  - **Rotas**: `mecânico` (haiku), `construtor` (sonnet), `analista` (opus), e quatro rotas
+    próprias da esteira que carregam cegueira e restrição de ferramenta — `revisor-diff`,
+    `adversário-ct`, `qa-gate` (todas `opus`, sem Edit/Write) e `executor-ctb` (sonnet)
+  - **Ordem de preferência para obter a rota**: agentes do projeto em `.claude/agents/` →
+    agentes da esteira (pasta `agents/` de cada skill, copiados com
+    `cp .ai/skills/*/agents/*.md .claude/agents/`) → `general-purpose` com `model` explícito.
+    **Nunca `general-purpose` sem `model`**
+  - **Paralelo é o padrão**, com duas restrições da esteira: nunca dois construtores no mesmo
+    arquivo; o revisor do diff só dispara depois do último construtor
+  - **Quadro de despacho** antes de todo lote e relatório contra o mesmo quadro no retorno, com a
+    coluna *"Não recebe (cegueira)"*. O quadro vai para a seção nova **`## Despachos`** do
+    `03-progresso.md` — o primeiro registro da coletânea de **qual modelo fez o quê**, e portanto o
+    primeiro instrumento de custo de operar (lacuna apontada em `estudos/`, §3.5)
+  - **Rodam em linha**: 1–2 passos, interação com o usuário, decisão de contexto imediato, edição
+    cirúrgica, captura verbatim do requisito — com *"Sem despacho — motivo"* declarado. Exceção
+    que **não** vale: *"é pequeno, reviso eu mesmo"* — tamanho não compra cegueira
+  - **Auditoria do retorno**: presença, integridade (`git diff --stat` antes/depois do lote) e
+    amostragem com `Read`/`grep` direto
+  - **Mapa de roteamento por step**, do 0 ao 9, com rota, paralelismo e cegueira por tarefa
+- **`agents/`** — quatro definições de sub-agente, **cada uma na skill dona do contrato** para o
+  `boost:add-skill` instalá-la junto (inclusive na instalação seletiva): `fw-revisor-diff.md` e
+  `fw-executor-ctb.md` aqui, `fw-adversario-ct.md` na `feature-test-design`, `fw-qa-gate.md` na
+  `feature-quality-gate`. Cada uma fixa modelo, ferramentas permitidas/proibidas, o que recebe, o
+  que recusa receber e o formato de saída. As três de julgamento **não têm Edit/Write**: *"não
+  corrige nada"* vira propriedade. O Claude Code só lê `.claude/agents/`, então a instalação exige
+  a cópia `cp .ai/skills/*/agents/*.md .claude/agents/` — documentada no README raiz, no README da
+  skill e na própria seção de rotas
+- **Step 5**: padrão *"levantar com `mecânico`, julgar com `analista`"* — o mesmo do
+  `PM_Arquiteto` do PO
+- **Step 8**: despacho do `fw-qa-gate` com só path da wiki, URL do app e `git diff --stat`; o `06`
+  volta como texto e a sessão grava verbatim; cabeçalho com `Independência:`
+- **Checklist**: grupo `### Delegação (Claude Code)` e itens de alvo/nível/`--fix` do 6.5
+- **Skills Companheiras**: linha *Orquestração (Claude Code)*
+
+### Alterado
+
+- **Step 7.5 → step 6.5**, movido para antes do step 7, com a seção *"Quando rodado no Claude
+  Code — dois passes, no mesmo lote"* e o bloco *"Fora do Claude Code"* (host com sub-agente usa
+  `revisor-diff` com o mesmo contrato; host sem sub-agente roda em linha e declara a degradação)
+- Bloco de abertura, índice, step 7 (*"A ordem é 6.5 → 7 → 8 → PR"*), templates de Verificação
+  Final do `01` e do `03`, e checklist: todas as referências ao 7.5 apontam para o 6.5
+- Step 3: os greps prescritos vão para `mecânico` em paralelo, tabela pronta
 
 ## [3.3.0] — 2026-09-17
 
@@ -420,6 +583,54 @@ Consolida as versões 2.5.0 e 2.6.0 (nunca commitadas isoladamente) e adiciona a
 # feature-test-design
 
 Deriva casos de teste que **matam defeito**, a partir do requisito — nunca do plano e nunca do código.
+
+## [1.14.0] — 2026-09-22
+
+O que a primeira feature completa com adversário cego ensinou. Acompanha a `feature-wiki` 3.5.0.
+
+### Adicionado
+
+- **Três sondas novas no contrato adversarial** (itens 5–7 e no `agents/fw-adversario-ct.md`):
+  acumulação de papéis **par a par**; participante histórico × recorte de visibilidade e destino
+  do link de toda notificação; teto de todo texto livre no model. São as perguntas que nem o
+  adversário fez e o quality gate depois fez (gestor que acumula `diretor` assinava as duas etapas;
+  aprovador perdia o registro de vista ao decidir; link do e-mail em 404)
+- **Fixture por transições reais** no `## Setup Global`: helper `{entidade}Em('{situacao}')` que
+  chama a máquina de estados do domínio em vez de gravar `situacao` à força — reimplementar a
+  transição no teste esconde o defeito que o teste existe para pegar. Medido: expôs que a
+  notificação real exigia contexto de painel
+- **Medição registrada na Revisão Adversarial**: rodada 1 achou 5 implementações erradas sobre 60
+  CTs derivados por `opus`; rodada 2 achou o estrutural (`R6` eram duas regras). Os dois lados eram
+  `opus` — a cegueira pesou mais que o modelo
+- **Mutation testing**: *"sem driver / plugin ausente"* só com a prova negativa colada (as duas
+  afirmações estavam numa wiki real e eram falsas); **`pest --mutate` dá 100 % falso no Windows**
+  (`argv[0]` sh não executa; score só vale com `Duration` plausível e sobreviventes listados;
+  lançador `.cmd` na `feature-wiki`); `--testsuite` só honra o último
+- **Checklist pós-implementação**: `--mutate` com duração plausível; CT cujo elemento foi cortado
+  no step 6 da `feature-wiki` vira `@obsoleto` (não apagado, não órfão); CT que passa dos dois lados
+  do `git stash` é reescrito **ou** declarado "não falsificável nesta pilha"
+- **Proibição 12 — não derivar CT de log.** Log não é cláusula; é saída observável do plano,
+  conferida pela dimensão D do quality gate. Exceção: requisito de trilha de auditoria, e aí é `RQ`
+
+### Alterado
+
+- Princípio 1 ganha o corolário *"log não é cláusula"*, fechando o conflito com o antigo template
+  da `feature-wiki`
+
+## [1.13.0] — 2026-09-21
+
+A revisão adversarial ganha rota e modelo. Acompanha a `feature-wiki` 3.4.0.
+
+### Alterado
+
+- **Revisão Adversarial**: no Claude Code, a rota é `fw-adversario-ct` (`opus`, sem
+  `Edit`/`Write`/`Bash`; definição em `agents/fw-adversario-ct.md` **desta skill**, copiada para
+  `.claude/agents/` com `cp .ai/skills/*/agents/*.md .claude/agents/`) ou `general-purpose` com
+  `model: opus` **explícito**. O modelo é o mais forte disponível porque classificar se um oráculo
+  está correto é a tarefa em que modelos são comprovadamente piores do que em gerá-lo. A cegueira
+  passa a vir da **construção** — o sub-agente recebe só o que a linha `Entrada` do contrato lista
+  — e o disparo é registrado em `## Despachos` do `03`. Host sem sub-agente: rodar em linha e
+  declarar no `04` *"Revisão adversarial: em linha, mesma sessão que derivou"*
 
 ## [1.12.0] — 2026-09-17
 
@@ -938,6 +1149,53 @@ preenchimento de gabarito por um pipeline de derivação com gate de auditoria.
 ---
 
 # feature-quality-gate
+
+## [1.5.0] — 2026-09-22
+
+O juiz cego rodou pela primeira vez numa feature completa e acusou o orquestrador. Acompanha a
+`feature-wiki` 3.5.0.
+
+### Adicionado
+
+- **Checagem L6 — alegações do `03`**: todo `[x]` da `## Verificação Final` com número é
+  reproduzido pelo comando que o gera; toda degradação declarada ("sem PCOV", "plugin ausente",
+  "MCP indisponível") é conferida com a prova negativa (`php -m`, `ls vendor/…`); toda `Duration`
+  de `--mutate` é testada por plausibilidade. Severidade Major, destino 1 (e 3 quando a degradação
+  pulou o passo medido da K). É a checagem que **acusa o orquestrador** — e só um juiz que não viu
+  a conversa a faz sem viés. Nasceu de QA-03 (*"88 ok"* irreproduzível) e QA-04 (*"sem
+  PCOV/mutate"* com os dois presentes) do ciclo 1 de 2026-09-21
+- **Dimensão K — plausibilidade do score antes de lê-lo**: no Windows o plugin de mutação conta
+  falha de spawn como mutante morto (*206 mutantes, 100 %, 3 s*); score sem `Duration` compatível
+  com N × testes cobridores, ou sem sobreviventes listados, é **"Não Verificado"**, não 100 %.
+  Este gate aceitou um *"2 mutantes, 100 %"* na primeira execução e não devia — está escrito
+- **Proibição 11 — não aceitar número sem comando nem ausência sem prova**
+- **Medição registrada no princípio 2**: `REPROVADO → especificação`, 8 achados, 2 perguntas de
+  requisito inéditas e 2 achados contra a própria sessão
+- **`agents/fw-qa-gate.md`**: seção *Duas checagens que só você consegue fazer sem viés* (L6 e
+  plausibilidade da K)
+
+### Alterado
+
+- Piso da dimensão K: *"sem driver, declarar Não Verificado"* passa a exigir a prova da ausência
+  antes da declaração
+- Checklist Final: +2 itens (L6; K só com duração plausível e sobreviventes nomeados)
+
+## [1.4.0] — 2026-09-21
+
+Os princípios 1 e 2 viram construção no Claude Code. Acompanha a `feature-wiki` 3.4.0.
+
+### Adicionado
+
+- **Execução como sub-agente**: a `feature-wiki` despacha esta skill no step 8 como `fw-qa-gate`
+  (`opus`), que **não tem `Edit`/`Write`** e recebe só o path da wiki, a URL do app e o
+  `git diff --stat` — nunca a conversa que escreveu o `01` e implementou. O relatório volta como
+  texto e a sessão o grava verbatim. *"Por quem não escreveu a wiki"* e *"não corrige nada"*
+  deixam de ser promessa
+- **`agents/fw-qa-gate.md`** nesta skill, para o Boost instalá-lo junto. O Claude Code só o enxerga
+  em `.claude/agents/`: copiar com `cp .ai/skills/*/agents/*.md .claude/agents/` a cada atualização
+- **Linha `Independência:` no cabeçalho do `06`**: `sub-agente {rota}/{modelo}, sem acesso à
+  conversa` ou `mesma sessão que escreveu a wiki (degradado)`. O leitor precisa saber se quem
+  julgou foi quem escreveu
 
 ## [1.3.0] — 2026-09-15
 

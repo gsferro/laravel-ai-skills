@@ -12,12 +12,49 @@ Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude C
 
 | Skill | Versão | O que faz | Quando é invocada |
 |---|---|---|---|
-| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 3.3.0 | Cria a wiki da feature antes de implementar: requisito bruto, PRD, ADR e progresso, com padrão de log. Delega os casos de teste | ao iniciar qualquer feature nova |
-| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.12.0 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes | step 4 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
-| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.3.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita a consistência wiki × código × docs × rules e roteia cada achado para especificação, implementação ou teste | step 8 da `feature-wiki`, após os testes passarem e **antes do PR** |
+| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 3.5.0 | Cria a wiki da feature antes de implementar: requisito bruto, PRD, ADR e progresso, com padrão de log. Delega os casos de teste. No Claude Code, despacha para sub-agentes com modelo roteado e juiz cego | ao iniciar qualquer feature nova |
+| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.14.0 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes | step 4 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
+| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.5.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita a consistência wiki × código × docs × rules e roteia cada achado para especificação, implementação ou teste | step 8 da `feature-wiki`, após os testes passarem e **antes do PR** |
 | **[requirement-to-rule](.ai/skills/requirement-to-rule/README.md)** | 1.2.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | step 9 da `feature-wiki` ou sob pedido |
 
 O ciclo completo: **planejar** (`feature-wiki`) → **especificar teste** (`feature-test-design`) → **executar** (Ponytail) → **comunicar** (Caveman) → **testar** (Pest 5) → **validar** (`feature-quality-gate`) → **memorizar** (`requirement-to-rule`).
+
+### Sub-agentes da esteira × modelo (referência)
+
+No Claude Code, a `feature-wiki` 3.5.0 despacha tarefas para sub-agentes com o modelo roteado por
+**complexidade** (quanto raciocínio a tarefa exige) e por **cegueira** (o que o executor não pode ter
+visto para o resultado valer como prova). A tabela abaixo é a referência do que cada rota usa; os
+aliases (`haiku`, `sonnet`, `opus`) resolvem sempre para a geração corrente de cada família.
+
+| Rota / agente | Skill dona | Alias | Modelo Claude (geração atual) | Tier | Ferramentas | Cegueira |
+|---|---|---|---|---|---|---|
+| `mecânico` | — (`general-purpose` + `model`) | `haiku` | Claude Haiku 4.5 | econômico | leitura + Bash | — |
+| `construtor` | — (`general-purpose` + `model`) | `sonnet` | Claude Sonnet 5 | intermediário | tudo | não edita `00`, `04`, `05` |
+| `analista` | — (`general-purpose` + `model`) | `opus` | Claude Opus 5 | topo | leitura + Bash | conforme a tarefa |
+| `Explore` (built-in) | — | `sonnet` recomendado | Claude Sonnet 5 | intermediário | leitura | — |
+| `fw-revisor-diff` | `feature-wiki` | `opus` | Claude Opus 5 | topo | leitura + Bash, **sem Edit/Write** | não recebe `01`, `03` |
+| `fw-executor-ct` | `feature-wiki` | `sonnet` | Claude Sonnet 5 | intermediário | tudo, sob contrato | não lê `01`/`02`; lê `app/` só para nomes; não altera código de aplicação |
+| `fw-executor-ctb` | `feature-wiki` | `sonnet` | Claude Sonnet 5 | intermediário | tudo, sob contrato | não altera código de aplicação |
+| `fw-adversario-ct` | `feature-test-design` | `opus` | Claude Opus 5 | topo | leitura, **sem Edit/Write/Bash** | recebe só `00` + `04`/`05` |
+| `fw-qa-gate` | `feature-quality-gate` | `opus` | Claude Opus 5 | topo | tudo menos Edit/Write (herda MCP) | não recebe a conversa |
+| sessão principal | — | o da sessão | o que o usuário escolheu (Fable 5.1, Opus 5…) | — | — | orquestra, decide, audita |
+| `/code-review` (nativo do Claude Code) | — | o da sessão, por padrão | — | — | isolado por construção | não vê a conversa |
+
+**Tier é o conceito portável; o alias é a implementação Claude.** Em outro host ou provedor, o
+projeto mapeia `econômico / intermediário / topo` para os modelos que tiver. Cada disparo registra
+o modelo **efetivamente** usado em `## Despachos` do `03-progresso.md`, então o custo de operar é
+medível por feature, seja qual for o provedor. Instalação dos agentes:
+`cp .ai/skills/*/agents/*.md .claude/agents/` (ver [Como Instalar no Claude Code](#-como-instalar-no-claude-code)).
+
+> Medição de referência (2026-09-21, feature FERRO-830 no `demo-wiki`, esteira completa até o
+> quality gate ciclo 1): **48 despachos, ~4,6 M tokens de sub-agente**, a maior parte em `sonnet`
+> construindo; o `Explore` sozinho custou 139 k. 3 de 8 retornos `haiku` tinham defeito, todos
+> pegos por amostragem; num lote misto de 5 itens o `haiku` fez 1 e reportou 3 como feitos. Os
+> cinco achados mais graves do `04` vieram do `opus` **cego** revisando o que outro `opus` derivou;
+> o quality gate cego devolveu `REPROVADO → especificação` com 2 perguntas de requisito que ninguém
+> tinha feito e **2 achados contra a própria sessão** (número sem comando; degradação declarada
+> falsa). A cegueira pesou mais que o modelo — e o registro completo está em
+> *Validado em campo*, no `SKILL.md` da `feature-wiki`.
 
 ### Por que a derivação do teste virou skill própria
 
@@ -90,7 +127,8 @@ Para que o Laravel Boost e o Claude Code consigam detectar suas habilidades auto
 └── skills/
     ├── nome-da-sua-skill/
     │   ├── SKILL.md      ← obrigatório: instruções para o agente
-    │   └── README.md     ← opcional: explicação para a pessoa
+    │   ├── README.md     ← opcional: explicação para a pessoa
+    │   └── agents/       ← opcional: sub-agentes da skill; copiar para .claude/agents/ (cp .ai/skills/*/agents/*.md .claude/agents/)
     └── outra-skill/
         └── SKILL.md
 ```
@@ -181,9 +219,20 @@ Você pode disponibilizar e carregar essas diretrizes no **Claude Code** atravé
 Se você já executou o comando do Laravel Boost acima no seu projeto, basta criar um espelho das configurações para que o Claude Code dê prioridade a elas no repositório local:
 
 ```bash
-mkdir -p .claude/skills/
+mkdir -p .claude/skills/ .claude/agents/
 cp -R .ai/skills/* .claude/skills/
+cp .ai/skills/*/agents/*.md .claude/agents/   # sub-agentes da esteira (revisor do diff, construtor de testes, adversário, QA, CT-B)
+ls .claude/agents/fw-*.md                     # confira: os agentes só carregam do diretório onde a sessão abre
 ```
+
+> **Os sub-agentes exigem a cópia.** O Claude Code lê agentes só em `.claude/agents/`, nunca em
+> `.ai/skills/*/agents/`. Cada skill traz o seu agente na própria pasta `agents/` (para o Boost
+> instalá-lo junto), então **repita a segunda cópia a cada `boost:add-skill`** — sem ela, a
+> `feature-wiki` não encontra `fw-revisor-diff`, `fw-executor-ct`, `fw-adversario-ct`, `fw-qa-gate`
+> nem `fw-executor-ctb`, e cai no `general-purpose` com `model` explícito (funciona — segurou uma
+> feature inteira em 2026-09-21 — mas sem a restrição de ferramenta que torna "quem julga não
+> conserta" mecânico). A sessão precisa estar aberta **no diretório do projeto**: agente em
+> `.claude/agents/` de um diretório pai ou de outro repositório não é visto.
 
 ### Opção 2: Instalação Global no Sistema
 Para que o Claude Code use estas regras de arquitetura em **qualquer diretório** que você abrir na sua máquina, instale a pasta de skills diretamente no seu perfil de usuário:
