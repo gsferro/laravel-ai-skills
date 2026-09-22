@@ -225,6 +225,13 @@ cp .ai/skills/*/agents/*.md .claude/agents/   # sub-agentes da esteira (revisor 
 ls .claude/agents/fw-*.md                     # confira: os agentes só carregam do diretório onde a sessão abre
 ```
 
+No **PowerShell** (`mkdir -p` e `cp` com glob não existem como no bash):
+
+```powershell
+New-Item -ItemType Directory -Force .claude\skills, .claudegents | Out-Null
+Copy-Item -Recurse -Force .ai\skills\* .claude\skillsCopy-Item -Force .ai\skills\*gents\*.md .claudegentsGet-ChildItem .claudegentsw-*.md        # cinco arquivos
+```
+
 > **Os sub-agentes exigem a cópia.** O Claude Code lê agentes só em `.claude/agents/`, nunca em
 > `.ai/skills/*/agents/`. Cada skill traz o seu agente na própria pasta `agents/` (para o Boost
 > instalá-lo junto), então **repita a segunda cópia a cada `boost:add-skill`** — sem ela, a

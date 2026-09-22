@@ -168,6 +168,9 @@ mkdir -p .claude/agents
 cp .ai/skills/*/agents/*.md .claude/agents/
 ```
 
+No PowerShell: `New-Item -ItemType Directory -Force .claudegents | Out-Null` e
+`Copy-Item -Force .ai\skills\*gents\*.md .claudegents\`.
+
 Sem essa cópia, o `subagent_type: "fw-…"` não existe e a skill cai no `general-purpose` com
 `model` explícito — funciona (segurou uma feature inteira em 2026-09-21), mas perde a restrição
 de ferramenta. Os agentes só carregam do diretório onde a sessão foi aberta: `ls .claude/agents/fw-*.md`

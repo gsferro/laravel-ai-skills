@@ -519,6 +519,9 @@ mkdir -p .claude/agents
 cp .ai/skills/*/agents/*.md .claude/agents/
 ```
 
+No PowerShell: `New-Item -ItemType Directory -Force .claudegents | Out-Null` e
+`Copy-Item -Force .ai\skills\*gents\*.md .claudegents\`.
+
 Sem a cópia, a `feature-wiki` não encontra `fw-qa-gate` e despacha um `general-purpose` com
 `model: opus` — funciona, mas com Edit/Write disponíveis, e o "não corrige nada" volta a ser promessa.
 | PCOV ou Xdebug | pré-requisito do `--tia` |

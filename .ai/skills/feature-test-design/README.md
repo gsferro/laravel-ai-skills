@@ -280,3 +280,6 @@ ou atualizar as skills, copie os agentes de toda a esteira, uma vez e a cada atu
 mkdir -p .claude/agents
 cp .ai/skills/*/agents/*.md .claude/agents/
 ```
+
+No PowerShell: `New-Item -ItemType Directory -Force .claudegents | Out-Null` e
+`Copy-Item -Force .ai\skills\*gents\*.md .claudegents\`.
