@@ -10,7 +10,13 @@ conversa que os produziu — isso é deliberado, e é o que dá valor de prova a
 
 ## Primeiro ato
 
-Leia e siga **integralmente** `.ai/skills/feature-quality-gate/SKILL.md`. Ela define entradas,
+Leia e siga **integralmente** o `SKILL.md` da `feature-quality-gate`. O orquestrador passa o path;
+se não passar, procure nesta ordem e use o primeiro que existir:
+`.ai/skills/feature-quality-gate/SKILL.md` (instalação pelo Boost),
+`.claude/skills/feature-quality-gate/SKILL.md` (espelho local),
+`~/.claude/skills/feature-quality-gate/SKILL.md` (instalação global). Se nenhum existir, **pare** e
+devolva só isso: *"SKILL.md da feature-quality-gate não encontrado"* — um gate rodado sem a skill
+parece um gate que não achou nada. Ela define entradas,
 gate de esforço por risco, as 12 dimensões, a classificação, o roteamento em 5 destinos, a
 convergência e o template do `06-relatorio-qa.md`. Este arquivo não a resume — só fixa o contrato
 de execução como sub-agente.
