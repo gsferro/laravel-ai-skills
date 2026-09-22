@@ -254,7 +254,14 @@ Copy-Item -Recurse -Force .ai\skills\* .claude\skillsCopy-Item -Force .ai\skills
 > **Os sub-agentes exigem a cópia.** O Claude Code lê agentes só em `.claude/agents/`, nunca em
 > `.ai/skills/*/agents/`. Cada skill traz o seu agente na própria pasta `agents/` (para o Boost
 > instalá-lo junto), então **repita a segunda cópia a cada `boost:add-skill`** — sem ela, a
-> `feature-wiki` não encontra `fw-revisor-diff`, `fw-executor-ct`, `fw-adversario-ct`, `fw-qa-gate`
+> **Verificar que a sessão os carregou** é outra coisa: a lista de sub-agentes é resolvida quando a
+> sessão **abre**, então agente copiado com a sessão em pé não aparece. Reinicie o Claude Code e
+> peça na própria sessão — *"despache o `fw-adversario-ct` para listar as ferramentas que ele
+> tem"*. Se não estiver registrado, o erro é explícito (`Agent type 'fw-adversario-ct' not found`,
+> com a lista dos disponíveis). O wizard `/agents` foi removido do Claude Code; a verificação por
+> despacho funciona em qualquer versão.
+>
+> Sem a cópia, a `feature-wiki` não encontra `fw-revisor-diff`, `fw-executor-ct`, `fw-adversario-ct`, `fw-qa-gate`
 > nem `fw-executor-ctb`, e cai no `general-purpose` com `model` explícito (funciona — segurou uma
 > feature inteira em 2026-09-21 — mas sem a restrição de ferramenta que torna "quem julga não
 > conserta" mecânico). A sessão precisa estar aberta **no diretório do projeto**: agente em
