@@ -1,6 +1,6 @@
 # feature-quality-gate — QA no Agente
 
-> **Status: implementada — [`SKILL.md`](SKILL.md) v1.5.0.**
+> **Status: implementada — [`SKILL.md`](SKILL.md) v1.5.1.**
 > Requer `feature-wiki` ≥ **2.10.0** (que introduziu o `00-requisito.md`, o oráculo desta skill).
 >
 > Este documento é o registro da pesquisa que precedeu a implementação: qual problema ela resolve, o que já existe no mercado (incluindo alternativas MIT), qual lacuna sobra, e por que essa lacuna justificou uma skill nova em vez de instalar o que estava pronto. Ele continua sendo o documento **para humanos** — vantagens, escopo, dependências e limitações.

@@ -8,9 +8,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 
 | Skill | Versão | Tag |
 |---|---|---|
-| `feature-wiki` | 3.5.0 | `feature-wiki-v3.5.0` |
+| `feature-wiki` | 3.5.1 | `feature-wiki-v3.5.1` |
 | `feature-test-design` | 1.14.0 | `feature-test-design-v1.14.0` |
-| `feature-quality-gate` | 1.5.0 | `feature-quality-gate-v1.5.0` |
+| `feature-quality-gate` | 1.5.1 | `feature-quality-gate-v1.5.1` |
 | `requirement-to-rule` | 1.2.0 | `requirement-to-rule-v1.2.0` |
 
 ## Convenção de tags
@@ -36,6 +36,27 @@ requirement-to-rule-v1.0.0
 # feature-wiki
 
 Cria a estrutura de documentação de uma feature **antes** de implementá-la: requisito bruto, PRD, ADR, tracking de progresso e padrão de log.
+
+## [3.5.1] — 2026-09-22
+
+Número escrito à mão envelhece **dentro do próprio ciclo**, e a cópia dele em outro arquivo
+sobrevive ao gate. Relatado por uma sessão que rodou a 3.5.0 num projeto real no mesmo dia.
+
+### Adicionado
+
+- **Step 7, item 5 — todo número da wiki é derivado por comando, e procurado na wiki inteira
+  quando muda.** A regra de `grep -c` existia só para o `03`; passa a valer para `01`, `02` e `04`
+  (contagem de CTs, regras, mutantes, permissions, linhas de varredura, total do cabeçalho). E o
+  ponto cego nomeado: quando um achado corrige um número, a correção vai para o arquivo citado e a
+  cópia em outro arquivo fica — fechar exige `grep -rn "{valor antigo}"` na pasta da wiki.
+  Medido três vezes numa mesma wiki: nove citações `arquivo:linha` defasadas, uma varredura colada
+  na `## Superfície Livewire` que o código já contradizia, e uma contagem corrigida no `01` que
+  continuou errada na ADR do `02` — **a defasagem sobreviveu ao gate que existia para pegá-la**
+- Checklist: contagens da wiki inteira por `grep -c`; número corrigido procurado na wiki inteira
+
+### Alterado
+
+- Itens 5–11 do step 7 renumerados para 6–12
 
 ## [3.5.0] — 2026-09-22
 
@@ -1149,6 +1170,19 @@ preenchimento de gabarito por um pipeline de derivação com gate de auditoria.
 ---
 
 # feature-quality-gate
+
+## [1.5.1] — 2026-09-22
+
+O gate aprende a conferir número por `grep`, não por leitura. Acompanha a `feature-wiki` 3.5.1.
+
+### Alterado
+
+- **L3 confere afirmação com número por `grep -rn` do valor na wiki inteira**, não abrindo o
+  arquivo onde a afirmação é esperada. Achado novo: número certo num arquivo e velho em outro
+- **Todo achado de L2, L3 ou L6 que envolva um valor sai com o `grep -rn` colado**, e a ação
+  exigida nomeia **todos** os arquivos que o repetem. Medido: este gate acusou uma contagem errada,
+  o orquestrador corrigiu o `01` e a ADR do `02`, que repetia o número, ficou para trás
+- Checklist: +1 item
 
 ## [1.5.0] — 2026-09-22
 

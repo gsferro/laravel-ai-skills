@@ -12,9 +12,9 @@ Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude C
 
 | Skill | Versão | O que faz | Quando é invocada |
 |---|---|---|---|
-| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 3.5.0 | Cria a wiki da feature antes de implementar: requisito bruto, PRD, ADR e progresso, com padrão de log. Delega os casos de teste. No Claude Code, despacha para sub-agentes com modelo roteado e juiz cego | ao iniciar qualquer feature nova |
+| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 3.5.1 | Cria a wiki da feature antes de implementar: requisito bruto, PRD, ADR e progresso, com padrão de log. Delega os casos de teste. No Claude Code, despacha para sub-agentes com modelo roteado e juiz cego | ao iniciar qualquer feature nova |
 | **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.14.0 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes | step 4 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
-| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.5.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita a consistência wiki × código × docs × rules e roteia cada achado para especificação, implementação ou teste | step 8 da `feature-wiki`, após os testes passarem e **antes do PR** |
+| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.5.1 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita a consistência wiki × código × docs × rules e roteia cada achado para especificação, implementação ou teste | step 8 da `feature-wiki`, após os testes passarem e **antes do PR** |
 | **[requirement-to-rule](.ai/skills/requirement-to-rule/README.md)** | 1.2.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | step 9 da `feature-wiki` ou sob pedido |
 
 O ciclo completo: **planejar** (`feature-wiki`) → **especificar teste** (`feature-test-design`) → **executar** (Ponytail) → **comunicar** (Caveman) → **testar** (Pest 5) → **validar** (`feature-quality-gate`) → **memorizar** (`requirement-to-rule`).

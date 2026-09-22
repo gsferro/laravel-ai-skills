@@ -1,6 +1,6 @@
 ---
 name: feature-quality-gate
-version: 1.5.0
+version: 1.5.1
 description: >
   Etapa de QA dentro do agente — a próxima estação da esteira depois de
   implementar e rodar os testes. Invoque no step 8 da skill feature-wiki, ou
@@ -491,7 +491,7 @@ implementador **declarou**; esta dimensão confere a declaração.
 |---|---|---|---|
 | L1 | IDs de CT | `grep -o '\[CT-B\?[0-9]*\]'` nos arquivos de teste × índice do `04`/`05` | ID num lado só; linha de dataset sem Exemplo no Gherkin; contagem do cabeçalho do `04` diferente da real |
 | L2 | Citações `arquivo:símbolo:linha` | o grep da seção *Citações de código* da `feature-wiki` | símbolo não está na linha citada; citação sem símbolo |
-| L3 | PRD/ADR × código | para cada passo do `01` e cada "Decisão"/"Consequências" do `02`, abrir o arquivo citado e conferir a afirmação | afirmação que o código contradiz sem marca `*(alterado em …)*`; desvio que existe só no `03` |
+| L3 | PRD/ADR × código | para cada passo do `01` e cada "Decisão"/"Consequências" do `02`, abrir o arquivo citado e conferir a afirmação. **Toda afirmação com número é conferida por `grep -rn` do valor na wiki inteira**, não lendo o arquivo onde ela é esperada — número duplicado entre `01` e `02` é o que sobrevive ao gate | afirmação que o código contradiz sem marca `*(alterado em …)*`; desvio que existe só no `03`; número certo num arquivo e velho em outro |
 | L4 | Rules × diff | para cada rule cujo glob casa um arquivo do diff, conferir a linha da tabela do `03` **e** o código | rule sem linha na tabela; "aplicada" sem evidência; rule violada (`group` errado, chave de env fora do `phpunit.xml`, par de cenário exigido pela rule ausente) |
 | L5 | Docs × comportamento × rastro | docs pt × en × CHANGELOG × README contra o comportamento final; cada frase nova procurada no `00`/`02` | pt e en dizem coisas diferentes; consequência invalidada ainda descrita; frase em doc de usuário **sem `RQ` nem ADR** de origem — crescimento sem rastro, o mesmo padrão que a matriz chama de "código sem `RQ`" |
 | **L6** | Alegações da `## Verificação Final` e de `## Despachos` do `03` | cada `[x]` com **número**: reproduzir o comando que o gera (`grep -c`, script de citações, `pest`); cada **degradação declarada** ("sem PCOV", "plugin ausente", "MCP indisponível"): prova negativa (`php -m`, `ls vendor/…`); cada `Duration` de `--mutate`: plausível para N × testes | número que nenhum comando reproduz; degradação declarada com a ferramenta presente; score de mutação com duração implausível. **É a checagem que acusa o orquestrador**, e só um juiz que não viu a conversa a faz sem viés |
@@ -509,6 +509,13 @@ implementador **declarou**; esta dimensão confere a declaração.
 | L6 número irreproduzível | Major | **1** — substituir pela saída real do comando |
 | L6 degradação falsa (a ferramenta existe) | Major | **1**, e **3** quando a degradação pulou o passo medido da dimensão K |
 | L1 contagem do cabeçalho errada | Cosmético | **1** — ou remover a contagem manual |
+
+> **Achado de número: procure a cópia antes de fechar.** Medido: este gate acusou uma contagem
+> errada, o orquestrador corrigiu o `01` e a ADR do `02` — que repetia o mesmo número — ficou para
+> trás. A defasagem sobreviveu ao gate que existia para pegá-la, porque o gate conferiu o arquivo
+> onde esperava a afirmação. Todo achado de L2, L3 ou L6 que envolva um valor sai com o
+> `grep -rn "{valor}" wikis/specs/{branch}/{feature}/` colado, e a ação exigida nomeia **todos** os
+> arquivos que o repetem.
 
 > **Esta dimensão não corrige nada**, como as outras. Devolve a lista com `arquivo:linha` dos
 > dois lados — o texto e o código — e o destino. Quem corrige é o step 7 da `feature-wiki`, na
@@ -772,6 +779,7 @@ Violação de qualquer uma invalida a execução:
 - [ ] Dimensão D verificou log real, incluindo **PII no context**
 - [ ] Dimensão L conferiu IDs de CT, citações `arquivo:símbolo:linha`, PRD/ADR × código, rules × diff e docs pt × en × CHANGELOG — inclusive a declaração do `03`
 - [ ] **L6**: todo número da `## Verificação Final` reproduzido pelo comando; toda degradação declarada conferida com a prova negativa; `Duration` do `--mutate` plausível
+- [ ] Todo achado que envolve um valor numérico sai com o `grep -rn` do valor na wiki inteira — a ação exigida nomeia cada arquivo que o repete
 - [ ] Dimensão K: score de mutação só aceito com duração plausível e sobreviventes nomeados — senão "Não Verificado"
 - [ ] Dimensão G detectou o mecanismo de tema do projeto antes de validar
 - [ ] Achados do MCP convertidos em CT-B novo ou em achado roteado

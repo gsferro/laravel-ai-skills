@@ -1,6 +1,6 @@
 ---
 name: feature-wiki
-version: 3.5.0
+version: 3.5.1
 description: >
   Cria estrutura de documentação wiki para uma feature antes de implementá-la.
   Invoque SEMPRE ao iniciar implementação de qualquer feature nova.
@@ -882,29 +882,48 @@ de `.ai/rules/` cujos globs casam com o diff.
    declarava um CT de ciclo liga/desliga com dois mutantes exclusivos e **nenhum teste o
    implementava**; o checkbox *"testes conforme 04/05"* fechou assim mesmo, e a lacuna só apareceu
    numa revisão de código posterior. O `diff` acima leva segundos e a teria pego no dia.)
-5. **Conformidade com as rules do projeto.** Para cada rule em `.ai/rules/index.md` cujo glob
+5. **Todo número da wiki é derivado por comando — e procurado na wiki inteira quando muda.**
+   Número escrito à mão envelhece **dentro do próprio ciclo**: contagem de CTs, de regras, de
+   mutantes, de permissions, de linhas de uma varredura, total de cenários no cabeçalho. A regra
+   vale para o `01`, o `02` e o `04`, não só para o `03` — e a conferência é `grep -c` contra o
+   código, ao fim, nunca leitura.
+
+   O ponto cego é a **duplicação**: quando um achado corrige um número, a correção vai para o
+   arquivo que o achado citou e a **cópia do mesmo número em outro arquivo sobrevive**. Antes de
+   fechar, procurar o valor antigo na wiki inteira:
+
+   ```bash
+   grep -rn "{valor antigo}" wikis/specs/{branch}/{feature}/
+   ```
+
+   > Medido numa mesma wiki, três vezes: nove citações `arquivo:linha` desatualizadas, uma
+   > varredura colada na `## Superfície Livewire` que o código já contradizia, e uma contagem que
+   > o quality gate acusou — corrigida no `01`, mantida na ADR do `02`, que repetia o mesmo
+   > número. **A defasagem sobreviveu ao gate que existia para pegá-la**, porque o gate leu o
+   > arquivo onde esperava a afirmação e conferiu ali.
+6. **Conformidade com as rules do projeto.** Para cada rule em `.ai/rules/index.md` cujo glob
    casa com um arquivo do diff, uma linha na tabela `## Conformidade com Rules` do `03`:
    `rule → aplicada / n.a. / violada`, com evidência (`arquivo:símbolo:linha` ou nome do CT).
    Rule violada é blocker do PR. O step 3 manda **ler** as rules antes de planejar; este item
    confere se o **código** as cumpre — são coisas diferentes, e a segunda nunca era feita
    (medido: `group('kit')` em teste de browser, chave `KIT_*` fora do `phpunit.xml`, par de
    cenário exigido pela rule de auth ausente — três rules lidas no step 3, três violadas no código)
-6. **Docs de usuário e CHANGELOG × comportamento × rastro.** Toda consequência que a wiki
+7. **Docs de usuário e CHANGELOG × comportamento × rastro.** Toda consequência que a wiki
    descreveu e depois mudou (ex.: "o log registra o painel `app`") é procurada nas docs pt/en, no
    CHANGELOG, no README e na ADR que a originou. Frase nova em doc de usuário **sem `RQ` nem ADR
    de origem** é crescimento sem rastro: vira Adendo no `00` ou sai da doc
-7. **Notas de Implementação** no `03`: descobertas durante o código que não estavam no plano
+8. **Notas de Implementação** no `03`: descobertas durante o código que não estavam no plano
    (ex.: "`Enrollment::find()` aplica scope global de tenant — documentado em `02`")
-8. **Roteiro "Desenhado × Implementado"** em `05-casos-de-teste-browser.md` (se existir): rodar os
+9. **Roteiro "Desenhado × Implementado"** em `05-casos-de-teste-browser.md` (se existir): rodar os
    CT-B, conferir cada linha da `## Superfície de UI` do PRD contra a tela real, marcar ✅/⚠️/❌;
    divergência vai para "Desvios do Plano" **e** para a fonte (item 2)
-9. **Confirmar impacto real com TIA**: `vendor/bin/pest --parallel --tia` × `## Impacto em
+10. **Confirmar impacto real com TIA**: `vendor/bin/pest --parallel --tia` × `## Impacto em
    Features Existentes` do PRD — divergência é nota de implementação
-10. **Retrospectiva breve** no `03`: o que funcionou no planejamento e o que faltou
-11. **Limpeza de channel de log** — só **depois do merge** e da estabilização: reduzir o level de
+11. **Retrospectiva breve** no `03`: o que funcionou no planejamento e o que faltou
+12. **Limpeza de channel de log** — só **depois do merge** e da estabilização: reduzir o level de
     `debug` para `info` ou remover o channel
 
-> **Autolimpeza não é auditoria.** Os itens 2, 5 e 6 são julgamento sobre texto que o mesmo
+> **Autolimpeza não é auditoria.** Os itens 2, 6 e 7 são julgamento sobre texto que o mesmo
 > agente escreveu, e ele tende a lê-lo como certo. Por isso a `feature-quality-gate` (step 8)
 > repete os três como **dimensão L — Consistência Documental**, por quem não escreveu a wiki.
 > Fazer só um dos dois não basta: sem o 7 o quality gate afoga em defasagem trivial; sem o 8
@@ -2317,7 +2336,8 @@ Antes de encerrar a invocação:
 - [ ] `## Superfície Livewire` do `02` re-varrida sobre o código final **antes** do 6.5
 - [ ] Todo número da `## Verificação Final` tem o comando que o gerou; toda degradação declarada tem a prova negativa (`php -m`, `ls vendor/…`)
 - [ ] `pest --mutate` com duração plausível e sobreviventes listados (no Windows, via lançador `.cmd`)
-- [ ] Contagens do `03` (nº de CTs, regras, mutantes) derivadas por `grep -c`, nunca digitadas — número digitado envelhece no primeiro adendo
+- [ ] Contagens da wiki inteira (`01`, `02`, `03`, `04`: nº de CTs, regras, mutantes, permissions, linhas de varredura) derivadas por `grep -c`, nunca digitadas — número digitado envelhece no primeiro adendo
+- [ ] Todo número **corrigido** durante o ciclo foi procurado na wiki inteira (`grep -rn "{valor antigo}"`) — a cópia em outro arquivo é o que sobrevive ao gate
 - [ ] Requisito que cresceu virou `## Adendo N` no `00`, com `RQ` novos, e a `feature-test-design` foi reinvocada para ele **antes** do código
 - [ ] Tabela `## Conformidade com Rules` do `03` preenchida para toda rule cujo glob casa o diff — nenhuma `violada`
 - [ ] Docs de usuário (pt **e** en), CHANGELOG e README reconciliados; nenhuma frase neles sem `RQ` ou ADR de origem
