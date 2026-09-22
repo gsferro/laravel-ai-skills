@@ -207,7 +207,26 @@ Assinatura completa:
 php artisan boost:add-skill [--list] [--all] [--skill [SKILL]] [--force] [--skip-audit] [--] [<repo>]
 ```
 
-> Após instalar, veja [Padrão de Commit](#-padrão-de-commit-ao-instalaratualizar-skills).    
+> Após instalar, veja [Padrão de Commit](#-padrão-de-commit-ao-instalaratualizar-skills).
+
+### Se o comando terminar com `ProcessTimedOutException`
+
+Em projeto grande, o `boost:add-skill` pode encerrar com:
+
+```text
+The process "php artisan test --list-tests" exceeded the timeout of 60 seconds.
+```
+
+**As skills já foram instaladas** — a tabela `Skills installed` é impressa **antes** da exceção, e
+o passo que estoura é posterior à cópia dos arquivos. Confira e siga:
+
+```powershell
+Select-String -Path .ai\skills\*\SKILL.md -Pattern '^version:'
+```
+
+O `--skip-audit` **não** evita esse timeout: quem estoura não é a auditoria. Para saber se a
+descoberta de testes do projeto é lenta ou está travando — o que vale investigar por si só —
+meça direto: `Measure-Command { php artisan test --list-tests | Out-Null }`.
 
 ---
 
