@@ -1,4 +1,4 @@
-> Referência da feature-test-design 1.15.0. Lida em: passo 5 (antes de escrever o primeiro cenário —
+> Referência da feature-test-design 1.16.0. Lida em: passo 5 (antes de escrever o primeiro cenário —
 > a estrutura `Funcionalidade` → `Regra` → `Cenário` e o `Esquema do Cenário` como forma de EP e
 > BVA). Fonte única de: o formato Gherkin dos cenários.
 

@@ -1,10 +1,39 @@
-> Referência da feature-wiki 3.6.0. Lida em: step 4 (antes de especificar os logs de cada passo do `01`). Fonte única de: anatomia da mensagem, contexto estruturado, exemplos, `Log::shareContext`, driver JSON e teste de log em Pest.
+> Referência da feature-wiki 4.0.0. Lida em: step 4 (antes de especificar os logs de cada passo do `01`). Fonte única de: por que o padrão, anatomia da mensagem, os sete níveis descritos, contexto estruturado, exemplos, `Log::shareContext`, driver JSON, teste de log em Pest e a trait de logging do projeto.
 
 # Padrão de Log — `[Classe@Método] mensagem`
 
-O porquê do padrão, o formato obrigatório, as regras de escrita (com os níveis), o que especificar
-por passo do PRD, os anti-padrões e a trait de logging do projeto ficam no corpo do `SKILL.md`, seção
-*Padrão de Log*.
+O formato obrigatório, as regras de escrita (com a regra de severidade), o que especificar por passo
+do PRD e os anti-padrões ficam no corpo do `SKILL.md`, seção *Padrão de Log*.
+
+### Por que este padrão
+
+O formato `[Classe@Método] mensagem` é obrigatório em **todos os logs** do projeto. Ele resolve três problemas:
+
+1. **Rastreabilidade**: ao ler um log, sabe-se imediatamente qual classe e método o gerou — sem precisar buscar no código
+2. **Filtragem**: permite `grep` por classe ou método para isolar fluxos específicos
+3. **Consistência**: padroniza a leitura em qualquer nível (info, warning, error) e em qualquer channel
+
+### Os sete níveis
+
+A regra de severidade (`fail()` → `warning`; `catch` que interrompe → `error`; `catch` tratada → `warning`;
+sistema indisponível → `critical`) está no corpo. A descrição de cada nível:
+
+- `debug` → detalhe intermediário para rastreabilidade
+- `info` → sucesso de operação esperada
+- `notice` → evento significativo mas normal (ex: queue retry agendado)
+- `warning` → condição anormal mas não fatal — **usar em `fail()` de Livewire**, fallback, retry, dado ausente
+- `error` → falha que interrompe o fluxo — **usar em `catch` de exceptions** que quebram a execução
+- `critical` → erro de sistema que exige intervenção imediata (ex: DB inacessível, API crítica fora do ar)
+- `emergency` → sistema indisponível, intervenção humana urgente
+
+Exception no contexto (`'exception' => $e`): o Laravel serializa stack trace, mensagem e código.
+
+### Trait de logging do projeto (ex.: `UnicoLogging`)
+
+- `Grep` por `trait UnicoLogging` ou `trait.*Logging` em `app/`
+- Se existir, usar a trait nas classes da feature — ela formata automaticamente o prefixo `[Classe@Método]`
+- Se não existir, implementar o formato manualmente via `Log::channel(...)->info('[Classe@metodo] ...')`
+- Documentar no plano qual abordagem será usada
 
 ### Anatomia da Mensagem
 
@@ -164,7 +193,7 @@ O channel `daily` gera arquivos de texto. Para parsing estruturado em produção
 > `feature-quality-gate` (17 logs conferidos um a um na feature de referência, sem nenhum CT de
 > log). Use quando o requisito pede trilha de auditoria (aí é `RQ`) ou quando um passo do PRD
 > trata o log como saída observável. Helper de log declarado e nunca usado é código morto
-> (achado F9 do 6.5 em 2026-09-21).
+> (achado F9 do step 9, em 2026-09-21).
 
 Para verificar que os logs foram emitidos corretamente nos CTs:
 

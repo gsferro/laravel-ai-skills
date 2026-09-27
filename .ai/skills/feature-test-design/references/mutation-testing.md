@@ -1,4 +1,4 @@
-> Referência da feature-test-design 1.15.0. Lida em: passo 6 (operadores que servem de fonte dos
+> Referência da feature-test-design 1.16.0. Lida em: passo 6 (operadores que servem de fonte dos
 > mutantes previstos) e no pós-implementação (comandos do `pest --mutate`, lançador do Windows,
 > tradução do sobrevivente em lacuna). Fonte única de: os comandos do mutation testing com Pest e
 > o detalhe das armadilhas (mecanismo, sintoma, números). A regra de cada armadilha fica no
@@ -49,24 +49,29 @@ vendor/bin/pest tests/Feature/{Feature} --mutate --path=app/Services
 vendor/bin/pest tests/Feature/{Feature} --mutate --path=app/Services --min=70
 ```
 
-- `--path` não consta na referência de CLI do Pest (que lista `--class`, `--ignore`,
-  `--covered-only`, `--min`, `--everything`, `--parallel`); funcionou nas medições desta coletânea
-  com Pest 5 — se falhar, usar `--class=`
+- **Filtro: `--path=` é o verificado; `--class=` é o fallback.** `--path=` funcionou nas medições
+  de 2026-09-21 com Pest 5, embora não conste na referência de CLI do Pest (que lista `--class`,
+  `--ignore`, `--covered-only`, `--min`, `--everything`, `--parallel`). Se a versão instalada não
+  aceitar `--path`, usar `--class='App\Services\X'`. É o mesmo conselho da dimensão K do
+  `feature-quality-gate`
 - **No Windows, `pest --mutate` dá 100 % falso.** O plugin relança `argv[0]` (`vendor/bin/pest`,
-  script sh) por Symfony Process; o `cmd` não o executa, cada subprocesso sai com código 1 em ~30 ms
-  e o plugin conta saída não-zero como mutante morto. Sintoma: *206 mutantes em 3 s* para uma suíte
-  de 200 s. **Score só vale com `Duration` compatível com N × tempo dos testes cobridores e com a
-  lista de sobreviventes.** Solução: um `.cmd` poliglota na raiz (batch que chama `php` sobre si
-  mesmo e, como PHP, faz `require` do `vendor/pestphp/pest/bin/pest`) e
-  `cmd //c pestw.cmd … --mutate --path=… --covered-only --parallel` — o texto completo do lançador
-  está em `{skills}/feature-wiki/references/pest-5.md`, §*`pest --mutate` no Windows — o lançador
-  `.cmd`* (`{skills}`: ver o Glossário do `SKILL.md`). Medido de verdade: 206 mutantes, 196 mortos, 7 timeout,
-  3 sobreviventes, 98,54 % em 594 s
-- **Armadilha medida em `experimentos/` (ver README de lá): `covers(X::class)` restringe o que conta como coberto.** Mutantes em
+  proxy sem extensão — script sh ou PHP, conforme a versão do Composer) por Symfony Process; o `cmd`
+  não o executa, cada subprocesso sai com código 1 em ~30 ms e o plugin conta saída não-zero como
+  mutante morto. Sintoma: *206 mutantes em 3 s* para uma suíte de 200 s. **Score só vale com
+  `Duration` compatível com N × tempo dos testes cobridores e com a lista de sobreviventes.**
+  Solução: o `.cmd` poliglota `{skills}/feature-wiki/scripts/pestw.cmd` (batch que chama `php` sobre
+  si mesmo e, como PHP, faz `require` do `vendor/pestphp/pest/bin/pest` do diretório corrente),
+  rodado da raiz do projeto — no Git Bash,
+  `cmd //c "$(cygpath -w {skills}/feature-wiki/scripts/pestw.cmd)" … --mutate --path=… --covered-only --parallel`
+  (com Xdebug, prefixar `XDEBUG_MODE=coverage`; o `cygpath -w` é obrigatório, e o nome solto
+  `pestw.cmd` não é achado no Bash do Claude Code). A forma do PowerShell e o porquê de cada detalhe
+  estão em `{skills}/feature-wiki/references/pest-5.md`; a do `cmd`, no cabeçalho do próprio
+  `pestw.cmd` (`{skills}`: ver o Glossário do `SKILL.md`). Medido de verdade: 206 mutantes, 196
+  mortos, 7 timeout, 3 sobreviventes, 98,54 % em 594 s
+- **Armadilha medida em `experimentos/` (<https://github.com/gsferro/laravel-ai-skills/blob/main/experimentos/README.md>): `covers(X::class)` restringe o que conta como coberto.** Mutantes em
   qualquer classe fora do `covers()` são reportados como `uncovered` e o score vai a **0%** —
   mesmo que os testes executem aquele código em toda chamada. Para medir uma classe vizinha,
   declare-a em `covers()`/`mutates()` ou meça em execução separada
-- `--class='App\Services\X'` pode não casar; **`--path=` é o filtro que funciona de forma confiável**
 
 ## Tradução do sobrevivente em lacuna de derivação
 

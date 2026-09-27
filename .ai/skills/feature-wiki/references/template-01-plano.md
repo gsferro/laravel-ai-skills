@@ -1,4 +1,4 @@
-> Referência da feature-wiki 3.6.0. Lida em: step 4 (antes de escrever o `01-plano-acao.md`). Fonte única de: template do `01-plano-acao.md` e lista de skills citáveis no PRD.
+> Referência da feature-wiki 4.0.0. Lida em: step 4 (antes de escrever o `01-plano-acao.md`). Fonte única de: template do `01-plano-acao.md` e lista de skills citáveis no PRD.
 
 # Template do `01-plano-acao.md`
 
@@ -33,12 +33,16 @@ na seção *Padrão de Log* e em `references/padrao-de-log.md`.
 
 ## Natureza da Wiki
 
-- **Tipo**: nova | evolução | correção | ajuste
-- **Wiki ancestral**: `wikis/specs/{branch}/{feature}/` — **obrigatório** se o tipo não for "nova"
+- **Tipo**: nova | evolução | correção | ajuste | refatoração
+- **Wiki ancestral**: `wikis/specs/{branch}/{feature}/` — **obrigatório** se o tipo não for "nova"; em `refatoração`, as wikis das features que consomem o símbolo, ou "nenhuma — {motivo}"
 - **Motivo**: {o que mudou desde a ancestral}
 - **Toca infra compartilhada?**: não | sim → {o quê: seeder de permissões, middleware global, `tests/Pest.php`, config de logging, migration em tabela de outra feature}
 
-> O tipo decide o escopo do `feature-quality-gate`: `nova` valida só a feature; os outros três disparam **regressão** contra os CT/CT-B da wiki ancestral.
+> O tipo decide o escopo do `feature-quality-gate`: `nova` valida só a feature; os outros quatro disparam **regressão** contra os CT/CT-B da wiki ancestral.
+>
+> **`refatoração`** é só a larga — renomear coluna, retipar símbolo compartilhado: troca de símbolo
+> usado em muitos lugares. O step 8 sugere a `feature-tickets`, que a sequencia em expand → migrate em
+> lotes → contract. Refatoração pequena e interna, já coberta por teste verde, não abre wiki.
 >
 > **Exceção que o tipo não cobre**: feature `nova` que **altera infra compartilhada** — a matriz
 > de papéis, um seeder que outras features consomem, um middleware global, o `tests/Pest.php`.
@@ -48,13 +52,20 @@ na seção *Padrão de Log* e em `references/padrao-de-log.md`.
 
 ## Cobertura do Requisito
 
-<!-- Toda cláusula do 00-requisito.md precisa aparecer aqui. Cláusula sem passo é omissão. -->
+<!-- Toda cláusula (RQ) do 00-requisito.md precisa aparecer aqui. Cláusula sem passo é omissão.
+     P-nn entra quando a correção dela é um passo (novo ou alterado); o elo obrigatório da P-nn é o CT
+     com Origem = P-nn no 04 — é o que o rastreabilidade.sh confere ("P sem CT").
+     RQ aberta: o passo que a implementaria fica marcado e não é executado até a resposta.
+     Fora desta entrega: passo "—" com a justificativa na Observação — a RQ (ou P-nn) sai de toda
+     cobrança de passo, CT e ticket, pelo mesmo critério no rastreabilidade.sh e no indice.sh. -->
 
 | RQ | Cláusula | Passo(s) que atende(m) | Observação |
 |----|----------|------------------------|------------|
 | RQ-01 | {resumo} | 3, 4 | — |
 | RQ-02 | {resumo} | 5 | — |
-| RQ-03 | {resumo} | — | ⚠️ fora de escopo desta entrega — justificar |
+| RQ-03 | {resumo} | — | ⚠️ fora desta entrega — {justificativa} |
+| RQ-04 | {resumo} | 6 | **Bloqueado por**: RQ-04 (aberta — Q1) |
+| P-01 | {premissa} | 7 | — |
 
 ## Objetivo
 
@@ -66,8 +77,19 @@ na seção *Padrão de Log* e em `references/padrao-de-log.md`.
 
 ## Análise dos Arquivos Existentes
 
+<!-- Raia fato da entrevista: o que o agente descobriu no código, sem perguntar ao usuário. -->
+
 ### {NomeDoArquivo}
 - {Descrição do que existe e como será afetado}
+
+## Decisões de Desenho
+
+<!-- Raia desenho: decisão tomada com o desenvolvedor que NÃO passou nos três portões de ADR.
+     Uma linha por decisão; a que passa nos três vira ADR no 02. "Nenhuma" é resposta válida. -->
+
+| # | Decisão | Pergunta | Portão que falta | Quem decidiu, data |
+|---|---|---|---|---|
+| D1 | {…} | Q2 | {difícil de reverter · surpreendente · trade-off} | {desenvolvedor}, {YYYY-MM-DD} |
 
 ## Autorização
 
@@ -90,10 +112,11 @@ na seção *Padrão de Log* e em `references/padrao-de-log.md`.
 |---|---|---|---|---|
 | {NomeDoComponente} | Filament \| Livewire \| Blade \| Inertia | {/path} | {o que o usuário faz} | Sim \| Não |
 
-**Gate de CT-B**: esta tabela é o **gatilho**, não o critério. O cenário só vai para o browser
-quando afirma sobre algo que **só o navegador prova** — JavaScript executado, console/erro de JS,
+**Gate de CT-B**: esta tabela é o **gatilho**, não o critério. O `05` existe se e só se
+`## Costuras de Teste` do `04` tem uma linha `browser`, e essa linha só se justifica quando o cenário
+afirma sobre algo que **só o navegador prova** — JavaScript executado, console/erro de JS,
 acessibilidade, cor/tema, layout. Validação de formulário, gravação, listagem, filtro, ação de
-tabela, notificação e autorização na tela são **teste de componente Livewire** e pertencem ao `04`.
+tabela, notificação e autorização na tela são costura `componente Livewire/Filament` e pertencem ao `04`.
 
 **Gate de tela de escrita**: para toda rota `create`/`edit` desta tabela, o `04` precisa ter um
 cenário de **gravação por componente** — *uma tela aberta não é uma tela que grava*.
@@ -128,12 +151,8 @@ cenário de **gravação por componente** — *uma tela aberta não é uma tela 
 | Custo do caminho principal | {queries do caminho comum × queries do caminho com filtro/busca} |
 
 **Este bloco existe porque uma ADR pode estar internamente coerente e apoiada numa premissa que
-ninguém escreveu.** Caso real (2026-09-17): uma ADR decidiu, com bom argumento, não cachear o
-agregado quando há filtro — e assumiu implicitamente *"uma tela = um request"*. Os widgets eram
-`lazy`, ou seja **oito requests independentes**, cada um recalculando: 48 queries viraram ~384 por
-carga filtrada. O memo por request que o código documentava **não existia**, e não teria ajudado —
-memo estático não atravessa request. Nenhum gate da wiki mede custo; declarar o modelo é o que
-torna a premissa falsificável na revisão.
+ninguém escreveu.** Nenhum gate da wiki mede custo; declarar o modelo é o que torna a premissa
+falsificável na revisão.
 
 ## Impacto em Features Existentes
 
@@ -167,7 +186,9 @@ torna a premissa falsificável na revisão.
 ### Decisão
 
 - **Se channel existe**: referenciar no plano como `Log::channel('{nome}')` em todos os passos
-- **Se não existe**: incluir como primeiro passo de implementação a criação do channel em `config/logging.php`, com:
+- **Se não existe**: incluir como primeiro passo de implementação a criação do channel em `config/logging.php`.
+  O `**Atende**` desse passo lista as `RQ` dos passos que registram log no channel — é infra delas, e
+  passo sem `RQ` é achado do `rastreabilidade.sh`. O channel leva:
   - Nome: `{feature-name}` (kebab-case, mesmo nome da pasta da feature)
   - Driver: `daily` (rotação automática)
   - Path: `storage/logs/{feature-name}.log`
@@ -192,6 +213,8 @@ torna a premissa falsificável na revisão.
 
 - **Path**: `app/...`
 - {Detalhes de implementação}
+- **Atende**: {RQ-nn, P-nn}
+- **Bloqueado por**: RQ-nn (aberta — Qn) <!-- só se o passo implementa RQ aberta: não executar até a resposta -->
 - **Logs**:
   - `Log::channel('{feature-name}')->info('[{Classe}@{metodo}] {mensagem da ação} | {parametro principal}')`
   - Especificar cada ponto de log: início, sucesso, falha, decisões de fluxo
@@ -217,8 +240,7 @@ torna a premissa falsificável na revisão.
 > Código, commits e PRs também são boundary do Caveman.
 >
 > **Model novo declara `$table`** sempre que o nome da tabela não for o plural inglês que o
-> Eloquent infere — com nome em pt-BR é sempre: `centros_custo`, não `centro_custos`. Nasceu como
-> defeito (2026-09-21) e é candidato natural a Project Rule no step 9.
+> Eloquent infere — com nome em pt-BR é sempre: `centros_custo`, não `centro_custos`.
 >
 > **Baseline antes do primeiro commit**: rodar a suíte completa em `{base}` e listar por nome as
 > falhas pré-existentes. A `## Verificação Final` compara contra a baseline, não contra zero.
@@ -240,7 +262,7 @@ torna a premissa falsificável na revisão.
 - [ ] `vendor/bin/pest --parallel --tia` (Pest 5 — confirma que nada mais no suite quebrou, rodando só o afetado) — comparado à **baseline** de `{base}`
 - [ ] `pest --mutate --path={classe de regra}` — score, **duração** e lista de sobreviventes (score sem duração plausível é falso; ver *Pest 5*)
 - [ ] **Custo medido** — queries do caminho principal e do caminho com filtro/busca, contra o `## Modelo de Execução`, com N **acima da página**
-- [ ] **`/code-review high {base}...HEAD` + passe de eixos (step 6.5)** — antes da reconciliação; o único gate que lê o diff atrás de defeito de correção
+- [ ] **`/code-review high {base}...HEAD` + passe de eixos (step 9)** — antes da reconciliação; o único gate que lê o diff atrás de defeito de correção
 - [ ] {outros comandos de verificação específicos}
 
 ## Commits

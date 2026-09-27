@@ -744,3 +744,57 @@ quatro primeiros são texto e medição; nada de desenho muda antes de a base es
 - Vídeo *"meu fluxo de trabalho com IA"* — https://www.youtube.com/watch?v=1bmO4BaVclY (transcrição fornecida pelo usuário)
 - Estudo anterior: [`2026-09-04-spdd-x-coletanea.md`](2026-09-04-spdd-x-coletanea.md) (§3.1 montante, §13.2 motor × hospedeiro × perfil de stack)
 - Medições desta coletânea: `README.md` raiz (*Validado em campo*, *Por que a derivação do teste virou skill própria*), `experimentos/README.md`
+
+---
+
+## 9. Execução do roteiro (2026-09-26/27)
+
+> Seção acrescentada em 2026-09-27, depois das releases 1 e 2. Nada acima dela foi reescrito; as
+> versões e os números citados acima são os de 2026-09-26. Detalhe de cada release no
+> [`CHANGELOG.md`](../CHANGELOG.md); medições pendentes em
+> [`experimentos/README.md`](../experimentos/README.md#rodadas-pendentes), itens (a) a (g).
+
+Estado: **feito** — pronto pelo critério do §8; **feito sem medição** — implementado, mas o critério
+pede uma rodada ou execução que não houve; **parcial** — parte do critério não foi cumprida;
+**pendente** — nada feito. Release 1 = `feature-wiki` 3.6.0 · `feature-test-design` 1.15.0 ·
+`feature-quality-gate` 1.6.0 · `requirement-to-rule` 1.3.0 (tags criadas). Release 2 = 4.0.0 · 1.16.0 ·
+1.7.0 · 1.4.0 · `feature-tickets` 1.0.0 (tags no commit da release).
+
+| # | O quê | Release | Versão / skill | Estado | O que falta |
+|---|---|---|---|---|---|
+| 1 | Conformidade ao spec | 1 (tolerância do CI na 2) | as quatro; CI `skills-ref.yml` | feito | nada nas quatro: validador verde, e as quatro `description` somam 3.874 caracteres (valor YAML, 2026-09-27). Com a `feature-tickets`, as cinco somam 4.673 — a meta de 4 k era para quatro. A `feature-tickets` passa no CI só pela tolerância explícita a `disable-model-invocation`, extensão do Claude Code fora do spec |
+| 2 | README = por quê / quando / limites / dependências | 1 | `feature-wiki`, `feature-quality-gate`, `requirement-to-rule` | feito | a release 2 acrescentou seções de uso aos READMEs (*Como chamar*, *O hook dos agentes*, *Teste do hook*, *Numeração dos steps*); o grep do critério não foi refeito depois dela |
+| 3 | `references/` com uma fonte por tema | 1 (estendido na 2) | `feature-wiki` 3.6.0, `feature-test-design` 1.15.0; na 2, também o gate, a `requirement-to-rule` e a `feature-tickets` | feito sem medição | a rodada antes e depois (a); o corpo ≤ 500 linhas não foi atingido — 1.315 na `feature-wiki` e 790 na `feature-test-design` em 2026-09-27 |
+| 4 | `scripts/` | 2 | `feature-wiki` 4.0.0 (seis `.sh` + `pestw.cmd`), gate 1.7.0 (dois), `requirement-to-rule` 1.4.0 (`prova-arch.sh`), `feature-tickets` 1.0.0 (dois) | feito | o critério (saída vazia = OK, exemplo de falha real, o `fw-qa-gate` chama script em vez de reescrever grep) foi conferido com fixtures; nenhum script rodou num projeto Laravel real |
+| 5 | Costuras de teste declaradas | 2 | `feature-test-design` 1.16.0; `feature-wiki` 4.0.0 (gate do `05`) | feito | o critério é estrutural e está no template; nenhuma feature real declarou costuras ainda (entra na rodada d) |
+| 6 | Ordem e regimes do `00`/`01` | 2 | `feature-wiki` 4.0.0 (major: steps renumerados) | feito | o efeito — o `04` derivado depois do Ponytail sem CT órfão — entra na rodada d |
+| 7 | Gate de mutantes falsificável | 2 | `feature-test-design` 1.16.0, `fw-adversario-ct` | feito sem medição | a rodada do perfil mínimo (b) |
+| 8 | Veredito do gate com teto por cobertura | 2 | `feature-quality-gate` 1.7.0 | feito sem medição | o custo antes e depois em `## Despachos` (e). L1/L2/L4 viraram scripts, não despacho a `mecânico` como o item sugeria |
+| 9 | Cegueira e não-edição por construção | 2 | `feature-wiki` 4.0.0 (hook + três agentes), `feature-test-design` 1.16.0, gate 1.7.0 | parcial | por construção só nas ferramentas de arquivo, e só com o hook instalado e, no Windows, com o Git Bash (sem ele, o Claude Code roda o hook no PowerShell; achado no fechamento, o hook não bloqueava nada, e foi corrigido na 4.0.0 com `exec sh -c '…; exit 2'; exit 2`: no PowerShell, o hook falha fechado e nega toda ferramenta — os cinco agentes ficam inutilizáveis sem Git Bash); no `Bash`, heurística. O teste do critério (despachar o `fw-revisor-diff` com o `01` na pasta e pedir que o cite) **não rodou** — só a matriz de JSON de `PreToolUse` e o smoke test do CI (f). Das duas vias do item, foi escolhido o hook, não a pasta temporária |
+| 10 | Step de rules com um dono e MCP | 2 | `requirement-to-rule` 1.4.0; `feature-wiki` 4.0.0 (step 12, antes 9) | feito sem medição | um prompt de aprovação no texto; a primeira execução real (c) |
+| 11 | Uma tabela de medição, uma fonte | 1 | `experimentos/README.md` | parcial | a tabela única existe; a `requirement-to-rule` e o perfil mínimo seguem sem rodada (b, c) |
+| 12 | `feature-tickets` | 2 | `feature-tickets` 1.0.0 (nova); `feature-wiki` 4.0.0 (step 8) | feito sem medição | a feature de duas sessões entregue por tickets, com o gate cruzando a coluna `Ticket` (g) |
+| 13 | Entrevista em três raias | 2 | `feature-wiki` 4.0.0, `feature-test-design` 1.16.0, gate 1.7.0 (L7) | feito | o critério (`RQ` aberta ⇒ passo bloqueado; `02` com zero ADR válido) está no texto e no `rastreabilidade.sh`. Sem medição: o efeito de perguntar antes e o limiar de 30 perguntas; o protocolo precisa de um solicitante simulado para medi-la (d) |
+| 14 | Expand–contract | 2 | `feature-tickets` 1.0.0; `feature-wiki` 4.0.0 (natureza `refatoração`); `feature-test-design` 1.16.0 (CT de transição) | feito | o item não tinha critério de pronto; nenhuma refatoração larga foi executada |
+
+**Desvios declarados.** O corpo do `SKILL.md` segue acima das 500 linhas na `feature-wiki` (1.315),
+na `feature-test-design` (790) e no gate (852), contadas pelo comando da convenção do CHANGELOG; a
+release 1 tinha chamado 1.285 de piso da `feature-wiki`, e a release 2 o passou em 30 linhas de
+obrigação nova. Os limiares novos são hipótese a calibrar, nenhum medido: o corte do step 8 (18 `RQ`
+ou 60 CT — o tamanho da única feature medida de ponta a ponta), o sinal de escopo (30 perguntas), a
+poda de rule (3 features seguidas), a evidência do gate 3 (3 arquivos irmãos) e o `maxTurns` dos
+executores (40 e 60).
+
+**Sobre a ordem.** A ordem sugerida no §8 terminava com: *"nada de desenho muda antes de a base estar
+limpa e medida"*. A base foi limpa na release 1, e **não medida**: as duas releases foram feitas na
+mesma sessão, em 2026-09-26 e 2026-09-27, sem nenhuma rodada do protocolo entre elas — nenhuma cabia
+na sessão, que não tinha projeto Laravel nem braços. O que houve no lugar da medição foi verificação
+por fixtures, feita por agentes separados da implementação: ela confere que os scripts e o hook fazem
+o que dizem, não que as skills derivam conjuntos melhores. As releases saíram com **tags separadas**
+justamente para a medição poder ser feita depois, isolando cada fase: `feature-wiki-v3.5.2` →
+`v3.6.0` (com `feature-test-design-v1.14.1` → `v1.15.0`) mede só o empacotamento, na rodada (a);
+`v3.6.0` → `v4.0.0` (com `v1.15.0` → `v1.16.0`) mede só o desenho, na (d). O custo fica declarado: a
+release 2 foi escrita sobre uma base cuja equivalência com a 3.5.2 ainda é hipótese, e uma regressão
+que a rodada (d) achar será de uma release já publicada. Dentro da release 2 a ordem também não foi a
+sugerida (9 → 7 → 8 → 10 → 6 → 5 → 13 → 12 → 14): os itens saíram juntos, porque a renumeração do
+item 6 mudava todo texto que os outros tocavam.

@@ -1,4 +1,4 @@
-> Referência da feature-wiki 3.6.0. Lida em: step 3 (extrair locators reais), loop do CT-B nas falhas (a)/(c) e step 7 (evidência de console e rede). Fonte única de: por que o MCP, onde ele entra, configuração e fallback sem ele.
+> Referência da feature-wiki 4.0.0. Lida em: step 3 (extrair locators reais), loop do CT-B nas falhas (a)/(c) e step 10 (evidência de console e rede). Fonte única de: por que o MCP, onde ele entra, configuração e fallback sem ele.
 
 # Playwright MCP na validação
 
@@ -16,9 +16,9 @@ quando o elemento realmente aparece em UI assíncrona, e extrair seletores de te
 |---|---|---|
 | **Step 3** — pesquisa | extrair locators reais das telas que a feature vai tocar | `browser_navigate`, `browser_find`, `browser_generate_locator` |
 | **Loop do CT-B** — falha (a)/(c) | observar a página ao vivo e corrigir o CT-B | `browser_find`, `browser_generate_locator`, `browser_wait_for` |
-| **Step 7** — evidência | anexar console e rede ao roteiro *Desenhado × Implementado* | `browser_console_messages`, `browser_network_requests` |
+| **Step 10** — evidência | anexar console e rede ao roteiro *Desenhado × Implementado* | `browser_console_messages`, `browser_network_requests` |
 
-> Para o step 7, verificar primeiro se a tool **`browser-logs`** (Browser Logs) do Boost MCP já resolve — é uma tool
+> Para o step 10, verificar primeiro se a tool **`browser-logs`** (Browser Logs) do Boost MCP já resolve — é uma tool
 > que o projeto provavelmente já tem, sem adicionar servidor novo.
 
 **Configuração obrigatória**:

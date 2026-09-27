@@ -12,12 +12,13 @@ Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude C
 
 | Skill | Versão | O que faz | Quando é invocada |
 |---|---|---|---|
-| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 3.6.0 | Cria a wiki da feature antes de implementar: requisito bruto, PRD, ADR e progresso, com padrão de log. Delega os casos de teste. No Claude Code, despacha para sub-agentes com modelo roteado e juiz cego | ao iniciar qualquer feature nova |
-| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.15.0 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes | step 4 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
-| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.6.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita a consistência wiki × código × docs × rules e roteia cada achado para especificação, implementação ou teste | step 8 da `feature-wiki`, após os testes passarem e **antes do PR** |
-| **[requirement-to-rule](.ai/skills/requirement-to-rule/README.md)** | 1.3.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | step 9 da `feature-wiki` ou sob pedido |
+| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 4.0.0 | Cria a wiki da feature antes de implementar: requisito bruto (com perguntas ao solicitante e premissas), PRD, ADR e progresso, com padrão de log. Entrevista em três raias, delega os casos de teste e confere a wiki por scripts. No Claude Code, despacha para sub-agentes com modelo roteado, juiz cego e um hook que nega a leitura e a edição fora do perfil de cada agente | ao iniciar qualquer feature nova, ou uma refatoração larga |
+| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.16.0 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: costuras de teste declaradas, técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes, com a asserção que mata cada um | step 7 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
+| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.7.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita a consistência wiki × código × docs × rules e roteia cada achado para especificação, implementação ou teste. Com dimensão não verificada, o veredito máximo é `APROVADO COM DÉBITO` | step 11 da `feature-wiki`, depois da revisão do diff (9) e da reconciliação (10), **antes do PR** |
+| **[requirement-to-rule](.ai/skills/requirement-to-rule/README.md)** | 1.4.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com um prompt de aprovação do usuário; gera e prova o teste `arch()` quando a rule é mecânica | step 12 da `feature-wiki` (dona única do step) ou sob pedido |
+| **[feature-tickets](.ai/skills/feature-tickets/README.md)** | 1.0.0 | Fatia a wiki em **tickets verticais** — `RQ` do `00` + CT do `04` que ficam verdes + passos do `01` + bloqueio + status — quando o plano não cabe numa sessão; um ticket por sessão nova; quadro gerado por script (`07-tickets/README.md`, `wikis/specs/INDEX.md`); expand–contract para refatoração larga | **só pelo usuário** (`/feature-tickets`; a skill tem `disable-model-invocation: true`). O step 8 da `feature-wiki` sugere quando o plano não cabe numa sessão. Todas as invocações: [Como chamar](.ai/skills/feature-tickets/README.md#como-chamar) |
 
-O ciclo completo: **planejar** (`feature-wiki`) → **especificar teste** (`feature-test-design`) → **executar** (Ponytail) → **comunicar** (Caveman) → **testar** (Pest 5) → **validar** (`feature-quality-gate`) → **memorizar** (`requirement-to-rule`).
+O ciclo completo: **planejar** (`feature-wiki`, steps 0–6) → **especificar teste** (`feature-test-design`, step 7) → **fatiar** (`feature-tickets`, step 8 — **só quando o plano não cabe numa sessão**) → **executar** (Ponytail; os passos do `01`, ou um ticket por sessão) → **comunicar** (Caveman) → **testar** (Pest 5) → **revisar o diff** (step 9) → **reconciliar** (step 10) → **validar** (`feature-quality-gate`, step 11) → **memorizar** (`requirement-to-rule`, step 12).
 
 ### Sub-agentes da esteira × modelo (referência)
 
@@ -26,25 +27,47 @@ No Claude Code, a `feature-wiki` (desde a 3.5.0) despacha tarefas para sub-agent
 visto para o resultado valer como prova). A tabela abaixo é a referência do que cada rota usa; os
 aliases (`haiku`, `sonnet`, `opus`) resolvem sempre para a geração corrente de cada família.
 
-| Rota / agente | Skill dona | Alias | Modelo Claude (geração atual) | Tier | Ferramentas | Cegueira |
-|---|---|---|---|---|---|---|
-| `mecânico` | — (`general-purpose` + `model`) | `haiku` | Claude Haiku 4.5 | econômico | leitura + Bash | — |
-| `construtor` | — (`general-purpose` + `model`) | `sonnet` | Claude Sonnet 5 | intermediário | tudo | não edita `00`, `04`, `05` |
-| `analista` | — (`general-purpose` + `model`) | `opus` | Claude Opus 5 | topo | leitura + Bash | conforme a tarefa |
-| `Explore` (built-in) | — | `sonnet` recomendado | Claude Sonnet 5 | intermediário | leitura | — |
-| `fw-revisor-diff` | `feature-wiki` | `opus` | Claude Opus 5 | topo | leitura + Bash, **sem Edit/Write** | não recebe `01`, `03` |
-| `fw-executor-ct` | `feature-wiki` | `sonnet` | Claude Sonnet 5 | intermediário | tudo, sob contrato | não lê `01`/`02`; lê `app/` só para nomes; não altera código de aplicação |
-| `fw-executor-ctb` | `feature-wiki` | `sonnet` | Claude Sonnet 5 | intermediário | tudo, sob contrato | não altera código de aplicação |
-| `fw-adversario-ct` | `feature-test-design` | `opus` | Claude Opus 5 | topo | leitura, **sem Edit/Write/Bash** | recebe só `00` + `04`/`05` |
-| `fw-qa-gate` | `feature-quality-gate` | `opus` | Claude Opus 5 | topo | tudo menos Edit/Write/NotebookEdit (herda MCP) | não recebe a conversa |
-| sessão principal | — | o da sessão | o que o usuário escolheu (Fable 5.1, Opus 5…) | — | — | orquestra, decide, audita |
-| `/code-review` (nativo do Claude Code) | — | o da sessão, por padrão | — | — | isolado por construção | não vê a conversa |
+| Rota / agente | Skill dona | Alias | Modelo Claude (geração atual) | Tier | Ferramentas | Cegueira | Hook (perfil do `guarda-subagente.sh`) |
+|---|---|---|---|---|---|---|---|
+| `mecânico` | — (`general-purpose` + `model`) | `haiku` | Claude Haiku 4.5 | econômico | leitura + Bash | — | — (sem hook) |
+| `construtor` | — (`general-purpose` + `model`) | `sonnet` | Claude Sonnet 5 | intermediário | tudo | não edita `00`, `04`, `05`; com tickets, recebe só a fatia | — (sem hook: contrato por prompt) |
+| `analista` | — (`general-purpose` + `model`) | `opus` | Claude Opus 5 | topo | leitura + Bash | conforme a tarefa | — (sem hook) |
+| `Explore` (built-in) | — | `sonnet` recomendado | Claude Sonnet 5 | intermediário | leitura | — | — (fallback declarado: `mecânico` ou `general-purpose` com `model: sonnet`) |
+| `fw-revisor-diff` | `feature-wiki` | `opus` | Claude Opus 5 | topo | leitura + Bash, **sem Edit/Write** | não recebe `01`, `03`; o diff chega sem `wikis/` | `revisor-diff`: nega ler `01`/`03`, `git diff` sem `':(exclude)wikis'` e alterar a árvore |
+| `fw-executor-ct` | `feature-wiki` | `sonnet` | Claude Sonnet 5 | intermediário | tudo, sob contrato; `maxTurns` 40 | não lê `01`/`02`; lê `app/` só para nomes; não altera código de aplicação | `executor-ct`: nega ler `01`/`02` e editar `app/`, `database/migrations/`, `00`, `03`, `04`, `05`, `07-tickets/` |
+| `fw-executor-ctb` | `feature-wiki` | `sonnet` | Claude Sonnet 5 | intermediário | tudo, sob contrato; `maxTurns` 60 | não altera código de aplicação nem o `05` | `executor-ctb`: nega editar os mesmos caminhos do `executor-ct` |
+| `fw-adversario-ct` | `feature-test-design` | `opus` | Claude Opus 5 | topo | leitura, **sem Edit/Write/Bash** | recebe só `00` + `04`/`05` (+ `wikis/glossario.md`) | `adversario-ct`: nega ler fora do `00`, `04`, `05`, glossário e arquivos das skills |
+| `fw-qa-gate` | `feature-quality-gate` | `opus` | Claude Opus 5 | topo | tudo menos Edit/Write/NotebookEdit (herda MCP) | não recebe a conversa; devolve o `06` entre `<<<06` e `>>>06` | `qa-gate`: nega alterar a árvore (lê a wiki inteira, por desenho) |
+| sessão principal | — | o da sessão | o que o usuário escolheu (Fable 5.1, Opus 5…) | — | — | orquestra, decide, audita | — |
+| `/code-review` (nativo do Claude Code) | — | o da sessão, por padrão | — | — | isolado por construção | não vê a conversa | — |
+
+**O que é construção e o que é heurística.** Desde a `feature-wiki` 4.0.0, os cinco agentes `fw-*`
+declaram um hook `PreToolUse` que roda `feature-wiki/scripts/guarda-subagente.sh` com o perfil da
+última coluna, antes de cada ferramenta. Em `Read`, `Grep`, `Glob`, `Edit` e `Write` (e `MultiEdit`,
+`NotebookEdit`) a cegueira e a não-edição são **por construção**: o path é comparado com o perfil, e a
+ferramenta nem roda. No `Bash`, a cobertura é **heurística**, por padrão de comando: pega `cat` do `01`,
+`git diff` sem excluir `wikis/`, `rm`, `sed -i`, `git stash`, redirecionamento para dentro do
+repositório; não pega escrita por interpretador (`php -r`), PowerShell nem corpo de heredoc. Ferramenta
+MCP herdada não passa pelo hook. E tudo isso **depende do hook instalado**: agente antigo em
+`.claude/agents/` (sem o bloco `hooks:`), agente não copiado ou o fallback `general-purpose` voltam à
+cegueira por instrução — as rotas `mecânico`, `construtor` e `analista` não têm hook nenhum. No
+Windows, os cinco agentes pedem o **Git Bash**: sem ele, o hook roda no PowerShell e nega toda
+ferramenta, o agente para e a sessão cai no fallback (ver
+[Hooks dos agentes e scripts](#hooks-dos-agentes-e-scripts-onde-precisam-estar)). No revisor
+do diff e no quality gate há um sinal a mais: a sessão compara o `git status --porcelain` de antes e de
+depois — sinal, não prova. O que cada perfil nega, o que não cobre e o teste ao vivo estão no README da
+`feature-wiki`, em [O hook dos agentes](.ai/skills/feature-wiki/README.md#o-hook-dos-agentes) e
+[Teste do hook](.ai/skills/feature-wiki/README.md#teste-do-hook). O teste ao vivo ainda não rodou numa
+feature real; o contrato foi conferido alimentando o script com JSON de `PreToolUse`, e o CI repete um
+smoke test a cada push.
 
 **Tier é o conceito portável; o alias é a implementação Claude.** Em outro host ou provedor, o
 projeto mapeia `econômico / intermediário / topo` para os modelos que tiver. Cada disparo registra
-o modelo **efetivamente** usado em `## Despachos` do `03-progresso.md`, então o custo de operar é
-medível por feature, seja qual for o provedor. Instalação dos agentes:
-`cp .ai/skills/*/agents/*.md .claude/agents/` (ver [Como Instalar no Claude Code](#-como-instalar-no-claude-code)).
+o modelo **efetivamente** usado em `## Despachos` do `03-progresso.md` — e, desde a 4.0.0, o custo
+(tokens · duração) que o host reporta —, então o custo de operar é medível por feature, seja qual for
+o provedor. O `maxTurns` dos executores é hipótese a calibrar: nenhum despacho registrou turnos.
+Instalação dos agentes: `cp .ai/skills/*/agents/*.md .claude/agents/` (ver
+[Como Instalar no Claude Code](#-como-instalar-no-claude-code)).
 
 > Medição de referência (2026-09-21, feature FERRO-830 no `demo-wiki`, esteira completa até o
 > quality gate ciclo 1): a maior parte do custo de sub-agente foi `sonnet` construindo; os
@@ -78,14 +101,15 @@ Isso obriga o agente a imaginar a implementação e testá-la.
 
 ### Onde está cada documentação
 
-Cada skill tem **dois arquivos com públicos diferentes** — o `README.md` explica para a pessoa; o `SKILL.md` instrui o agente. Procedimento não é duplicado entre eles. Duas skills têm também `references/`: arquivos **para o agente, sob demanda**, que o `SKILL.md` manda abrir antes da ação que depende deles (templates, tabelas, comandos, casos medidos). Os gates e as proibições ficam no `SKILL.md`.
+Cada skill tem **dois arquivos com públicos diferentes** — o `README.md` explica para a pessoa; o `SKILL.md` instrui o agente. Procedimento não é duplicado entre eles. As cinco têm também `references/`: arquivos **para o agente, sob demanda**, que o `SKILL.md` manda abrir antes da ação que depende deles (templates, tabelas, comandos, casos medidos). Quatro têm `scripts/`: checagens mecânicas que o agente **roda** e cuja saída julga — silêncio é OK —, em vez de reescrever grep. Os gates e as proibições ficam no `SKILL.md`.
 
-| Skill | Para você ler | Para o agente seguir | Para o agente, sob demanda |
-|---|---|---|---|
-| feature-wiki | [README](.ai/skills/feature-wiki/README.md) — por quê, os arquivos que ela cria, quando usar, dependências, instalação dos agentes, limites | [SKILL.md](.ai/skills/feature-wiki/SKILL.md) | [`references/`](.ai/skills/feature-wiki/references/) — templates `00`–`03`, padrão de log, pesquisa do step 3, roteamento, Pest 5, citações, casos medidos |
-| feature-test-design | [README](.ai/skills/feature-test-design/README.md) — o problema medido, o pipeline de 8 passos (0 a 7), **por que Gherkin sem runner**, a camada Livewire que faltava | [SKILL.md](.ai/skills/feature-test-design/SKILL.md) | [`references/`](.ai/skills/feature-test-design/references/) — técnicas por regra, taxonomia, templates `04`/`05`, mutation testing, `pest-plugin-browser` (fonte única da coletânea) |
-| feature-quality-gate | [README](.ai/skills/feature-quality-gate/README.md) — quando usar, limites, dependências + **estudo de viabilidade** (pesquisa de mercado, lacuna verificada, critério eliminatório) | [SKILL.md](.ai/skills/feature-quality-gate/SKILL.md) | — |
-| requirement-to-rule | [README](.ai/skills/requirement-to-rule/README.md) — por quê, quando usar/não usar, limites, dependências | [SKILL.md](.ai/skills/requirement-to-rule/SKILL.md) | — |
+| Skill | Para você ler | Para o agente seguir | Para o agente, sob demanda | Scripts que o agente roda |
+|---|---|---|---|---|
+| feature-wiki | [README](.ai/skills/feature-wiki/README.md) — por quê, os arquivos que ela cria, quando usar, [como chamar os tickets](.ai/skills/feature-wiki/README.md#feature-fatiada--como-chamar-os-tickets), [numeração dos steps 3.x → 4.0.0](.ai/skills/feature-wiki/README.md#numeração-dos-steps--3x--400), dependências, instalação dos agentes e [o hook](.ai/skills/feature-wiki/README.md#o-hook-dos-agentes), limites | [SKILL.md](.ai/skills/feature-wiki/SKILL.md) | [`references/`](.ai/skills/feature-wiki/references/) — templates `00`–`03`, entrevista em três raias, glossário, padrão de log, pesquisa do step 3, roteamento, Pest 5, citações, casos medidos | [`scripts/`](.ai/skills/feature-wiki/scripts/) — rastreabilidade, checkbox sem evidência, citações, IDs de CT, conformidade com rules, o lançador `pestw.cmd` e o hook `guarda-subagente.sh` |
+| feature-test-design | [README](.ai/skills/feature-test-design/README.md) — o problema medido, o pipeline de 8 passos (0 a 7), costuras de teste e perguntas em raias, **por que Gherkin sem runner**, a camada Livewire que faltava | [SKILL.md](.ai/skills/feature-test-design/SKILL.md) | [`references/`](.ai/skills/feature-test-design/references/) — técnicas por regra, taxonomia, templates `04`/`05`, mutation testing, `pest-plugin-browser` (fonte única da coletânea) | — |
+| feature-quality-gate | [README](.ai/skills/feature-quality-gate/README.md) — quando usar, limites, dependências + **estudo de viabilidade** (pesquisa de mercado, lacuna verificada, critério eliminatório) | [SKILL.md](.ai/skills/feature-quality-gate/SKILL.md) | [`references/`](.ai/skills/feature-quality-gate/references/) — template do `06`, delegação ao `qa-skills` e Playwright MCP | [`scripts/`](.ai/skills/feature-quality-gate/scripts/) — dark mode e K1 (os da dimensão A e L são da `feature-wiki`) |
+| requirement-to-rule | [README](.ai/skills/requirement-to-rule/README.md) — por quê, quando usar/não usar, limites, dependências | [SKILL.md](.ai/skills/requirement-to-rule/SKILL.md) | [`references/`](.ai/skills/requirement-to-rule/references/) — coleta e apresentação, enforcement por `arch()`, índice e `record-rule` | [`scripts/`](.ai/skills/requirement-to-rule/scripts/) — `prova-arch.sh`, a prova de que o `arch()` pega |
+| feature-tickets | [README](.ai/skills/feature-tickets/README.md) — por que existe, quando usar, **[como chamar](.ai/skills/feature-tickets/README.md#como-chamar)** (todas as invocações, com custo e saída real), limites, dependências | [SKILL.md](.ai/skills/feature-tickets/SKILL.md) | [`references/`](.ai/skills/feature-tickets/references/) — template do ticket, exemplo de fatiamento, expand–contract, despacho e fechamento, visualização | [`scripts/`](.ai/skills/feature-tickets/scripts/) — `indice.sh` (quadros, `--status`, `--check`) e `espelho-gh.sh` |
 
 > Histórico de evolução das skills: [CHANGELOG.md](CHANGELOG.md)
 
@@ -114,6 +138,8 @@ As skills seguem o [spec Agent Skills](https://agentskills.io/specification). Pa
     │   ├── README.md               ← opcional: explicação para a pessoa
     │   ├── references/             ← opcional: arquivos que o SKILL.md manda o agente abrir sob demanda
     │   │   └── tema.md             ←   um nível só: references/tema.md, sem subpasta
+    │   ├── scripts/                ← opcional: checagens que o SKILL.md manda rodar (spec: scripts/)
+    │   │   └── confere.sh          ←   bash, LF, PHP embutido; silêncio + exit 0 = OK
     │   └── agents/                 ← opcional: sub-agentes da skill (convenção desta coletânea, não do spec)
     │       └── nome-do-agente.md   ←   o Claude Code só os lê em .claude/agents/ — ver a instalação
     └── outra-skill/
@@ -121,7 +147,14 @@ As skills seguem o [spec Agent Skills](https://agentskills.io/specification). Pa
 ```
 
 O `boost:add-skill` copia a pasta **inteira** de cada skill (menos arquivos `.php`) para
-`.ai/skills/<skill>/` do projeto; do `SKILL.md`, o Boost lê só o `name` e a `description`.
+`.ai/skills/<skill>/` do projeto; do `SKILL.md`, o Boost lê só o `name` e a `description`. Por isso
+os scripts desta coletânea são `.sh` com a lógica em PHP embutido: um `.php` não chegaria ao projeto,
+e todo projeto Laravel tem `php`. O contrato de saída é o mesmo em todos: silêncio + exit 0 = OK; uma
+linha `arquivo:linha: mensagem` por achado + exit 1; erro de uso ou de ambiente no stderr + exit 2. O
+[`.gitattributes`](.gitattributes) fixa os `.sh` em LF (com `core.autocrlf=true` o checkout os
+converteria para CRLF, e o bash quebra) e guarda o `pestw.cmd` sem conversão (`-text`), com os bytes
+CRLF no próprio blob: o `boost:add-skill` não faz checkout, baixa o blob, e `text eol=crlf` o
+entregaria em LF.
 
 Fora de `.ai/`, o repositório guarda **[`experimentos/`](experimentos/README.md)** (protocolo e
 rodadas medidas) e **`estudos/`** (análises comparativas datadas). Nenhum dos dois é instalado
@@ -133,6 +166,7 @@ pelo Boost — são o registro de por que cada regra existe.
 |---|---|---|---|
 | `SKILL.md` | **agente** | gates, obrigações, proibições, a sequência de passos, checklist | o frontmatter (`name` + `description`) está em toda sessão, para o agente decidir invocar; o corpo carrega quando a skill é ativada |
 | `references/` | **agente** | templates, tabelas, comandos, exemplos, casos medidos — nunca um gate ou proibição que não esteja também no corpo | só quando o `SKILL.md` manda: *"antes de X, leia `references/Y.md`"* |
+| `scripts/` | **agente** (roda, não lê) | checagens mecânicas: o agente julga a saída, em vez de reescrever o grep | só a saída do script — silêncio quando está tudo certo |
 | `agents/` | **Claude Code** | sub-agentes com modelo e ferramentas restritos | só no despacho, depois de copiados para `.claude/agents/` |
 | `README.md` | **pessoa** | por que existe, quando usar, dependências com versão mínima, limites | **zero** — nenhum agente o carrega por conta própria |
 
@@ -178,8 +212,13 @@ metadata:
   `version:` no topo, que o validador reprova —, e `requires`, as versões mínimas de outras
   skills e pacotes, separadas por `;`.
 - **Caminhos**: arquivo da própria skill, relativo à pasta dela (`references/mensagens.md`).
-  Arquivo de outra skill, `{skills}/<skill>/…`, onde **`{skills}`** é o diretório de instalação das
-  skills — `.ai/skills/`, `.claude/skills/` ou `~/.claude/skills/`, o primeiro que existir.
+  Arquivo de outra skill, `{skills}/<skill>/…`, onde **`{skills}`** é o primeiro dos três
+  diretórios de instalação — `.ai/skills/`, `.claude/skills/`, `~/.claude/skills/` — que **contém a
+  skill citada** (não o primeiro que existe: `.ai/skills/` pode existir sem ela). Link para fora da
+  skill (`experimentos/`, `estudos/`, outra skill) vai em URL absoluta do repositório: o relativo
+  quebra quando a skill é instalada num projeto.
+- **Campo fora do spec**: o validador reprova. Esta coletânea usa um só, `disable-model-invocation:
+  true` (extensão do Claude Code, na `feature-tickets`), e o CI o tolera por uma lista fechada.
 - **Tamanho**: o spec recomenda corpo abaixo de 500 linhas, com o resto em `references/`. É
   recomendação, não regra do validador.
 
@@ -195,6 +234,14 @@ campos permitidos); as duas se declaram só para demonstração:
 npx -y skills-ref@0.1.5 validate .ai/skills/nome-da-sua-skill
 ```
 
+O CI tem ainda um segundo job, para os `scripts/`: `bash -n` em cada `.sh`, nenhum `.sh` com CR, o
+`pestw.cmd` em CRLF e um smoke test do hook dos agentes com PHP: nega/permite por perfil, e o bloco
+`hooks:` de cada agente — um evento só, `PreToolUse`, com o matcher das oito ferramentas, o bloco
+idêntico nos cinco além do perfil, e o comando, que tem de achar o script e falhar fechado sem ele. O
+comando roda com `sh -c` no bash do Linux e de novo com `pwsh -NoProfile -Command`, o caso do Windows
+sem Git Bash: com o mesmo JSON que o bash permite, tem de sair com 2 — é o teste que trava o falha
+fechado fora do bash. Sem `pwsh` no runner, esse caso vira aviso e é pulado.
+
 ---
 
 ## ⚙️ Como Instalar no Laravel Boost 2.0
@@ -205,8 +252,8 @@ Para instalar **todas as skills de uma vez**, sem prompt de seleção, execute n
 php artisan boost:add-skill gsferro/laravel-ai-skills --all
 ```
 
-Isso copia a pasta **inteira** de cada uma das quatro skills — `SKILL.md`, `README.md`,
-`references/` e `agents/`; nada `.php` — para `.ai/skills/<skill>/` do seu projeto. Se o projeto
+Isso copia a pasta **inteira** de cada uma das cinco skills — `SKILL.md`, `README.md`,
+`references/`, `scripts/` e `agents/`; nada `.php` — para `.ai/skills/<skill>/` do seu projeto. Se o projeto
 tem `boost.json`, o próprio `add-skill` termina chamando o `boost:update`, que sincroniza as skills
 para a pasta de cada agente configurado no Boost (comportamento do Boost 2.10; o do Claude Code
 está em [Como Instalar no Claude Code](#-como-instalar-no-claude-code)). Rodar o `boost:update` à
@@ -233,10 +280,14 @@ php artisan boost:add-skill gsferro/laravel-ai-skills \
   --skill=feature-wiki --skill=feature-test-design --skill=feature-quality-gate
 ```
 
-> **Atenção**: as skills são encadeadas pela wiki. A `feature-test-design` e a `feature-quality-gate`
-> leem o `00-requisito.md` que a `feature-wiki` cria — é o oráculo das duas —, e instalar qualquer
-> uma delas sem a `feature-wiki` não funciona. A `requirement-to-rule` lê `01`, `02`, `03` e o
-> checklist de taxonomia do `04`.
+> **Atenção**: as skills são encadeadas pela wiki. A `feature-test-design`, a `feature-quality-gate`
+> e a `feature-tickets` leem o `00-requisito.md` que a `feature-wiki` cria — é o oráculo delas —, e
+> instalar qualquer uma sem a `feature-wiki` não funciona. A `requirement-to-rule` lê `01`, `02`, `03`
+> e o checklist de taxonomia do `04`. E o hook dos cinco agentes `fw-*` — inclusive o
+> `fw-adversario-ct` da `feature-test-design` e o `fw-qa-gate` da `feature-quality-gate` — é um script
+> da `feature-wiki`: sem ela, esses agentes negam toda ferramenta
+> ([Hooks dos agentes e scripts](#hooks-dos-agentes-e-scripts-onde-precisam-estar)). A
+> `feature-tickets` é opcional: só entra quando uma feature não cabe numa sessão.
 
 As versões mínimas entre elas vêm do `metadata.requires` de cada `SKILL.md` e valem quando a
 dependência está presente. O que é obrigatório e o que só degrada está na seção *Dependências* do
@@ -244,15 +295,17 @@ README de cada skill.
 
 | Skill | `metadata.requires` |
 |---|---|
-| `feature-wiki` 3.6.0 | `feature-test-design>=1.15.0; feature-quality-gate>=1.5.0; laravel/boost>=2.4.12` |
-| `feature-test-design` 1.15.0 | `feature-wiki>=3.5.2` |
-| `feature-quality-gate` 1.6.0 | `feature-wiki>=3.5.0; feature-test-design>=1.15.0` |
-| `requirement-to-rule` 1.3.0 | `laravel/boost>=2.4.12; feature-wiki>=3.1.0` |
+| `feature-wiki` 4.0.0 | `feature-test-design>=1.16.0; feature-quality-gate>=1.7.0; laravel/boost>=2.4.12` |
+| `feature-test-design` 1.16.0 | `feature-wiki>=4.0.0` |
+| `feature-quality-gate` 1.7.0 | `feature-wiki>=4.0.0` |
+| `requirement-to-rule` 1.4.0 | `laravel/boost>=2.4.12; feature-wiki>=4.0.0` |
+| `feature-tickets` 1.0.0 | `feature-wiki>=4.0.0; feature-test-design>=1.16.0` |
 
-Na prática, instale as quatro juntas: a `feature-wiki` 3.6.0 e a `feature-quality-gate` 1.6.0
-apontam para `references/pest-plugin-browser.md`, que só existe a partir da `feature-test-design`
-1.15.0. O `laravel/boost` 2.4.12 é a versão em que nasceram as Project Rules e a tool
-`record-rule`.
+Na prática, instale as cinco juntas, na mesma versão da coletânea: a `feature-wiki` 4.0.0 renumerou
+os steps, e as outras quatro citam os números novos (step 7 = derivação do `04`, 8 = tickets,
+9 = revisão do diff, 10 = reconciliação, 11 = quality gate, 12 = rules); o hook dos agentes das
+outras skills é um script dela. O `laravel/boost` 2.4.12 é a versão em que nasceram as Project Rules
+e a tool `record-rule`.
 
 ### Todas as opções do `boost:add-skill`
 
@@ -386,9 +439,59 @@ Nesse caso, a cópia de `.claude/skills/` também se repete a cada atualização
 >
 > Sem a cópia, a `feature-wiki` não encontra `fw-revisor-diff`, `fw-executor-ct`, `fw-adversario-ct`, `fw-qa-gate`
 > nem `fw-executor-ctb`, e cai no `general-purpose` com `model` explícito (funciona — segurou uma
-> feature inteira em 2026-09-21 — mas sem a restrição de ferramenta que torna "quem julga não
-> conserta" mecânico). A sessão precisa estar aberta **no diretório do projeto**: agente em
-> `.claude/agents/` de um diretório pai ou de outro repositório não é visto.
+> feature inteira em 2026-09-21 — mas sem a restrição de ferramenta e sem o hook que tornam "quem
+> julga não conserta" mecânico). A sessão precisa estar aberta **no diretório do projeto**: agente em
+> `.claude/agents/` de um diretório pai ou de outro repositório não é visto. Agente copiado de uma
+> versão anterior à `feature-wiki` 4.0.0 não tem o bloco `hooks:`: copie de novo depois de atualizar.
+
+### Hooks dos agentes e scripts: onde precisam estar
+
+Os cinco agentes `fw-*` declaram no frontmatter um hook `PreToolUse` que roda
+`feature-wiki/scripts/guarda-subagente.sh` com o perfil do agente (tabela em
+[Sub-agentes da esteira × modelo](#sub-agentes-da-esteira--modelo-referência)). O hook procura o
+script, nesta ordem, em:
+
+1. `$CLAUDE_PROJECT_DIR/.ai/skills/feature-wiki/scripts/` — onde o Boost instala
+2. `$CLAUDE_PROJECT_DIR/.claude/skills/feature-wiki/scripts/` — o espelho local, com ou sem Boost
+3. `~/.claude/skills/feature-wiki/scripts/` — a instalação global (Opção 2, abaixo)
+
+Por isso a `feature-wiki`, **com a pasta `scripts/`**, precisa estar instalada num desses três
+lugares — copiar só o `SKILL.md` não basta. **Sem o script, o agente falha fechado**: o hook nega
+toda ferramenta com `guarda-subagente.sh nao encontrado: instale a feature-wiki`, o agente para, e a
+sessão cai no fallback declarado (`general-purpose` com `model` explícito, sem hook).
+
+Os scripts — o hook e as checagens de `scripts/` das skills — exigem **`bash` e `php` no PATH**; todo
+projeto Laravel tem `php`. Sem `php`, o script sai com exit 2: o hook nega tudo, e a checagem fica sem
+prova, declarada. No Windows, o `bash` é o do **Git Bash** (Git for Windows), e o Claude Code não o
+exige: sem Git Bash, ele roda os hooks no PowerShell — sobre o campo `shell` do hook, a documentação
+diz *"Defaults to "bash", or to "powershell" on Windows when Git Bash isn't installed"*, e o bloco dos
+cinco agentes não declara `shell`. Por isso o comando é `exec sh -c '…; exit 2'; exit 2`. No bash
+(Linux, macOS, Windows com Git Bash), o `exec` troca o shell pelo `sh`, o `; exit 2` do fim nunca roda,
+e o código de saída é o do `guarda-subagente.sh`: 0 permite, 2 nega, e sem o script, 2. No PowerShell,
+`exec` não existe, a linha segue para o `exit 2`, e o hook **falha fechado**: nega toda ferramenta, com
+o erro do PowerShell (`exec` não reconhecido) no lugar do `nao encontrado`, o agente para, e a sessão
+cai no fallback. **No Windows sem Git Bash, os cinco agentes `fw-*` ficam inutilizáveis** — negam
+tudo, em vez de rodar sem cegueira. Para usá-los no Windows, instale o Git for Windows. Medido com JSON
+de `PreToolUse` do `fw-revisor-diff`: no bash, `Read` do `01` → 2, `Read` de `app/` → 0, sem o script
+→ 2; no PowerShell 7.6.6 e no Windows PowerShell 5.1, `Read` de `app/` → 2. Com o comando antigo, sem
+o `exec`, o PowerShell nunca devolvia 2 — 1 na negação e sem o `sh`, 0 quando o `sh` do Git estava no
+PATH e o script permitia —, e no `PreToolUse` só o 2 bloqueia: o hook não negava nada. A medição
+usou `pwsh -NoProfile -Command` e `powershell -NoProfile -Command`; como o Claude Code chama o
+PowerShell não foi conferido. Fontes:
+[Hooks](https://code.claude.com/docs/en/hooks) (campo `shell` e códigos de saída) e
+[`defaultShell`](https://code.claude.com/docs/en/settings-reference#defaultshell), lidos em 2026-09-27.
+O teste ao vivo desse caso está pendente, na
+[rodada (f)](experimentos/README.md#f-item-9--teste-ao-vivo-do-hook). Para conferir o hook, na raiz do
+projeto (tem de sair a linha de negação e `exit 2`):
+
+```bash
+echo '{"tool_name":"Read","tool_input":{"file_path":"wikis/specs/b/f/01-plano-acao.md"}}' \
+  | bash .ai/skills/feature-wiki/scripts/guarda-subagente.sh revisor-diff; echo "exit $?"
+```
+
+A cópia dos agentes para `.claude/agents/` continua obrigatória nos dois casos da Opção 1 e na
+Opção 2 — são cinco agentes, todos com hook. O teste com o agente de verdade está no README da
+`feature-wiki`, em [Teste do hook](.ai/skills/feature-wiki/README.md#teste-do-hook).
 
 ### Opção 2: Instalação Global no Sistema
 Para que o Claude Code use estas regras de arquitetura em **qualquer diretório** que você abrir na sua máquina, instale a pasta de skills diretamente no seu perfil de usuário:
@@ -408,9 +511,10 @@ Para que o Claude Code use estas regras de arquitetura em **qualquer diretório*
   ```
 
 > Copie sempre a pasta **inteira** de cada skill, como acima: copiar só o `SKILL.md` deixa os
-> *"leia `references/…`"* apontando para o vazio. Instalação global é `{skills}` =
-> `~/.claude/skills/`: as skills procuram umas às outras em `.ai/skills/`, `.claude/skills/` e
-> `~/.claude/skills/`, nessa ordem.
+> *"leia `references/…`"* apontando para o vazio e os agentes sem o script do hook. Instalação global
+> é `{skills}` = `~/.claude/skills/`: as skills — e o hook dos agentes — procuram umas às outras em
+> `.ai/skills/`, `.claude/skills/` e `~/.claude/skills/`, nessa ordem, e ficam com o primeiro
+> diretório que contém a skill procurada.
 
 > Instalação como plugin do Claude Code (`/plugin marketplace add`): ainda não disponível — o repositório não publica manifesto de marketplace.
 
@@ -517,7 +621,7 @@ O Caveman tem Auto-Clarity que desativa o modo terse em situações críticas. M
 php artisan boost:add-skill gsferro/laravel-ai-skills --all
 ```
 
-Isso baixa `feature-wiki`, `feature-test-design`, `feature-quality-gate` e `requirement-to-rule` para `.ai/skills/` no seu projeto Laravel. Com `boost.json`, o próprio `add-skill` termina chamando o `boost:update`; rodá-lo à mão só se o `add-skill` terminou com erro (ver [Como Instalar no Laravel Boost 2.0](#️-como-instalar-no-laravel-boost-20)). Sem `boost.json`, o `boost:update` falha (*Please set up Boost with [php artisan boost:install] first*).
+Isso baixa `feature-wiki`, `feature-test-design`, `feature-quality-gate`, `requirement-to-rule` e `feature-tickets` para `.ai/skills/` no seu projeto Laravel. Com `boost.json`, o próprio `add-skill` termina chamando o `boost:update`; rodá-lo à mão só se o `add-skill` terminou com erro (ver [Como Instalar no Laravel Boost 2.0](#️-como-instalar-no-laravel-boost-20)). Sem `boost.json`, o `boost:update` falha (*Please set up Boost with [php artisan boost:install] first*).
 
 #### 2. Instalar o Ponytail e o Caveman no seu agente de IA
 
@@ -601,37 +705,47 @@ A partir de agora, para cada feature nova:
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  1. PLANEJAR (feature-wiki)                         │
+│  PLANEJAR (feature-wiki, steps 0 a 6)               │
 │  ─────────────────────────────────                  │
 │  • Invocar feature-wiki ao iniciar a feature        │
-│  • Criar wikis/specs/{branch}/{feature}/ com 7 arqs │
+│  • Criar wikis/specs/{branch}/{feature}/            │
 │    (00 a 06 — 04/05/06 chegam nos passos abaixo)    │
-│  • 00-requisito.md       → requisito bruto IMUTÁVEL  │
-│    - Decomposição em cláusulas RQ-##                │
-│    - Ambiguidades = pergunta, não suposição         │
-│  • 01-plano-acao.md      → PRD detalhado            │
+│  • 00-requisito.md → requisito bruto (verbatim)     │
+│    - Decomposição em cláusulas RQ-## + Estado       │
+│    - Perguntas ao Solicitante · Premissas (P-nn)    │
+│  • Entrevista em três raias (step 4):               │
+│    - fato: o agente descobre, não pergunta          │
+│    - desenho: o desenvolvedor decide                │
+│    - requisito: o solicitante responde; RQ aberta   │
+│      bloqueia o passo que a implementaria           │
+│  • 01-plano-acao.md → PRD detalhado                 │
 │    - Natureza da wiki + Cobertura do Requisito      │
 │    - Autorização, Rotas, Env, Eventos, Jobs         │
 │    - Impacto, Rollback, Dependências, Riscos        │
 │    - Logs em todas as etapas (channel + padrão)     │
-│  • 02-decisoes-arquiteturais.md → formato ADR       │
-│  • 03-progresso.md       → checklist + Blockers     │
-│  • Revisão profunda pós-escrita                     │
-│  • Auditoria da wiki: /ponytail:ponytail-review     │
+│  • 02-decisoes-arquiteturais.md → ADR só com os     │
+│    três portões (zero ADR é resultado válido)       │
+│  • 03-progresso.md → checklist + Blockers           │
+│  • wikis/glossario.md → termo decidido na feature   │
+│  • Revisão profunda pós-escrita (step 5)            │
+│  • Auditoria: /ponytail:ponytail-review (step 6)    │
 │  • Confirmar plano com usuário                      │
-│  ⚠️ Caveman OFF nos arquivos wiki                  │
+│  ⚠️ Caveman OFF nos arquivos wiki                   │
 └──────────────────────┬──────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  2. ESPECIFICAR TESTE (feature-test-design)         │
+│  ESPECIFICAR TESTE (feature-test-design, step 7)    │
 │  ─────────────────────────────────                  │
-│  • Invocada no step 4 da wiki                       │
+│  • Invocada no step 7, depois dos cortes do         │
+│    Ponytail (o 04 não herda o que foi cortado)      │
 │  • Entrada: 00-requisito.md é o ORÁCULO             │
 │    - o PRD entra só para path, rota e superfície    │
 │  • Perfil por risco (P×I) → mínimo/padrão/completo  │
 │  • Varredura SFDIPOT (7 dimensões declaradas)       │
 │  • Mapa de regras: regra / exemplo / pergunta       │
+│  • Costuras de teste: onde cada grupo de CT se      │
+│    prende (confirmadas pelo desenvolvedor)          │
 │  • Técnica formal POR REGRA:                        │
 │    - partição · valor limite 3-valores              │
 │    - tabela de decisão · estado × operação          │
@@ -639,22 +753,42 @@ A partir de agora, para cada feature nova:
 │  • Checklist de taxonomia (IDOR, idempotência,      │
 │    concorrência, timezone, soft delete, monetário)  │
 │  • Cenários em Gherkin pt-BR (Regra → Cenário)      │
-│  • GATE: toda regra declara os mutantes plausíveis  │
-│    e aponta o cenário que mata cada um              │
+│  • RQ aberta: sem cenário até a resposta            │
+│  • GATE: todo mutante plausível aponta o cenário    │
+│    e a asserção que o mata, em todo perfil          │
 │  • Camada mais barata que prova + poda              │
-│  • Revisão adversarial por sub-agente independente  │
+│  • Revisão adversarial por sub-agente cego          │
 │  → 04-casos-de-teste.md                             │
-│  → 05-casos-de-teste-browser.md (só o que exige     │
-│     navegador: JS, console, a11y, cor/layout)       │
+│  → 05-casos-de-teste-browser.md (só se alguma       │
+│     costura é browser: JS, console, a11y, cor)      │
 └──────────────────────┬──────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  3. EXECUTAR (Ponytail)                             │
+│  FATIAR (feature-tickets, step 8 — CONDICIONAL)     │
+│  ─────────────────────────────────                  │
+│  • Só quando o plano não cabe numa sessão           │
+│    (18+ RQ ou 60+ CT, sessão compactada, mais de 30 │
+│    perguntas, refatoração larga — hipóteses)        │
+│  • O step 8 sugere; só o usuário invoca:            │
+│    /feature-tickets {wiki}                          │
+│  • Quiz de granularidade → 07-tickets/NN-slug.md    │
+│    (RQ + CT que ficam verdes + passos + bloqueio)   │
+│  • Um ticket por sessão nova:                       │
+│    /feature-tickets {wiki} {NN}                     │
+│  • Quadro por script: 07-tickets/README.md,         │
+│    wikis/specs/INDEX.md, indice.sh --status         │
+│  • Cabe numa sessão → "Não fatiado" no 03           │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│  EXECUTAR (Ponytail)                                │
 │  ─────────────────────────────────                  │
 │  • Ponytail ativo em modo full (padrão)             │
 │  • Caveman ativo (ultra) na comunicação c/ usuário  │
 │  • Seguir o 01-plano-acao.md passo a passo          │
+│    (ou só o ticket da sessão, quando fatiado)       │
 │  • Aplicar a escada de simplicidade em cada passo:  │
 │    - Reutilizar antes de criar                      │
 │    - Stdlib antes de código custom                  │
@@ -666,24 +800,25 @@ A partir de agora, para cada feature nova:
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  4. REVISAR (Ponytail-review)                       │
+│  REVISAR (Ponytail-review)                          │
 │  ─────────────────────────────────                  │
-│  • /ponytail:ponytail-review no diff atual           │
+│  • /ponytail:ponytail-review no diff atual          │
 │  • Receber lista de cortes: delete, stdlib, native, │
 │    yagni, shrink                                    │
 │  • Aplicar cortes sugeridos                         │
-│  • /ponytail:ponytail-audit se quiser varrer o repo  │
-│  • /ponytail:ponytail-debt para coletar atalhos      │
+│  • /ponytail:ponytail-audit se quiser varrer o repo │
+│  • /ponytail:ponytail-debt para coletar atalhos     │
 └──────────────────────┬──────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  5. TESTAR E COMMITAR                               │
+│  TESTAR E COMMITAR                                  │
 │  ─────────────────────────────────                  │
 │  • Rodar testes dos CTs (04-casos-de-teste.md)      │
 │  • vendor/bin/pint --dirty                          │
 │  • vendor/bin/pest --filter={Feature} --compact     │
-│  • vendor/bin/pest tests/Browser (se houver CT-B)   │
+│  • vendor/bin/pest tests/Browser --filter={Feature} │
+│    (se houver CT-B)                                 │
 │  • vendor/bin/pest --tia → confirma impacto real    │
 │  • Commit com gitmoji + escopo                      │
 │  • :memo: wiki: atualiza 03-progresso.md            │
@@ -691,21 +826,26 @@ A partir de agora, para cada feature nova:
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  5.5 REVISAR O DIFF (feature-wiki, step 6.5)        │
+│  REVISAR O DIFF (feature-wiki, step 9)              │
 │  ─────────────────────────────────                  │
-│  • Logo após os testes passarem, antes do step 7    │
+│  • Logo após os testes passarem, antes do step 10   │
 │  • /code-review high {base}...HEAD (genérico)       │
 │  • fw-revisor-diff (opus, sem Edit/Write): eixos    │
-│    Laravel/Livewire/tenant — CEGO ao PRD: não vê    │
-│    01, 03 nem o raciocínio da sessão                │
-│  • Achado confirmado → Adendo · CT · correção       │
-│  • Ordem fixa: 6.5 → 7 → 8 → PR                     │
+│    Laravel/Livewire/tenant — CEGO ao PRD: o diff    │
+│    chega sem wikis/, e o hook nega ler 01 e 03      │
+│  • Achado confirmado:                               │
+│    - o solicitante não escreveu → P-nn → CT → fix   │
+│    - viola RQ existente → CT (Origem RQ) → fix      │
+│  • Ordem fixa: 9 → 10 → 11 → PR                     │
 └──────────────────────┬──────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  6. PÓS-IMPLEMENTAÇÃO (feature-wiki, step 7)        │
+│  PÓS-IMPLEMENTAÇÃO (feature-wiki, step 10)          │
 │  ─────────────────────────────────                  │
+│  • Scripts, saída vazia = OK: rastreabilidade,      │
+│    checkbox, citações, IDs de CT, rules × diff      │
+│    (+ indice.sh --check, se fatiado)                │
 │  • Atualizar 03-progresso.md (checkboxes + data)    │
 │  • CT-B via sub-agente em loop (máx. 3 iterações)   │
 │    - Preencher Desenhado × Implementado             │
@@ -716,32 +856,42 @@ A partir de agora, para cada feature nova:
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  7. VALIDAR (feature-quality-gate, step 8)          │
+│  VALIDAR (feature-quality-gate, step 11)            │
 │  ─────────────────────────────────                  │
 │  • Confronta 00-requisito × PRD × app rodando       │
 │  • Audita ambiguidades do requisito PRIMEIRO        │
 │  • Matriz de Rastreabilidade → omissão silenciosa   │
+│    (RQ, P-nn e, se fatiado, a coluna Ticket)        │
 │  • 12 dimensões (perfil por risco: mín/padrão/full) │
+│  • Dimensão não verificada → teto APROVADO COM      │
+│    DÉBITO (APROVADO só no perfil Completo)          │
 │  • Roteia achado: especificação | código | teste    │
 │  • Escreve 06-relatorio-qa.md + veredito            │
-│  • Veredito APROVADO → abrir o PR e linkar a wiki   │
+│  • Veredito → abrir o PR e linkar a wiki            │
 │  ⚠️ NÃO corrige nada · teto de 3 ciclos             │
 └──────────────────────┬──────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│  8. MEMORIZAR (requirement-to-rule, step 9)         │
+│  MEMORIZAR (requirement-to-rule, step 12)           │
 │  ─────────────────────────────────                  │
-│  • Varrer ADRs + Notas + PRD por candidatos a rule  │
-│  • Aplicar os 4 gates: durável, escopável,          │
-│    não-inferível, não-redundante                    │
-│  • Preferir enforcement (arch() do Pest) à prosa    │
-│  • APRESENTAR ao usuário — decisão é dele           │
+│  • Dona única do step: coleta candidatos em ADRs,   │
+│    Notas, PRD e taxonomia do 04                     │
+│  • 4 gates: durável, escopável, não-inferível       │
+│    (3 arquivos irmãos lidos), não-redundante        │
+│  • Preferir enforcement: arch() gerado e provado    │
+│    (prova-arch.sh) em vez de prosa                  │
+│  • UM prompt de aprovação — a decisão é do usuário  │
 │  • Se aprovado: gravar via record-rule (Boost)      │
-│  • Commitar .ai/rules/ (artefato de equipe)         │
+│  • Commit na branch do PR já aberto                 │
+│  • Poda: rule n.a./violada em 3 features seguidas   │
 │  ⚠️ Teto: 3 candidatos apresentados                 │
 └─────────────────────────────────────────────────────┘
 ```
+
+Os steps são os da `feature-wiki` 4.0.0. Wiki escrita com a 3.x cita a numeração antiga — a
+correspondência está no README dela, em
+[Numeração dos steps — 3.x → 4.0.0](.ai/skills/feature-wiki/README.md#numeração-dos-steps--3x--400).
 
 #### 5. Referenciar o Ponytail e o Caveman no PRD da feature-wiki
 
@@ -816,20 +966,21 @@ Padrão de log             /ponytail:ponytail-debt    Boundary: wiki/code
 Revisão pós-escrita                              /commits = prosa normal
 03-progresso.md tracking
 
-feature-test-design
-─────────────────
-Deriva do REQUISITO, nunca do plano
-SFDIPOT · mapa de regras · técnica formal
-Gate: mutante previsto → cenário que mata
-Gherkin pt-BR · camada mais barata que prova
-Revisão adversarial por sub-agente
+feature-test-design                          feature-tickets (condicional)
+─────────────────                            ─────────────────
+Deriva do REQUISITO, nunca do plano          Só quando não cabe numa sessão
+SFDIPOT · costuras · técnica formal          Ticket = RQ + CT do 04 + passos
+Gate: mutante → cenário e asserção que mata  Um ticket por sessão nova
+Gherkin pt-BR · camada mais barata que prova Quadro gerado por script
+Revisão adversarial por sub-agente cego      Só o usuário invoca
 
 feature-quality-gate               requirement-to-rule
 ─────────────────                  ─────────────────
 Requisito × plano × app rodando    Decisão da wiki → .ai/rules/
-Omissão silenciosa (Matriz)        4 gates + aprovação do usuário
+Omissão silenciosa (Matriz)        4 gates + um prompt de aprovação
 12 dimensões, perfil por risco     Gravado via record-rule (Boost)
-Dimensão K: a suíte pega defeito?  Índice .ai/rules/index.md
+Dimensão K: a suíte pega defeito?  arch() gerado e provado
+Não verificado → teto COM DÉBITO   Índice .ai/rules/index.md
 Roteia: spec | código | teste
 Não corrige · teto de 3 ciclos
          │                    │                      │
@@ -849,11 +1000,12 @@ Este README é o índice da coletânea. O detalhe de cada skill vive com ela:
 
 | Documento | O que você encontra |
 |---|---|
-| [**feature-wiki**](.ai/skills/feature-wiki/README.md) | por que a skill existe e o que entrega, os arquivos da wiki (00 a 06), quando usar, dependências com versão mínima e o que degrada sem cada uma, instalação dos agentes, como ela está organizada (`SKILL.md` × `references/` × `agents/`), limites, e o porquê das escolhas: sub-agentes no Claude Code, requisito verbatim (card colado, `.pdf`/`.docx`/`.md`), arquivo próprio para teste de browser, `search-docs` como primeira fonte |
-| [**feature-test-design**](.ai/skills/feature-test-design/README.md) | o problema medido (a auditoria de 9 wikis reais, em [O que a auditoria mediu](.ai/skills/feature-test-design/README.md#o-que-a-auditoria-mediu)), o pipeline de 8 passos (0 a 7), **por que Gherkin sem runner**, por que uma skill separada da `feature-wiki`, a camada de componente Livewire que faltava, onde estão os fatos do `pest-plugin-browser` ([`references/pest-plugin-browser.md`](.ai/skills/feature-test-design/references/pest-plugin-browser.md), fonte única da coletânea), o que foi medido (com link para [`experimentos/`](experimentos/README.md#histórico)), o que a skill não faz e dependências |
+| [**feature-wiki**](.ai/skills/feature-wiki/README.md) | por que a skill existe e o que entrega, os arquivos da wiki (00 a 06), quando usar, dependências com versão mínima e o que degrada sem cada uma, como chamar os tickets de uma feature fatiada, a numeração dos steps 3.x → 4.0.0, instalação dos agentes, o hook dos agentes e o teste dele, como ela está organizada (`SKILL.md` × `references/` × `scripts/` × `agents/`), limites, e o porquê das escolhas: sub-agentes no Claude Code, entrevista em três raias, requisito verbatim (card colado, `.pdf`/`.docx`/`.md`), arquivo próprio para teste de browser, `search-docs` como primeira fonte |
+| [**feature-test-design**](.ai/skills/feature-test-design/README.md) | o problema medido (a auditoria de 9 wikis reais, em [O que a auditoria mediu](.ai/skills/feature-test-design/README.md#o-que-a-auditoria-mediu)), o pipeline de 8 passos (0 a 7), costuras de teste e perguntas em raias, **por que Gherkin sem runner**, por que uma skill separada da `feature-wiki`, a camada de componente Livewire que faltava, onde estão os fatos do `pest-plugin-browser` ([`references/pest-plugin-browser.md`](.ai/skills/feature-test-design/references/pest-plugin-browser.md), fonte única da coletânea), o que foi medido (com link para [`experimentos/`](experimentos/README.md#histórico)), o que a skill não faz e dependências |
 | [**feature-quality-gate**](.ai/skills/feature-quality-gate/README.md) | quando usar, o que ela entrega (omissão silenciosa, veredito, destino por achado), limites, dependências com versão mínima, instalação do sub-agente **e** o estudo de viabilidade completo: pesquisa de mercado, lacuna verificada, achados técnicos e critério eliminatório |
-| [**requirement-to-rule**](.ai/skills/requirement-to-rule/README.md) | por que existe (wiki da feature × rule × guideline), quando usar e quando não usar, relação com o `infer-conventions`, limites, dependências com versão mínima; gates, escada, índice e modelo da rule ficam no `SKILL.md` |
-| [**CHANGELOG.md**](CHANGELOG.md) | histórico de evolução das quatro skills, com versionamento independente e convenção de tags |
+| [**requirement-to-rule**](.ai/skills/requirement-to-rule/README.md) | por que existe (wiki da feature × rule × guideline), quando usar e quando não usar, relação com o `infer-conventions`, limites, dependências com versão mínima; gates, escada, prova do `arch()`, índice, poda e modelo da rule ficam no `SKILL.md` e em `references/` |
+| [**feature-tickets**](.ai/skills/feature-tickets/README.md) | por que existe (a unidade de planejamento), quando usar, **[como chamar](.ai/skills/feature-tickets/README.md#como-chamar)** — todas as invocações, com o que faz, quando usar, quem invoca, custo e saída real, e as duas formas de ver o status lado a lado —, o que ela entrega, a diferença para a `/to-tickets`, limites e dependências |
+| [**CHANGELOG.md**](CHANGELOG.md) | histórico de evolução das cinco skills, com versionamento independente e convenção de tags |
 
 ---
 

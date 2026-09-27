@@ -1,4 +1,4 @@
-> Referência da feature-wiki 3.6.0. Lida em: step 3 (versão do Pest), implementação (`--tia` e `--agent` a cada passo) e step 7 / Verificação Final (`--tia`, `--mutate`). Fonte única de: instalação, TIA, agent plugin, lançador `.cmd` do Windows e demais recursos do Pest 5.
+> Referência da feature-wiki 4.0.0. Lida em: step 3 (versão do Pest), implementação (`--tia` e `--agent` a cada passo) e step 10 / Verificação Final (`--tia`, `--mutate`). Fonte única de: instalação, TIA, agent plugin, por quê e uso do lançador `scripts/pestw.cmd` do Windows e demais recursos do Pest 5.
 
 # Execução de Testes com Pest 5
 
@@ -19,25 +19,32 @@ Vindo de Pest 4: `"pestphp/pest": "^5.0"` no `composer.json` + todos os plugins 
 ## `pest --mutate` no Windows — o lançador `.cmd`
 
 - **`pest --mutate` dá 100 % falso no Windows.** O plugin relança `argv[0]` (`vendor/bin/pest`,
-  script sh) por Symfony Process; o `cmd` não o executa, o subprocesso sai com código 1 em ~30 ms e
+  proxy sem extensão — script sh ou PHP, conforme a versão do Composer; o 2.9.5 gera o PHP) por
+  Symfony Process; o `cmd` não executa arquivo sem extensão, o subprocesso sai com código 1 em ~30 ms e
   o plugin conta **qualquer** saída não-zero como mutante morto. Sintoma: *206 mutantes em 3 s*
   para uma suíte de 200 s — e o juiz cego caiu nisso também (*"2 mutantes, 100 %"*). Regra:
   **score só vale com `Duration` compatível com N × tempo dos testes cobridores e com a lista de
-  sobreviventes.** No Windows, lançar por um `.cmd` poliglota na raiz do projeto, para que
-  `argv[0]` seja executável pelo `cmd`:
+  sobreviventes.** No Windows, lançar pelo `.cmd` poliglota que vem com a skill,
+  `{skills}/feature-wiki/scripts/pestw.cmd`, para que `argv[0]` seja executável pelo `cmd`. Ele acha
+  o Pest pelo diretório corrente (`getcwd()`), então roda na raiz do projeto sem cópia e sem path fixo:
 
-  ```
-  <?php /*
-  @echo off
-  php "%~f0" %*
-  exit /b %errorlevel%
-  */ require __DIR__.'/vendor/pestphp/pest/bin/pest';
+  ```bash
+  XDEBUG_MODE=coverage cmd //c "$(cygpath -w {skills}/feature-wiki/scripts/pestw.cmd)" tests/Feature/{Feature} --mutate --path=app/Models/X.php --covered-only --parallel
   ```
 
-  `XDEBUG_MODE=coverage cmd //c pestw.cmd tests/Feature/{Feature} --mutate --path=app/Models/X.php --covered-only --parallel`
-  — medido de verdade na feature de referência: 206 mutantes, 196 mortos, 7 timeout,
-  3 sobreviventes (context de log), 98,54 % em 594 s. Timeout conta como morto no score; listar
-  os sobreviventes é o que vale
+  O `cygpath -w` é obrigatório no Git Bash. O `cmd` lê a `/` como início de opção: com `{skills}`
+  relativo (`.ai/skills/`), `cmd //c ".ai/skills/…/pestw.cmd"` falha com *"'.ai' não é reconhecido
+  como um comando interno"*. E o nome solto (`cmd //c pestw.cmd`) não é procurado na pasta corrente
+  quando `NoDefaultCurrentDirectoryInExePath` está definida, como no Bash do Claude Code. Com
+  contrabarra ou path absoluto, roda (conferido em 2026-09-27 com um `vendor/bin/pest` falso).
+
+  No PowerShell: `$env:XDEBUG_MODE='coverage'; & "{skills}\feature-wiki\scripts\pestw.cmd" …`, mesmos
+  argumentos. Como o arquivo funciona, o eco da 1ª linha no `cmd` e o código 255 fora da raiz do
+  projeto estão no cabeçalho dele. Medido de verdade na feature de referência (com o lançador na raiz
+  e `require __DIR__`, a versão anterior ao arquivo da skill): 206 mutantes, 196 mortos, 7 timeout,
+  3 sobreviventes (context de log), 98,54 % em 594 s. Timeout conta como morto no score; listar os
+  sobreviventes é o que vale. `--path=` é o filtro verificado; `--class=` é o fallback se a versão
+  instalada do Pest não aceitar `--path`
 
 ### TIA — Test Impact Analysis (`--tia`)
 

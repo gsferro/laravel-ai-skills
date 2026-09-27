@@ -1,11 +1,12 @@
-> Referência da feature-test-design 1.15.0. Lida em: passo 4 (percorrer a tabela inteira, uma vez
+> Referência da feature-test-design 1.16.0. Lida em: passo 4 (percorrer a tabela inteira, uma vez
 > por feature, e dar a cada gatilho presente o ID do cenário que o mata). Fonte única de: a tabela de
 > gatilhos da taxonomia de defeito.
 
 # Taxonomia de defeito — gatilho × cenário obrigatório (passo 4)
 
 A obrigação de percorrer a tabela, as três respostas válidas e o critério de `não se aplica` estão
-no `SKILL.md` §Passo 4. O caso que originou as três linhas de superfície Livewire está em
+no `SKILL.md` §Passo 4; a coluna `Grupo` do checklist no `04` (a linha de `## Costuras de Teste` onde
+vive cada CT), nas costuras que fecham o passo 2. O caso que originou as três linhas de superfície Livewire está em
 `references/casos-medidos.md` §Passo 4.
 
 | Gatilho na feature | Cenário obrigatório |
@@ -36,5 +37,8 @@ no `SKILL.md` §Passo 4. O caso que originou as três linhas de superfície Live
 | cenário cujo `Então` é 4xx, 5xx ou redirect | **a saída**: para onde o usuário vai depois — ver *Todo estado de erro declara a saída* em `references/tecnicas-por-regra.md` |
 
 > Esta tabela é **viva**: todo defeito que escapou para produção e gerou retrabalho deve virar
-> uma linha aqui, no `.ai/rules/` do projeto. Taxonomia alimentada pelo histórico do próprio
+> uma linha nova no checklist de taxonomia do `04`. Taxonomia alimentada pelo histórico do próprio
 > projeto é o item de maior alavancagem do pipeline inteiro.
+
+A linha só chega a `.ai/rules/` se passar na definição *Vale virar rule* da `requirement-to-rule`
+(step 12 da `feature-wiki`), que decide e grava; esta skill não grava rule (`SKILL.md` §Passo 4).

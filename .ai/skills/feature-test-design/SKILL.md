@@ -6,11 +6,12 @@ description: >
   asserção depende do navegador, o 05-casos-de-teste-browser.md. Pipeline: perfil de
   risco, varredura SFDIPOT, mapa de regras, técnica formal por regra, taxonomia de
   defeito, cenários em Gherkin pt-BR e gate de falsificabilidade por mutantes,
-  fechado com pest --mutate e revisão adversarial. Invoque no step 4 da feature-wiki,
-  antes de implementar; quando o feature-quality-gate rotear um achado para o
-  destino 3 (teste); ao escrever o teste de regressão de um bug de produção; para
-  cobrir código legado sem wiki; quando pest --mutate deixar mutante sobrevivente.
-  Palavras-chave: casos de teste, CT, CT-B, Gherkin, mutantes, pest --mutate,
+  fechado com pest --mutate e revisão adversarial. Invoque no step 7 da feature-wiki,
+  antes de implementar; quando um achado de revisão virar premissa P-nn ou o
+  feature-quality-gate rotear um achado para o destino 3 (teste); ao escrever o teste
+  de regressão de um bug de produção; para cobrir código legado sem wiki; quando
+  pest --mutate deixar mutante sobrevivente.
+  Palavras-chave: casos de teste, CT, CT-B, costuras de teste, Gherkin, mutantes, pest --mutate,
   partição, valor limite, tabela de decisão, estado × evento, IDOR, idempotência,
   superfície Livewire, Filament, Pest, Laravel.
 license: MIT
@@ -23,8 +24,8 @@ compatibility: >
   general-purpose com model opus); sem ele, lacuna declarada no 04, nunca
   autorrevisão.
 metadata:
-  version: "1.15.0"
-  requires: "feature-wiki>=3.5.2"
+  version: "1.16.0"
+  requires: "feature-wiki>=4.0.0"
 ---
 
 # Feature Test Design — Do Requisito ao Caso de Teste que Mata Defeito
@@ -33,7 +34,9 @@ metadata:
 
 | Sigla | Significado |
 |-------|-------------|
-| **RQ** | Cláusula de requisito — unidade numerada do `00-requisito.md` |
+| **RQ** | Cláusula de requisito — unidade numerada do `00-requisito.md`. `RQ` `aberta — Qn` espera resposta do solicitante e não tem cenário |
+| **P-nn** | Premissa de `## Premissas` do `00`: o que a feature assume sem o solicitante ter escrito (nasce de achado confirmado de revisão). Origem de CT como a `RQ` |
+| **Costura** | Onde um grupo de CT se prende ao sistema: `unit de regra` · `Pest feature HTTP` · `componente Livewire/Filament` · `browser`. **`Pest feature HTTP`** = teste em `tests/Feature` com a aplicação de pé — por HTTP **ou** chamando action/service/model direto ("por fora do componente") |
 | **Regra** | Uma regra de negócio verificável extraída de uma ou mais `RQ`. É o `Regra:` do Gherkin |
 | **CT** | Caso de Teste — um `Cenário:` do Gherkin, com ID |
 | **CT-B** | Caso de Teste de Browser |
@@ -42,7 +45,7 @@ metadata:
 | **SFDIPOT** | Structure, Function, Data, Interfaces, Platform, Operations, Time |
 | **Mutante** | Implementação errada plausível. O CT que "mata" o mutante é o que falharia se ela existisse |
 | **MSI** | Mutation Score Indicator — % de mutantes mortos (`pest --mutate`) |
-| **`{skills}`** | Diretório onde as skills estão instaladas: `.ai/skills/` (Boost), `.claude/skills/` (espelho local) ou `~/.claude/skills/` (global); use o primeiro que existir. `{skills}/feature-wiki/references/` existe desde a `feature-wiki` 3.6.0; numa versão anterior, o mesmo texto está na seção *Execução de Testes com Pest 5* do `SKILL.md` dela |
+| **`{skills}`** | Diretório onde as skills estão instaladas: o primeiro dos três — `.ai/skills/` (Boost), `.claude/skills/` (espelho local), `~/.claude/skills/` (global) — que **contém a skill citada** (`.ai/skills/` pode existir sem ela). É a resolução do hook `guarda-subagente.sh` |
 
 ## Índice
 
@@ -58,8 +61,8 @@ metadata:
 | [`tecnicas-por-regra.md`](references/tecnicas-por-regra.md) | 3 | desenvolvimento, tabelas e exemplos das regras de execução |
 | [`taxonomia-de-defeito.md`](references/taxonomia-de-defeito.md) | 4 | tabela gatilho × cenário obrigatório |
 | [`gherkin.md`](references/gherkin.md) | 5 | estrutura `Funcionalidade` → `Regra` → `Cenário`, exemplos de `Esquema do Cenário` |
-| [`template-04.md`](references/template-04.md) | 6, 7, arquivo 04, pós | template do `04`, tabela de mutantes, cogitado e cortado, teste de arquitetura de IDs |
-| [`escolha-de-camada.md`](references/escolha-de-camada.md) | 7 | cenário → camada → API; helpers `@deprecated` do Filament |
+| [`template-04.md`](references/template-04.md) | 2, 6, 7, arquivo 04, pós | template do `04`, formato ❓/➡️ das perguntas, costuras de teste, tabela de mutantes, cogitado e cortado, contagem por `grep -c`, teste de arquitetura de IDs |
+| [`escolha-de-camada.md`](references/escolha-de-camada.md) | 2 (costuras), 7 | cenário → camada → API; camada → valor de `Costura`; helpers `@deprecated` do Filament |
 | [`template-05.md`](references/template-05.md) | arquivo 05 | template do `05` |
 | [`pest-plugin-browser.md`](references/pest-plugin-browser.md) | arquivo 05 | fatos do plugin, comando, seletores, tema e cor — fonte única da coletânea |
 | [`armadilhas-de-api.md`](references/armadilhas-de-api.md) | 5, 7, arquivo 04 | fakes, assertions e helpers que invalidam CT |
@@ -101,30 +104,41 @@ exemplos. Escrever cenário direto produz variações do mesmo eixo e buracos no
 
 ### 5. Ambiguidade é pergunta, não caso inventado
 
-Regra que o requisito não determina não vira cenário com valor chutado. Vira pergunta
-registrada no `00-requisito.md` **e** um cenário marcado `@premissa` com a suposição explícita —
-para que, quando a resposta vier, se saiba exatamente o que muda — quando esta skill roda em
-sub-agente, as perguntas voltam como **saída** e a sessão principal as grava no `00`.
+Regra que o requisito não determina não vira cenário com valor chutado: vira pergunta ❓/➡️ com
+raia (formato em `references/template-04.md`) — **requisito** (o que o sistema faz; só o
+solicitante responde) ou **desenho** (como implementar; o desenvolvedor responde). A sessão leva as
+de requisito a `## Perguntas ao Solicitante` do `00`; em sub-agente, elas voltam como **saída**,
+numeradas `Q?1, Q?2…` — provisório: o `Qn` é uma sequência só da feature, nas três raias, e a
+sessão renumera ao gravar.
 
-**A suposição não é livre**: quando ela decide se o sistema aceita ou recusa, a direção é
-[falha fechado](references/tecnicas-por-regra.md#premissa-escopo-apaga-mecanismo-escolhe-comportamento-falha-fechado) e o
-invariante das duas leituras é afirmado no mesmo cenário. Não escrever o cenário nunca é a saída.
+**`RQ` aberta não tem cenário**: com `Estado` `aberta — Qn` no `00`, ou citada em `afeta:` de
+pergunta de requisito da derivação, ela entra no `04` como
+`RQ-nn — aberta (Qn), sem cenário até a resposta` — nenhum passo do `01` a implementa, e cenário
+sobre a suposição é requisito inventado com cara de confirmado ([estudo 2026-09-26](https://github.com/gsferro/laravel-ai-skills/blob/main/estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md) §2.3).
+**Premissa de comportamento** (o que o sistema faz quando o texto não diz) é pergunta da raia
+requisito, e a **➡️ não é livre**: recomenda
+[falha fechado](references/tecnicas-por-regra.md#premissa-escopo-apaga-mecanismo-escolhe-comportamento-falha-fechado)
+— a mesma regra da entrevista do step 4 da `feature-wiki` —, e o invariante das duas leituras, de
+cláusula fechada, vira cenário já. Premissa de **mecanismo** (raia desenho) não bloqueia: fixa o
+mecanismo do cenário, marcado `@premissa`.
 
 ---
 
 ## Quando Invocar
 
-- **Step 4 da `feature-wiki`**, depois do `00`/`01`/`02` e **antes** de implementar
+- **Step 7 da `feature-wiki`**, depois do `00`/`01`/`02` e da auditoria Ponytail (step 6), e **antes** de implementar
+- Quando um achado confirmado de revisão (steps 9 e 11 da `feature-wiki`) virar `P-nn` em `## Premissas` do `00`: o CT com origem `P-nn` nasce aqui, antes da correção
 - Quando o `feature-quality-gate` rotear um achado para **destino 3 — teste** ("escrever o CT que falha primeiro")
 - Ao escrever o teste de regressão de um **bug encontrado em produção**
 - Para cobrir **código legado** sem wiki (nesse caso a entrada é o comportamento acordado com o usuário, não o código)
 - Quando `pest --mutate` deixar mutante sobrevivente
+- Wiki de **refatoração larga** (`## Natureza da Wiki: refatoração`, step 7): além dos CT das `RQ`, que ficam verdes no contract, derivar os CT de **transição** — escrita dupla, um por lote de leitores, remoção do antigo —, com origem na `RQ` da refatoração; a `feature-tickets` os aloca em expand, migrate e contract
 
 ### Quando NÃO invocar
 
 - Sem requisito nem comportamento acordado — sem oráculo não há derivação, só transcrição do código
 - Para **corrigir** implementação: esta skill escreve especificação de teste, não conserta produto
-- Ajuste cosmético, bump de dependência, refactor sem mudança de comportamento
+- Ajuste cosmético, bump de dependência, refatoração pequena e interna já coberta por teste verde
 
 ---
 
@@ -132,7 +146,8 @@ invariante das duas leituras é afirmado no mesmo cenário. Não escrever o cen�
 
 | Entrada | Obrigatória | Sem ela |
 |---|---|---|
-| `00-requisito.md` com cláusulas `RQ-##` | **sim** | pedir ao usuário. Nunca derivar do PRD |
+| `00-requisito.md` com cláusulas `RQ-##` e o `Estado` de cada uma, `## Premissas` (`P-nn`) e `## Perguntas ao Solicitante` | **sim** | pedir ao usuário. Nunca derivar do PRD |
+| `wikis/glossario.md` — vocabulário do domínio decidido nas features | se existir | o Gherkin usa o termo literal do `00`, sem sinônimo inventado |
 | `01-plano-acao.md` — `## Superfície de UI`, rotas, paths, stack | sim (no fluxo da wiki) | fora do fluxo da wiki, perguntar a superfície |
 | `02-decisoes-arquiteturais.md` — `## Superfície Livewire` | **sim**, sempre que a feature cria página, widget ou componente (pacote de terceiro é uma das origens, não a condição) | a superfície que o cliente realmente alcança fica fora do inventário — e é onde o defeito mora |
 | `.ai/rules/` do projeto | se existir | herdar convenção pelo código de teste existente |
@@ -178,13 +193,14 @@ que é exatamente o defeito que esta skill existe para evitar.
 
 ### Quando o `00-requisito.md` é somente leitura
 
-A skill obriga a devolver as perguntas novas para `## Ambiguidades e Perguntas Abertas` do `00`. Há casos em que isso
+A skill obriga a devolver as perguntas novas de raia requisito para `## Perguntas ao Solicitante` do `00`. Há casos em que isso
 não é possível: o `00` está fechado para edição, pertence a outra branch, ou está sendo usado como
 linha de base de comparação.
 
 Nesse caso: escrever as perguntas no próprio `04`, numa seção
 `## Perguntas para o 00-requisito.md`, **em bloco pronto para colagem** (mesmo formato da seção de
-destino), e **declarar o desvio** em uma linha. A pergunta continua bloqueando o que depende dela.
+destino), e **declarar o desvio** em uma linha. A pergunta continua bloqueando o que depende dela:
+a `RQ` que ela afeta é tratada como aberta.
 O que não pode acontecer é a pergunta morrer porque o arquivo de destino estava travado.
 
 ---
@@ -204,7 +220,7 @@ Antes de derivar qualquer coisa, pontuar **Probabilidade × Impacto** por área 
 
 | P×I | Perfil | O que rodar do pipeline |
 |---|---|---|
-| 1–3 | **mínimo** | passos 1, 2, 5, 6 — técnica só EP; 1 cenário por regra |
+| 1–3 | **mínimo** | passos 1, 2 (com as costuras), 5, 6 — técnica só EP; 1 cenário por regra |
 | 4–6 | **padrão** | passos 1–7, sem pairwise; BVA 2-valores; taxonomia só nos itens aplicáveis |
 | 7–9 | **completo** | passos 1–7 integrais; BVA 3-valores; tabela de decisão completa; 100% das células inválidas da tabela de estado; revisão adversarial |
 
@@ -247,14 +263,15 @@ silêncio não é.
 
 ### Passo 2 — Mapa de Regras (Example Mapping)
 
-Converter as cláusulas `RQ` em **Regras** verificáveis. Uma `RQ` pode gerar várias regras; uma
-regra pode atender várias `RQ`.
+Converter as cláusulas `RQ` fechadas e as `P-nn` vigentes em **Regras** verificáveis — a origem
+aceita `P-nn` como `RQ-nn`, porque achado confirmado de revisão vira premissa no `00` e CT antes da
+correção. Uma `RQ` pode gerar várias regras; uma regra pode atender várias `RQ`.
 
 | Cartão | O que é | Onde vai |
 |---|---|---|
 | 🟦 **Regra** | critério de aceite verificável | vira `Regra:` no `04` |
 | 🟩 **Exemplo** | caso concreto que ilustra a regra | vira `Cenário:` no `04` |
-| 🟥 **Pergunta** | o requisito não determina | vai para `## Ambiguidades e Perguntas Abertas` do `00-requisito.md` |
+| 🟥 **Pergunta** | o requisito não determina | vira ❓/➡️ com raia ([princípio 5](#5-ambiguidade-é-pergunta-não-caso-inventado)); a de requisito vai, pela sessão, a `## Perguntas ao Solicitante` do `00` |
 
 Sinais de leitura do mapa, antes de seguir:
 
@@ -264,6 +281,21 @@ Sinais de leitura do mapa, antes de seguir:
 
 > Só regras e exemplos entram no arquivo de casos de teste. Perguntas e história ficam fora —
 > mas perguntas **bloqueiam** o que dependem delas.
+
+#### Costuras de teste — fecham o passo 2, antes do primeiro cenário
+
+Em todo perfil, declarar `## Costuras de Teste` no `04` (template em `references/template-04.md`;
+camada → `Costura` em `references/escolha-de-camada.md`): uma linha por grupo, `Costura` do
+[Glossário](#glossário), **existente > nova** (a nova diz por quê). A proposta sai do que a regra
+(a `RQ`/`P-nn`) afirma, pela escada do [item 0 do passo 7](#passo-7--alocar-camada-e-podar) — não
+do `Então`, que ainda não existe. A derivação **propõe**; a sessão **confirma** com o desenvolvedor
+(raia desenho) antes do passo 5 — em sub-agente, a proposta volta com `Confirmada` vazia, e costura
+trocada re-deriva o grupo. **Todo cenário pertence a um grupo** (colunas `Grupo` e `Costura` do
+índice) e **toda linha da taxonomia com `CT-nn` ou lacuna aponta um grupo** (`não se aplica` leva
+`—`). **O `05` existe se e só se uma linha tem costura `browser`** ([gate](#gate--quando-criar)). O
+número de costuras não é meta. Por quê: a costura confirmada por quem conhece o arnês evita CT e
+CT-B duplicados, faz do gate do `05` uma consequência (estudo 2026-09-26 §3.4) e decide a camada de
+cada cenário — por isso vem antes deles.
 
 ### Passo 3 — Técnica formal por regra
 
@@ -305,13 +337,15 @@ desenvolvimento, a tabela e o exemplo de cada regra. A regra vale mesmo sem o ex
 - **Exemplo discriminante** — a implementação defeituosa produziria resultado diferente com este
   valor, este instante, este ambiente, este `Dado`?
 - **Lacuna fechada sem discriminar é piora** — provar em uma linha por que o cenário novo discrimina
-- **Premissa** — escopo apaga, mecanismo escolhe, comportamento falha fechado com o invariante das
-  duas leituras afirmado junto; mecanismo e comportamento nunca autorizam a não escrever o cenário
+- **Premissa** — escopo apaga; mecanismo escolhe (raia desenho, `@premissa`) e nunca autoriza a não
+  escrever o cenário; comportamento vira pergunta de requisito com a ➡️ por falha fechado, a `RQ`
+  fica aberta e sem cenário, e o invariante das duas leituras vira cenário da regra fechada
 - **Impossibilidade de arnês é hipótese** — tentar mudar o arnês; a lacuna declara o que foi tentado
 - **Afirmação negativa é hipótese até um `grep` prová-la** — toda negativa que **dispensa um
-  controle** entra na wiki com a mesma exigência de evidência que a positiva: `arquivo:linha` do
-  vendor — e, quando dispensa um controle de **fronteira** (escopo, autorização, trava de escrita),
-  também **um cenário escrito como se ela fosse falsa**
+  controle** entra na wiki com a mesma exigência de evidência que a positiva: `arquivo:símbolo:linha`
+  do vendor (formato da `feature-wiki`, *Citações de código*; `arquivo:linha` sem símbolo é achado
+  do `citacoes.sh`) — e, quando dispensa um controle de **fronteira** (escopo, autorização, trava
+  de escrita), também **um cenário escrito como se ela fosse falsa**
 - **Estado de erro declara a saída** — todo cenário cujo `Então` é 4xx, 5xx ou redirect ganha um
   par que afirma **um destino alcançável a partir dali**. Se não existir destino, o achado não é do
   teste — é de desenho, e volta para o `00` como pergunta
@@ -341,7 +375,8 @@ não a palavra "sim".
 > itens do checklist como cobertos (*"Idempotência: sim"*, *"Timezone: parcialmente coberto"*)
 > enquanto o defeito correspondente atravessava intacto. Item de checklist sem ID de cenário é
 > exatamente o "falso ✅" que faz o requisito parecer coberto. As três respostas válidas são:
-> **`CT-nn`**, **`não se aplica: {motivo}`** ou **`lacuna declarada: {o que foi tentado}`**.
+> **`CT-nn`**, **`não se aplica: {motivo}`** ou **`lacuna declarada: {o que foi tentado}`**. Item
+> que depende de `RQ` aberta responde `lacuna declarada: RQ-nn aberta (Qn)`.
 
 Abra [`references/taxonomia-de-defeito.md`](references/taxonomia-de-defeito.md) e percorra a tabela
 inteira — ela dá o cenário obrigatório de cada gatilho (IDOR, autorização na ação, idempotência,
@@ -349,7 +384,9 @@ concorrência, fronteira na gravação, cardinalidade 0/1/N, ausente ≠ `null` 
 timezone, soft delete, mass assignment, superfície Livewire — método público, propriedade pública
 sem `#[Locked]`, estado do framework —, IDOR e mass assignment **por tabela**, discriminante nulo…).
 **`não se aplica` que dispensa um controle é afirmação negativa**: segue a regra do `grep` do passo 3. O gatilho é
-a **superfície**, não a origem dela. Defeito que escapou para produção vira linha nova no `.ai/rules/`.
+a **superfície**, não a origem dela. Defeito que escapou para produção vira linha nova no checklist
+de taxonomia e candidato a rule pela definição *Vale virar rule* da `requirement-to-rule` (step 12) —
+nunca gravado direto em `.ai/rules/`: a definição de rule é uma só (estudo 2026-09-26 §8, item 10).
 
 ### Passo 5 — Escrever os cenários em Gherkin
 
@@ -374,6 +411,7 @@ Antes de nomear fake, assertion ou helper num cenário, abra também
 | **Cenário de recusa afirma o não-efeito, e nomeia quais.** "Recusado" sozinho não basta: afirmar que o estado **não** mudou e que **cada efeito que a operação dispara no caminho feliz** não aconteceu — notificação, histórico, trilha, job, contador. "Nenhum registro" genérico não é asserção | implementação que recusa **depois** de gravar, ou **depois** de avisar alguém, passa no cenário |
 | **`Dado` fixa a situação de partida** sempre que a entidade tem ciclo de vida — inclusive nos cenários positivos | cenário que aprova "uma solicitação criada por X" sem dizer que ela foi enviada: materializado, ele **certifica** a transição ilegal (ver [gate, item 6](#passo-6--gate-de-falsificabilidade-obrigatório)) |
 | **Nenhum termo de domínio não definido no `Então`** — use o campo, o estado ou o valor | `Então o aprovador da vez é o Rui` / `Então o acesso é concedido` (que é `assertOk` com outro nome) |
+| **Vocabulário do glossário**: termo de domínio é o de `wikis/glossario.md`; ausente dele, o literal do `00` — nunca sinônimo inventado | dois nomes para a mesma coisa: o cenário afirma um conceito que ninguém decidiu (estudo 2026-09-26 §2.5, item 4) |
 | **Título descreve o comportamento** | `Cenário: teste 3` / `Cenário: criar, editar e excluir` |
 | **Sem detalhe incidental** — só os dados que afetam a regra | dado mágico que invalida o cenário quando muda |
 | **Cenários independentes**, executáveis em qualquer ordem | cenário que só passa depois do anterior |
@@ -421,6 +459,10 @@ Antes de montar a tabela `#### Mutantes previstos`, abra [`references/template-0
    barrado — corrigido pela fixture, não podado
 8. **A legenda da matriz é verificada célula a célula**: cada `❌` afirma os efeitos que aquela
    operação dispara no caminho feliz. Legenda não conferida vale como célula **não resolvida**
+9. **Todo mutante preenche `Asserção que mata`, em todo perfil** (mínimo, padrão, completo): a
+   asserção ou o valor do CT que diverge sob ele (*linha `borda` (3, 3): "recusado"; o mutante
+   aceita*). Vazia = **gate não passou**; sem matador = `— (lacuna declarada)`. Por quê: sem ela,
+   "CT-nn mata M-nn" é afirmação de quem derivou os dois — gate autocertificado (estudo 2026-09-26 §7.3)
 
 ### Passo 7 — Alocar camada e podar
 
@@ -469,6 +511,9 @@ mutante vivo é pior que cenário a mais.
 4. **Registrar o que foi cortado.** Quando há mais candidatos que teto — o caso normal no `05`,
    onde o gate é generoso e o teto é apertado —, escrever uma tabela de **cogitado e cortado**
    (formato em [`references/template-04.md`](references/template-04.md)).
+5. **Conferir as costuras** do [passo 2](#costuras-de-teste--fecham-o-passo-2-antes-do-primeiro-cenário):
+   cada cenário cai na costura do seu grupo; o que o item 0 manda para outra camada muda de grupo
+   ou abre linha nova em `## Costuras de Teste`, que volta à confirmação da sessão.
 
 ### Precedência: Project Rule do projeto vence a skill
 
@@ -535,12 +580,14 @@ passa hoje e quebra no upgrade.
 
 Template: abra [`references/template-04.md`](references/template-04.md) antes de escrever. O que ele
 carrega vale mesmo adaptado: cabeçalho *"Derivado do requisito, não do plano"*; `## Perfil de
-Derivação` (P×I por área); contagem derivada do `## Índice de Cenários`; `## Varredura SFDIPOT`;
-`## Mapa de Regras` (área, `RQ` de origem, técnica); `## Fronteira com o Plano`; `## Setup Global`
-com situação de partida **por transições reais** — helper `{entidade}Em('{situacao}', [...])` em
-`tests/Pest.php` que chama a máquina de estados do domínio, nunca `situacao` gravada à força;
-Gherkin + `#### Mutantes previstos` por regra; `## Checklist de Taxonomia`; `## Índice de Cenários`
-(ID, regra, técnica, camada, arquivo, mata); `## Sem CT-B` quando o gate do `05` não passar.
+Derivação` (P×I por área) com a contagem por `grep -c`, nunca à mão; `## Varredura SFDIPOT`;
+`## Mapa de Regras` (área, origem `RQ`/`P-nn`, técnica), com uma linha por `RQ` aberta;
+`## Costuras de Teste`; `## Fronteira com o Plano`; `## Setup Global` com situação de partida
+**por transições reais** — helper `{entidade}Em('{situacao}', [...])` em `tests/Pest.php` que
+chama a máquina de estados do domínio, nunca `situacao` gravada à força;
+Gherkin + `#### Mutantes previstos` por regra, com `Asserção que mata`; `## Checklist de Taxonomia`
+com o grupo de cada linha; `## Índice de Cenários` (ID, regra, técnica, grupo, costura, arquivo, mata);
+`## Sem CT-B` quando nenhuma costura é `browser`.
 
 ---
 
@@ -550,11 +597,13 @@ Gherkin + `#### Mutantes previstos` por regra; `## Checklist de Taxonomia`; `## 
 
 ### Gate — quando criar
 
-Criar **somente** se houver linha em `## Superfície de UI` do PRD **e** o cenário afirmar sobre
-algo que **só o navegador prova**: JavaScript executado, console/erro de JS, acessibilidade,
-cor/tema, layout. Se o cenário puder ser provado por componente Livewire, ele pertence ao `04`.
+O `05` existe **se e só se** uma linha de `## Costuras de Teste` do `04` tem costura `browser`. E a
+linha `browser` só se justifica se houver linha em `## Superfície de UI` do PRD **e** o cenário
+afirmar sobre algo que **só o navegador prova**: JavaScript executado, console/erro de JS,
+acessibilidade, cor/tema, layout. Se o cenário puder ser provado por componente Livewire, ele
+pertence ao `04`, na costura `componente Livewire/Filament`.
 
-Se o gate não passar: **não criar o arquivo** e registrar no `04` a seção `## Sem CT-B` com o motivo.
+Sem costura `browser`: **não criar o arquivo** e registrar no `04` a seção `## Sem CT-B` com o motivo.
 
 Antes de qualquer CT-B, abra [`references/pest-plugin-browser.md`](references/pest-plugin-browser.md)
 (fatos do plugin, comando, seletores, tema e cor) e [`references/template-05.md`](references/template-05.md).
@@ -598,8 +647,8 @@ sobrevivente: abra [`references/mutation-testing.md`](references/mutation-testin
   `ls vendor/pestphp/`) — em 2026-09-21 as duas afirmações estavam na wiki e as duas eram falsas
 - **No Windows, `pest --mutate` dá 100 % falso** — o subprocesso que o `cmd` não executa conta como
   morto. **Score só vale com `Duration` compatível com N × tempo dos testes cobridores e com a
-  lista de sobreviventes**; lançar pelo `.cmd` poliglota (texto em
-  `{skills}/feature-wiki/references/pest-5.md`, §*`pest --mutate` no Windows — o lançador `.cmd`*)
+  lista de sobreviventes**; lançar pelo `.cmd` poliglota (arquivo `{skills}/feature-wiki/scripts/pestw.cmd`;
+  explicação em `{skills}/feature-wiki/references/pest-5.md`)
 - **`--testsuite=A --testsuite=B` só honra o último** — uma suíte por comando
 - **Confirmar que `pestphp/pest-plugin-mutate` está declarado no `composer.json`.** Ele costuma
   aparecer em `vendor/` como dependência transitiva do Pest 5 — o comando funciona por acidente da
@@ -633,7 +682,11 @@ Delegar a um **sub-agente que não derivou os cenários**, com o contrato de
 depois de `cp .ai/skills/*/agents/*.md .claude/agents/`) ou
 `general-purpose` com `model: opus` **explícito** — o mais forte disponível, porque classificar
 se um oráculo está correto é a tarefa em que modelos são comprovadamente piores do que em gerá-lo.
-A cegueira vem da construção: o sub-agente recebe **só** o que a linha `Entrada` (abaixo) lista, e o
+**Cegueira**: o sub-agente recebe **só** o que a linha `Entrada` (abaixo) lista. No `fw-adversario-ct`,
+Read e Grep fora dela são negados **por construção** pelo hook `PreToolUse` (perfil `adversario-ct`)
+— desde que o hook esteja instalado (`guarda-subagente.sh` da `feature-wiki` ≥ 4.0.0 em `{skills}`).
+Sem o script, o hook nega tudo: o agente devolve as leituras negadas e a sessão redespacha pela rota
+`general-purpose` com `model: opus` (cegueira de prompt). O
 orquestrador registra o disparo em `## Despachos` do `03`. Quem despacha o adversário e fecha os
 achados é a **sessão principal** — um sub-agente não despacha sub-agente; se a derivação rodou em
 sub-agente, ela devolve o `04` e a sessão dispara a revisão. Host sem sub-agente: **não**
@@ -644,7 +697,7 @@ Linhas do contrato que todo despacho carrega — inclusive pela rota `general-pu
 agente recusa o que não devia receber:
 
 ```text
-Entrada: 00-requisito.md + 04-casos-de-teste.md (e 05, se houver)
+Entrada: 00-requisito.md + 04-casos-de-teste.md (e 05, se houver; e wikis/glossario.md, se existir)
 NÃO receber: o PRD, o código, nem o raciocínio de quem derivou
 PROIBIDO: elogiar o conjunto, reescrever os cenários, dizer "está bom".
 ```
@@ -676,7 +729,7 @@ cujos achados ninguém fecha é teatro caro.
    escrever o nome de qualquer helper.
 6. **Não marcar regra como coberta** enquanto houver mutante previsto sem matador — declarar a lacuna.
 7. **Não empurrar para o browser** o que um teste de componente prova.
-8. **Não editar o `00-requisito.md`** a não ser para acrescentar pergunta em `## Ambiguidades e Perguntas Abertas`.
+8. **Não editar o `00-requisito.md`** a não ser para acrescentar pergunta em `## Perguntas ao Solicitante` e a marca `aberta — Qn` que ela põe na `RQ` afetada.
 9. **Não autorrevisar** o conjunto no perfil completo ou com Impacto 3.
 10. **Não usar cobertura de código como critério de suficiência.** "Todo método público tem ao
     menos 1 CT" e "cada branch tem um CT" são critérios sobre um código que **ainda não existe**
@@ -687,7 +740,8 @@ cujos achados ninguém fecha é teatro caro.
     implementação nasce **aqui** — Gherkin, regra, mutante — e só depois vira código de teste.
     O caminho inverso, teste escrito e "documentado depois", é a Proibição 1 com outro nome, e
     foi medido: oito IDs de CT só no arquivo de teste, todos derivados do código. Requisito novo
-    entra pelo **Adendo** do `00` (ver `feature-wiki`), não direto no teste.
+    entra pelo **Adendo** do `00`, e achado de revisão pela **premissa `P-nn`** (ver `feature-wiki`),
+    não direto no teste.
 12. **Não derivar CT de log.** Log não é cláusula do requisito; é saída observável do plano, e quem
     a confere é a dimensão D do quality gate. Exceção: requisito que pede trilha de auditoria —
     aí é `RQ`, e o cenário afirma o **registro**, não a linha de log.
@@ -699,14 +753,15 @@ cujos achados ninguém fecha é teatro caro.
 ### Derivação
 - [ ] Perfil de esforço definido por área, com P×I registrado
 - [ ] Varredura SFDIPOT preenchida; dimensão vazia **declarada** com motivo
-- [ ] Mapa de regras montado; toda `RQ` do `00` gerou ao menos uma regra ou uma justificativa
-- [ ] Perguntas em aberto replicadas no `00-requisito.md` e cenários dependentes marcados `@premissa`
+- [ ] Mapa de regras montado; toda `RQ` fechada e toda `P-nn` vigente do `00` gerou ao menos uma regra ou uma justificativa
+- [ ] Toda `RQ` aberta aparece como `RQ-nn — aberta (Qn), sem cenário até a resposta` — e nenhum cenário a afirma
+- [ ] Perguntas geradas no formato ❓/➡️ com raia (em sub-agente, numeração provisória `Q?n`, que a sessão renumera); as de requisito devolvidas para `## Perguntas ao Solicitante` do `00`
 - [ ] Técnica formal escolhida e **nomeada** por regra
 - [ ] BVA com o incremento do tipo certo (`0,01` em decimal, 1 dia em date)
 - [ ] Entidade com `status` → tabela **estado × evento**, com 100% das células inválidas no perfil completo
 - [ ] A matriz é **uma só** e é o produto cartesiano `todos os estados × todas as operações`, montada do enum e não do mapa de regras — com o **total de células declarado** e cada uma resolvida
 - [ ] Nenhuma premissa de **mecanismo** foi usada para apagar cenário — ela fixa qual escrever, e o mecanismo descartado virou lacuna declarada
-- [ ] Toda premissa de **comportamento** teve a direção fixada por **falha fechado**, com o invariante das duas leituras afirmado no mesmo cenário e a linha "se negado, CT-nn inverte" escrita
+- [ ] Toda premissa de **comportamento** (o que o sistema faz quando o texto não diz) virou pergunta da raia requisito com ➡️ por **falha fechado**, e o invariante das duas leituras virou cenário da regra fechada
 - [ ] Partições inválidas isoladas uma por cenário
 - [ ] Checklist de taxonomia percorrido item a item, com dispensa justificada
 
@@ -714,6 +769,7 @@ cujos achados ninguém fecha é teatro caro.
 - [ ] Cenários em Gherkin pt-BR: `Funcionalidade` → `Regra` → `Cenário`
 - [ ] Um único `Quando` por cenário; 3–5 passos; ator nomeado em 3ª pessoa
 - [ ] Todo `Então` afirma saída observável com valor concreto
+- [ ] Termos de domínio de `wikis/glossario.md` (se existir); termo ausente dele = literal do `00`, sem sinônimo
 - [ ] Todo cenário de entidade com ciclo de vida tem a **situação de partida fixada no `Dado`** — inclusive os positivos
 - [ ] Todo cenário de recusa afirma o não-efeito de **cada** efeito que a operação dispara no caminho feliz — nomeados, não "nenhum registro"
 - [ ] Todo `Então` de ausência tem, no `Dado`, o destinatário/alvo que tornaria o efeito possível
@@ -721,12 +777,14 @@ cujos achados ninguém fecha é teatro caro.
 
 ### Gate
 - [ ] **Toda regra declara ≥2 mutantes** (≥3 no perfil completo)
-- [ ] Todo mutante tem cenário matador **ou** lacuna declarada com motivo
+- [ ] Todo mutante tem cenário matador e `Asserção que mata` preenchida (em **todo** perfil) **ou** lacuna declarada com motivo
 - [ ] Cenário que não mata mutante nenhum foi cortado ou justificado
 - [ ] Nenhum **oráculo invertido** — cenário positivo sem situação de partida foi corrigido, não podado
 - [ ] Nenhuma asserção de ausência em mundo vazio — atomicidade provada com falha **depois** do ponto do efeito **e** destinatário real
 - [ ] Legenda da matriz conferida célula a célula contra os efeitos daquela operação
 - [ ] Cada cenário na camada mais barata que o prova
+- [ ] `## Costuras de Teste` declarada depois do mapa de regras e antes dos cenários: uma linha por grupo, `Costura` do enum, existente > nova, `Confirmada` pela sessão; todo cenário com `Grupo` e `Costura` no índice; toda linha da taxonomia com `CT-nn` ou lacuna aponta um grupo (`não se aplica` leva `—`)
+- [ ] `05` criado se e só se uma costura é `browser`; senão, `## Sem CT-B` no `04`
 - [ ] Toda regra de autorização e de validação de domínio tem **≥1 cenário por fora do componente de UI**
 - [ ] Teto do perfil respeitado, ou estouro justificado
 - [ ] Revisão adversarial executada por sub-agente independente (perfil completo ou Impacto 3)
@@ -736,12 +794,12 @@ cujos achados ninguém fecha é teatro caro.
 
 ### Pós-implementação
 - [ ] `pest --mutate --covered-only --path={escopo da feature}` executado — com **duração plausível** e sobreviventes listados (no Windows, via lançador `.cmd`); "sem driver/plugin" só com a prova negativa
-- [ ] CT cujo elemento foi cortado no step 6 da `feature-wiki` (filtro, ação, coluna) marcado `@obsoleto` com motivo e `~~` no índice — não apagado, não deixado órfão
+- [ ] CT cujo elemento foi cortado depois do step 7 da `feature-wiki` (achado do step 9 ou 11: filtro, ação, coluna) marcado `@obsoleto` com motivo e `~~` no índice — não apagado, não deixado órfão
 - [ ] CT novo que passa dos dois lados do `git stash`: reescrito, **ou** declarado "não falsificável nesta pilha" com o motivo (SQLite sem `VARCHAR`/`RESTRICT`)
 - [ ] Mutante sobrevivente traduzido em lacuna de derivação e convertido em cenário novo
 - [ ] Índice de cenários atualizado com o arquivo de teste real de cada CT
 - [ ] **Sincronia nos dois sentidos**: todo `[CT-nn]`/`[CT-Bnn]` do teste existe no `04`/`05`, e todo CT do índice aponta um teste existente ou declara "fundido em CT-nn"; linha de dataset nova existe como Exemplo no Gherkin
-- [ ] Contagem do cabeçalho (`Cenários: {n} · Mutantes: {n}`) recalculada por `grep -c` (nunca escrita à mão — ver feature-wiki 3.5.1)
+- [ ] Contagem do cabeçalho (`Cenários: {n} · Regras: {n} · Mutantes previstos: {n} · Sem matador: {n}`) recalculada pelos quatro `grep -c` de `references/template-04.md` §Contagem do cabeçalho (nunca escrita à mão — ver feature-wiki 3.5.1)
 
 **Teste de arquitetura sugerido** (um por projeto): falha com o `[CT-nn]` que existe só no teste ou só
 no `04`/`05` — código em [`references/template-04.md`](references/template-04.md).
@@ -752,9 +810,10 @@ no `04`/`05` — código em [`references/template-04.md`](references/template-04
 
 | Skill | Relação |
 |---|---|
-| `feature-wiki` | produz o `00`/`01`/`02` e invoca esta skill no step 4; esta devolve o `04` e o `05` |
+| `feature-wiki` | produz o `00`/`01`/`02` e invoca esta skill no step 7; esta devolve o `04`, o `05`, as perguntas e a proposta de costuras |
+| `feature-tickets` | aloca cada CT do `04` a um ticket; o campo **Costura** do ticket é uma linha de `## Costuras de Teste` |
 | `feature-quality-gate` | roteia achado de **destino 3** para cá; usa a Matriz de Rastreabilidade que os IDs desta skill sustentam |
 | `ponytail` | a poda do passo 7 é a escada de simplicidade aplicada a teste — sem cortar cobertura de risco |
-| `requirement-to-rule` | linha nova do checklist de taxonomia, vinda de defeito real do projeto, é candidata a rule |
+| `requirement-to-rule` | linha nova do checklist de taxonomia, vinda de defeito real do projeto, é candidata a rule pela definição *Vale virar rule* dela (step 12); esta skill não grava em `.ai/rules/` |
 
 > **Caveman**: o `04` e o `05` são **boundary** — prosa normal. Cenário ambíguo produz teste errado.

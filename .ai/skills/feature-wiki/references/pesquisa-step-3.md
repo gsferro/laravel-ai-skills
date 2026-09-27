@@ -1,4 +1,4 @@
-> Referência da feature-wiki 3.6.0. Lida em: step 3 (ao preencher a `## Superfície Livewire` e antes de escrever o PRD) e antes do step 6.5 (re-varredura da Superfície sobre o código final). Fonte única de: formato da linha e greps da Superfície Livewire; cobertura, uso e lacunas do `search-docs`.
+> Referência da feature-wiki 4.0.0. Lida em: step 3 (ao preencher a `## Superfície Livewire` e antes de escrever o PRD) e antes do step 9 (re-varredura da Superfície sobre o código final). Fonte única de: tabela das três origens da Superfície Livewire, formato da linha e greps; cobertura, uso e lacunas do `search-docs`.
 
 # Pesquisa do step 3 — tabelas e greps
 
@@ -7,12 +7,21 @@ anti-padrões do `search-docs`) ficam no corpo do `SKILL.md`.
 
 ## Superfície Livewire — formato e greps
 
-Uma linha por ponto, com a fronteira e a evidência:
+As três origens que o corpo manda inventariar, com o porquê de cada uma:
+
+| Origem | O que inventariar | Por que |
+|---|---|---|
+| **o código do projeto** | todo `public function` de Page, Widget ou componente Livewire; toda `public $` sem `#[Locked]` | método público de componente Livewire **é ação chamável pelo cliente**, e o retorno vai para o navegador; propriedade pública é escrita pelo cliente **entre requests** |
+| **o framework** | os arrays de estado que o framework publica e o seu código consome — `$filters` (`HasFilters`), `$pageFilters` (`InteractsWithPageFilters`), `$tableFilters`, `$tableSearch`, `$tableSortColumn` | são **entrada de usuário não validada** que vira `where`, índice de array e parse de data. O framework os declara `public` |
+| **o pacote de terceiro** | ações que recebem id/argumento do cliente, propriedades públicas e models que a feature persiste | ver os greps do pacote, abaixo |
+
+Uma linha por ponto, com a fronteira e a evidência. A evidência é `arquivo:símbolo:linha` (seção
+*Citações de código* do `SKILL.md`): o `citacoes.sh` confere a tabela no step 10 e acusa citação só com linha.
 
 | Ponto de entrada (vendor) | Alcançável por | Fronteira aplicada pelo projeto | Evidência |
 |---|---|---|---|
-| `Widget::find($arguments['widget'])` | `$wire.mountAction('deleteWidget', {widget: <id>})` | global scope `whereHas('pai')` | `vendor/{pkg}/src/Pages/X.php:962` |
-| `public ?int $currentDashboardId` | `$wire.set()` em qualquer request após o `mount()` | `#[Locked]` na subclasse do projeto | `vendor/{pkg}/src/Pages/X.php:71` |
+| `Widget::find($arguments['widget'])` | `$wire.mountAction('deleteWidget', {widget: <id>})` | global scope `whereHas('pai')` | `vendor/{vendor}/{pkg}/src/Pages/X.php:mountAction():962` |
+| `public ?int $currentDashboardId` | `$wire.set()` em qualquer request após o `mount()` | `#[Locked]` na subclasse do projeto | `vendor/{vendor}/{pkg}/src/Pages/X.php:$currentDashboardId:71` |
 
 **No código que a feature escreve** (sempre):
 

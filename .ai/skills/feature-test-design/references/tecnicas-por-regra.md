@@ -1,4 +1,4 @@
-> Referência da feature-test-design 1.15.0. Lida em: passo 3 (antes de aplicar a técnica a cada
+> Referência da feature-test-design 1.16.0. Lida em: passo 3 (antes de aplicar a técnica a cada
 > regra — o desenvolvimento, as tabelas e os exemplos de cada regra de execução). Fonte única de:
 > as regras de execução do passo 3.
 
@@ -223,7 +223,7 @@ um resultado diferente com este valor?** Se produz o mesmo, o exemplo é decorat
 | **canal do efeito** | "uma notificação foi enviada" | o **canal** que o requisito nomeia (`mail`, e não `database`) |
 | **valor do requisito parametrizado** | injetar o limite por `config()` em todo cenário | ao menos um cenário com o **número literal do requisito** |
 | **não-efeito** | "nenhuma notificação foi enviada" num mundo sem destinatário | o destinatário existe no `Dado` e o caminho feliz o notificaria |
-| **direção da premissa** | `@premissa` que assume "aceito" onde o requisito é silencioso | a direção vem da regra de **falha fechado**, e o invariante é afirmado junto |
+| **direção da premissa** | cenário que assume "aceito" onde o requisito é silencioso | nenhum cenário da direção até a resposta (a `RQ` fica aberta); a ➡️ recomenda **falha fechado**, e o invariante vira cenário já |
 
 As três últimas linhas são a versão não-numérica do valor redondo. **Persona colapsada** é o caso
 mais comum: quando o mesmo usuário é dono, aprovador e chamador, nenhuma barreira de identidade é
@@ -270,34 +270,44 @@ Três coisas diferentes andam com o mesmo nome:
 
 | Tipo de premissa | O que ela decide | Efeito legítimo no conjunto |
 |---|---|---|
-| **de escopo** | o comportamento **está fora** desta entrega (o agregado `Pedido` não existe) | o cenário é **inexpressável** → lacuna declarada + pergunta ao usuário |
-| **de mecanismo** | **como** o sistema faz o que o requisito pede (a exclusão é física; `ativo` é derivado; o valor vem por `config`) | o cenário **continua obrigatório** → a premissa só fixa em que mecanismo ele é escrito |
-| **de comportamento** | **se** o sistema aceita ou recusa algo que o requisito não decidiu (cadastrar cupom já vencido; percentual de 150; reduzir o limite abaixo dos usos feitos) | o cenário **continua obrigatório e afirmativo** → a direção vem da regra abaixo, e o invariante é afirmado junto |
+| **de escopo** | o comportamento **está fora** desta entrega (o agregado `Pedido` não existe) | o cenário é **inexpressável** → lacuna declarada + pergunta (raia requisito) |
+| **de mecanismo** | **como** o sistema faz o que o requisito pede (a exclusão é física; `ativo` é derivado; o valor vem por `config`) | o cenário **continua obrigatório** → a premissa (raia desenho) só fixa em que mecanismo ele é escrito, marcado `@premissa` |
+| **de comportamento** | **o que** o sistema faz quando o texto não diz: **se** aceita ou recusa algo que o requisito não decidiu (cadastrar cupom já vencido; percentual de 150; reduzir o limite abaixo dos usos feitos) | **pergunta da raia requisito** → a `RQ` fica `aberta — Qn`, sem cenário da direção até a resposta; a regra abaixo decide a **recomendação** (➡️), e o invariante vira cenário já. Mesma regra na entrevista do step 4 da `feature-wiki` e na derivação do step 7 |
 
-**A direção da premissa de comportamento é escolhida por regra, não por conveniência: falha
-fechado.** Quando o requisito não decide se um estado pode ser criado, e **outra cláusula do mesmo
-requisito já trata esse estado como inválido no uso**, a premissa é que a **gravação recusa**.
-Assumir "aceita" cria por decisão um estado que o sistema depois precisa saber tratar — e é a
-suposição que, quando erra, deixa o cenário **vermelho contra a implementação correta**.
+**A direção da premissa de comportamento — hoje, a recomendação (➡️) da pergunta de requisito — é
+escolhida por regra, não por conveniência: falha fechado.** Quando o requisito não decide se um
+estado pode ser criado, e **outra cláusula do mesmo requisito já trata esse estado como inválido no
+uso**, a recomendação é que a **gravação recuse**. Assumir "aceita" cria por decisão um estado que o
+sistema depois precisa saber tratar — e é a suposição que, quando erra, deixa o cenário **vermelho
+contra a implementação correta**.
 
-**E o invariante das duas leituras é afirmado no mesmo cenário**, porque ele vale qualquer que seja
+**E o invariante das duas leituras vira cenário já**, porque ele vale qualquer que seja
 a resposta: *seja qual for a decisão sobre gravar um cupom vencido, ele **não pode** ser aplicável*;
 *seja qual for a decisão sobre reduzir o limite abaixo dos usos, o contador **não** é corrigido e a
 trilha **não** é truncada*. O invariante é a parte do oráculo que nenhuma resposta à pergunta
-inverte — e é ela que impede a lacuna de virar cega.
+inverte — e é ela que impede a lacuna de virar cega. Ele vem de uma cláusula **fechada** (a
+aplicação, o total, a comparação de uso), e o cenário mora na regra dela, com origem nessa `RQ`.
 
-| Premissa de comportamento | Direção por falha fechado | Invariante a afirmar junto |
+| Pergunta de comportamento | ➡️ por falha fechado | Invariante — cenário já, na regra fechada |
 |---|---|---|
 | "cadastrar cupom já vencido é permitido?" | **recusa** — a cláusula da aplicação já trata o vencido como inválido | gravado por qualquer via, ele não é aplicável |
 | "percentual de 150 é erro ou desconto?" | **recusa** — o total não pode ficar negativo | aplicado, o desconto nunca excede o total |
 | "reduzir o limite abaixo dos usos feitos?" | **recusa** — cria `usos > limite`, estado que a comparação de uso já trata como esgotado | o contador não é corrigido; a trilha não é truncada |
 | "qualquer papel pode executar a ação?" | **recusa** — ausência de barreira nunca se assume | nenhum cenário afirma que a barreira não existe |
 
-O cenário continua marcado `@premissa`, a pergunta continua bloqueando, e a linha *"se negado,
-CT-nn inverte"* continua obrigatória. **Premissa de comportamento nunca autoriza a não escrever o
-cenário**: um `@premissa` rotulado é dívida visível; um cenário ausente é buraco na partição, e o
-item do passo 4 (*"valor abaixo do mínimo, acima do máximo e no limite — na gravação"*) fica sem
-matador.
+**A direção não vira cenário enquanto a pergunta está aberta.** A `RQ` afetada fica
+`aberta — Qn` e nenhum passo do `01` a implementa: um cenário `@premissa` sobre ela afirmaria um
+comportamento que ninguém vai construir — ou forçaria a construção com a interpretação do dev, que
+é o que a raia requisito existe para impedir (estudo 2026-09-26 §2.3). O buraco na partição não
+fica cego: o `04` lista `RQ-nn — aberta (Qn), sem cenário até a resposta`, o item do passo 4
+(*"valor abaixo do mínimo, acima do máximo e no limite — na gravação"*) responde
+`lacuna declarada: RQ-nn aberta (Qn)`, e o invariante já tem cenário. Quando a resposta entra como
+Adendo, o cenário da direção é derivado dela.
+
+**Custo declarado da troca**: a detecção medida do cenário direcional (a recusa na criação, em
+`references/casos-medidos.md` §Premissa de comportamento) fica suspensa até a resposta, e o
+invariante não a substitui — *gravado por qualquer via, não é aplicável* não pega *vencido aceito na
+criação*. A lacuna fica declarada, não cega; o preço é detecção até o Adendo.
 
 > Caso medido: `references/casos-medidos.md` §Premissa de comportamento.
 
@@ -313,7 +323,8 @@ dois mundos: item ✅ no checklist com o defeito dentro.
 | "o histórico é uma tabela própria, não a trilha de auditoria" | o registro sai completo pelo caminho que **não** dispara evento de model? |
 
 O procedimento: escrever o cenário **no mecanismo assumido**, e registrar o mecanismo descartado
-como **lacuna declarada** vinculada à premissa, com a pergunta ao usuário. Duas linhas de custo.
+como **lacuna declarada** vinculada à premissa, com a pergunta de desenho ao desenvolvedor. Duas
+linhas de custo.
 
 > Caso medido: `references/casos-medidos.md` §Premissa de mecanismo.
 
@@ -328,8 +339,10 @@ tentar é que a lacuna é real — e aí ela é declarada com **o que foi tentad
 
 *"Não precisa de escopo"*, *"não se aplica: não há upload"*, *"o filho já está protegido pelo pai"*.
 Toda negativa que **dispensa um controle** entra na wiki com a mesma exigência de evidência que a
-positiva: `arquivo:linha` do vendor — e, quando dispensa um controle de **fronteira** (escopo,
-autorização, trava de escrita), também **um cenário escrito como se ela fosse falsa**.
+positiva: `arquivo:símbolo:linha` do vendor — e, quando dispensa um controle de **fronteira** (escopo,
+autorização, trava de escrita), também **um cenário escrito como se ela fosse falsa**. O formato é o
+da `feature-wiki` (`{skills}/feature-wiki/SKILL.md`, *Citações de código*): o `04` é conferido pelo
+`citacoes.sh` no step 10 e na dimensão L2 do quality gate, e `arquivo:linha` sem símbolo é achado lá.
 
 O motivo é assimétrico e vale a pena enunciar: a tabela de mutantes deriva mutantes das regras
 **escritas**. O que a wiki declara desnecessário não vira regra, não vira mutante e não vira

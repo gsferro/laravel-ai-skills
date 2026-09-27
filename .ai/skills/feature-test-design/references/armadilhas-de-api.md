@@ -1,4 +1,4 @@
-> Referência da feature-test-design 1.15.0. Lida em: passos 5 e 7 e na escrita do `04` (antes de
+> Referência da feature-test-design 1.16.0. Lida em: passos 5 e 7 e na escrita do `04` (antes de
 > nomear fake, assertion ou helper num cenário). Fonte única de: as armadilhas de API que invalidam
 > CT.
 

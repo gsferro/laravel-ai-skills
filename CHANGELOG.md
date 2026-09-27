@@ -8,10 +8,11 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 
 | Skill | Versão | Tag |
 |---|---|---|
-| `feature-wiki` | 3.6.0 | `feature-wiki-v3.6.0` |
-| `feature-test-design` | 1.15.0 | `feature-test-design-v1.15.0` |
-| `feature-quality-gate` | 1.6.0 | `feature-quality-gate-v1.6.0` |
-| `requirement-to-rule` | 1.3.0 | `requirement-to-rule-v1.3.0` |
+| `feature-wiki` | 4.0.0 | `feature-wiki-v4.0.0` |
+| `feature-test-design` | 1.16.0 | `feature-test-design-v1.16.0` |
+| `feature-quality-gate` | 1.7.0 | `feature-quality-gate-v1.7.0` |
+| `requirement-to-rule` | 1.4.0 | `requirement-to-rule-v1.4.0` |
+| `feature-tickets` | 1.0.0 | `feature-tickets-v1.0.0` |
 
 **Onde a versão está, desde a release 1 do roteiro (2026-09-26).** O frontmatter segue o
 [spec Agent Skills](https://agentskills.io/specification): a versão saiu do topo (`version:`) e
@@ -26,10 +27,14 @@ grep -Hn '^[[:space:]]*version:' .ai/skills/*/SKILL.md
 Select-String -Path .ai\skills\*\SKILL.md -Pattern '^\s*version:'
 ```
 
-As contagens de linhas de corpo citadas nas entradas da release 1 são as linhas do `SKILL.md`
+As contagens de linhas de corpo citadas nas entradas das releases 1 e 2 são as linhas do `SKILL.md`
 depois do fechamento do frontmatter: `awk '/^---$/ && ++n==2 {next} n>=2' SKILL.md | wc -l`. Os
 tamanhos de `description` são os do valor que o YAML entrega (a quebra final do bloco `>` conta),
 o mesmo que o `skills-ref validate` compara com o limite de 1024.
+
+**A `feature-tickets` (release 2) usa um campo fora do spec**, `disable-model-invocation: true`
+(extensão do Claude Code: só o usuário a invoca). O `skills-ref validate` rejeita o campo; o CI o
+tolera por uma lista fechada, e só ele — ver a entrada de 2026-09-27 em [Repositório](#repositório).
 
 ## Convenção de tags
 
@@ -51,7 +56,8 @@ requirement-to-rule-v1.0.0
 | `feature-wiki` 3.4.0 | — | liberada sem tag — consolidada na 3.5.0 (ver nota na entrada 3.5.0) |
 | `feature-test-design` 1.13.0 · `feature-quality-gate` 1.4.0 | — | liberadas sem tag (o mesmo dia da versão seguinte); as entradas existem no CHANGELOG |
 | patches de 2026-09-26 (3.5.2 · 1.14.1 · 1.5.2 · 1.2.1) | criadas | tag por skill, como as demais |
-| release 1 do roteiro, 2026-09-26 (3.6.0 · 1.15.0 · 1.6.0 · 1.3.0) | a criar | tag por skill, no commit da release |
+| release 1 do roteiro, 2026-09-26 (3.6.0 · 1.15.0 · 1.6.0 · 1.3.0) | criadas | tag por skill, no commit da release (`09c5a29`) |
+| release 2 do roteiro, 2026-09-27 (4.0.0 · 1.16.0 · 1.7.0 · 1.4.0 · `feature-tickets` 1.0.0) | a criar | tag por skill, no commit; `feature-tickets-v1.0.0` é a primeira tag da skill nova |
 
 ## Números de medição
 
@@ -64,6 +70,305 @@ Onde divergem da tabela única, as notas de correção de 2026-09-26 dizem o que
 # feature-wiki
 
 Cria a estrutura de documentação de uma feature **antes** de implementá-la: requisito bruto, PRD, ADR, tracking de progresso e padrão de log.
+
+## [4.0.0] — 2026-09-27
+
+Release 2 do roteiro do estudo
+[`estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md`](estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md)
+(§8): a de **desenho**, depois da 3.6.0, que foi só empacotamento. Os itens que tocam esta skill e o
+que cada um virou:
+
+- **4 (`scripts/`)**: os greps do step 10 viraram cinco scripts com saída vazia = OK; mais o hook
+  `guarda-subagente.sh` e o lançador `pestw.cmd` como arquivo
+- **5 (costuras, lado wiki)**: o `05` existe se e só se o `04` declara uma costura `browser`
+- **6 (ordem e regimes)**: o Ponytail (step 6) roda antes da derivação do `04` (step 7), os steps
+  foram renumerados, e o `00` ganhou regimes por seção, `## Premissas` (`P-nn`) e a coluna `Estado`
+- **8 (veredito, lado wiki)**: a tabela de vereditos do step 11 ganhou o teto por cobertura, e o
+  `06` volta entre delimitadores
+- **9 (cegueira e não-edição)**: um hook `PreToolUse` nos cinco agentes `fw-*`, com um perfil por
+  agente — por construção nas ferramentas de arquivo, heurístico no `Bash`
+- **10 (rules com um dono)**: o step 12 delega tudo à `requirement-to-rule`
+- **12 e 14 (tickets e refatoração larga)**: step 8 condicional, que sugere a `feature-tickets`;
+  a refatoração larga passa a ter wiki
+- **13 (três raias)**: entrevista no step 4, perguntas ao solicitante, três portões de ADR e
+  glossário do projeto
+
+**Por que é major.** A numeração dos steps mudou, e o número é contrato: as outras skills, os cinco
+agentes e os `03`/`06` já gravados citam steps por número, e na 4.0.0 o mesmo número designa outro
+step — o "step 7" da 3.x é a reconciliação, e o da 4.0.0 é a derivação do `04`. Por isso a
+`feature-test-design` 1.16.0, a `feature-quality-gate` 1.7.0, a `requirement-to-rule` 1.4.0 e a
+`feature-tickets` 1.0.0 exigem a 4.0.0. Mudam também contratos que quem instalou a 3.x usa: o `00`
+troca `## Ambiguidades e Perguntas Abertas` por `## Perguntas ao Solicitante`; o `fw-executor-ctb`
+deixa de editar o `05`; e o hook nega nos agentes o que antes era só proibido no prompt. Wiki escrita
+com a 3.x continua legível; os números de step dela seguem a numeração antiga:
+
+| Antigo (3.x) | Novo (4.0.0) | Step |
+|---|---|---|
+| 0 | 0 | Capturar o requisito |
+| 1 | 1 | Branch e pasta |
+| 2 | 2 | Nome da feature |
+| 3 | 3 | Pesquisa e contexto |
+| 4 (parte) | 4 | Criar `00`, `01`, `02`, `03` — com a entrevista em três raias |
+| 5 | 5 | Revisão profunda pós-escrita (classe irmã, confronto código × afirmação) |
+| 6 | 6 | Auditoria Ponytail sobre `01`/`02` |
+| 4 (parte) | 7 | Derivar `04`/`05` — `feature-test-design` + revisão adversarial; o `03` ganha os CT/CT-B |
+| — | 8 | Fatiar em tickets — condicional (`feature-tickets`) |
+| — | — | Implementação (sem número): passos do `01` ou tickets de `07-tickets/` |
+| 6.5 | 9 | Revisão de código do diff |
+| 7 | 10 | Pós-implementação e reconciliação (loop dos CT-B) |
+| 8 | 11 | Quality gate e abertura do PR |
+| 9 | 12 | Candidatos a rule |
+
+O motivo da troca é um caso medido: o Ponytail corta elementos do `01`, e o `04` derivado antes dele
+herdava o que foi cortado — em 2026-09-21, um CT ficou órfão e só apareceu no `diff` de IDs da
+reconciliação (estudo §7.2). A mesma tabela está no README, em *Numeração dos steps — 3.x → 4.0.0*.
+
+O corpo do `SKILL.md` foi de 1.285 para **1.315 linhas** (comando da convenção, em
+[Skills e versões atuais](#skills-e-versões-atuais)). A release 1 tinha chamado 1.285 de piso; a 2 o
+passou em 30 linhas, todas de obrigação nova: entrevista, `P-nn` e o roteamento de achado, step 8,
+implementação por tickets, costuras, hook e scripts no step 10. Para caber, saíram do corpo para
+`references/` a tabela das raias, a de path por arquivo e a de regimes do `00` (que a própria release
+tinha posto ali), o porquê e os níveis do padrão de log e a tabela das origens da Superfície Livewire.
+O alvo do spec (< 500 linhas) continua longe.
+
+**Não medido**:
+
+- a rodada que compara esta release com a 3.6.0 (C1/C2 sem regressão), item d de
+  [Rodadas pendentes](experimentos/README.md#rodadas-pendentes). Ela depende da rodada da 3.6.0 contra
+  a 3.5.2 (item a), que também não rodou;
+- o **teste ao vivo** do hook (roteiro, item 9: despachar o `fw-revisor-diff` com o `01` na pasta e
+  pedir que o cite) **não rodou**, item f. O contrato foi conferido só alimentando o script com JSON de
+  `PreToolUse`: no reteste final, uma matriz de 97 casos em três configurações de ambiente
+  (`CLAUDE_PROJECT_DIR` em forma Windows, em forma POSIX, e o `cwd` numa fixture), sem divergência,
+  mais 20 casos que dependem do disco. O comando de cada agente foi extraído do frontmatter e rodado
+  com `sh -c` e, depois da correção do caso Windows (abaixo), com `pwsh -NoProfile -Command`. O
+  procedimento ao vivo está no README, em *Teste do hook*;
+- a primeira feature entregue por tickets (item g) e o efeito de perguntar antes, na entrevista,
+  sobre o defeito entregue;
+- os **limiares novos são hipótese a calibrar**, declarados assim no texto: o corte do step 8
+  (18 `RQ` vigentes ou 60 CT, o tamanho da única feature medida de ponta a ponta, que rodou numa sessão
+  com 48 despachos e ~4,6 M tokens), o sinal de escopo (mais de 30 perguntas de requisito) e o
+  `maxTurns` dos executores (40 e 60; nenhum despacho registrou turnos);
+- os scripts foram testados com fixtures de wiki, fora de um projeto Laravel.
+
+**Caso Windows sem Git Bash, achado no fechamento da release e corrigido nela.** O hook não bloqueava
+nada. Sobre o campo `shell` do hook, a documentação do Claude Code diz *"Defaults to "bash", or to
+"powershell" on Windows when Git Bash isn't installed"*; o bloco `hooks:` dos cinco agentes não declara
+`shell`, e o comando era `sh -c '…'`. No PowerShell 7.6.6 desta máquina,
+`pwsh -NoProfile -Command "sh -c 'exit 2'"` saiu com 1 sem o Git no PATH (o `sh` não é achado) e
+também com ele, e no `PreToolUse` só o exit 2 bloqueia.
+
+- **Correção**: o comando passou a `exec sh -c '…; exit 2'; exit 2`, nos cinco agentes. No bash
+  (Linux, macOS, Windows com Git Bash), o `exec` troca o shell pelo `sh`, o `; exit 2` do fim nunca
+  roda, e o código de saída é o do `guarda-subagente.sh` (0 permite, 2 nega; sem o script, 2). No
+  PowerShell, `exec` não existe, a linha segue para o `exit 2`, e o hook **falha fechado**
+- **Medido** com JSON de `PreToolUse` do `fw-revisor-diff`: no bash, `Read` do `01` → 2, `Read` de
+  `app/` → 0, sem o script → 2; no PowerShell 7.6.6 e no Windows PowerShell 5.1, `Read` de `app/` → 2,
+  com o erro do PowerShell (`exec` não reconhecido) no stderr, não o `nao encontrado`
+- **Consequência**: no Windows sem Git Bash, os cinco agentes `fw-*` negam toda ferramenta e ficam
+  inutilizáveis — o agente para, e a sessão cai no fallback declarado (`general-purpose` com `model`,
+  sem hook) —, em vez de rodar sem cegueira. Para usá-los no Windows, é preciso o Git for Windows (Git
+  Bash); o Claude Code não o exige
+- **CI**: o smoke test roda o comando de cada agente também com `pwsh -NoProfile -Command` e exige
+  exit 2 com o JSON que o bash permite. Controles, rodados a partir do YAML: com o comando antigo, o
+  caso reprova nos cinco agentes (o pwsh sai com 0, porque o `sh` do Git estava no PATH e o script
+  permitiu); sem o `; exit 2` do fim, reprova (sai com 1); sem `pwsh` no PATH, vira `::warning` e o job
+  passa
+
+Como o Claude Code chama o PowerShell não foi conferido. O teste ao vivo do caso segue na rodada (f)
+de [Rodadas pendentes](experimentos/README.md#f-item-9--teste-ao-vivo-do-hook).
+
+### Adicionado
+
+- **Entrevista em três raias no step 4** (estudo §2.3–§2.5): o fato o agente descobre (steps 3 e 5)
+  e nunca pergunta; o desenho o desenvolvedor decide, em rodadas com recomendação; o requisito vai ao
+  **solicitante**. Formato `❓ Qn · raia · afeta · depende de` + `➡️ Recomendação`, rodadas pela
+  fronteira (pergunta cuja dependência está aberta espera a rodada seguinte) e filtro de oráculo: só
+  entra pergunta que toca uma `RQ` ou `P-nn`. `Qn` é uma sequência única por feature nas três raias;
+  sub-agente devolve `Q?n` provisória, e a sessão renumera. A `RQ` sem resposta fica `aberta — Qn`, e
+  nenhum passo do `01` a implementa (`**Bloqueado por**: RQ-nn (aberta — Qn)`). Antes do step 5, o
+  `03` registra `Entendimento confirmado: {data} — {quem} — {rodadas, perguntas por raia}`. As quatro
+  perguntas que eram obrigatórias (acumulação de papéis, recorte de visibilidade, destino de
+  notificação, teto de texto livre) viraram sementes, condicionais ao requisito ter o tema. Premissa de
+  comportamento — o que o sistema faz quando o texto não diz — é pergunta da raia requisito, com a
+  recomendação pela opção que falha fechado, no step 4 e no step 7. Formato e exemplos em
+  `references/entrevista-tres-raias.md` (nova)
+- **`## Premissas` no `00`** — `P-nn`, o que a feature assume sem que o solicitante tenha escrito, com
+  origem, data, `RQ` afetada e estado (`vigente` · `substituída por P-nn` · `promovida a RQ-nn
+  (Adendo N)` · `revogada — {motivo}`). **Roteamento do achado confirmado nos steps 9 e 11**: o que o
+  solicitante não escreveu vira `P-nn` → CT com `Origem` = `P-nn` (a `feature-test-design` é
+  reinvocada só para o achado) → correção → pergunta ao solicitante, se o achado contradiz ou estende
+  o pedido. O achado que viola ou omite uma `RQ` existente **não** vira `P-nn`, porque a duplicaria:
+  vira CT com `Origem` = `RQ-nn` → correção. Com `07-tickets/`, a `P-nn` ganha ticket novo no fim da
+  numeração, e o CT de uma `RQ` existente entra no ticket que já a cobre
+- **Coluna `Estado` na Decomposição em Cláusulas**: `fechada` · `aberta — Qn` · `substituída por RQ-nn
+  (Adendo N)` · `decomposta em RQ-nn, RQ-mm`. A `RQ` citada na coluna `Substitui` de um Adendo, sem
+  `(parcial)`, conta como substituída mesmo sem `Estado` (o Adendo é imutável); a `RQ` "fora desta
+  entrega" no `01` (passo `—` com justificativa) sai de toda cobrança de passo, CT e ticket
+- **Três portões de ADR** no `02`: ADR só quando a decisão é difícil de reverter, surpreendente sem
+  contexto **e** resultado de trade-off real, e cada ADR declara `**Portões**`. Faltando um, a decisão
+  vira linha em `## Decisões de Desenho` do `01`. **`02` com zero ADR é resultado válido**
+- **Glossário do projeto**, `wikis/glossario.md`: global, fora da pasta da feature, escrito no momento
+  em que um termo é decidido; termo do requisito que conflita com ele vira pergunta. A
+  `feature-test-design` escreve o Gherkin nele, e o quality gate o confere (L7). Template em
+  `references/glossario.md` (nova)
+- **Confronto código × afirmação** no step 5 — "o `01` diz X; `app/…` faz Y — qual vale?" —, com a
+  resposta registrada em `## Auditoria Pré-Implementação` do `03`
+- **Step 8 — Fatiar em tickets (condicional).** "Se cabe numa sessão, não fatie." A sessão sugere
+  `/feature-tickets {wiki}` quando qualquer sinal vale: 18 ou mais `RQ` vigentes ou 60 ou mais CT; a
+  sessão já compactada antes do step 8; o sinal de escopo do step 4; refatoração larga. **Só o usuário
+  invoca** (a `feature-tickets` tem `disable-model-invocation: true`). Sem fatiar, o `03` registra
+  `Não fatiado — {data}: {sinais conferidos}`, que guarda os números para calibrar o limiar
+- **Implementação em duas formas**: os passos do `01`, ou os tickets de `07-tickets/`, um por
+  **sessão nova** (`/feature-tickets {wiki} {NN}`) ou por `construtor` que recebe só a fatia — o
+  ticket, o `00`, o `02`, os passos do ticket e os CT dele (cegueira de fatia). O step 9 roda uma vez
+  por feature, depois do último ticket
+- **Refatoração larga tem wiki**: com `## Natureza da Wiki: refatoração` (valor novo no template do
+  `01`), a skill não sai mais de cena, e o step 8 sugere expand → migrate em lotes → contract.
+  Refatoração pequena e interna, coberta por teste verde, continua fora. Wiki de refatoração não pula
+  o step 11
+- **`scripts/`**, cada um com cabeçalho de uso, quem chama e um `# Exemplo de falha:` com saída real.
+  Contrato: silêncio + exit 0 = OK; `arquivo:linha: mensagem` + exit 1 por achado; exit 2 = erro de
+  uso ou de ambiente. Lógica em PHP embutido no `.sh` (o `boost:add-skill` descarta `.php`; todo
+  projeto Laravel tem `php`), sem `jq`, `node`, `python` nem `grep -P`:
+  - `rastreabilidade.sh {wiki}` — `RQ`/`P-nn` × passo do `01` × CT do `04`: `RQ` sem passo ou sem CT,
+    `P-nn` sem CT, passo sem `RQ`, passo inexistente, `RQ` aberta implementada por passo não bloqueado,
+    `decomposta` sem as filhas. Não confere ticket: a alocação a ticket é do `indice.sh --check`
+  - `checkbox-sem-evidencia.sh {wiki}` — `- [x]` sem ` — {evidência}` no `03`
+  - `citacoes.sh {wiki}` — toda citação `arquivo:símbolo:linha`: o arquivo existe e o símbolo está na
+    linha; citação sem símbolo e símbolo fora do formato (`Classe::método()`, `linha:coluna`) são achado
+  - `ids-ct.sh {wiki} 'tests/**/{Feature}/*.php'` — IDs `CT-nn`/`CT-Bnn` do `04`/`05` × dos testes,
+    nos dois sentidos
+  - `conformidade-rules.sh {wiki} {base}` — rule de `.ai/rules/*.md` cujo `paths:` casa o
+    `git diff --name-only {base}...HEAD` e não tem linha em `## Conformidade com Rules` do `03`
+  - `pestw.cmd` — o lançador poliglota do `pest --mutate` no Windows vira arquivo (antes era bloco para
+    copiar), com `require getcwd()`, sem path fixo. O `vendor/bin/pest` é proxy sem extensão, e o `cmd`
+    não o executa: no reteste, o `--mutate` pelo lançador deu 20 % em 1,90 s, e pelo `pest` direto, o
+    falso 100 % em 0,13 s
+  - `guarda-subagente.sh <perfil>` — o hook dos agentes (abaixo)
+
+  Os scripts são chamados no step 10 e pelo quality gate (dimensões A, L1, L2, L4 e L6), e o
+  `rastreabilidade.sh` é o gate de entrada da `feature-tickets`
+- **Hook de cegueira e não-edição** — `scripts/guarda-subagente.sh`, declarado no frontmatter dos
+  cinco agentes `fw-*` num bloco `hooks:` idêntico, que só troca o perfil (`revisor-diff`,
+  `adversario-ct`, `qa-gate`, `executor-ct`, `executor-ctb`). Procura o script em
+  `$CLAUDE_PROJECT_DIR/.ai/skills`, `$CLAUDE_PROJECT_DIR/.claude/skills` e `~/.claude/skills`, e **falha
+  fechado**: sem o script, nega toda ferramenta, e a sessão cai no fallback `general-purpose`. No
+  Windows sem Git Bash, nega toda ferramenta mesmo com o script: o comando
+  `exec sh -c '…; exit 2'; exit 2` cai no `exit 2` do PowerShell (ver o caso Windows, acima).
+  - **Por construção**: `Read`, `Grep`, `Glob`, `Edit`, `Write`, `MultiEdit` e `NotebookEdit` — o path é
+    normalizado (Windows ou POSIX, `.` e `..`, relativo ao `cwd`) e comparado com o perfil antes de a
+    ferramenta rodar. No `Grep`, o glob é lido como o ripgrep o lê: lista, o último que casa decide,
+    glob só negado casa todo o resto
+  - **Por heurística, no `Bash`**: comando que cita o `01`/`03` (o `01`/`02`, no `executor-ct`);
+    `git diff`/`git show` sem `':(exclude)wikis'`; nome montado por expansão num comando que cita
+    `wikis/`; o que altera a árvore — git que muda estado, `rm`, `mv`, `cp`, `tee`, `sed -i`, `>` para
+    dentro do repositório, `pint` fora dos arquivos de teste, o `indice.sh` sem `--check`/`--status` e o
+    `espelho-gh.sh --aplicar` —, inclusive por `find -exec`, `xargs`, `bash -c` (e `-lc`, `-ec`) e
+    `cmd /c`
+  - **Não cobre**: escrita por interpretador (`php -r`, `python -c`), PowerShell, corpo de heredoc,
+    `git cat-file` por hash, arquivo copiado para fora do repositório e lido de lá, e as ferramentas
+    MCP herdadas pelos agentes sem `tools:` (`fw-executor-ct`, `fw-executor-ctb`, `fw-qa-gate`)
+
+  O PHP do hook passa de 30 mil caracteres e roda de um arquivo temporário, não de `php -r`: no
+  Windows, o teto da linha de comando (32.767 caracteres) faria o hook negar toda ferramenta
+- **Agentes**: `maxTurns` 40 no `fw-executor-ct` e 60 no `fw-executor-ctb`, o teto mecânico do loop;
+  os dois executores não editam o `03` nem `07-tickets/` (quem grava o `03` e o `Status` do ticket é a
+  sessão), mas leem o ticket; o `fw-executor-ct` formata só os próprios testes
+  (`vendor/bin/pint {arquivos de teste do lote}`), nunca `pint --dirty`, que formata `app/` junto
+- **`03`**: a linha `**Estado**: em planejamento | em implementação | em revisão | concluída — {data}`
+  (lida pelo `indice.sh`); `## Revisão do Diff (step 9)` (achados, destino, `P-nn` gerada,
+  rejeitados com motivo), lida pela dimensão I do quality gate; `## Referências Abertas`;
+  `## Candidatos a Rule`, com a linha que a `requirement-to-rule` devolve; `## Tickets`, no formato da
+  `feature-tickets`; a coluna `Custo` em `## Despachos` (tokens · duração, `—` se o host não reporta);
+  a linha `Débito` em `## Quality Gate`, e `NÃO APLICÁVEL` no enum do veredito
+- **Fallbacks declarados**: sem `Explore`, `mecânico` com trechos ou `general-purpose` com
+  `model: sonnet`; sem `SendMessage`, agente novo com `git status`, `git diff --stat` e o que já foi
+  entregue
+- **README**: *Feature fatiada — como chamar os tickets*, com as duas formas de pedir o status lado a
+  lado e a ressalva de custo (a forma `!` só custa zero token de modelo com
+  `"respondToBashCommands": false`: desde a v2.1.186, o Claude Code responde à saída do `!` com o custo
+  de um prompt normal); *Numeração dos steps*; *O hook dos agentes* (cobre, cobre por heurística, não
+  cobre); *Teste do hook*; dependências `requirement-to-rule` 1.4.0, `feature-tickets` 1.0.0, e
+  `bash` e `php` no PATH
+
+### Alterado
+
+- **Ordem**: o `04` nasce no step 7, sobre o `01`/`02` já cortados pelo Ponytail. A regra da 3.x de
+  re-sincronizar o `04` depois de um corte vale só para corte posterior ao step 7 (achado do step 9 ou
+  do 11). Depois da implementação, a ordem é **9 → 10 → 11 → PR**, e o 12 roda depois do veredito
+- **Regimes do `00`**, por seção: `## Fonte`, `## Texto Original` e `## Adendo N` imutáveis; a
+  Decomposição, as Perguntas, as Premissas e o Fora de Escopo, revisáveis. **Adendo só para pedido do
+  solicitante** (ou resposta dele a uma pergunta), com fonte e texto verbatim; achado de revisão vai para
+  `## Premissas`. Sai o "Adendo N, premissas Pnn" do antigo 6.5. `## Perguntas ao Solicitante`
+  substitui `## Ambiguidades e Perguntas Abertas`
+- **Path e número por arquivo**: proibidos no `00` e na ADR — que cita módulo ou classe pelo nome, com
+  `Referências: {classe/módulo, ADR relacionada, link externo}` no template —, com exceção da
+  `## Superfície Livewire`, que tem reconciliação própria; permitidos no `01`, `03`, `04` e `05`, que
+  a reconciliação do step 10 cobre (estudo §3.4). O ticket não leva path: o `01` tem
+- **Step 0**: sai o par "Assumido / Se negado" e a "RQ atendida sob premissa". O pedido fora desta
+  entrega vira pergunta ao solicitante, `RQ` aberta e passo bloqueado — as regras antigas contradiziam o
+  "nenhum passo implementa `RQ` aberta"
+- **Step 9**: o `fw-revisor-diff` recebe `git diff {base}...HEAD -- . ':(exclude)wikis'` — a wiki vai no
+  PR, e sem a exclusão o revisor "cego" recebia o `01` e o `03` no diff — e devolve o
+  `git status --porcelain` de antes e de depois, que a sessão compara. A comparação é sinal, não prova:
+  nova edição num arquivo que já estava modificado não muda o porcelain
+- **Step 10**: roda os scripts (saída vazia é o critério, colada na `## Verificação Final`), inclusive o
+  `indice.sh --check` da `feature-tickets` quando existe `07-tickets/`. Saem o grep do checkbox, o
+  `diff <(grep …)` dos IDs e o "— 14/14 ok" escrito à mão
+- **Step 11**: o `06` volta do `fw-qa-gate` entre uma linha `<<<06` e uma `>>>06`, e a sessão grava só o
+  que está entre elas, sem editar. `APROVADO` exige todas as dimensões verificadas; com qualquer uma não
+  verificada, o teto é `APROVADO COM DÉBITO` — **inalcançável nos perfis Mínimo e Padrão, de propósito**,
+  e não bloqueia nada. `RQ` aberta implementada por passo não bloqueado ou por código é
+  `REPROVADO → especificação`, que volta ao step 4 e re-deriva no step 7 o que a correção mudar.
+  `NÃO APLICÁVEL` é veredito do orquestrador ("Quando pular"), escrito sem rodar o gate. O `03` passa a
+  `concluída` antes de o `indice.sh` regenerar o `wikis/specs/INDEX.md`, que vai no PR
+- **Step 12 com um dono** (estudo §7.5): a skill invoca a `requirement-to-rule` com o path da wiki e não
+  coleta, não julga nem pergunta — era a origem das duas aprovações para a mesma decisão. Rota: sessão
+  principal, ou sub-agente que herda MCP; nunca `analista`, que não tem o `search-docs` do gate 4.
+  "Vale virar rule" é a definição da `requirement-to-rule`; o commit do step vai na branch do PR já
+  aberto; o `03` registra a linha fixa `apresentados N · gravados N · recusados N · descartados no gate
+  N · poda N`
+- **Gate do `05`**: o `05` existe se e só se `## Costuras de Teste` do `04` tem uma linha `browser`. As
+  costuras voltam da derivação como proposta, e a sessão as confirma com o desenvolvedor antes da revisão
+  adversarial
+- **Vermelho (b) do `fw-executor-ct`**: sai o "Adendo → CT → correção". O CT vermelho já é o oráculo, e a
+  correção vai no código; a divergência que revela o que o `00` não diz vira pergunta ou premissa
+- **`fw-executor-ctb`**: a correção do `05` volta como texto (*Correções do 05*), e a sessão grava — o
+  hook nega a edição
+- `metadata.requires`: `feature-test-design>=1.16.0; feature-quality-gate>=1.7.0; laravel/boost>=2.4.12`.
+  A `compatibility` declara `bash` e `php` para `scripts/`. O checklist final segue a ordem dos steps
+
+### Corrigido
+
+Defeitos registrados na release 1 e resolvidos nesta:
+
+- **`{skills}`** passa a ser o primeiro dos três diretórios (`.ai/skills/`, `.claude/skills/`,
+  `~/.claude/skills/`) que **contém a skill citada**, não o primeiro que existe — `.ai/skills/` pode
+  existir sem a skill. O hook resolve do mesmo jeito
+- Varredura da classe irmã com `grep -rnF` (FQCN com barra invertida sem escape)
+- `## Modelo de Execução` entra na lista obrigatória do `01`
+- Casos datados que estavam dentro dos templates (copiados para todo `01` gerado) foram para
+  `references/casos-medidos.md`
+- "Proibido passar como entrada: a implementação da feature" volta ao corpo do step 7
+- Links para fora da skill — `experimentos/`, `estudos/`, README raiz e as skills irmãs — em URL
+  absoluta do repositório: o relativo quebra quando a skill é instalada num projeto
+- `pest-5.md`: a forma Git Bash do lançador é `cmd //c "$(cygpath -w {skills}/feature-wiki/scripts/pestw.cmd)"`.
+  Com o path cru, o `cmd` lia a `/` como opção; com o nome solto, o Bash do Claude Code não o acha
+  (`NoDefaultCurrentDirectoryInExePath`)
+- Template do `03`: o texto de sete itens usava " — ", o separador da evidência, e o
+  `checkbox-sem-evidencia.sh` aprovaria o item marcado sem evidência
+- Sai do template do `01` a frase "`$table` é candidato natural a Project Rule": o gate de rule não é
+  desta skill
+
+### Removido
+
+- `references/candidatos-a-rule.md`. As fontes e o formato do prompt ficam em
+  `requirement-to-rule/references/coleta-e-apresentacao.md`
+- O bloco duplicado do step de rules: fontes, os 4 gates, teto, escada, "como apresentar" e o
+  "Virar rule? (1, 2, ambos, nenhum)"
+- Do README, "a cegueira vem de graça" e "a prova de que o revisor e o quality gate não editaram",
+  reescritas com a ressalva do hook
 
 ## [3.6.0] — 2026-09-26
 
@@ -772,6 +1077,116 @@ Consolida as versões 2.5.0 e 2.6.0 (nunca commitadas isoladamente) e adiciona a
 # feature-test-design
 
 Deriva casos de teste que **matam defeito**, a partir do requisito — nunca do plano e nunca do código.
+
+## [1.16.0] — 2026-09-27
+
+Release 2 do roteiro de
+[`estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md`](estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md)
+(§8). Os itens que tocam esta skill e o que cada um virou:
+
+- **5 (costuras de teste)**: seção `## Costuras de Teste` no `04`, proposta pela derivação e confirmada
+  pelo desenvolvedor antes do primeiro cenário
+- **7 (gate de mutantes falsificável)**: a coluna `Asserção que mata` vira obrigatória em todo perfil, e
+  as "5 implementações" do adversário passam de teto a piso
+- **9 (cegueira do adversário)**: hook `PreToolUse` no `fw-adversario-ct`
+- **13 (três raias, lado derivação)**: perguntas no formato da entrevista, `RQ` aberta sem cenário,
+  `P-nn` como origem de CT e Gherkin no vocabulário do glossário
+- **14 (refatoração larga)**: CT de transição para os tickets expand, migrate e contract
+- **6 (renumeração da `feature-wiki`)**: esta skill passa a ser invocada no step 7, depois do Ponytail
+
+Requer `feature-wiki` 4.0.0: o hook e o `pestw.cmd` são arquivos dela, e `## Perguntas ao Solicitante`,
+`## Premissas` e o glossário são formatos dela. As duas saem juntas.
+
+O corpo do `SKILL.md` foi de 732 para **790 linhas** (comando da convenção). O que entrou é obrigação
+curta — costuras, `Asserção que mata`, `RQ` aberta, `P-nn`, glossário, hook. Template, formato de
+pergunta, os comandos `grep -c` da contagem e a correspondência camada → costura foram para
+`references/`. O alvo do spec (< 500) continua não atingido.
+
+**Não medido**: a rodada do perfil mínimo (item b de
+[Rodadas pendentes](experimentos/README.md#rodadas-pendentes), agora com chegada nesta tag) e a
+comparação desta release com a 1.15.0 (item d). As duas pedem uma mudança no protocolo: com "`RQ` aberta
+não gera cenário", o card com ambiguidades plantadas precisa de um **solicitante simulado** que responda
+às perguntas de requisito. Sem ele, a detecção dos defeitos plantados em ambiguidade cai por construção,
+e a comparação com as rodadas anteriores fica viesada.
+
+### Adicionado
+
+- **`## Costuras de Teste`** no `04` (estudo §3.4), fechando o passo 2, logo depois do Mapa de Regras:
+  uma linha por grupo de CT, com `Costura` ∈ `unit de regra` · `Pest feature HTTP` ·
+  `componente Livewire/Filament` · `browser`, existente > nova. `Pest feature HTTP` é teste em
+  `tests/Feature` com a aplicação de pé, pela rota ou chamando action/service/model direto ("por fora do
+  componente"). A proposta sai do que a regra (`RQ`/`P-nn`) afirma; em sub-agente, volta com
+  `Confirmada` vazia, e a sessão confirma com o desenvolvedor (raia desenho). Todo cenário pertence a um
+  grupo, e toda linha do checklist de taxonomia com CT ou lacuna aponta um (`—` na linha "não se
+  aplica"). O `05` existe se e só se há uma costura `browser`. Vale em todo perfil, inclusive o mínimo,
+  porque o gate do `05` depende dela. O "ideal = 1 costura" da `/to-spec` não foi importado
+- **Coluna `Asserção que mata`** em toda tabela de mutantes (`04` e `05`), em todo perfil: a asserção ou
+  o valor do CT que diverge sob o mutante. Vazia, o gate não passou (estudo §7.3: gate autocertificado)
+- **`RQ` aberta não gera cenário**: aparece no `04` como `RQ-nn — aberta (Qn), sem cenário até a
+  resposta`
+- **Perguntas no formato da entrevista** (`❓`/`➡️`, com raia requisito ou desenho), levadas pela sessão
+  a `## Perguntas ao Solicitante` do `00` ou a `## Decisões de Desenho` do `01`. Em sub-agente, a
+  numeração é provisória (`Q?1, Q?2…`) e a sessão renumera ao gravar
+- **`P-nn` como origem de CT**, ao lado de `RQ-nn`: o achado confirmado dos steps 9 e 11 vira premissa
+  e CT antes da correção
+- **Glossário**: `wikis/glossario.md` é entrada opcional; o Gherkin usa o termo dele, e termo ausente
+  fica literal do `00`, sem sinônimo inventado
+- **Hook no `fw-adversario-ct`** (perfil `adversario-ct` do `guarda-subagente.sh` da `feature-wiki`):
+  `Read`/`Grep` fora do `00`, do `04`/`05`, do glossário e dos arquivos das skills são negados por
+  construção quando o hook está instalado; `Glob` passa (devolve só nomes), e o `Bash` já estava fora.
+  Sem o script, o hook nega tudo: o agente para e devolve `## Leituras negadas`, e a sessão redespacha
+  pelo `general-purpose` com `model: opus` — aí a cegueira volta a ser de prompt. No Windows sem Git
+  Bash, o hook nega toda ferramenta mesmo com o script, e a revisão vai pelo mesmo fallback (caso
+  Windows, na `feature-wiki` 4.0.0)
+- **Wiki de refatoração larga**: a derivação escreve também os CT de transição (escrita dupla, um por
+  lote de leitores, remoção do antigo), que a `feature-tickets` aloca em expand, migrate e contract
+
+### Alterado
+
+- **`## Índice de Cenários`**: a coluna `Camada` passa a se chamar `Costura`, com os valores do enum, e
+  ganha `Grupo` ao lado — a pertença do cenário fica escrita, não inferida. A coluna do checklist de
+  taxonomia também é `Grupo`
+- **`fw-adversario-ct`**: "5 implementações" passa a piso ("no mínimo 5"); o adversário aponta a
+  `Asserção que mata` que não diverge sob o mutante; pode receber `wikis/glossario.md` (vocabulário não é
+  plano nem código); as sondas 6–8 ficam condicionais ao que o `00` tem; o caso de 2026-09-21 saiu do
+  prompt para `references/casos-medidos.md`
+- **Premissa de comportamento**: sai o cenário `@premissa` na direção que falha fechado. A falha fechado
+  vira a recomendação (`➡️`) da pergunta de requisito, e o invariante das duas leituras vira cenário já,
+  na regra da cláusula fechada. Custo declarado em `tecnicas-por-regra.md` e no README: a detecção do
+  cenário direcional fica suspensa até o Adendo, e o invariante não a repõe. `@premissa` fica só para a
+  premissa de mecanismo (raia desenho)
+- **Afirmação negativa** cita `arquivo:símbolo:linha` (o formato que o `citacoes.sh` confere no step 10 e
+  na L2 do gate), não mais `arquivo:linha`
+- **Defeito que escapou para produção** vira linha do checklist de taxonomia e candidato a rule pela
+  definição *Vale virar rule* da `requirement-to-rule` (step 12). Esta skill não grava mais direto em
+  `.ai/rules/`
+- Renumeração da `feature-wiki` 4.0.0: invocada no step 7; `@obsoleto` vale para corte depois do step 7
+  (achado dos steps 9 ou 11). "Quando NÃO invocar" passa a "refatoração pequena e interna já coberta por
+  teste verde"
+- No exemplo preenchido de mutantes (template do `04` e README), o M1 passou de "`<` no lugar de `<=`"
+  para "`<=` no lugar de `<`": com a formulação antiga a divergência caía na linha borda − 1, e a coluna
+  nova expôs isso
+- `metadata.requires`: `feature-wiki>=4.0.0`
+
+### Corrigido
+
+Defeitos registrados na release 1:
+
+- Comando do template do `05`: `vendor/bin/pest tests/Browser --filter={Feature}`; `--testsuite=Browser`
+  só se o `phpunit.xml` declara a suíte (conferido por grep)
+- Filtro do `--mutate` com um conselho só, igual ao do quality gate: `--path=` é o verificado,
+  `--class=` o fallback
+- `references/mutation-testing.md`: o `vendor/bin/pest` é "proxy sem extensão (sh ou PHP, conforme o
+  Composer)", e o lançador é chamado por `cmd //c "$(cygpath -w {skills}/feature-wiki/scripts/pestw.cmd)"` —
+  com o nome solto, falhava no Bash do Claude Code
+- O fato 10 do `pest-plugin-browser` e o grep estático do gate deixam de se contradizer: são dois papéis
+  (achar candidato × provar defeito). "Exige DB por worker" entra no fato 6
+- A contagem do cabeçalho do `04` sai de `grep -c`, com os comandos no template
+- O caso medido que estava dentro do template do `04` foi para `casos-medidos.md`
+- `{skills}` = o primeiro dos três diretórios que contém a skill citada; links para fora da skill em URL
+  absoluta
+- `tecnicas-por-regra.md` atribuía o `citacoes.sh` à dimensão L1 do gate; é a L2 (L1 = IDs de CT, na
+  numeração do gate desde a 1.2.0)
 
 ## [1.15.0] — 2026-09-26
 
@@ -1496,6 +1911,121 @@ preenchimento de gabarito por um pipeline de derivação com gate de auditoria.
 
 # feature-quality-gate
 
+## [1.7.0] — 2026-09-27
+
+Release 2 do roteiro do estudo
+[`2026-09-26-agentskills-spec-to-spec-to-tickets.md`](estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md)
+(§8). Os itens que tocam esta skill e o que cada um virou:
+
+- **8 (veredito com teto por cobertura)**: `APROVADO` exige todas as dimensões verificadas; tabela
+  "mecânica × julgamento"; âncora mecânica da dimensão A; a dimensão I deixa de repetir o step 9
+- **4 (scripts, lado gate)**: o gate roda os scripts da `feature-wiki` e julga a saída, sem reescrever
+  grep; dois scripts próprios, `dark-mode.sh` e `k1-oraculo-fraco.sh`
+- **9 (não-edição, lado `fw-qa-gate`)**: hook `PreToolUse` (perfil `qa-gate`), o `06` entre
+  delimitadores e o `git status --porcelain` de antes e de depois
+- **12 (tickets)**: a coluna `Ticket` na Matriz de Rastreabilidade quando existe `07-tickets/`
+- **13 (três raias)**: a checagem **L7 — Vocabulário × glossário**; linhas `P-nn` na Matriz
+- **6 (renumeração da `feature-wiki`)**: o gate é o step 11; a revisão do diff, o 9; a reconciliação, o 10
+
+O corpo do `SKILL.md` foi de 800 para **852 linhas** (comando da convenção), mesmo com o template do
+`06`, o mapa de delegação ao `qa-skills` e os confrontos do Playwright MCP movidos para `references/`
+(dois arquivos novos). O acréscimo são as obrigações novas dos itens 8 e 9. Os blocos "Medido em
+2026-09-21" continuam no corpo. O alvo do spec (< 500) continua não atingido.
+
+**Não medido**: o **custo do gate antes e depois** desta versão, que o roteiro pede medido em
+`## Despachos` (item e de [Rodadas pendentes](experimentos/README.md#rodadas-pendentes)), e a primeira
+execução com o teto por cobertura. O hook `qa-gate` foi conferido com o `guarda-subagente.sh` real, por
+JSON de `PreToolUse`, não num despacho ao vivo (item f).
+
+### Adicionado
+
+- **Teto por cobertura no veredito** (estudo §7.4, "falso APROVADO por omissão"): com qualquer dimensão
+  não verificada — fora do perfil, rodada em parte, sem app, MCP ou driver, script ausente, oráculo
+  degradado —, o máximo é `APROVADO COM DÉBITO`, e o débito lista cada dimensão com a causa. "Não
+  aplicável com prova" (J em wiki nova sem infra compartilhada, G sem dark mode, G/H sem UI) conta como
+  verificada. **`APROVADO` é inalcançável nos perfis Mínimo e Padrão, de propósito** — o K2 só roda no
+  Completo —, e isso não bloqueia nada: é a declaração do que não foi verificado
+- **`RQ` aberta no step 11**: sem passo nem código que a implemente → teto `APROVADO COM DÉBITO`;
+  implementada com a interpretação do desenvolvedor → Major, `REPROVADO → especificação`
+- **Oráculo degradado** também quando o `00` existe mas não tem `RQ`, ou foi derivado do PRD
+- **Tabela "Mecânica × julgamento"**, uma linha por dimensão: o gate roda o script e julga a saída.
+  Script ausente ou exit 2 → a checagem vai para "Não Verificado"; o gate não a refaz à mão
+- **Dimensão L por script da `feature-wiki`**, na numeração da dimensão desde a 1.2.0: L1 = IDs de CT
+  (`ids-ct.sh`), L2 = citações (`citacoes.sh`), L6 = alegações do `03` (`checkbox-sem-evidencia.sh`).
+  **L4 fica mista**: o `conformidade-rules.sh` lista a rule cujo glob casa o diff e não tem linha em
+  `## Conformidade com Rules`; aplicada / n.a. / violada continua julgamento
+- **L7 — Vocabulário × glossário**: termo do `00`/`01`/`04`/UI divergente de `wikis/glossario.md`, ou
+  termo decidido na feature que não entrou nele
+- **Âncora mecânica da A**: o `rastreabilidade.sh` + o `git diff` por passo. A Matriz de
+  Rastreabilidade ganha linhas `P-nn` e, com `07-tickets/`, a coluna `Ticket`, que vem do
+  `indice.sh --check` da `feature-tickets` — fonte única da alocação a ticket, com CT-B contando como
+  CT. O gate não refaz a checagem
+- **Scripts próprios**, com PHP embutido, contrato 0/1/2 e exemplo de falha real no cabeçalho:
+  `scripts/dark-mode.sh` — o mecanismo de dark mode (Tailwind 3; Tailwind 4 com `@custom-variant` ou só
+  `dark:`; CSS; JS; Flux; Filament) e o nível 1 estático. Exceção declarada ao contrato: com
+  `--mecanismo`, exit 1 quer dizer que a G roda. `scripts/k1-oraculo-fraco.sh` — o passo K1, inclusive
+  teste higher-order do Pest
+- **`fw-qa-gate`**: o hook do perfil `qa-gate` nega a alteração da árvore pelo `Bash` (heurística) e
+  Edit/Write (construção); o gate continua lendo a wiki inteira, por desenho. O retorno traz o `06`
+  entre uma linha `<<<06` e uma `>>>06`, com `## Para o orquestrador` depois, e o `git status
+  --porcelain` de antes e de depois — sinal, não prova. O `indice.sh` roda só com `--check`, porque o
+  modo padrão grava arquivos
+- **`references/`**: `template-06.md` (o `06` com `Cobertura:`, linhas `P-nn`, coluna `Ticket` e o exit
+  de cada script) e `delegacao-e-playwright.md`
+
+### Alterado
+
+- **Dimensão I** lê `## Revisão do Diff (step 9)` do `03` e cobre só o que os quatro eixos do
+  `fw-revisor-diff` não cobrem; o `06` declara o que cobriu além. Sem a seção, as quatro linhas "eixo 9"
+  rodam inteiras
+- **Perfis de esforço decidíveis**: Completo (UI com JS ou domínio sensível, qualquer natureza) → Mínimo
+  (`ajuste`, sem UI, domínio comum) → Padrão = toda combinação restante. `ajuste` com UI sem JS não caía
+  em perfil nenhum. As naturezas `correção` e `refatoração` entram no Padrão
+- A **dimensão J** e a **Regressão Condicional** leem também *Toca infra compartilhada?* do
+  `## Natureza da Wiki`: `nova` com `sim` regride contra as features que consomem a infra, e a J só é
+  n/a com `nova` e `não`. Fechava um falso `APROVADO`
+- **Dimensão K**: a marca `Revisão adversarial: NÃO FEITA` no cabeçalho do `04` vai para
+  `## Não Verificado` e conta como K não verificada
+- **Princípio 5**: o teto vem da dimensão que ficou sem verificação por falta da ferramenta, não da mera
+  ausência de um opcional; skill do `qa-skills` substituída pelo fallback inline não rebaixa o veredito
+- **`NÃO APLICÁVEL` não é veredito do gate**: é o `06` mínimo que a sessão da `feature-wiki` escreve
+  sem rodar o gate ("Quando pular"). O gate o menciona numa linha, para ninguém o tratar como veredito
+  desconhecido
+- **Candidato a rule** só pela definição *Vale virar rule* da `requirement-to-rule` (step 12); o gate
+  não tem critério próprio, e sai o "recorrente entre features"
+- Formas do `04` que **não** são achado: a coluna `Costura` no `## Índice de Cenários`, `—` na linha "não
+  se aplica" do checklist de taxonomia, `RQ-nn — aberta (Qn), sem cenário até a resposta`. A Matriz usa
+  o critério dos scripts: saem da cobrança a `RQ` substituída ou decomposta, a citada sem `(parcial)` em
+  `Substitui` de Adendo e a `RQ`/`P-nn` fora desta entrega. Omissão de `RQ` existente não vira `P-nn`
+- **L6** conhece a coluna `Custo` de `## Despachos`: valor do host ou `—`, não se reproduz, e só a célula
+  vazia é achado (Cosmético). A contagem errada do cabeçalho do `04` (L1) se recalcula pelos `grep -c`
+  do template da `feature-test-design`
+- Vocabulário das três raias onde o gate o usava: destino 1 e passo 2 dizem "pergunta ao solicitante"
+  (raia requisito) ou "decisão do desenvolvedor" (raia desenho); a L5 "frase sem rastro" e o padrão
+  "código sem RQ" viram `P-nn`, não Adendo
+- Steps renumerados (`feature-wiki` 4.0.0) na `description`, no corpo, no README e no agente.
+  `metadata.requires: "feature-wiki>=4.0.0"`; sai `feature-test-design>=1.15.0`, exigida por
+  transitividade (a `feature-wiki` 4.0.0 requer a 1.16.0)
+
+### Corrigido
+
+Defeitos registrados na release 1:
+
+- A dimensão J roda em todo perfil quando a natureza não é `nova`
+- Filtro do `--mutate`: `--path=` é o verificado, `--class=` o fallback — o mesmo conselho da
+  `feature-test-design`
+- O `03` é degradável: sem ele, o gate declara e segue
+- Princípio 5 completo (Xdebug, `pest-plugin-browser`)
+- `{skills}` = o primeiro dos três diretórios que contém a skill citada; links para fora da skill em URL
+  absoluta
+- `dark-mode.sh`: arquivo relativo que não existe no diretório corrente é resolvido contra `--raiz`
+
+### Registrado, não corrigido
+
+- O teto de ~150 linhas do `06` estoura com muitos achados (estudo §7.4)
+- A heurística RCRCRC da regressão continua sem comando: é tabela de foco
+- Os blocos "Medido em 2026-09-21" seguem no corpo
+
 ## [1.6.0] — 2026-09-26
 
 Release 1 do roteiro do estudo
@@ -1797,6 +2327,88 @@ Etapa de QA dentro do agente — a próxima estação da esteira depois de imple
 
 Transforma decisões e restrições de um requisito em **Project Rules do Laravel Boost** (`.ai/rules/`), com aprovação explícita do usuário.
 
+## [1.4.0] — 2026-09-27
+
+Release 2 do roteiro de
+[`estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md`](estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md)
+(§8). Os itens que tocam esta skill e o que cada um virou:
+
+- **10 (step de rules com um dono e MCP)**: a skill é a dona única do step 12 da `feature-wiki` 4.0.0 —
+  coleta, os 4 gates, **um** prompt de aprovação, `record-rule`, índice e commit —, com rota declarada,
+  evidência mínima no gate 3, uma definição de *Vale virar rule* e poda compatível com o Boost
+- **4 (scripts, lado rules)**: a rule mecânica ganha um teste `arch()` gerado e provado por
+  `scripts/prova-arch.sh`
+- **6 (renumeração da `feature-wiki`)**: o step que invoca esta skill é o 12 (era o 9)
+
+O corpo do `SKILL.md` foi de 388 para **451 linhas** (comando da convenção), abaixo das 500 do spec.
+A skill passa a ter `references/` (três arquivos) e `scripts/` (um).
+
+**Não medido**: a primeira execução real — item c de
+[Rodadas pendentes](experimentos/README.md#rodadas-pendentes), agora com chegada nesta tag. A prova do
+`arch()` rodou num projeto-fixture com Pest 5.2.1, o comportamento do `RuleRepository` do Boost num
+harness da v2.10.0, a regeneração do índice por `tinker` num harness, e o `gh pr edit` foi conferido
+pelo `--help` e contra um stub, não contra um PR real. Os limiares novos são hipótese a calibrar:
+3 arquivos irmãos no gate 3 e 3 features seguidas no gatilho da poda.
+
+### Adicionado
+
+- **Dona única do step 12** (estudo §7.5): coleta de candidatos (ADRs do `02`, Notas de Implementação e
+  Conformidade com Rules do `03`, padrões do `01`, checklist de taxonomia do `04`), os 4 gates, **um**
+  prompt de aprovação, `record-rule`, índice e commit. Acaba a dupla coleta e a dupla aprovação que a
+  1.3.0 registrava nos Limites. Fontes e formato do prompt em `references/coleta-e-apresentacao.md`
+- **Rota declarada**: sessão principal, ou sub-agente que herde MCP (este devolve a apresentação como
+  texto); nunca `analista`. Sem MCP, o candidato chega marcado "gate 4 não verificado" e só é gravado se
+  o usuário decidir assim
+- **Gate 3 com evidência mínima**: ao menos 3 arquivos irmãos lidos, listados com path (achados por
+  `ls`/`grep`), e a frase "um agente que lesse só esses arquivos erraria porque …"
+- **`## Vale virar rule`**, a definição única da coletânea: durável **e** não-inferível **e** recorrência
+  declarada. A `feature-wiki` e o `feature-quality-gate` apontam para ela
+- **Poda**: gatilho (rule `n.a.` ou `violada` em `## Conformidade com Rules` em 3 features seguidas, ou
+  glob que não casa mais nenhum arquivo), proposta no mesmo prompt único e procedimento compatível com o
+  Boost, que não tem tool de remoção. Remover uma seção `## título` não mexe no índice; remover o arquivo
+  ou mudar o glob exige editar a linha do índice à mão — com a configuração padrão, o `boost:update` não
+  o regenera —, a única edição manual permitida, com o motivo. Alternativa, com a ressalva "API interna
+  do Boost, não documentada — pode mudar": `RuleRepository::writeIndex()` pelo `php artisan tinker`,
+  que falha com `BindingResolutionException` quando o Boost não está ativo no ambiente. Commit de poda
+  com `:fire: rules: remove {título}`
+- **Enforcement que roda**: a rule mecânica ganha um teste `arch()` gerado a partir do template de
+  `references/enforcement-arch.md`, gravado em `tests/Arch/{Área}Test.php` e provado por
+  `scripts/prova-arch.sh` em quatro checagens — (0) a suíte do `phpunit.xml` inclui `tests/Arch`, lida
+  pelo DOM do PHP (o `phpunit.xml` padrão do Laravel só tem Unit e Feature); (a) o teste passa no código
+  atual (se falha, é achado, não rule nova); (b) uma violação controlada o derruba; (c) o `git status
+  --porcelain` fica idêntico. A evidência vai para um diretório fora do repositório. A rule só diz
+  "Enforçado em …" com a prova colada. Sintaxe conferida na doc do Pest 5.x
+- **Linha de retorno e PR**: a skill devolve à sessão, como última linha, `apresentados N · gravados N ·
+  recusados N · descartados no gate N · poda N` — sempre, inclusive com zeros. O commit do step 12
+  (`.ai/rules/`, `tests/Arch/`, `phpunit.xml`) vai na branch do PR já aberto, com uma linha na descrição
+  acrescentada por `gh pr edit --body-file -`; sem `gh`, a linha vai ao usuário para colar
+- `references/indice-e-record-rule.md`: a tabela glob → arquivo e a alternativa do `writeIndex()`.
+  README: `gh` e `laravel/tinker` como dependências opcionais; nos Limites, "o commit do step 12 chega
+  depois do veredito"
+
+### Alterado
+
+- **Índice e `record-rule` como o Boost faz** (`laravel/boost` v2.10.0, `RuleRepository`, executado num
+  harness): uma linha por **arquivo** de rule, com os globs juntados por `, `; o mesmo título em dois
+  globs que caem no mesmo arquivo duplica a seção; o arquivo é escolhido pelos segmentos do glob
+  (`app/Http/Controllers/Api/**` → `api.md`, `tests/**` → `tests.md`). Saem "uma linha por glob", "duas
+  chamadas com o mesmo title/note" e "ordenar por especificidade". Atualizar rule existente é editar a
+  seção à mão, porque o `record-rule` sempre acrescenta outra
+- Escada de enforcement, degrau 4: Pint é formatação — sugerir o preset, não gravar rule
+- O exemplo do prompt único não dá mais ✅ no gate 4 sem MCP: todos levam ⚠️, com uma nota geral
+- O anti-padrão "escrever o arquivo à mão com Boost ativo" ganha a exceção da Poda
+- Skills Companheiras: a linha da taxonomia da `feature-test-design` passa pelo *Vale virar rule* e
+  pelos 4 gates, em vez de "é rule"
+- `metadata.requires`: `laravel/boost>=2.4.12; feature-wiki>=4.0.0`. `{skills}` = o primeiro dos três
+  diretórios que contém a skill citada; links para fora da skill, inclusive para as skills irmãs, em URL
+  absoluta
+
+### Removido
+
+- Do exemplo de rule, "Enforçado parcialmente por `tests/Arch/MoneyTest.php`": o `arch()` não enxerga
+  tipo de coluna, e a regra nova proíbe citar teste sem prova
+- Dos Limites do README, "não há poda de rule" e "vindo do step 9, a aprovação é pedida duas vezes"
+
 ## [1.3.0] — 2026-09-26
 
 Release 1 do roteiro de
@@ -1941,9 +2553,165 @@ Patch de documentação, sem mudança de comportamento. Nasce da auditoria inter
 
 ---
 
+# feature-tickets
+
+Fatia a wiki de uma feature em **tickets verticais** quando o plano não cabe numa sessão: cada ticket é um subconjunto de `RQ`/`P-nn` do `00` mais os `CT` do `04` que ficam verdes com ele.
+
+## [1.0.0] — 2026-09-27
+
+Skill nova, da release 2 do roteiro de
+[`estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md`](estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md)
+(§4.1–§4.4 e §8, itens 12 e 14):
+
+- **12 (`feature-tickets`)**: o ticket é `RQ` + `CT` + passos do `01` + bloqueio + status; `RQ` sem
+  ticket é achado; quem implementa recebe só a fatia; `wikis/specs/INDEX.md` é o quadro entre features;
+  espelho no tracker só sob pedido
+- **14 (expand–contract)**: a refatoração larga vira a sequência expand → migrate em lotes → contract
+
+A visualização em três níveis — quadro no repositório, status no chat sob pedido, espelho no GitHub
+Projects — foi pedida pelo usuário durante a release e é gerada por script, nunca escrita pelo
+modelo. A skill nasce de uma lacuna que o estudo nomeou (§4.2): o `01` fatia por camada, nada se
+demonstra até o último passo, e a feature medida em 2026-09-21 rodou numa sessão com 48 despachos e
+~4,6 M tokens.
+
+**Só o usuário invoca**: o frontmatter tem `disable-model-invocation: true`, extensão do Claude Code
+fora do spec Agent Skills. O `skills-ref validate` rejeita o campo, e o CI o tolera explicitamente (ver
+*Repositório*, abaixo). A `feature-wiki` 4.0.0 sugere a invocação no step 8. Corpo do `SKILL.md`:
+**475 linhas** (comando da convenção); `description` com 799 caracteres.
+
+**Não medido**: o critério de pronto do roteiro — uma feature de duas sessões entregue por tickets, com
+o quality gate no fim cruzando a coluna `Ticket` — não foi exercitado (item g de
+[Rodadas pendentes](experimentos/README.md#rodadas-pendentes)). Nenhum custo em tokens foi medido: a
+tabela *Como chamar* do README diz de onde o custo de cada invocação vem, não quanto é. Os scripts foram
+testados com fixtures de wiki, fora de um projeto Laravel, e o `espelho-gh.sh --aplicar` rodou só
+contra um stub do `gh`.
+
+### Adicionado
+
+- **Ticket** em `wikis/specs/{branch}/{feature}/07-tickets/NN-slug.md`, numerado em ordem de dependência,
+  com os campos fixos `**Entrega**` (comportamento ponta a ponta, do ponto de vista do usuário),
+  `**RQ cobertas**` (e `P-nn`), `**CT que ficam verdes**`, `**CT-B**`, `**Passos do 01 envolvidos**`
+  (número e link, não cópia), `**Bloqueado por**`, `**Bloqueia**`, `**Prefactoring**`, `**Costura**` e
+  `**Status**: pronto | em execução | em revisão | concluído — {data, evidência}`. O prefactoring é o
+  `00-prefactor-{slug}.md` e vem primeiro. Template em `references/template-ticket.md`
+- **Procedimento**: gate de entrada (`rastreabilidade.sh` da `feature-wiki` silencioso; `04` com
+  `## Costuras de Teste`) → corte ("se cabe numa sessão, não fatie") → prefactoring → fatia vertical por
+  `RQ`/`P-nn` + CT → arestas → **quiz** com o desenvolvedor, no formato `❓`/`➡️` da entrevista em três
+  raias, continuando o maior `Qn` da wiki → gravação, `## Tickets` no `03` e quadros
+- **Regras**: todo `RQ`/`P-nn` vigente e todo CT/CT-B em exatamente um ticket (sem ticket = omissão no
+  nível do plano); o CT fica no ticket onde vira verde; a `RQ` aberta só entra em ticket bloqueado pela
+  `Qn`; a `RQ` fora desta entrega no `01` fica fora; sem path de código e sem critério de aceite em
+  prosa; `concluído` só com aprovação do desenvolvedor, e nenhuma label automática. O tamanho de um
+  ticket não usa os limiares do step 8, que descrevem a feature inteira: é julgado no quiz, com o sinal
+  de retorno "a sessão do ticket compactou → dividir os próximos". A resposta a uma `Qn` vai para o
+  ticket que ela bloqueava, sem renumerar; pedido novo (Adendo com `**Responde a**: —`) e `P-nn` nascida
+  nos steps 9, 10 ou 11 ganham ticket novo no fim, gravado pela sessão que registra o Adendo ou roteia
+  o achado, sem invocar a skill
+- **Execução com cegueira de fatia**: um ticket por sessão nova (`/feature-tickets {wiki} {NN}`) ou por
+  `construtor` que recebe só o ticket, o `00`, o `02`, os passos do ticket e os CT dele. Limite
+  declarado: é cegueira por contexto entregue, não por construção — o hook da `feature-wiki` não tem
+  perfil para o `construtor`
+- **Fechamento**: os IDs `[CT-nn]` distintos da saída do Pest têm de ser os CT do ticket (a contagem de
+  testes não serve: com o Pest 5.2.1, 4 CT, um com dataset de 4 linhas, deram 7 testes) +
+  `pest --parallel --tia` contra a baseline → `em revisão`, o ponto de entrada da revisão humana →
+  `concluído`. Ao fechar, a skill responde uma linha: `NN → {status} · x/y concluídos · fronteira: …`.
+  Os steps 9, 10 e 11 da `feature-wiki` continuam por feature, depois do último ticket
+- **Expand–contract** para refatoração larga: expand → migrate em lotes, cada um bloqueado pelo expand,
+  com a suíte verde entre os lotes → contract. Exemplo Laravel de renomear coluna em
+  `references/expand-contract.md`, com a armadilha do update em massa, que não dispara `saving`
+- **`scripts/indice.sh`**, contrato 0/1/2 e PHP embutido (rodado de um arquivo temporário, pelo teto da
+  linha de comando no Windows):
+  - sem argumento: grava `wikis/specs/INDEX.md` (uma linha por feature: estado do `03`, tickets por
+    status, progresso, fronteira, veredito do `06`) e o `{wiki}/07-tickets/README.md` de cada feature
+    fatiada, com barra de progresso, tabela por ticket e o grafo de dependências em Mermaid colorido por
+    status (renderizado com o `@mermaid-js/mermaid-cli` 12.0.0 nos temas claro e escuro).
+    Determinístico e sem data
+  - `--status {wiki}`: a visão compacta em texto, sem gravar nada. Duas formas de chamar, lado a lado no
+    README: `! bash … indice.sh --status {wiki}` no prompt do Claude Code — zero token de modelo só com
+    `"respondToBashCommands": false`, porque desde a v2.1.186 o Claude Code responde à saída do `!` com
+    o custo de um prompt normal — e `/feature-tickets {wiki} status`, em que a skill responde uma linha
+  - `--check {wiki}`: a **fonte única** da alocação a ticket (o `rastreabilidade.sh` não confere
+    ticket) — alocação, forma, arestas, fatia vertical, costura (o grupo do CT no `## Índice de
+    Cenários`, comparado por nome inteiro) e o espelho em `## Tickets` do `03`
+- **`scripts/espelho-gh.sh`**, só sob pedido: dry-run por padrão (imprime os comandos `gh` e não chama
+  o `gh`); executa só com `--aplicar`, que exige `gh auth status`; uma issue por ticket, sem label;
+  idempotente pelo campo opcional `**Issue**` do ticket, gravado preservando o fim de linha do arquivo;
+  status → coluna do Project configurável
+- **`references/`**: `template-ticket.md`, `exemplo-de-fatiamento.md`, `expand-contract.md`,
+  `despacho-e-fechamento.md` e `visualizacao.md`
+- **README**, seção *Como chamar*: as oito invocações, cada uma com o que faz, quando usar, quem invoca,
+  custo e exemplo de saída real (gerada num projeto de exemplo com cinco tickets), as duas formas de ver
+  o status e de executar um ticket, como descobrir o caminho da wiki (bash e PowerShell 7.6.6) e o
+  caminho do script por local de instalação
+
+### Verificação antes da tag
+
+O reteste final rodou os scripts contra fixtures novas e não reproduziu os seis achados do reteste
+anterior (RT-01 a RT-06). Achou quatro na `feature-tickets` (RF-01 a RF-04), corrigidos antes da
+tag, com 32 casos de regressão:
+
+- "fora desta entrega" com o mesmo critério do `rastreabilidade.sh`, aberta ou não a `RQ`
+- **Costura** comparada por nome de grupo inteiro — `Pagamento na tela` não cita mais `Pagamento`
+- CRLF preservado ao gravar o `**Issue**` (`awk -v BINMODE=3`)
+- `RQ` "aberta — Qn" com a `Qn` já respondida vira um achado só, na linha da `RQ` no `00`
+
+### Não importado da `/to-tickets` (estudo §4.4)
+
+- Critério de aceite em prosa por ticket; tickets fora do controle de versão; label automática
+  `ready-for-agent`, que o próprio autor relata ter disparado execução indevida
+
+---
+
 # Repositório
 
 Mudanças que não pertencem a uma skill específica.
+
+## 2026-09-27 — release 2 do roteiro
+
+- **CI: [`.github/workflows/skills-ref.yml`](.github/workflows/skills-ref.yml)** valida as cinco
+  skills com **tolerância explícita** a campos de extensão do Claude Code: uma lista fechada
+  (`EXTENSOES_TOLERADAS`, hoje só `disable-model-invocation`). Para a skill que tem um campo da lista,
+  o job valida uma cópia temporária sem ele e escreve no log quais foram tolerados; qualquer campo fora
+  da lista continua reprovando. Job novo, **scripts e hook dos agentes**: `bash -n` em todo
+  `.ai/skills/*/scripts/*.sh`, nenhum `.sh` com CR, o `pestw.cmd` em CRLF, e um smoke test do
+  `guarda-subagente.sh` com PHP 8.4 (`shivammathur/setup-php@v2`) — 17 casos (nega/permite por
+  perfil, JSON inválido, perfil desconhecido), mais o bloco `hooks:` de cada um dos cinco agentes:
+  um evento só, `PreToolUse`, com o matcher das oito ferramentas logo abaixo, conferidos por extenso;
+  o bloco inteiro idêntico nos cinco além do perfil; e o comando, que tem de achar o script e falhar
+  fechado sem ele. O smoke test roda o comando com `sh -c` no bash do Linux e com
+  `pwsh -NoProfile -Command`, o caso do Windows sem Git Bash, que tem de sair com 2 no JSON que o bash
+  permite — trava o falha fechado fora do bash; sem `pwsh` no runner, o caso vira `::warning` e é
+  pulado (conferido tirando o `pwsh` do PATH). Os dois jobs acumulam as falhas e reprovam no fim.
+  Rodado localmente a partir do próprio YAML: verde no repositório, e vermelho nos controles negativos
+  (campo `user-invocable` fora da lista, `version` no topo, `.sh` em CRLF, `.cmd` em LF, erro de sintaxe,
+  agente com o perfil trocado, comando de hook diferente, hook que permite tudo, matcher sem `Bash`,
+  `Edit` e `Write` num agente e nos cinco, `PostToolUse` no lugar de `PreToolUse` num agente e nos
+  cinco, evento a mais no bloco, `type` do hook trocado num agente, comando sem o `exec` nos cinco,
+  comando sem o `; exit 2` do fim nos cinco)
+- **`.gitattributes`** (novo): `*.sh text eol=lf` e `*.cmd -text`. Com `core.autocrlf=true`, o
+  padrão do Git for Windows, o checkout converteria os `.sh` para CRLF, e o bash quebra; o `pestw.cmd`
+  é lido pelo `cmd.exe`, e o formato testado dele é CRLF. `-text`, e não `text eol=crlf`: este guarda o
+  blob em LF e só converte no checkout, e o `boost:add-skill` não faz checkout — baixa cada arquivo do
+  `raw.githubusercontent.com`, que serve o blob, e o grava como veio (`laravel/boost` v2.10,
+  `GitHubSkillProvider`). Conferido num repositório temporário: com `text eol=crlf`, o blob do
+  `pestw.cmd` tinha 0 CR (42 no disco); com `-text`, 42 no blob e 42 nos clones com `core.autocrlf`
+  `true`, `input` e `false`
+- **README raiz**: as cinco skills, com a `feature-tickets` invocada só pelo usuário e sugerida pelo
+  step 8; toda menção a step da `feature-wiki` na numeração 4.0.0, e o fluxo integrado na ordem nova,
+  com o fatiamento condicional; a coluna do hook na tabela de sub-agentes e a frase honesta sobre a
+  cegueira (por construção nas ferramentas de arquivo, heurística no `Bash`, e só com o hook
+  instalado); na instalação, onde o hook procura o script, o `bash` e o `php` no PATH e o que acontece
+  sem eles — no Windows sem Git Bash, o hook roda no PowerShell, falha fechado e os cinco agentes negam
+  toda ferramenta: para usá-los, é preciso o Git Bash; `{skills}` = o primeiro dos três diretórios que
+  contém a skill citada
+- **[`experimentos/README.md`](experimentos/README.md#rodadas-pendentes)**, Rodadas pendentes: quatro
+  novas — (d) release 2 × release 1, (e) custo do gate antes e depois, (f) teste ao vivo do hook,
+  (g) primeira feature entregue por tickets —, com tags de partida e de chegada e critério de pronto; as
+  rodadas (b) e (c) ganham a tag de chegada
+- **[Estudo](estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md#9-execução-do-roteiro-2026-09-2627)**,
+  seção nova e datada no fim, *9. Execução do roteiro (2026-09-26/27)*: item a item, a release, a
+  versão, o estado e o que falta, os desvios declarados e por que as duas releases saíram na mesma
+  sessão, com tags separadas. Nada acima dela foi reescrito
 
 ## 2026-09-26 — release 1 do roteiro
 

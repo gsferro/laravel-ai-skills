@@ -1,7 +1,8 @@
-> Referência da feature-test-design 1.15.0. Lida em: passo 7 (alocar a camada de cada cenário; o
-> porquê das regras de teto) e na escrita do cenário de componente (qual API do Filament/Livewire
-> usar). Fonte única de: a tabela cenário → camada → API em Laravel/Filament, os helpers
-> `@deprecated` do Filament e o que o teste de componente não distingue.
+> Referência da feature-test-design 1.16.0. Lida em: passo 2 (o valor de `Costura` de cada camada,
+> ao propor as costuras), passo 7 (alocar a camada de cada cenário; o porquê das regras de teto) e
+> na escrita do cenário de componente (qual API do Filament/Livewire usar). Fonte única de: a
+> tabela cenário → camada → API em Laravel/Filament, a correspondência camada → `Costura`, os
+> helpers `@deprecated` do Filament e o que o teste de componente não distingue.
 
 # Escolha de camada em Laravel/Filament — tabela e API
 
@@ -29,6 +30,23 @@ que mais destrói o orçamento de teste de uma feature.
 | **console limpo / erro de JS** | **Browser** | `assertNoSmoke()`, `assertNoJavaScriptErrors()` |
 | **acessibilidade** | **Browser** | `assertNoAccessibilityIssues()` |
 | **cor, tema, layout** | **Browser** | `inDarkMode()`, `assertScreenshotMatches()` |
+
+## Camada → valor de `Costura` (costuras do passo 2; conferido no passo 7, item 5)
+
+A coluna `Costura` de `## Costuras de Teste` e do `## Índice de Cenários` usa o enum da skill, não o
+nome da camada. Nas costuras, a linha escolhida é a do que a **regra** afirma; no passo 7, a do que o
+`Então` afirma — divergência muda o cenário de grupo. A correspondência:
+
+| Camada (tabela acima) | `Costura` | Nota |
+|---|---|---|
+| `Unit` | `unit de regra` | cálculo, regra pura, value object — sem container nem banco |
+| `Feature` | `Pest feature HTTP` | teste em `tests/Feature` com a aplicação de pé: pela rota, ou chamando model, action ou service direto — é onde vive o cenário "por fora do componente de UI" do gate de camada da regra |
+| Livewire | `componente Livewire/Filament` | `livewire(...)`, `fillForm`, `callAction`, `assertCanSeeTableRecords` |
+| **Browser** | `browser` | só o que o navegador prova; uma linha com esta costura é o que faz o `05` existir |
+
+**Existente > nova**: antes de propor costura nova, procurar a que o projeto já tem — um arquivo de
+teste irmão da mesma área (`ls tests/Feature/{Área}`, `ls tests/Unit`), o helper do `tests/Pest.php`
+e a ligação do `TestCase` por pasta (passo 7, item 1). A linha "nova" diz por que nenhuma serviu.
 
 ## Helpers `@deprecated` no Filament 4/5
 

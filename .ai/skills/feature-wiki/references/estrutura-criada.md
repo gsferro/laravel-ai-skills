@@ -1,4 +1,4 @@
-> Referência da feature-wiki 3.6.0. Lida em: step 4 (antes de decidir os arquivos extras). Fonte única de: arquivos extras `05-*` e exemplo de árvore criada.
+> Referência da feature-wiki 4.0.0. Lida em: step 4 (antes de decidir os arquivos extras). Fonte única de: arquivos extras `05-*` e exemplo de árvore criada — com o glossário do projeto, os tickets do step 8 e o quadro entre features.
 
 # Estrutura criada
 
@@ -8,7 +8,7 @@ Criar apenas quando a feature exige:
 
 | Arquivo | Quando criar |
 |---------|-------------|
-| `05-casos-de-teste-browser.md` | Feature que passa no gate de CT-B — ver [Arquivos 04 e 05](../SKILL.md#arquivos-04-e-05-casos-de-teste--delegados-à-feature-test-design) |
+| `05-casos-de-teste-browser.md` | `## Costuras de Teste` do `04` tem uma linha `browser` — ver [Gate do `05`](../SKILL.md#gate-do-05-browser) |
 | `05-design.md` | Feature com UI significativa (Filament, Livewire, Blade) |
 | `05-api-contract.md` | Feature com API externa (payloads, endpoints, autenticação) |
 | `05-db-schema.md` | Feature com schema complexo (múltiplas tabelas, migrations em cadeia) |
@@ -21,17 +21,24 @@ Criar apenas quando a feature exige:
 
 ```text
 wikis/
+├── glossario.md                            ← global: vocabulário do domínio (fora da pasta da feature)
 └── specs/
+    ├── INDEX.md                            ← quadro entre features: gerado pelo indice.sh da feature-tickets, nunca editado
     └── ferro/
         └── 579/
             └── relatorio-mba-lote/
-                ├── 00-requisito.md                  ← requisito bruto imutável + RQ-##
+                ├── 00-requisito.md                  ← requisito bruto imutável + RQ-## + perguntas + premissas
                 ├── 01-plano-acao.md
-                ├── 02-decisoes-arquiteturais.md      ← formato ADR
-                ├── 03-progresso.md                   ← + Blockers, Desvios, Retrospectiva
-                ├── 04-casos-de-teste.md              ← backend: + CTs de autorização
+                ├── 02-decisoes-arquiteturais.md      ← ADR só com os três portões (zero é válido)
+                ├── 03-progresso.md                   ← **Estado** + Tickets, Revisão do Diff, Despachos, Blockers, Desvios, Retrospectiva
+                ├── 04-casos-de-teste.md              ← step 7 (depois do Ponytail): costuras de teste + CTs de backend
                 ├── 05-casos-de-teste-browser.md      ← CT-B + roteiro desenhado × implementado
                 ├── 05-api-contract.md                ← extra quando necessário
                 ├── 05-rollback.md                    ← extra quando necessário
-                └── 06-relatorio-qa.md                ← saída do feature-quality-gate
+                ├── 06-relatorio-qa.md                ← saída do feature-quality-gate
+                └── 07-tickets/                       ← só se o step 8 fatiou (feature-tickets)
+                    ├── README.md                         ← quadro da feature, gerado pelo indice.sh — nunca editado
+                    ├── 00-prefactor-consulta-por-turma.md ← prefactoring, quando há: vem primeiro
+                    ├── 01-coordenador-dispara-lote.md    ← um ticket vertical por arquivo, em ordem de dependência
+                    └── 02-coordenador-notificado.md
 ```

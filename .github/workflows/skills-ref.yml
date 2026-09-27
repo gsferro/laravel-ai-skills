@@ -1,26 +1,46 @@
-# Valida cada skill de .ai/skills/ contra a especificação Agent Skills (https://agentskills.io/specification)
-# com `skills-ref validate` do pacote npm skills-ref: port não oficial, em TypeScript, do skills-ref, a
-# biblioteca de referência do spec (Python, https://github.com/agentskills/agentskills/tree/main/skills-ref).
-# As constantes e os campos permitidos batem com os da biblioteca Python (conferido em 2026-09-26);
-# as duas se declaram "for demonstration purposes only".
+# Dois jobs, em push e pull request:
 #
-# O que o validador confere, por skill: frontmatter só com os campos do spec (name, description,
-# license, compatibility, metadata, allowed-tools), `name` igual ao nome do diretório, `description`
-# com no máximo 1024 caracteres e `compatibility` com no máximo 500.
+# 1. validate — cada skill de .ai/skills/ contra a especificação Agent Skills
+#    (https://agentskills.io/specification), com `skills-ref validate` do pacote npm skills-ref: port
+#    não oficial, em TypeScript, do skills-ref, a biblioteca de referência do spec (Python,
+#    https://github.com/agentskills/agentskills/tree/main/skills-ref). As constantes e os campos
+#    permitidos batem com os da biblioteca Python (conferido em 2026-09-26); as duas se declaram "for
+#    demonstration purposes only". O validador confere, por skill: frontmatter só com os campos do spec
+#    (name, description, license, compatibility, metadata, allowed-tools), `name` igual ao nome do
+#    diretório, `description` com no máximo 1024 caracteres e `compatibility` com no máximo 500.
 #
-# Por quê: até a release 1 (2026-09-26) as quatro skills reprovavam no validador (`version` no topo
-# do frontmatter, `description` acima de 1024) e ninguém via, porque nada rodava a checagem. O
-# estudo estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md (§1.2 a §1.4; roteiro §8, item 1)
-# pede o validador em CI nas quatro, para a conformidade não regredir sem aviso.
+#    Tolerância explícita a extensões do Claude Code (release 2 do roteiro, 2026-09-27): a lista
+#    fechada está em EXTENSOES_TOLERADAS. Hoje tem um campo só, `disable-model-invocation` (a
+#    feature-tickets é invocada só pelo usuário; o spec não tem o campo, e o validador o reprova). Para a
+#    skill que tem um campo da lista no topo do frontmatter, o job valida uma cópia temporária sem esse
+#    campo e escreve no log quais foram tolerados. Qualquer campo fora da lista continua reprovando:
+#    a cópia só perde o que está na lista. Campo novo entra na lista por commit, com o motivo aqui.
 #
-# O que ele NÃO confere: o corpo abaixo de 500 linhas (recomendação do spec, não regra do
-# validador; três skills estão acima, com o motivo declarado no CHANGELOG) e os links para
-# references/. A tolerância a campos de extensão do Claude Code (ex.: disable-model-invocation)
-# fica para a release 2 do roteiro.
+# 2. scripts — os .sh de .ai/skills/*/scripts/ (release 2): `bash -n` em todos, nenhum .sh com CR (o
+#    bash quebra com CRLF; ver .gitattributes), o pestw.cmd em CRLF, e um smoke test do hook
+#    guarda-subagente.sh da feature-wiki com PHP (a lógica do hook é PHP embutido no .sh): casos de
+#    nega/permite por perfil, JSON inválido, e o bloco hooks: de cada um dos cinco agentes fw-*:
+#    idêntico nos cinco além do perfil, com o evento PreToolUse e o matcher das oito ferramentas, e um
+#    comando que tem de achar o script e falhar fechado quando não acha. O mesmo comando roda também
+#    com pwsh -NoProfile -Command: no Windows sem Git Bash, o Claude Code roda o hook no PowerShell,
+#    onde o `exec` do comando não existe e a linha cai no `exit 2` do fim — com o JSON que o bash
+#    permite, tem de sair com 2 (falha fechado). Sem pwsh no runner, esse caso vira ::warning e é
+#    pulado. O smoke test não substitui o teste ao vivo do item 9 do roteiro (README da feature-wiki,
+#    "Teste do hook") e não prova como o Claude Code chama o PowerShell.
+#
+# Por quê: até a release 1 (2026-09-26) as skills reprovavam no validador e ninguém via, porque nada
+# rodava a checagem (estudo estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md, §1.2 a §1.4;
+# roteiro §8, item 1). A release 2 pôs a cegueira dos cinco agentes num script (item 9) e as
+# checagens mecânicas em scripts/ (item 4): um .sh que não passa no bash, ou que chega em CRLF, tira o
+# hook de todos os agentes de uma vez — sem o script funcionando, o hook nega tudo.
+#
+# O que NÃO confere: o corpo abaixo de 500 linhas (recomendação do spec, não regra do validador; três
+# skills estão acima, com o motivo no CHANGELOG), os links para references/ e o comportamento dos
+# scripts contra uma wiki real (as fixtures ficaram fora do repositório).
 #
 # Versão fixada (0.1.5): fixa o pacote, não as dependências transitivas (commander ^12.1.0, js-yaml
-# ^4.1.0, sem lockfile), então o resultado pode mudar sem commit. Todas as skills são validadas;
-# a falha de uma não interrompe as outras, e o job reprova no fim se alguma falhou.
+# ^4.1.0, sem lockfile), então o resultado pode mudar sem commit. Nos dois jobs, a falha de um item não
+# interrompe os outros: as falhas se acumulam e o job reprova no fim.
 
 name: skills-ref
 
@@ -42,17 +62,50 @@ jobs:
         with:
           node-version: 22
 
-      - name: Validar cada .ai/skills/*/ que tem SKILL.md
+      - name: Validar cada .ai/skills/*/ que tem SKILL.md (tolerando só as extensões da lista)
         shell: bash
+        env:
+          # Lista fechada, separada por espaço. Só campo de extensão do Claude Code, com o motivo no
+          # cabeçalho deste arquivo.
+          EXTENSOES_TOLERADAS: disable-model-invocation
         run: |
+          # o bash do Actions roda com -e -o pipefail; aqui as falhas são acumuladas à mão
+          set +e +o pipefail
+          raiz="${SKILLS_DIR:-.ai/skills}"
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
           total=0
           falhas=()
-          for dir in .ai/skills/*/; do
+          toleradas=()
+          for dir in "$raiz"/*/; do
             dir="${dir%/}"
             [ -f "$dir/SKILL.md" ] || continue
             total=$((total + 1))
+            nome="$(basename "$dir")"
             echo "::group::$dir"
-            if npx -y skills-ref@0.1.5 validate "$dir"; then
+            # campos de topo do frontmatter: entre a 1ª e a 2ª linha ---, sem indentação
+            campos="$(awk 'NR == 1 && $0 != "---" { exit }
+                           /^---[ \t]*$/ { if (++n == 2) exit; next }
+                           n == 1 && /^[A-Za-z][A-Za-z0-9_-]*:/ { sub(/:.*/, ""); print }' "$dir/SKILL.md")"
+            tolerar=()
+            for c in $campos; do
+              case " $EXTENSOES_TOLERADAS " in *" $c "*) tolerar+=("$c") ;; esac
+            done
+            alvo="$dir"
+            if [ "${#tolerar[@]}" -gt 0 ]; then
+              # a cópia fica num diretório com o mesmo nome: o validador compara `name` com ele
+              alvo="$tmp/$nome"
+              cp -R "$dir" "$alvo"
+              awk -v lista=" ${tolerar[*]} " '
+                /^---[ \t]*$/ && n < 2 { n++; pula = 0; print; next }
+                n == 1 && /^[A-Za-z][A-Za-z0-9_-]*:/ { c = $0; sub(/:.*/, "", c); pula = index(lista, " " c " ") > 0 }
+                n == 1 && pula && (/^[A-Za-z][A-Za-z0-9_-]*:/ || /^[ \t]/ || /^$/) { next }
+                { print }' "$dir/SKILL.md" > "$alvo/SKILL.md"
+              echo "tolerado em $dir (extensão do Claude Code, fora do spec): ${tolerar[*]} — validando uma cópia sem esse(s) campo(s)"
+              echo "::notice file=$dir/SKILL.md::campo(s) de extensão tolerado(s) pelo CI: ${tolerar[*]}"
+              toleradas+=("$nome: ${tolerar[*]}")
+            fi
+            if npx -y skills-ref@0.1.5 validate "$alvo"; then
               echo "ok: $dir"
             else
               echo "::error file=$dir/SKILL.md::skills-ref validate reprovou $dir"
@@ -62,12 +115,201 @@ jobs:
           done
 
           if [ "$total" -eq 0 ]; then
-            echo "::error::nenhum .ai/skills/*/SKILL.md encontrado"
+            echo "::error::nenhum $raiz/*/SKILL.md encontrado"
             exit 1
           fi
 
-          echo "$total skill(s) validada(s); ${#falhas[@]} reprovada(s)"
+          echo "$total skill(s) validada(s); ${#falhas[@]} reprovada(s); extensões toleradas: ${#toleradas[@]}"
+          if [ "${#toleradas[@]}" -gt 0 ]; then printf '  tolerado — %s\n' "${toleradas[@]}"; fi
           if [ "${#falhas[@]}" -gt 0 ]; then
-            printf '  - %s\n' "${falhas[@]}"
+            printf '  reprovada — %s\n' "${falhas[@]}"
             exit 1
           fi
+
+  scripts:
+    name: scripts e hook dos agentes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: none
+
+      - name: Sintaxe (bash -n) e fim de linha dos scripts
+        shell: bash
+        run: |
+          set +e +o pipefail
+          shopt -s nullglob
+          falhas=0
+          scripts=(.ai/skills/*/scripts/*.sh)
+          if [ "${#scripts[@]}" -eq 0 ]; then
+            echo "::error::nenhum .ai/skills/*/scripts/*.sh encontrado"
+            exit 1
+          fi
+          for f in "${scripts[@]}"; do
+            if bash -n "$f"; then
+              echo "ok   bash -n: $f"
+            else
+              echo "::error file=$f::bash -n reprovou $f"
+              falhas=$((falhas + 1))
+            fi
+            cr=$(tr -cd '\r' < "$f" | wc -c)
+            if [ "$cr" -ne 0 ]; then
+              echo "::error file=$f::$f tem $cr CR (CRLF): o bash quebra com o \\r — confira o .gitattributes (*.sh text eol=lf)"
+              falhas=$((falhas + 1))
+            else
+              echo "ok   LF: $f"
+            fi
+          done
+          for f in .ai/skills/*/scripts/*.cmd; do
+            linhas=$(wc -l < "$f")
+            cr=$(tr -cd '\r' < "$f" | wc -c)
+            if [ "$cr" -ne "$linhas" ]; then
+              echo "::error file=$f::$f tem $cr CR em $linhas linhas: o formato testado no cmd é CRLF — confira o .gitattributes (*.cmd -text: o blob guarda os bytes CRLF)"
+              falhas=$((falhas + 1))
+            else
+              echo "ok   CRLF: $f ($linhas linhas)"
+            fi
+          done
+          echo "${#scripts[@]} .sh conferido(s); $falhas falha(s)"
+          [ "$falhas" -eq 0 ]
+
+      - name: Smoke test do hook guarda-subagente.sh (PHP)
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set +e +o pipefail
+          g=.ai/skills/feature-wiki/scripts/guarda-subagente.sh
+          php -r 'echo "php ", PHP_VERSION, "\n";' || { echo "::error::php não está no PATH"; exit 1; }
+          n=0
+          falhas=0
+
+          # caso <perfil> <exit esperado> <descrição> <JSON do PreToolUse>
+          caso() {
+            local saida rc
+            n=$((n + 1))
+            saida=$(printf '%s' "$4" | bash "$g" "$1" 2>&1)
+            rc=$?
+            if [ "$rc" -eq "$2" ]; then
+              echo "ok   $1 · $3 → exit $rc"
+            else
+              echo "::error::$1 · $3 → exit $rc (esperado $2)${saida:+ — $saida}"
+              falhas=$((falhas + 1))
+            fi
+          }
+
+          w=wikis/specs/b/f
+          caso revisor-diff  2 "Read do 01"                    '{"tool_name":"Read","tool_input":{"file_path":"'$w'/01-plano-acao.md"}}'
+          caso revisor-diff  2 "Read do 03"                    '{"tool_name":"Read","tool_input":{"file_path":"'$w'/03-progresso.md"}}'
+          caso revisor-diff  0 "Read de app/"                  '{"tool_name":"Read","tool_input":{"file_path":"app/Models/X.php"}}'
+          caso revisor-diff  2 "git diff sem excluir wikis/"   '{"tool_name":"Bash","tool_input":{"command":"git diff main...HEAD"}}'
+          caso revisor-diff  0 "git diff com :(exclude)wikis"  '{"tool_name":"Bash","tool_input":{"command":"git diff main...HEAD -- . '"':(exclude)wikis'"'"}}'
+          caso adversario-ct 0 "Read do 00"                    '{"tool_name":"Read","tool_input":{"file_path":"'$w'/00-requisito.md"}}'
+          caso adversario-ct 0 "Read do 04"                    '{"tool_name":"Read","tool_input":{"file_path":"'$w'/04-casos-de-teste.md"}}'
+          caso adversario-ct 2 "Read de app/"                  '{"tool_name":"Read","tool_input":{"file_path":"app/Models/X.php"}}'
+          caso adversario-ct 2 "Read do 01"                    '{"tool_name":"Read","tool_input":{"file_path":"'$w'/01-plano-acao.md"}}'
+          caso executor-ct   2 "Edit em app/"                  '{"tool_name":"Edit","tool_input":{"file_path":"app/Models/X.php","old_string":"a","new_string":"b"}}'
+          caso executor-ct   0 "Edit em tests/"                '{"tool_name":"Edit","tool_input":{"file_path":"tests/Feature/X/XTest.php","old_string":"a","new_string":"b"}}'
+          caso executor-ct   2 "Read do 02"                    '{"tool_name":"Read","tool_input":{"file_path":"'$w'/02-decisoes-arquiteturais.md"}}'
+          caso executor-ctb  2 "Write em database/migrations/" '{"tool_name":"Write","tool_input":{"file_path":"database/migrations/2026_01_01_000000_x.php","content":"x"}}'
+          caso qa-gate       0 "Read do 03"                    '{"tool_name":"Read","tool_input":{"file_path":"'$w'/03-progresso.md"}}'
+          caso qa-gate       2 "git stash"                     '{"tool_name":"Bash","tool_input":{"command":"git stash"}}'
+          caso revisor-diff  2 "JSON inválido"                 '{"tool_name":"Read","tool_input":'
+          caso perfil-que-nao-existe 2 "perfil desconhecido"   '{"tool_name":"Read","tool_input":{"file_path":"app/Models/X.php"}}'
+
+          # O bloco hooks: de cada agente fw-*, extraído do frontmatter:
+          # (1) um evento só, PreToolUse, e logo abaixo o matcher das oito ferramentas, conferidos por
+          #     extenso: no PostToolUse o exit 2 não impede a ferramenta, e um matcher sem Bash ou sem
+          #     Edit desliga o hook para elas — e um bloco errado igual nos cinco não pararia em (2);
+          # (2) o bloco inteiro (do "hooks:" até a próxima chave de topo), com o perfil trocado por
+          #     PERFIL, idêntico nos cinco; perfil = nome do agente sem "fw-";
+          # (3) o comando (escalar dobrado >-): com a skill em $CLAUDE_PROJECT_DIR/.ai/skills, acha o
+          #     script e aplica o perfil; sem o script nos três lugares, falha fechado (exit 2,
+          #     "nao encontrado");
+          # (4) o mesmo comando pelo pwsh -NoProfile -Command, com o script no lugar e o JSON que o
+          #     bash permitiu em (3) (Read do 00 → 0 nos cinco perfis; o Read de app/ o adversario-ct
+          #     nega também no bash): tem de sair com 2. É o Windows sem Git Bash, onde o Claude Code
+          #     roda o hook no PowerShell — o `exec` não existe e a linha cai no `exit 2` do fim. Um
+          #     comando sem esse desenho (o antigo `sh -c '…'` sai com 1, que não bloqueia) reprova aqui.
+          bloco() {
+            awk '{ sub(/\r$/, "") }
+                 /^---[ \t]*$/ { if (++fm == 2) exit; next }
+                 fm == 1 && /^hooks:[ \t]*$/ { on = 1; print; next }
+                 on && /^[^ \t]/ { exit }
+                 on { print }' "$1"
+          }
+          evento='  PreToolUse:'
+          matcher='    - matcher: "Read|Grep|Glob|Bash|Edit|Write|MultiEdit|NotebookEdit"'
+          extrai() {
+            awk '/^---[ \t]*$/ { if (++fm == 2) exit; next }
+                 fm == 1 && /^[ \t]+command:[ \t]*>-[ \t]*$/ { on = 1; ind = -1; next }
+                 on { if ($0 ~ /^[ \t]*$/) exit
+                      match($0, /^[ \t]*/); if (ind < 0) ind = RLENGTH; if (RLENGTH < ind) exit
+                      l = substr($0, ind + 1); out = (out == "" ? l : out " " l) }
+                 END { print out }' "$1"
+          }
+          vazio="$(mktemp -d)"
+          modelo=""
+          agentes=0
+          pwsh="$(command -v pwsh)"
+          if [ -n "$pwsh" ]; then
+            echo "pwsh $("$pwsh" -NoProfile -Command '$PSVersionTable.PSVersion.ToString()' 2>/dev/null)"
+          else
+            echo "::warning::pwsh não está no PATH: o caso (4), o comando do hook rodado pelo PowerShell (Windows sem Git Bash), foi pulado"
+          fi
+          for a in .ai/skills/*/agents/fw-*.md; do
+            agentes=$((agentes + 1))
+            nome="$(basename "$a" .md)"
+            esperado="${nome#fw-}"
+            cmd="$(extrai "$a")"
+            perfil="$(printf '%s' "$cmd" | sed -n 's/.*exec bash "\$f" \([a-z-]*\);.*/\1/p')"
+            n=$((n + 1))
+            if [ -z "$cmd" ] || [ "$perfil" != "$esperado" ]; then
+              echo "::error file=$a::$nome: bloco hooks: ausente ou com perfil \"$perfil\" (esperado \"$esperado\")"
+              falhas=$((falhas + 1)); continue
+            fi
+            blk="$(bloco "$a" | sed "s/\"\\\$f\" $perfil;/\"\\\$f\" PERFIL;/")"
+            estrutura="$(printf '%s\n' "$blk" | sed -n '2,3p')"
+            eventos="$(printf '%s\n' "$blk" | grep -cE '^  [A-Za-z]+:')"
+            if [ "$estrutura" != "$evento"$'\n'"$matcher" ] || [ "$eventos" -ne 1 ]; then
+              echo "::error file=$a::$nome: o bloco hooks: tem de ter um evento só, PreToolUse, com o matcher das oito ferramentas logo abaixo (Read|Grep|Glob|Bash|Edit|Write|MultiEdit|NotebookEdit)"
+              falhas=$((falhas + 1)); continue
+            fi
+            if [ -z "$modelo" ]; then modelo="$blk"
+            elif [ "$blk" != "$modelo" ]; then
+              echo "::error file=$a::$nome: o bloco hooks: difere do dos outros agentes além do perfil"
+              falhas=$((falhas + 1)); continue
+            fi
+            ler00='{"tool_name":"Read","tool_input":{"file_path":"'$w'/00-requisito.md"}}'
+            editar='{"tool_name":"Edit","tool_input":{"file_path":"app/Models/X.php","old_string":"a","new_string":"b"}}'
+            printf '%s' "$ler00"  | CLAUDE_PROJECT_DIR="$PWD" HOME="$vazio" sh -c "$cmd" >/dev/null 2>&1; r1=$?
+            printf '%s' "$editar" | CLAUDE_PROJECT_DIR="$PWD" HOME="$vazio" sh -c "$cmd" >/dev/null 2>&1; r2=$?
+            msg="$(printf '%s' "$ler00" | CLAUDE_PROJECT_DIR="$vazio" HOME="$vazio" sh -c "$cmd" 2>&1 >/dev/null)"; r3=$?
+            if [ "$r1" -eq 0 ] && [ "$r2" -eq 2 ] && [ "$r3" -eq 2 ] && [ "${msg#*nao encontrado}" != "$msg" ]; then
+              echo "ok   $nome: bloco hooks: (PreToolUse, oito ferramentas) acha o script (Read do 00 → 0, Edit em app/ → 2) e falha fechado sem ele (→ 2)"
+            else
+              echo "::error file=$a::$nome: Read do 00 → $r1 (esperado 0), Edit em app/ → $r2 (esperado 2), sem o script → $r3 (esperado 2, 'nao encontrado')${msg:+ — $msg}"
+              falhas=$((falhas + 1))
+            fi
+            if [ -n "$pwsh" ]; then
+              n=$((n + 1))
+              printf '%s' "$ler00" | CLAUDE_PROJECT_DIR="$PWD" HOME="$vazio" "$pwsh" -NoProfile -Command "$cmd" >/dev/null 2>&1; r4=$?
+              if [ "$r4" -eq 2 ]; then
+                echo "ok   $nome: pelo pwsh -Command, falha fechado (Read do 00, que o bash permite → 2)"
+              else
+                echo "::error file=$a::$nome: pelo pwsh -Command, Read do 00 → $r4 (esperado 2: no Windows sem Git Bash o hook roda no PowerShell e tem de negar tudo; só o exit 2 bloqueia)"
+                falhas=$((falhas + 1))
+              fi
+            fi
+          done
+          rm -rf "$vazio"
+          if [ "$agentes" -ne 5 ]; then
+            echo "::error::esperados 5 agentes fw-* com hook, achados $agentes"
+            falhas=$((falhas + 1))
+          fi
+
+          echo "$n caso(s); $falhas falha(s)"
+          [ "$falhas" -eq 0 ]

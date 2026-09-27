@@ -1,4 +1,4 @@
-> Referência da feature-wiki 3.6.0. Lida em: início da sessão de planejamento (ativar Caveman e Ponytail). Fonte única de: fronteira do Caveman com os arquivos wiki, onde ele se aplica e como ativar o trio.
+> Referência da feature-wiki 4.0.0. Lida em: início da sessão de planejamento (ativar Caveman e Ponytail). Fonte única de: fronteira do Caveman com os arquivos wiki, onde ele se aplica e como ativar o trio.
 
 # Ponytail e Caveman — integração
 

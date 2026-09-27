@@ -322,10 +322,14 @@ O que esta página dizia antes, e o que os dados brutos sustentam.
 
 ## Rodadas pendentes
 
-Três medições que o roteiro do estudo
+Medições que o roteiro do estudo
 [`2026-09-26-agentskills-spec-to-spec-to-tickets.md`](../estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md)
-(§8) exige e que a sessão da release de 2026-09-26 não fez: elas pedem um projeto Laravel e os
-braços do protocolo. Ordem sugerida: (a), depois (b), depois (c).
+(§8) exige e que as sessões das releases não fizeram: elas pedem um projeto Laravel e, as de DDR, os
+braços do protocolo. As três primeiras são da release 1 (2026-09-26); de (d) a (g), da release 2
+(2026-09-27), que saiu na mesma sessão, antes de qualquer uma delas rodar
+([estudo, §9](../estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md#9-execução-do-roteiro-2026-09-2627)).
+Ordem sugerida: (a) → (d), a série de regressão, uma fase por vez; depois (b), (e), (c) e (g). A (f)
+é barata e não depende das outras: pode ir primeiro.
 
 **Pré-requisito das rodadas (a) e (b).** O oráculo congelado não tem
 `02-decisoes-arquiteturais.md`, e a `feature-test-design` ≥ 1.12 exige a `## Superfície Livewire`
@@ -362,8 +366,9 @@ dois cenários pontuam P×I 6 a 9 na maioria das áreas.
 
 - **Partida**: `feature-test-design-v1.15.0` (o perfil mínimo como é hoje: 1 cenário por regra,
   só partição, gate de mutantes afirmado pelo mesmo agente que derivou).
-- **Chegada**: a tag da release 2 que implementar o item 7 (gate de mutantes falsificável em todo
-  perfil) — ainda sem número.
+- **Chegada**: `feature-test-design-v1.16.0` (+ `feature-wiki-v4.0.0`), a release 2, que implementou
+  o item 7: coluna `Asserção que mata` obrigatória em todo perfil. Na 1.16.0, `RQ` aberta não gera
+  cenário: o braço de chegada precisa do solicitante simulado descrito em (d).
 - **Montagem**: marcador `{PERFIL}` do `PROMPT-BRACO.md` = mínimo imposto em todas as áreas,
   declarado no cabeçalho do `04`. Os dois cenários têm áreas de Impacto 3 (dinheiro,
   autorização), então a revisão adversarial dispara pelo Impacto 3 mesmo no mínimo — o que se
@@ -383,21 +388,122 @@ Três versões e nenhuma execução registrada (estudo, §7.1, T14). Não é rod
 catálogo de defeitos para rules. É uma execução descrita.
 
 - **Partida**: `requirement-to-rule-v1.3.0` + `feature-wiki-v3.6.0` (o step 9 que a chama).
-- **Chegada**: a tag da release 2 que implementar o item 10 (step 9 com um dono e com MCP) —
-  ainda sem número.
+- **Chegada**: `requirement-to-rule-v1.4.0` + `feature-wiki-v4.0.0`, a release 2, que implementou o
+  item 10. Na 4.0.0 o step que chama a skill é o 12 (era o 9), e a skill é a dona única dele. Na
+  chegada, registrar também a prova do `arch()` por `scripts/prova-arch.sh`, a linha de retorno
+  (`apresentados N · gravados N · …`) e, se houver poda, o índice depois dela.
 - **Montagem**: projeto-cobaia com `laravel/boost` ≥ 2.4.12 (a tool MCP `record-rule`, com
-  `glob`, `title` e `note`, existe desde essa versão) e uma feature completa, steps 0 a 9 — a
-  feature de referência de 2026-09-21 no `demo-wiki`, se a wiki dela ainda existir, ou o cenário
-  2 implementado de ponta a ponta. Rodar só em cobaia descartável: não existe tool nem comando
-  para remover rule.
+  `glob`, `title` e `note`, existe desde essa versão) e uma feature completa, steps 0 a 9 na
+  partida (3.x) e 0 a 12 na chegada — a feature de referência de 2026-09-21 no `demo-wiki`, se a
+  wiki dela ainda existir, ou o cenário 2 implementado de ponta a ponta. Rodar só em cobaia
+  descartável: não existe tool nem comando para remover rule.
 - **Registrar**: versões (`metadata.version` das skills, `laravel/boost`); host e modelo;
-  candidatos coletados e por quem (step 9 ou a skill); por candidato, o resultado de cada um dos
-  4 gates com a evidência — e se o gate 4 (`search-docs`, MCP) rodou, em que rota; **quantos
-  prompts de aprovação** o usuário recebeu; as rules gravadas por `record-rule` e se o índice
-  regenerado as lista; para rule mecânica, se o `arch()` ou a config que ela cita existe e se a
+  candidatos coletados e por quem (o step de rules — 9 na 3.x, 12 na 4.0.0 — ou a skill); por
+  candidato, o resultado de cada um dos 4 gates com a evidência — e se o gate 4 (`search-docs`,
+  MCP) rodou, em que rota; **quantos prompts de aprovação** o usuário recebeu; as rules gravadas
+  por `record-rule` e se o índice regenerado as lista; para rule mecânica, se o `arch()` ou a config que ela cita existe e se a
   suíte roda.
 - **Pronto quando** (estudo, §8, itens 10 e 11): "primeira execução real registrada em
   `experimentos/`"; na chegada, "um prompt de aprovação, não dois".
+
+### (d) Release 2 × release 1 — o desenho sem regressão em C1/C2
+
+A release 2 mudou o desenho da derivação: o `04` nasce depois do Ponytail (step 7), com costuras de
+teste declaradas, `Asserção que mata` em todo perfil, `RQ` aberta sem cenário e perguntas ao
+solicitante. Nenhuma rodada mediu se isso custou detecção.
+
+- **Partida**: `feature-wiki-v3.6.0` + `feature-test-design-v1.15.0` — a chegada de (a). Rodar (a)
+  antes isola as duas fases: (a) mede o empacotamento, (d) mede o desenho.
+- **Chegada**: `feature-wiki-v4.0.0` + `feature-test-design-v1.16.0`.
+- **Montagem**: a de (a) — os dois cenários, o mesmo kit, o mesmo oráculo, o mesmo
+  [`PROMPT-BRACO.md`](protocolo/PROMPT-BRACO.md) nas duas pontas e o mesmo juiz (prompt **e** modelo).
+  Duas diferenças obrigatórias: (1) um **solicitante simulado**, com as respostas escritas **antes**
+  da rodada e iguais nas duas pontas, responde às perguntas de requisito do braço de chegada; sem ele,
+  a 1.16.0 deixa sem cenário toda `RQ` ambígua (`RQ-nn — aberta (Qn)`), a detecção dos defeitos
+  plantados em ambiguidade cai por construção, e a comparação fica viesada. (2) Na chegada, a revisão
+  adversarial roda pelo `fw-adversario-ct` com o hook instalado (`guarda-subagente.sh` em
+  `.ai/skills/feature-wiki/scripts/` do projeto-cobaia), ou a rodada declara a degradação.
+- **Registrar além do usual**: as perguntas que o braço de chegada fez, por raia, e as respostas
+  simuladas usadas; a tabela `## Costuras de Teste` e se o `05` nasceu (costura `browser`); por
+  mutante, se a `Asserção que mata` diverge de fato sob ele.
+- **Pronto quando** (estudo, §8, itens 5, 6, 7 e 13): **sem regressão** em C1/C2, com a definição de
+  (a) — em cada cenário, detectados na chegada ≥ detectados na partida, nenhum defeito que a partida
+  detectou vira NÃO DETECTA, nenhuma lacuna cega nova.
+
+### (e) Item 8 — custo do quality gate antes e depois
+
+O item 8 pediu o custo do gate "medido antes/depois em `## Despachos`". A 1.7.0 trocou greps
+reescritos por scripts e a dimensão I deixou de repetir o step 9 — a hipótese é que o gate ficou
+mais barato —, e acrescentou o teto por cobertura e a L7. Nenhum número foi medido.
+
+- **Partida**: `feature-quality-gate-v1.6.0` + `feature-wiki-v3.6.0` (o gate no step 8 da 3.x).
+- **Chegada**: `feature-quality-gate-v1.7.0` + `feature-wiki-v4.0.0` (o gate no step 11).
+- **Montagem**: a mesma feature, com a wiki e o diff iguais nas duas pontas e o app servido igual, o
+  gate despachado pelo `fw-qa-gate` (`opus`) nas duas, o mesmo perfil de esforço. Host que reporta
+  tokens e duração no retorno do sub-agente; sem isso, a coluna `Custo` fica `—` e a rodada não
+  conta.
+- **Registrar**: tokens e duração (a coluna `Custo` de `## Despachos`, nova na 4.0.0; na partida,
+  anotar à mão do retorno), dimensões verificadas e não verificadas com a causa, veredito, número de
+  achados por destino, o exit de cada script na chegada. É também a primeira execução do gate com o
+  teto por cobertura: registrar se o veredito mudou por ele.
+- **Pronto quando** (estudo, §8, item 8): "custo do gate medido antes/depois em `## Despachos`".
+
+### (f) Item 9 — teste ao vivo do hook
+
+O contrato do `guarda-subagente.sh` foi conferido só alimentando o script com JSON de `PreToolUse`
+(e o CI repete um smoke test a cada push). Nenhum agente foi despachado com o hook ativo.
+
+- **Partida**: `feature-wiki-v3.6.0` — o `fw-revisor-diff` sem hook, com `Read` sem restrição de
+  path (estudo, §7.1 T6). O esperado é a frase do `01` aparecer: é o defeito que o item 9 corrige.
+- **Chegada**: `feature-wiki-v4.0.0`, com os cinco agentes copiados de novo para `.claude/agents/`.
+- **Montagem**: o procedimento do README da `feature-wiki`,
+  [Teste do hook](https://github.com/gsferro/laravel-ai-skills/blob/main/.ai/skills/feature-wiki/README.md#teste-do-hook),
+  numa feature com wiki: despachar o `fw-revisor-diff` sobre `{base}...HEAD` e pedir que cite a
+  primeira frase do `01-plano-acao.md`; repetir pedindo `cat` do mesmo arquivo pelo `Bash` e um
+  `git diff {base}...HEAD` sem a exclusão de `wikis/`; o controle renomeia o script e despacha de novo.
+  O hook fica com o primeiro dos três diretórios em que acha o script, então o controle renomeia o
+  `guarda-subagente.sh` **em todo lugar onde ele existe** — para achar:
+  `ls .ai/skills/feature-wiki/scripts/guarda-subagente.sh .claude/skills/feature-wiki/scripts/guarda-subagente.sh ~/.claude/skills/feature-wiki/scripts/guarda-subagente.sh`.
+  Com `.claude/skills/` em symlink, basta renomear em `.ai/skills/`; com cópia ou instalação global,
+  renomeado só num lugar, o hook acha outra cópia e o controle não prova nada (reproduzido em fixture
+  em 2026-09-27: com a cópia em `.claude/skills/`, o `Read` de `app/` saiu com exit 0, sem
+  `nao encontrado`). **Caso Windows sem Git Bash**, numa máquina Windows sem Git Bash (ou com ele fora
+  do PATH do Claude Code): o mesmo despacho. A documentação diz que aí os hooks rodam no PowerShell.
+  O comando é `exec sh -c '…; exit 2'; exit 2`, e o `exec`, que não existe no PowerShell, leva ao
+  `exit 2` do fim — medido com `pwsh -NoProfile -Command` (7.6.6) e `powershell -NoProfile -Command`
+  (5.1): exit 2 num `Read` de `app/` que o bash permite. O esperado é o agente negar toda ferramenta
+  (falha fechado), parar, e a sessão cair no fallback `general-purpose`. A negação vem com o erro do
+  PowerShell (`exec` não reconhecido), não com o `nao encontrado`.
+- **Registrar**: a versão do Claude Code, o retorno literal de cada despacho (a linha de negação do
+  hook, com o perfil e o motivo), os lugares onde o script existia e onde foi renomeado no controle, o
+  resultado do controle e, no caso Windows sem Git Bash: se toda ferramenta voltou negada, a mensagem
+  literal da negação, se o agente parou e se a sessão caiu no fallback (a frase do `01` só pode vir
+  pelo fallback, que não tem hook).
+- **Pronto quando** (estudo, §8, item 9): "despachar o `fw-revisor-diff` com o `01` na pasta e pedir
+  que o cite — precisa falhar", com o motivo do hook no retorno; no controle, com o script renomeado em
+  todo lugar, toda ferramenta volta com `guarda-subagente.sh nao encontrado` e o agente para; o caso
+  Windows sem Git Bash registrado — toda ferramenta negada e o fallback na sessão, ou o que aconteceu
+  no lugar disso.
+
+### (g) Item 12 — primeira feature entregue por tickets
+
+- **Partida**: a feature de referência de 2026-09-21 no `demo-wiki` (18 `RQ`, 79 CT no fim, uma
+  sessão, 48 despachos, ~4,6 M tokens de sub-agente; registro em
+  [*Validado em campo*](https://github.com/gsferro/laravel-ai-skills/blob/main/.ai/skills/feature-wiki/references/casos-medidos.md#validado-em-campo--2026-09-21-feature-completa-no-demo-wiki)).
+  É referência de tamanho, não braço de controle: a feature da chegada não é a mesma.
+- **Chegada**: `feature-tickets-v1.0.0` + `feature-wiki-v4.0.0` + `feature-test-design-v1.16.0` +
+  `feature-quality-gate-v1.7.0`.
+- **Montagem**: uma feature que cruze um sinal do step 8 (18 ou mais `RQ` vigentes, 60 ou mais CT,
+  compactação antes do step 8, mais de 30 perguntas de requisito ou refatoração larga), fatiada por
+  `/feature-tickets {wiki}` e executada em pelo menos duas sessões, cada ticket numa sessão nova
+  (`/feature-tickets {wiki} {NN}`), com o quality gate no fim, uma vez, sobre a feature inteira.
+- **Registrar**: o sinal do step 8 que disparou; tickets, sessões e despachos; o custo por ticket
+  (coluna `Custo` de `## Despachos`); se alguma sessão de ticket compactou (o sinal de ticket grande
+  demais); a saída do `indice.sh --check` antes de cada despacho e no fim; a Matriz de
+  Rastreabilidade do `06` com a coluna `Ticket`. É também a calibração dos limiares do step 8, que são
+  hipótese: a linha `Não fatiado — …` ou `Fatiamento confirmado — …` do `03` guarda os números.
+- **Pronto quando** (estudo, §8, item 12): "feature de 2 sessões entregue por tickets, com o gate no
+  fim cruzando a coluna *ticket*".
 
 ## Como repetir
 

@@ -1,0 +1,17 @@
+# Fim de linha dos scripts das skills (.ai/skills/*/scripts/), fixado aqui em vez de depender do
+# core.autocrlf de cada máquina.
+#
+# *.sh em LF: com core.autocrlf=true (o padrão do Git for Windows), o checkout converteria os .sh
+# para CRLF, e o bash quebra com o \r no fim de cada linha ($'\r': command not found). Os scripts
+# rodam com `bash script.sh` no Git Bash, no Linux e no CI.
+#
+# *.cmd sem conversão (-text), guardado em CRLF no próprio blob: o feature-wiki/scripts/pestw.cmd é
+# lido pelo cmd.exe, e o formato testado dele é CRLF (o cabeçalho diz "Arquivo CRLF"). Não é
+# `text eol=crlf`: esse atributo guarda o blob em LF e só converte no checkout, e o boost:add-skill
+# não faz checkout — baixa cada arquivo do raw.githubusercontent.com, que serve o blob, e o grava como
+# veio (laravel/boost v2.10, GitHubSkillProvider). Com -text, o clone (qualquer core.autocrlf) e o
+# download do Boost entregam os mesmos bytes CRLF.
+#
+# O CI (.github/workflows/skills-ref.yml, job de scripts) reprova .sh com CR e .cmd sem CRLF.
+*.sh  text eol=lf
+*.cmd -text

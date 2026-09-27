@@ -1,9 +1,8 @@
-> Referência da feature-test-design 1.15.0. Lida em: qualquer passo, quando for preciso o caso
-> que motivou uma regra (o `SKILL.md` e as outras references têm a regra; aqui fica a evidência).
-> Fonte única de: os casos medidos que originaram as regras da skill. Exceções, por serem texto de
-> outro tema: o "Medido (2026-09-21)" do helper `{entidade}Em`, que é texto do template do `04`
-> (`references/template-04.md`), e os números do lançador `.cmd` do `pest --mutate`
-> (`references/mutation-testing.md`).
+> Referência da feature-test-design 1.16.0. Lida em: qualquer passo, quando for preciso o caso
+> que motivou uma regra (o `SKILL.md`, as outras references e o agente `fw-adversario-ct` têm a
+> regra; aqui fica a evidência). Fonte única de: os casos medidos que originaram as regras da skill
+> e do agente. Exceção, por ser texto de outro tema: os números do lançador `.cmd` do
+> `pest --mutate` (`references/mutation-testing.md`).
 
 # Casos medidos — a evidência por trás de cada regra
 
@@ -133,6 +132,11 @@ porque ninguém volta a olhar.
 > dela. […] ele mora na escolha do oráculo, não na escolha do valor."* A correção não é deixar de
 > escrever o cenário — é **fixar o sinal por regra**.
 
+**Nota 1.16.0.** A conclusão acima é de antes da raia requisito. Desde a 1.16.0, *fixar o sinal por
+regra* vale para a recomendação (➡️) da pergunta de requisito — falha fechado —, não para um
+cenário: a `RQ` fica `aberta — Qn`, e o cenário da direção só nasce da resposta, no Adendo. A regra e
+o custo da troca estão em `references/tecnicas-por-regra.md` §Premissa.
+
 ### Premissa de mecanismo
 
 > Medido: um conjunto fixou *"a exclusão é física"* e registrou no checklist *"unicidade +
@@ -166,6 +170,14 @@ porque ninguém volta a olhar.
 > dela** — e o discriminante que falta quase sempre é este: *a página sanitiza o valor, o widget o
 > recebe cru*, então o cenário precisa entrar pelo widget.
 
+## Setup Global do `04` — fixture por transições reais
+
+Estava no template do `04` (`references/template-04.md`, helper `{entidade}Em`), que é copiado
+para todo `04` gerado; saiu dele na 1.16.0 e ficou aqui:
+
+> Medido (2026-09-21): a fixture por transição expôs que a notificação real exigia
+> contexto de painel — um `create(['situacao' => …])` nunca mostraria
+
 ## Passo 6 — oráculo invertido (gate, item 6)
 
 > Medido: `CT-22` de um conjunto dizia *"Dado uma solicitação de valor 3.000,00 criada pela
@@ -191,8 +203,9 @@ porque ninguém volta a olhar.
 
 ## Revisão adversarial — primeira feature completa com adversário cego
 
-As "perguntas 5–7" citadas no bloco são as sondas 5–7 do resumo em
-`references/revisao-adversarial.md` (itens 6–8 do contrato em `agents/fw-adversario-ct.md`).
+As "perguntas 5–7" citadas no bloco (numeração da época, mantida porque o bloco é verbatim) são as
+sondas 6–8 do contrato em `agents/fw-adversario-ct.md` e do resumo em
+`references/revisao-adversarial.md`.
 
 > **Medido em 2026-09-21** (feature de aprovação de compra, 60 CTs derivados por `opus`): a rodada 1
 > do adversário cego (`opus`, só `00` + `04`) achou **5 implementações erradas que passavam por
@@ -200,3 +213,14 @@ As "perguntas 5–7" citadas no bloco são as sondas 5–7 do resumo em
 > perguntas 5–7 acima nasceram do que **nem o adversário** perguntou e o quality gate depois
 > perguntou: gestor que acumula `diretor` assinava as duas etapas sozinho; quem já decidiu perdia a
 > solicitação de vista. A cegueira pesou mais que o modelo — os dois eram `opus`.
+
+### Sondas 6 e 7 do agente — o caso, fora do prompt
+
+Até a 1.15.0 o caso ia dentro das sondas 6 e 7 de `agents/fw-adversario-ct.md`, e portanto no
+prompt de **todo** despacho — enviesando a revisão de qualquer feature para o domínio de aprovação
+(estudo 2026-09-26 §7.6). A sonda ficou no agente; o caso ficou aqui, verbatim:
+
+- Sonda 6 (acumulação de papéis): em 2026-09-21 o conjunto tinha o par
+  solicitante × gestor e não tinha gestor × diretor, e a mesma pessoa assinava as duas etapas
+- Sonda 7 (participante histórico e destino do link): em 2026-09-21 o aprovador perdia o registro
+  de vista no instante em que decidia e o link do e-mail virava 404
