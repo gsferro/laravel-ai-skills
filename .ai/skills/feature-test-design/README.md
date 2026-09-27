@@ -1,9 +1,10 @@
 # feature-test-design — Casos de Teste que Matam Defeito
 
-> **Skill**: [`SKILL.md`](SKILL.md) · versão **1.14.1**
+> **Skill**: [`SKILL.md`](SKILL.md) · versão **1.15.0**
 > Este README fala com a **pessoa**: por que a skill existe, que problema ela resolve, a
 > evidência por trás de cada decisão e o que ela não faz. O procedimento que o agente segue
-> está no `SKILL.md` e não é duplicado aqui.
+> está no `SKILL.md` — e, sob demanda, nos arquivos de [`references/`](references/) que cada passo
+> manda abrir — e não é duplicado aqui.
 
 ## O problema
 
@@ -12,7 +13,27 @@ A `feature-wiki` já escrevia casos de teste antes do código. E mesmo assim, na
 > *"os CTs que estão sendo escritos cobrem alguns erros, mas outros passam"*
 
 Isso não é falta de disciplina — é uma consequência previsível de **como** os casos eram
-derivados. Três causas, todas mensuráveis:
+derivados.
+
+### O que a auditoria mediu
+
+Auditoria de 9 wikis reais desta coletânea, 125 casos de teste e 164 testes Pest em produção:
+
+| Medida | Resultado |
+|---|---|
+| Casos que caem nos 4 arquétipos que o próprio template nomeava | **52%** — e nada além |
+| Análise de valor limite genuína | **1 ocorrência em 125** |
+| Tabela de decisão implementada · pairwise | **0** · **0** |
+| Cláusulas `RQ` rastreáveis sem nenhum caso | **9 de 19** (razão CT/RQ = 1,11) |
+| Casos com oráculo fraco (implementação defeituosa passa) | **19 de 125**; 7 graves cobrindo 52 telas |
+| Telas `create` cobertas só por `visit()`, sem gravação | **5** |
+| Testes "órfãos" — achados depois, não pelo processo do `04` | **9**, dos quais 5 um particionamento formal listaria em minutos |
+
+Os 4 arquétipos eram happy path, falha, autorização e log. A auditoria não é rodada do protocolo
+de [`experimentos/`](https://github.com/gsferro/laravel-ai-skills/blob/main/experimentos/README.md): é a leitura forense da saída real que
+motivou a skill, e esta seção é a fonte dela.
+
+Três causas, todas mensuráveis:
 
 ### 1. O caso de teste era derivado do plano, não do requisito
 
@@ -39,6 +60,10 @@ A rastreabilidade existente (`cada CT cita o RQ que cobre`) mede **existência**
 **adequação**: um único caminho feliz basta para a cláusula aparecer ✅ na Matriz de
 Rastreabilidade. É exatamente por isso que o `feature-quality-gate` aprovava e o defeito passava.
 
+O critério que existia não servia: *"todo método público tem 1 CT, cada branch tem um CT"* —
+cobertura de um **código que ainda não existe** quando o `04` é escrito. Isso obriga o agente a
+imaginar a implementação e testá-la.
+
 E a métrica clássica não salva: com o tamanho da suíte controlado, **cobertura de linha não
 prevê eficácia de detecção** ([Inozemtseva & Holmes, ICSE 2014](https://www.cs.ubc.ca/~rtholmes/papers/icse_2014_inozemtseva.pdf)).
 100% de cobertura é compatível com zero assertion útil.
@@ -54,7 +79,7 @@ que responde à pergunta que interessa: *este conjunto pega defeito?*
 | **1. Varredura SFDIPOT** | 7 dimensões: Structure, Function, Data, Interfaces, Platform, Operations, Time | o que escapa quase nunca é um caso a mais — é uma **dimensão inteira esquecida** |
 | **2. Mapa de Regras** | Example Mapping: regras 🟦, exemplos 🟩, perguntas 🟥 | separa *descobrir* de *escrever*; regra é o eixo de cobertura |
 | **3. Técnica por regra** | partição, valor limite 3-valores, tabela de decisão, tabela estado×evento, matriz papel×ação, pairwise, rastreio de efeito | cada técnica pega uma **classe de defeito que as outras não pegam** |
-| **4. Checklist de taxonomia** | IDOR, idempotência, concorrência, timezone/DST, nulo≠vazio≠ausente, paginação, ordenação, unicidade+soft delete, mass assignment, precisão monetária | cobre o que a especificação **nunca menciona** |
+| **4. Checklist de taxonomia** | IDOR, idempotência, concorrência, timezone/DST, nulo≠vazio≠ausente, paginação, ordenação, unicidade+soft delete, mass assignment, precisão monetária, superfície Livewire (método público chamável por `$wire.`, propriedade pública sem `#[Locked]`, estado do framework — `$filters`, `$pageFilters`, `$tableFilters` — que vira índice de array, argumento de `parse` ou nome de coluna) | cobre o que a especificação **nunca menciona** |
 | **5. Gherkin pt-BR** | `Funcionalidade` → `Regra` → `Cenário`, com Dado/Quando/Então | força um oráculo observável e linguagem de domínio |
 | **6. Gate de falsificabilidade** | toda regra declara os mutantes plausíveis e aponta quem mata cada um | **o passo que não existia** |
 | **7. Camada e poda** | o nível mais barato que prova; teto por perfil | evita empurrar para browser o que um teste de componente resolve |
@@ -89,13 +114,21 @@ assertion de efeito colateral).
 > nenhum, e o score não cai — a métrica é **estruturalmente cega à omissão**.
 >
 > Medido neste projeto, contra a **mesma** implementação: a suíte derivada por gabarito e a
-> derivada por este pipeline tiveram **100% de mutation score cada uma** (24 de 24 mutantes
-> mortos), e detectaram **7 e 12** defeitos plantados de 18. A métrica saturou e não distinguiu
-> as duas.
+> derivada por este pipeline reportaram o mesmo mutation score e detectaram quantidades
+> diferentes de defeitos plantados — números e a ressalva sobre aquele score em
+> [`experimentos/README.md`](https://github.com/gsferro/laravel-ai-skills/blob/main/experimentos/README.md).
 >
 > Os mutantes do passo 6 são **de especificação**: nascem do requisito, não do código, e por isso
 > enxergam o que nunca foi escrito. O `--mutate` é o piso de qualidade de assertion; o passo 6 é o
 > teto de cobertura de comportamento.
+
+### Revisão adversarial
+
+No perfil completo, ou com Impacto 3 em qualquer área, o conjunto vai para um sub-agente que não o
+derivou — no Claude Code, o `fw-adversario-ct`, que recebe só o `00` e o `04`/`05` — com a tarefa de
+provar que ele deixa passar defeito. A revisão recebe o conjunto **inteiro**, não só a área que a
+disparou: o achado cai onde cai. Sem sub-agente, a skill não se autorrevisa; declara a lacuna no
+`04`, e o `feature-quality-gate` a reporta como débito.
 
 ## Por que Gherkin — e por que sem runner
 
@@ -137,9 +170,9 @@ Quatro razões, em ordem de peso:
 2. **Reuso fora do fluxo da wiki.** A derivação é necessária também quando o quality gate roteia
    um achado para *destino 3 — teste*, quando se escreve a regressão de um bug de produção, e
    para cobrir código legado sem wiki.
-3. **Tamanho.** O `SKILL.md` da `feature-wiki` já tem ~2.450 linhas. Embutir o pipeline levaria a
-   ~2.200 — um monólito que o agente precisa carregar inteiro para qualquer feature, inclusive
-   as que não têm teste a derivar.
+3. **Tamanho.** O pipeline tem o porte de uma skill inteira. Embutido na `feature-wiki`, ele
+   entraria no contexto de toda feature, inclusive das que não têm teste a derivar; separado, só
+   carrega quem o invoca.
 4. **Ciclo de vida próprio.** A tabela de taxonomia do passo 4 é **viva**: cada defeito que
    escapa para produção vira uma linha nova. Isso é manutenção contínua, com cadência diferente
    da wiki.
@@ -166,23 +199,17 @@ acessibilidade**. A skill fixa isso numa tabela de decisão de camada, com a **r
 aprendida em produção: *uma tela aberta não é uma tela que grava* — um `GET` fica verde com o
 salvamento quebrado, então toda tela de escrita gera dois cenários.
 
+O teste de componente também tem um limite, e a skill o fixa em gate: toda regra de autorização e
+de validação ganha ao menos um cenário **por fora da UI**, porque o componente não distingue a regra
+que vive no domínio da regra que vive só no formulário.
+
 ## Fatos corrigidos sobre `pest-plugin-browser`
 
-A skill carrega dez fatos verificados que contradizem crenças comuns — e que a documentação
-anterior da coletânea trazia errados:
-
-- **O plugin sobe o próprio servidor** (HTTP in-process, porta aleatória). Nada de Herd,
-  `artisan serve`, Sail ou `APP_URL` a configurar
-- Como é o **mesmo processo**, `$this->actingAs($user)` antes do `visit()` funciona — e é o
-  recomendado. Login pela tela custa dezenas de segundos por cenário
-- **Nunca `wait($segundos)`**: o plugin reexecuta cada assertion até o teto de
-  `pest()->browser()->timeout()`. `waitForText`/`waitForSelector` **não existem**
-- **`assertPathIs` antes das asserções de conteúdo** — invertido, o `assertSee` roda contra o
-  snapshot da página anterior e falha com a ação tendo funcionado
-- **Nunca `--parallel` com browser**; e como `--tia` exige run completo, os dois não convivem
-  numa invocação só
-- `assertNoSmoke()` só em tela de autoria própria; em tela de plugin de terceiro,
-  `assertNoJavaScriptErrors()`
+A skill carrega os fatos verificados do plugin que contradizem crenças comuns — e que a
+documentação anterior da coletânea trazia errados (o plugin sobe o próprio servidor, `actingAs()`
+funciona, nunca `wait()`, nunca `--parallel`). A fonte única deles é
+[`references/pest-plugin-browser.md`](references/pest-plugin-browser.md), que a `feature-wiki`, o
+agente `fw-executor-ctb` e o `feature-quality-gate` também referenciam.
 
 ## O que foi medido
 
@@ -195,39 +222,14 @@ pipeline. Um catálogo de **18 defeitos plantados foi escrito antes** de qualque
 Um juiz cego pontuou os dois, sem saber qual processo gerou qual, exigindo **citação literal** da
 assertion que mataria cada defeito.
 
-**Cenário 1 — cupons** (cálculo, dinheiro, datas, unicidade):
-
-| Métrica | Gabarito (2.10.0) | v1.0.0 | v1.1.0 | v1.5.0 |
-|---|---|---|---|---|
-| Defeitos detectados (de 18) | 7 | 12 | 16 | **16** |
-| Taxa de detecção | 38,9% | 66,7% | 88,9% | **88,9%** |
-| Lacunas **cegas** | 10 | 2 | 1 | **1** |
-| Casos de teste | 12 | 37 | 41 | 47 |
-| Oráculos fracos | — | — | 7 de 41 | **3 de 47** |
-
-**Cenário 2 — aprovação em duas etapas** (máquina de estados, autorização, efeito colateral):
-
-| Métrica | Gabarito | v1.0.0 | v1.5.0 |
-|---|---|---|---|
-| Defeitos detectados (de 18) | 11 | 15 | **17** |
-| Taxa de detecção | 61,1% | 83,3% | **94,4%** |
-| Lacunas **cegas** | 7 | 2 | **1** |
-| Células inválidas da matriz estado × operação **executadas** | 9 de 21 | 21 de 21 | 21 de 21 |
-
-> Medições até a v1.5.0; rodadas posteriores (6 a 13) em `experimentos/README.md`.
-
-Depois, as duas especificações foram **materializadas em Pest** contra a **mesma** implementação
-(escrita por um terceiro agente que nunca viu nenhum dos dois `04`):
-
-| | Suíte do gabarito | Suíte deste pipeline |
-|---|---|---|
-| Testes verdes | 22 (55 assertions) | **38 (91 assertions)** |
-| Defeitos reais encontrados na implementação | 2 | 2 |
-| Mutation score em `app/Services` | 100% (24/24) | 100% (24/24) |
-
-Os dois defeitos reais foram **diferentes**: o gabarito pegou "unicidade não imposta quando
-`tenant_id` é NULL"; este pipeline pegou a **borda exata da validade** (`>=` no lugar de `>`).
-Ambos pegaram "trilha de auditoria sobrescrita a cada aplicação".
+Os números — defeitos detectados de 18, lacunas cegas e declaradas por cenário (cenário 1, cupons:
+cálculo, dinheiro, datas, unicidade; cenário 2, aprovação em duas etapas: máquina de estados,
+autorização, efeito colateral), as células da matriz estado × operação executadas e a materialização
+das duas especificações em Pest contra a mesma implementação — vivem numa tabela só, rodada a
+rodada, em [`experimentos/README.md`](https://github.com/gsferro/laravel-ai-skills/blob/main/experimentos/README.md). A contagem de oráculos
+fracos por versão está na entrada 1.6.0 da `feature-test-design` no
+[`CHANGELOG.md`](https://github.com/gsferro/laravel-ai-skills/blob/main/CHANGELOG.md). Este README não repete número de rodada, para que nenhum
+deles apareça em dois lugares com valores diferentes.
 
 **Toda regra desta skill nasceu de um defeito que escapou.** Cada rodada mediu, listou os defeitos
 que atravessaram os conjuntos, e a versão seguinte fechou exatamente aqueles:
@@ -243,7 +245,7 @@ que atravessaram os conjuntos, e a versão seguinte fechou exatamente aqueles:
 | 1.8.0 | cenário por fora da UI; premissa de mecanismo não apaga cenário; matriz cartesiana fechada; oráculo invertido | policy só no form; excluído ainda aplicável; aprovar em rascunho |
 | 1.9.0 | premissa de comportamento falha fechado; não-efeito exige destinatário real; legenda da matriz auditada | validade no passado assumida como aceita; e-mail fora da transação |
 
-> Regras das versões 1.10.0 a 1.14.0 estão no `CHANGELOG.md`.
+> Regras das versões 1.10.0 em diante estão no `CHANGELOG.md`.
 
 Os três defeitos mais teimosos do cenário 2 — ciclo de volta, tela mentindo o estado e e-mail fora
 da transação — sobreviveram a **dois** conjuntos e caíram no terceiro, cada um pelo mecanismo que
@@ -254,7 +256,8 @@ opinião, são o registro do que já escapou.
 
 - **Não escreve o código de teste** — ela produz a especificação. Quem materializa em `.php` é o
   sub-agente `fw-executor-ct` — por construção quem **não** implementou — ou o `fw-executor-ctb`
-  para os CT-B (ver feature-wiki)
+  para os CT-B (ver feature-wiki). Cenário descoberto durante a implementação nasce no `04` antes
+  de virar teste, e os IDs `[CT-nn]` do teste e do `04`/`05` são conferidos nos dois sentidos
 - **Não corrige implementação**
 - **Não substitui o `feature-quality-gate`**: a derivação acontece *antes* do código; o gate
   valida o produto *depois*. Uma acha lacuna de especificação de teste, o outro acha lacuna
@@ -264,13 +267,16 @@ opinião, são o registro do que já escapou.
 
 ## Dependências
 
-**Obrigatória**: `00-requisito.md` produzido pela `feature-wiki` ≥ 2.10.0 — é o oráculo do
-pipeline; sem ele a skill **para e pede** o requisito (nunca deriva do PRD). Além disso, um projeto
-com testes. Degradações declaradas:
+**Obrigatória**: a `feature-wiki` ≥ 3.5.2 (`metadata.requires` do `SKILL.md`). O `00-requisito.md`
+existe desde a 2.10.0 e é o oráculo do pipeline — sem ele a skill **para e pede** o requisito (nunca
+deriva do PRD) —, mas esta versão depende também do que veio depois: `## Superfície Livewire` no
+`02` (3.3.0), `## Despachos` no `03` (3.4.0), o corte do step 6 que vira `@obsoleto` e o
+`fw-executor-ct` (3.5.0), contagens por `grep -c` (3.5.1) e o contrato de delegação que entrega o
+`02` ao step 4 (3.5.2). Além disso, um projeto com testes. Degradações declaradas:
 
 | Item | O que habilita | Sem ele |
 |---|---|---|
-| `pestphp/pest-plugin-mutate` + PCOV/Xdebug | fechamento do ciclo (`pest --mutate`) | o passo 6 fica só como previsão, sem medição — declarar a ausência só com `php -m` / `ls vendor/pestphp/` colados. **No Windows o score é 100 % falso** sem o lançador `.cmd` (ver a `feature-wiki`, seção *Pest 5*) |
+| `pestphp/pest-plugin-mutate` + PCOV/Xdebug | fechamento do ciclo (`pest --mutate`) | o passo 6 fica só como previsão, sem medição — declarar a ausência só com `php -m` / `ls vendor/pestphp/` colados. **No Windows o score é 100 % falso** sem o lançador `.cmd` (ver [`feature-wiki/references/pest-5.md`](../feature-wiki/references/pest-5.md), desde a `feature-wiki` 3.6.0; antes, a seção *Execução de Testes com Pest 5* do `SKILL.md` dela) |
 | `pest-plugin-livewire` | camada de componente | cai para `Feature` HTTP, mais cara e mais cega |
 | `pest-plugin-browser` + Playwright | CT-B executáveis | o `05` fica como roteiro manual |
 | Sub-agente disponível | revisão adversarial | perfil completo ou Impacto 3 perde o gate independente |
@@ -288,8 +294,12 @@ cp .ai/skills/*/agents/*.md .claude/agents/
 ```
 
 ```powershell
-New-Item -ItemType Directory -Force .claude\skills, .claude\agents | Out-Null
-Copy-Item -Recurse -Force .ai\skills\* .claude\skills\
+New-Item -ItemType Directory -Force .claude\agents | Out-Null
 Copy-Item -Force .ai\skills\*\agents\*.md .claude\agents\
 Get-ChildItem .claude\agents\fw-*.md        # cinco arquivos
 ```
+
+Espelhar as skills em `.claude/skills/` só é preciso sem `boost.json`: com ele, o `boost:update` cria
+cada `.claude/skills/<skill>` como symlink, e copiar por cima falha. Os dois casos estão em
+[Como Instalar no Claude Code](https://github.com/gsferro/laravel-ai-skills/blob/main/README.md#-como-instalar-no-claude-code),
+no README da coletânea.

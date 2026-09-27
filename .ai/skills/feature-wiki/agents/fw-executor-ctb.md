@@ -42,11 +42,11 @@ No prompt:
 
 ## Fatos do plugin que você precisa respeitar
 
-- O plugin sobe o próprio servidor; nada de Herd, `artisan serve` ou `APP_URL`
-- `$this->actingAs($user)` **antes** do `visit()`; login pela tela só num cenário
-- Nunca `wait($segundos)`; `waitForText`/`waitForSelector` **não existem**
-- `assertPathIs` antes das asserções de conteúdo, depois de qualquer ação que navegue
-- `npm run build` é pré-requisito: sem `public/build/manifest.json` tudo falha por `ViteException`
+Antes de escrever o primeiro teste, leia `{skills}/feature-test-design/references/pest-plugin-browser.md`
+— a fonte única dos fatos do plugin (servidor, autenticação, esperas, ordem das asserções, build
+dos assets). `{skills}` é o primeiro diretório que existir entre `.ai/skills/`, `.claude/skills/` e
+`~/.claude/skills/`. Se o arquivo não existir em nenhum dos três, **pare** e devolva só isso:
+*"pest-plugin-browser.md não encontrado"*, sem escrever nenhum teste.
 
 ## Proibido
 

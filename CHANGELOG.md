@@ -8,10 +8,28 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 
 | Skill | Versão | Tag |
 |---|---|---|
-| `feature-wiki` | 3.5.2 | `feature-wiki-v3.5.2` |
-| `feature-test-design` | 1.14.1 | `feature-test-design-v1.14.1` |
-| `feature-quality-gate` | 1.5.2 | `feature-quality-gate-v1.5.2` |
-| `requirement-to-rule` | 1.2.1 | `requirement-to-rule-v1.2.1` |
+| `feature-wiki` | 3.6.0 | `feature-wiki-v3.6.0` |
+| `feature-test-design` | 1.15.0 | `feature-test-design-v1.15.0` |
+| `feature-quality-gate` | 1.6.0 | `feature-quality-gate-v1.6.0` |
+| `requirement-to-rule` | 1.3.0 | `requirement-to-rule-v1.3.0` |
+
+**Onde a versão está, desde a release 1 do roteiro (2026-09-26).** O frontmatter segue o
+[spec Agent Skills](https://agentskills.io/specification): a versão saiu do topo (`version:`) e
+foi para `metadata.version`, indentada. Quem conferia com `grep '^version:'` passa a conferir
+`metadata.version`:
+
+```bash
+grep -Hn '^[[:space:]]*version:' .ai/skills/*/SKILL.md
+```
+
+```powershell
+Select-String -Path .ai\skills\*\SKILL.md -Pattern '^\s*version:'
+```
+
+As contagens de linhas de corpo citadas nas entradas da release 1 são as linhas do `SKILL.md`
+depois do fechamento do frontmatter: `awk '/^---$/ && ++n==2 {next} n>=2' SKILL.md | wc -l`. Os
+tamanhos de `description` são os do valor que o YAML entrega (a quebra final do bloco `>` conta),
+o mesmo que o `skills-ref validate` compara com o limite de 1024.
 
 ## Convenção de tags
 
@@ -32,13 +50,111 @@ requirement-to-rule-v1.0.0
 | 2.7.0 em diante | `feature-wiki-vX.Y.Z` | série namespaced |
 | `feature-wiki` 3.4.0 | — | liberada sem tag — consolidada na 3.5.0 (ver nota na entrada 3.5.0) |
 | `feature-test-design` 1.13.0 · `feature-quality-gate` 1.4.0 | — | liberadas sem tag (o mesmo dia da versão seguinte); as entradas existem no CHANGELOG |
-| patches de 2026-09-26 (3.5.2 · 1.14.1 · 1.5.2 · 1.2.1) | a criar no commit | tag por skill, como as demais |
+| patches de 2026-09-26 (3.5.2 · 1.14.1 · 1.5.2 · 1.2.1) | criadas | tag por skill, como as demais |
+| release 1 do roteiro, 2026-09-26 (3.6.0 · 1.15.0 · 1.6.0 · 1.3.0) | a criar | tag por skill, no commit da release |
+
+## Números de medição
+
+A tabela única de medição da coletânea é [`experimentos/README.md`](experimentos/README.md#histórico).
+As tabelas nas entradas abaixo são o registro do dia em que cada versão saiu e não são reescritas.
+Onde divergem da tabela única, as notas de correção de 2026-09-26 dizem o que vale.
 
 ---
 
 # feature-wiki
 
 Cria a estrutura de documentação de uma feature **antes** de implementá-la: requisito bruto, PRD, ADR, tracking de progresso e padrão de log.
+
+## [3.6.0] — 2026-09-26
+
+Release 1 do roteiro do estudo
+[`estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md`](estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md)
+(§8, itens 1, 2, 3 e 11), "base limpa": **só empacotamento**. Nenhum gate, regra, template ou step
+mudou. O único contrato de agente tocado é o do `fw-executor-ctb`, que troca a cópia dos fatos do
+`pest-plugin-browser` por um ponteiro para a fonte única e para quando ela não existe. Por isso a
+release é medível sozinha contra `feature-wiki-v3.5.2`.
+
+O corpo do `SKILL.md` foi de 2.410 para **1.285 linhas**. O alvo do spec (< 500) **não foi
+atingido**, e não se atinge sem tirar obrigação do corpo: 1.285 é o piso com todos os gates, as
+obrigações, o que é NUNCA ou proibido, os critérios de parada, os steps 0–9 e o checklist no
+próprio `SKILL.md`. Os blocos que seguram o piso são normativos: execução e delegação, step 3
+(captura verbatim, lista obrigatória de verificações, Superfície Livewire), step 6.5, step 7, os obrigatórios dos
+arquivos `00`–`03` e o checklist final. Resumir essas linhas seria mudar regra, e a release 1
+não muda regra.
+
+**Não medido**: a rodada que compara com a tag anterior (`feature-wiki-v3.5.2` +
+`feature-test-design-v1.14.1`) está pendente em
+[`experimentos/README.md`](experimentos/README.md#rodadas-pendentes) (Rodadas pendentes, item a).
+
+### Alterado
+
+- **Frontmatter no formato do [spec Agent Skills](https://agentskills.io/specification).**
+  `version` sai do topo e vira `metadata.version: "3.6.0"`: quem conferia com `grep '^version:'`
+  passa a conferir `metadata.version` (comando em [Skills e versões atuais](#skills-e-versões-atuais)).
+  Entram `license: MIT` e uma `compatibility` com as exigências reais: projeto Laravel com git;
+  Laravel Boost com MCP **recomendado** (`search-docs` no step 3, `record-rule` a partir do Boost
+  2.4.12 no step 9); Pest 4 ou 5, assumindo o 5 (`--tia` e `--mutate` na Verificação Final,
+  `--agent` na implementação) e caindo para `--filter` no 4; sub-agentes e plugins Ponytail e
+  Caveman opcionais, com a degradação que o `SKILL.md` já declarava. `metadata.requires` passa a
+  ser `feature-test-design>=1.15.0; feature-quality-gate>=1.5.0; laravel/boost>=2.4.12`.
+  `npx skills-ref validate` passa
+- **`description` de 3.636 para 999 caracteres**: o quê, quando e palavras-chave. Continuam o
+  gatilho "Invoque SEMPRE…", o "de novo quando o pedido crescer no meio da implementação (vira
+  Adendo no 00)" e a revisão do diff "assim que os testes passam". O que era release note foi para
+  o README, e cada regra que só existia na `description` foi conferida no corpo
+- **Corpo do `SKILL.md` de 2.410 para 1.285 linhas, com 15 arquivos em `references/`**, um tema
+  por arquivo: templates `00`–`03`, padrão de log, pesquisa do step 3, roteamento e despacho,
+  delegação dos casos de teste, Playwright MCP, Pest 5, citações de código, candidatos a rule,
+  Ponytail/Caveman, estrutura criada e casos medidos. O corpo guarda linhas verbatim da 3.5.2; só
+  os ponteiros foram reescritos. Continuam nele, entre outros, a auditoria do retorno dos
+  sub-agentes (tem o gate que reprova retorno); do padrão de log, o "Por que este padrão", as 9
+  regras de escrita e a trait `UnicoLogging`; e o vermelho separado por rota — backend (`(b)` do
+  `fw-executor-ct` roteado Adendo → CT → correção) e CT-B (3 iterações → blocker no `03`)
+- **Cada step que depende de uma reference manda lê-la antes da ação** ("Antes de X, leia
+  `references/Y.md`"), também sem MCP e em host sem sub-agente; o pré-6.5 manda ler os greps de
+  `references/pesquisa-step-3.md`. O índice lista as references com o step em que são lidas, e o
+  checklist final ganhou o item *referências lidas: arquivo (step N)*, com o mínimo por step
+- **Casos medidos fora do procedimento.** Todo "caso real", "medido em 2026-09-xx" e o *Validado
+  em campo* foram para `references/casos-medidos.md`, com ponteiro curto no ponto da regra.
+  Quando caso e regra estavam na mesma frase, a frase foi inteira, e o arquivo avisa que a regra
+  em vigor é a do corpo
+- **Fatos do `pest-plugin-browser` com fonte única**:
+  `{skills}/feature-test-design/references/pest-plugin-browser.md` (entrada `feature-test-design`
+  1.15.0). O `SKILL.md`, o README e o `fw-executor-ctb` viram ponteiro. No step 3 ficam, verbatim,
+  os dois fatos duros: o plugin sobe o próprio servidor, sem `APP_URL`; e `npm run build` é
+  pré-requisito (sem ele, `ViteException`)
+- **`fw-executor-ctb` lê a fonte única antes do primeiro teste.** Se `pest-plugin-browser.md` não
+  existir em nenhum dos três diretórios de `{skills}`, para e devolve *"pest-plugin-browser.md não
+  encontrado"*, sem escrever teste. Com a `feature-test-design` abaixo da 1.15.0, o agente não
+  escreve CT-B
+- **Caminho para arquivo de outra skill usa `{skills}/<skill>/…`**, definido no Glossário:
+  `.ai/skills/`, `.claude/skills/` ou `~/.claude/skills/`, o primeiro que existir
+- **README reescrito** como por quê, quando, dependências, instalação, organização e limites (615
+  → 354 linhas). Na tabela de dependências, a versão de `metadata.requires` é o mínimo **quando a
+  dependência está presente**: nenhuma é obrigatória além de Laravel com git, exceto a
+  `feature-quality-gate`, sem a qual o PR não abre. A `requirement-to-rule` aparece com mínimo
+  1.1.0 (o `search-docs` do gate 4) e fica fora de `metadata.requires`, porque o step 9 só a
+  invoca depois do "sim" do usuário. Saiu o procedimento que repetia o `SKILL.md` (Playwright
+  MCP, `search-docs`, contrato dos CT-B, Pest 5, fatos do plugin, tabelas de campo)
+- **A auditoria das 9 wikis e 125 casos que motivou a delegação do `04` saiu da `feature-wiki`.**
+  A fonte única é o [README da `feature-test-design`](.ai/skills/feature-test-design/README.md#o-que-a-auditoria-mediu);
+  as rodadas do protocolo ficam em [`experimentos/README.md`](experimentos/README.md#histórico)
+
+### Corrigido
+
+- **Versão mínima do Boost: 2.4.12**, a versão em que nasceram as Project Rules e a tool
+  `record-rule` usada no step 9 (laravel/boost PR #852). A coletânea citava 2.5.0 — na entrada
+  `requirement-to-rule` 1.2.1 e no estudo, §7.5 e §8; os dois ganharam errata datada
+- README: o bloco PowerShell de instalação dos agentes copiava `.ai\skills\*` para `.claude\skills\`
+  sem condição, ao contrário do bloco bash logo acima e do README da coletânea: com `boost.json`, o
+  `boost:update` cria `.claude/skills/<skill>` como symlink e a cópia por cima falha. Fica igual ao
+  bash (só agentes), com link para os dois casos em *Como Instalar no Claude Code*
+- README: os links para `experimentos/` viram URL absoluta do repositório (o `boost:add-skill` copia
+  o README para `.ai/skills/<skill>/` do projeto, onde `../../../` não leva ao repositório)
+- `references/ponytail-caveman.md` mandava `php artisan boost:update` logo depois do `add-skill`,
+  sem condição. Com `boost.json` o `add-skill` já o chama; sem `boost.json` ele falha. Vira
+  comentário: só se o `add-skill` terminou com erro
+
 
 ## [3.5.2] — 2026-09-26
 
@@ -657,6 +773,100 @@ Consolida as versões 2.5.0 e 2.6.0 (nunca commitadas isoladamente) e adiciona a
 
 Deriva casos de teste que **matam defeito**, a partir do requisito — nunca do plano e nunca do código.
 
+## [1.15.0] — 2026-09-26
+
+Release 1 do roteiro de
+[`estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md`](estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md)
+(§8, itens 1, 3 e 11): **só empacotamento**. Nenhuma regra, gate, proibição, técnica, template ou
+contrato do `fw-adversario-ct` mudou. A única mudança deliberada de comando é o da suíte de
+browser na reference nova (ver Adicionado). É a base que a rodada do protocolo vai medir contra a
+1.14.1.
+
+O corpo do `SKILL.md` foi de 1.547 para **732 linhas**. O alvo do spec (< 500) **não foi
+atingido**: 732 é o piso com gates, proibições, checklist e obrigações no corpo. Chegar a 500
+exigiria condensar texto normativo fora do passo 3 — fronteira com o plano, gate do passo 6, teto
+do passo 7, assertion proibida, checklist —, e isso é resumir regra: decisão de desenho para a
+release 2.
+
+**Não medido**: a rodada que compara com a tag anterior (`feature-test-design-v1.14.1` +
+`feature-wiki-v3.5.2`) está pendente em
+[`experimentos/README.md`](experimentos/README.md#rodadas-pendentes) (Rodadas pendentes, item a).
+
+### Alterado
+
+- **Frontmatter conforme o [spec Agent Skills](https://agentskills.io/specification)**: `version`
+  sai do topo e vira `metadata.version: "1.15.0"` — quem conferia com `grep '^version:'` passa a
+  conferir `metadata.version`. Entram `license: MIT`, `compatibility` com as exigências reais
+  (Pest; o `00-requisito.md` da `feature-wiki`; `pest-plugin-mutate` + PCOV/Xdebug, ausência só
+  com prova negativa; lançador `.cmd` no Windows; `pest-plugin-browser` + Playwright + `npm run
+  build`; sub-agente para a adversarial, e sem ele lacuna declarada, nunca autorrevisão) e
+  `metadata.requires: "feature-wiki>=3.5.2"`. Esse é o mínimo real: `## Superfície Livewire` no
+  `02` (3.3.0), `## Despachos` (3.4.0), `@obsoleto` e `fw-executor-ct` (3.5.0), `grep -c` (3.5.1)
+  e o contrato de delegação que entrega o `02` (3.5.2). `npx skills-ref validate` passa
+- **`description` de 2.245 para 927 caracteres**: o que a skill faz, quando invocar e
+  palavras-chave. Toda regra que só aparecia nela já estava no corpo, e o que servia à pessoa foi
+  para o README
+- **Corpo do `SKILL.md` de 1.547 para 732 linhas.** Gates, proibições, checklist e obrigações
+  ficam no corpo; desenvolvimento, exemplos, templates, tabelas de dados e casos medidos vão para
+  `references/`. Cada regra de execução do passo 3 fica numa linha no corpo, com ponteiro; os
+  bullets "Afirmação negativa" e "Estado de erro declara a saída" ficam com o texto integral da
+  1.14.1. A tabela de regras de escrita do Gherkin fica no corpo, verbatim. Da revisão
+  adversarial, o corpo mantém verbatim as linhas `Entrada`, `NÃO receber` e `PROIBIDO` do
+  contrato, que valem também pela rota `general-purpose`, com o ponteiro para
+  `references/revisao-adversarial.md` antes do Disparo
+- **Cada passo diz qual reference abrir antes da ação**; os passos 5 e 7 apontam para
+  `references/armadilhas-de-api.md`. O Índice lista as references, e o Checklist Final ganha o
+  bloco "Saída da derivação", com a linha *references lidas: {arquivo} (passo N), …*
+- **Glossário ganha `{skills}`.** O lançador `.cmd` do `pest --mutate` passa a ser apontado em
+  `{skills}/feature-wiki/references/pest-5.md`. Esse arquivo existe desde a `feature-wiki` 3.6.0;
+  com a 3.5.2 (o mínimo de `metadata.requires`), o mesmo texto está na seção *Execução de Testes
+  com Pest 5* do `SKILL.md` dela — e o Glossário diz isso na própria linha de `{skills}`, como o da
+  `feature-quality-gate`; o link do README (tabela de dependências) também
+- **README**: as tabelas de rodada (C1/C2, materialização em Pest, 24/24) viram um link para
+  [`experimentos/README.md`](experimentos/README.md#histórico), a fonte única. Os fatos do
+  `pest-plugin-browser` viram ponteiro para a reference. A auditoria de 9 wikis e 125 casos passa
+  a viver só aqui ([O que a auditoria mediu](.ai/skills/feature-test-design/README.md#o-que-a-auditoria-mediu)).
+  A razão "Tamanho" não traz mais contagem escrita à mão (o "~2.450 linhas" ficou falso nesta
+  mesma release). Entra no README o que só a `description` dizia: superfície Livewire na
+  taxonomia, revisão adversarial com o conjunto inteiro, cenário por fora da UI e sincronia de IDs
+  nos dois sentidos
+
+### Adicionado
+
+- **`references/`**, um tema por arquivo, cada um com o cabeçalho *"Lida em / Fonte única de"*:
+  `tecnicas-por-regra`, `taxonomia-de-defeito`, `gherkin`, `template-04`, `template-05`,
+  `escolha-de-camada`, `mutation-testing`, `armadilhas-de-api`, `revisao-adversarial` (resumo; a
+  fonte continua sendo o agente), `casos-medidos` (os blocos *"Medido"* que estavam no meio do
+  procedimento; só o caso, a regra fica no corpo) e `pest-plugin-browser`
+- **`references/pest-plugin-browser.md` é a fonte única da coletânea** para os fatos do plugin,
+  e outras skills dependem dele: a `feature-wiki` 3.6.0 (ciclo dos CT-B), o `fw-executor-ctb`
+  (que para se o arquivo não existir) e a `feature-quality-gate` 1.6.0 (README e dimensão G do
+  `SKILL.md`, que mantém em linha os dois fatos que motivam a dimensão — exceção declarada no
+  cabeçalho da reference). Por isso as duas exigem `feature-test-design>=1.15.0`. O arquivo junta as cinco cópias que
+  existiam (SKILL e README desta skill, SKILL da `feature-wiki`, `fw-executor-ctb`, README do gate)
+  sem perder fato nem ressalva. Onde as cópias divergiam, ficou a forma mais restritiva: para cor,
+  *"dentro do plugin nenhuma assertion barata prova cor"*; e o comando da suíte de browser
+  unificado na forma condicional da `feature-wiki` 3.5.2 e do `fw-executor-ctb` —
+  `vendor/bin/pest tests/Browser --filter={Feature}`, com `--testsuite=Browser` só se o
+  `phpunit.xml` definir a suíte. É mudança deliberada de comando. O `references/template-05.md`
+  mantém `--testsuite=Browser` sem condição até a release 2 (mudar template está fora da release
+  1), e a reference declara que vale a forma condicional
+
+### Corrigido
+
+- A afirmação de que as duas suítes "mataram todos os mutantes" vira "reportaram o mesmo score",
+  com a ressalva de [`experimentos/README.md`](experimentos/README.md#materialização-em-pest-rodada-1-cenário-1)
+  (nota h: score medido no Windows, sem `Duration`). O argumento estrutural — mutação não gera
+  mutante para código que não existe — não muda
+- README: o bloco PowerShell de instalação dos agentes copiava `.ai\skills\*` para `.claude\skills\`
+  sem condição, ao contrário do bloco bash logo acima e do README da coletânea: com `boost.json`, o
+  `boost:update` cria `.claude/skills/<skill>` como symlink e a cópia por cima falha. Fica igual ao
+  bash (só agentes), com link para os dois casos em *Como Instalar no Claude Code*
+- README: os links para `experimentos/README.md` e para o `CHANGELOG.md` viram URL absoluta do
+  repositório (o `boost:add-skill` copia o README para `.ai/skills/<skill>/` do projeto, onde
+  `../../../` não leva ao repositório)
+
+
 ## [1.14.1] — 2026-09-26
 
 Patch de documentação e de coerência, sem técnica nova. Nasce da auditoria interna consolidada em
@@ -837,6 +1047,17 @@ Material em [`experimentos/2026-08-15-rodada-6/`](experimentos/2026-08-15-rodada
 | C2 · células estado × evento | 9/21 | 17/21 | **21/21** |
 | Total | 18 / 36 | 31 / 36 | **33 / 36 (91,7%)** |
 
+> **Nota de correção (2026-09-26).** A tabela acima é a medição da 1.8.0 (rodada 6), que motivou
+> a 1.9.0 — como nas entradas 1.1.0 a 1.8.0, cada entrada mostra a medição da versão anterior. A
+> medição da própria 1.9.0 nunca entrou no CHANGELOG: as sete rodadas com a 1.9.0 reportaram
+> 15/18 + 18/18; só a rodada 7 é auditável (ver
+> [`experimentos/README.md`](experimentos/README.md#histórico), Histórico e notas g, i, k). Na
+> rodada 7, o C1 deu **15 de 18**, abaixo dos 16 da rodada 6: D14 e D15 voltaram a lacuna
+> declarada, e D12 passou a ser detectado. O C2 deu **18 de 18** (E18 fechado). O total ficou em
+> 33 de 36, igual ao da rodada 6, e escondeu a troca. É observação de um braço, sem atribuição à
+> 1.9.0: a ponta da rodada 6 é rejulgável, não auditável. Detalhe em
+> [`experimentos/README.md`](experimentos/README.md#o-que-mudou-entre-as-rodadas-5-e-7-defeito-a-defeito).
+
 As quatro regras da 1.8.0 mataram cada uma o seu alvo: o gate de camada matou *policy só no form*,
 a premissa de mecanismo matou *cupom excluído ainda aplicável*, a matriz cartesiana fechou 21 de 21
 células **com menos cenários** que a rodada anterior (49 contra 63), e o gate de oráculo invertido
@@ -941,6 +1162,9 @@ na segunda rodada, todos fechados.
 | Lacunas cegas | 7 | 2 | **1** |
 | Lacunas declaradas que custaram defeito | 0 | 1 | **0** |
 
+> **Nota de correção (2026-09-26).** A coluna "v1.0.0" é a rodada 2, a primeira medição do
+> cenário 2, feita com a 1.1.0 — a entrada 1.2.0 a rotula assim. O número (15 de 18) não muda.
+
 **Os três defeitos que escapavam de todos os conjuntos anteriores caíram**, cada um pelo mecanismo
 que a versão correspondente introduziu: o ciclo de volta pelo 2-switch com `Então` contrastivo
 (*"passa a ser 'aguardando_gestor', **e não** 'aguardando_diretor'"*); a tela pela partição
@@ -981,6 +1205,9 @@ todos fechados**.
 | Defeitos detectados (de 18) | 7 | 12 | 16 | **16** |
 | Lacunas cegas | 10 | 2 | 1 (float) | **1 (fuso)** |
 | Oráculos fracos | — | — | 7 de 41 | **3 de 47** |
+
+> **Nota de correção (2026-09-26).** A coluna "v1.1.0" é a rodada 3, feita com a 1.3.0 vigente na
+> data, medindo as regras da 1.1.0.
 
 A taxa parou em 88,9%, mas a **composição** mudou: a precisão de ponto flutuante — lacuna cega da
 rodada anterior — fechou pela regra do exemplo discriminante, com o juiz conferindo a aritmética
@@ -1061,6 +1288,9 @@ mesmo requisito e mesmo catálogo de 18 defeitos:
 | Taxa de detecção | 38,9% | 66,7% | **88,9%** |
 | Lacunas cegas | 10 | 2 | **1** |
 
+> **Nota de correção (2026-09-26).** A coluna "v1.1.0" é a rodada 3, feita com a 1.3.0 vigente na
+> data, medindo as regras da 1.1.0.
+
 **Cinco dos seis fugitivos históricos fecharam** — e o juiz atribuiu cada um a um mecanismo
 reprodutível, não a sorte: o teto do percentual e o piso do valor caíram pela regra
 *entrada ≠ uso* combinada com *domínio condicionado*; a validade no passado, pela mesma regra
@@ -1140,6 +1370,11 @@ Os três defeitos que ainda atravessaram os dois conjuntos viraram as regras aba
 Medição direta, contra a **mesma** implementação: as duas suítes materializadas — a do gabarito e
 a deste pipeline — obtiveram **100% de mutation score cada** (24 de 24 mutantes mortos), enquanto o
 juiz cego as separava em 7 × 12 defeitos detectados. **A métrica saturou e não distinguiu nada.**
+
+> **Nota de correção (2026-09-26).** O 100% (24/24) das duas suítes foi medido no Windows, com
+> Pest 5.0.5. É o ambiente em que, em 2026-09-21, o `pest --mutate` foi medido dando 100% falso
+> (entrada 1.14.0). A medição não registrou `Duration` nem sobreviventes, então o número fica não
+> verificado. O argumento — mutação não gera mutante para código que não existe — não depende dele.
 
 A causa é estrutural: mutation testing só muta **código que existe**. Os defeitos que separam as
 duas são *comportamentos ausentes* — não há `if ($percentual > 100)` para mutar porque a validação
@@ -1260,6 +1495,98 @@ preenchimento de gabarito por um pipeline de derivação com gate de auditoria.
 ---
 
 # feature-quality-gate
+
+## [1.6.0] — 2026-09-26
+
+Release 1 do roteiro do estudo
+[`2026-09-26-agentskills-spec-to-spec-to-tickets.md`](estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md)
+(§8, itens 1, 2 e 11): **só empacotamento**. Nenhuma dimensão, gate, regra, template ou contrato
+de agente mudou; no `SKILL.md`, fora do frontmatter, mudaram só o Glossário (`{skills}`), cinco
+ponteiros para a `feature-wiki`, um ponteiro na dimensão G para a fonte única do
+`pest-plugin-browser` e o qualificador do mutation score na dimensão K (ver *Corrigido*).
+
+O item 3 (`references/`) não cobre esta skill nesta release: o corpo segue com **800 linhas** (797
+na 1.5.2, mais a linha de `{skills}` no Glossário e duas da ressalva do mutation score na dimensão
+K). O alvo do spec (< 500) **não foi atingido**
+nem tentado; os blocos candidatos para uma release futura são as dimensões K e L, o template do
+`06` e as tabelas de delegação e do MCP. Os blocos "Medido em 2026-09-21" continuam no corpo.
+
+**Não medido**: a comparação com a tag anterior não tem rodada — nem pendente. As
+[Rodadas pendentes](experimentos/README.md#rodadas-pendentes) de `experimentos/README.md` medem a
+derivação do `04`, e o gate não tem braço no protocolo. O que se confere é o diff:
+`git diff feature-quality-gate-v1.5.2 -- .ai/skills/feature-quality-gate/SKILL.md` mostra só o
+frontmatter, o Glossário, os ponteiros e a ressalva da dimensão K.
+
+### Alterado
+
+- **Frontmatter conforme o [spec Agent Skills](https://agentskills.io/specification)**
+  (`skills-ref validate` verde): `version` sai do topo e vira `metadata.version: "1.6.0"` — quem
+  conferia com `grep '^version:'` passa a conferir `metadata.version`. Entram `license: MIT`,
+  `compatibility` (Laravel com Pest 4 ou 5; sub-agente `fw-qa-gate` no Claude Code, em linha em
+  outro host; opcionais com a degradação declarada, entre eles `pest-plugin-agent` para o
+  `--agent`) e `metadata.requires: "feature-wiki>=3.5.0; feature-test-design>=1.15.0"`. A
+  `feature-test-design` 1.15.0 é a que traz `references/pest-plugin-browser.md`, para onde a
+  seção de dark mode do README aponta: as duas saem juntas
+- **`description` de 1.369 para 1.000 caracteres**: o quê, quando e palavras-chave de gatilho.
+  Fica o gatilho sem pedido ("antes de abrir PR com UI ou regra de negócio sensível") e os termos
+  das dimensões K (oráculo fraco, mutation score via `pest --mutate`) e L (PRD/ADR × código, rules
+  × diff, docs pt × en × CHANGELOG). Saem a contagem "12 dimensões", o teto de 3 ciclos e a
+  instalação do sub-agente, regras que já estavam no corpo
+- **Ponteiros para a `feature-wiki` apontam para o arquivo onde o texto mora desde a 3.6.0**: os
+  greps da Superfície Livewire (Entradas e dimensão I) em
+  `{skills}/feature-wiki/references/pesquisa-step-3.md`; o lançador `.cmd` do `pest --mutate`
+  (dimensão K, dois pontos) em `{skills}/feature-wiki/references/pest-5.md`; o comando da L2 em
+  `{skills}/feature-wiki/references/citacoes-de-codigo.md` (o formato obrigatório continua no
+  corpo da `feature-wiki`). O Glossário define `{skills}` e diz onde está o mesmo texto numa
+  `feature-wiki` 3.5.x
+- **Dimensão G aponta para a fonte única dos fatos do `pest-plugin-browser`**
+  (`{skills}/feature-test-design/references/pest-plugin-browser.md`, §*Tema, cor e acessibilidade*).
+  Os dois fatos que motivam a dimensão (`assertSee` passa com o texto invisível; o primeiro
+  `assertScreenshotMatches()` cria o baseline com o bug) ficam em linha, como exceção declarada no
+  cabeçalho da reference
+- **README = por quê / quando / limites / dependências** (553 → 447 linhas). Sai a segunda cópia
+  das 12 dimensões, dos 5 destinos com a tabela lacuna → destino, das regras de convergência e dos
+  princípios, das regras do Playwright MCP e da tabela de regressão; o README explica e aponta
+  para a seção do `SKILL.md`. O estudo de viabilidade fica
+- README: **uma tabela de dependências** (versão mínima, para quê, o que degrada sem cada item)
+  no lugar de duas listas que divergiam: `feature-test-design` ≥ 1.15.0, `pest-plugin-agent` com
+  Pest 5, Project Rules do Boost (`laravel/boost` 2.4.12; sem elas a L4 fica em "Não Verificado").
+  "App servido" deixa de constar como obrigatório, como o `SKILL.md` já dizia: sem app, B a I
+  ficam estáticas
+- README: seção **Limites**, com os limites abertos no roteiro (itens 8 e 9): dimensões de
+  julgamento, `APROVADO` com dimensões puladas, sobreposição da I com o step 6.5 e o
+  `/code-review`, `Bash` no sub-agente e leitura do `03`. "Quem corrige" é a estação do destino
+- README: os fatos do `pest-plugin-browser` viram ponteiro para a fonte única
+  `{skills}/feature-test-design/references/pest-plugin-browser.md`; fica só o que é da dimensão G
+- README: nota de medição. O gate não tem rodada própria em `experimentos/`, a validação de
+  2026-09-21 foi uso real, e as tabelas de medição vivem só em
+  [`experimentos/README.md`](experimentos/README.md#histórico)
+
+### Corrigido
+
+- **Versão mínima da `feature-wiki` de 2.10.0 para 3.5.0**: `00-requisito.md` (2.10.0),
+  `## Superfície Livewire` do `02` (3.3.0), `## Despachos` do `03` que a L6 confere (3.4.0,
+  publicada só junto com a 3.5.0) e o lançador `.cmd` que a dimensão K manda usar (3.5.0)
+- **Dimensão K afirmava "duas suítes com 100% de mutation score cada" como fato medido.** O 100%
+  não está verificado: foi medido no Windows, sem `Duration` registrada (nota h da
+  [tabela única](experimentos/README.md#materialização-em-pest-rodada-1-cenário-1), e nota de
+  correção na entrada 1.1.0 abaixo). A frase passa a dizer que as duas suítes *reportaram o mesmo*
+  score, com a ressalva e o link; o 7 × 12 do juiz está confirmado. A regra — score alto não
+  absolve a dimensão A — não muda
+- README: o bloco PowerShell de instalação dos agentes copiava `.ai\skills\*` para `.claude\skills\`
+  sem condição, ao contrário do bloco bash logo acima e do README da coletânea: com `boost.json`, o
+  `boost:update` cria `.claude/skills/<skill>` como symlink e a cópia por cima falha. Fica igual ao
+  bash (só agentes), com link para os dois casos em *Como Instalar no Claude Code*
+- README: os links para `experimentos/` e para o estudo viram URL absoluta do repositório (o
+  `boost:add-skill` copia o README para `.ai/skills/<skill>/` do projeto, onde `../../../` não leva
+  ao repositório)
+
+### Registrado, não corrigido
+
+- `SKILL.md` ("os princípios 1 e 2 são construção, não promessa") e `agents/fw-qa-gate.md`
+  ("mecânico aqui, não uma promessa") contradizem o estudo, §7.1 (T7): o sub-agente tem `Bash`.
+  Fica para a release 2 (item 9), porque corrigir é mudar regra
+
 
 ## [1.5.2] — 2026-09-26
 
@@ -1435,6 +1762,10 @@ autolimpeza fica no step 7 da `feature-wiki`; a auditoria por quem não escreveu
   por isso é **cego à omissão**. Medido: duas suítes com **100% de mutation score cada**
   detectaram 7 e 12 de 18 defeitos plantados. Score alto **não** absolve a dimensão A
 
+> **Nota de correção (2026-09-26).** O 100% das duas suítes não está verificado (Windows, Pest
+> 5.0.5, sem `Duration` registrada). O 7 × 12 do juiz está. Ver
+> [`experimentos/README.md`](experimentos/README.md#materialização-em-pest-rodada-1-cenário-1).
+
 Etapa de QA dentro do agente — a próxima estação da esteira depois de implementar e rodar os testes. Confronta requisito × plano × app rodando e roteia cada achado.
 
 ## [1.0.0] — 2026-08-14
@@ -1466,6 +1797,64 @@ Etapa de QA dentro do agente — a próxima estação da esteira depois de imple
 
 Transforma decisões e restrições de um requisito em **Project Rules do Laravel Boost** (`.ai/rules/`), com aprovação explícita do usuário.
 
+## [1.3.0] — 2026-09-26
+
+Release 1 do roteiro de
+[`estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md`](estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md)
+(§8, itens 1, 2 e 11), "base limpa": **só empacotamento**, sem mudança de comportamento, gate ou
+procedimento. O corpo do `SKILL.md` segue com 388 linhas, abaixo das 500 do spec, sem
+`references/`.
+
+**Não medido**: esta skill não tem nenhuma execução registrada. A primeira está pendente em
+[`experimentos/README.md`](experimentos/README.md#rodadas-pendentes) (Rodadas pendentes, item c),
+com partida em `requirement-to-rule-v1.3.0`.
+
+### Alterado
+
+- **Frontmatter conforme o [spec Agent Skills](https://agentskills.io/specification).** `version`
+  sai do topo e vira `metadata.version: "1.3.0"` — quem conferia com `grep '^version:'` passa a
+  conferir `metadata.version`. Entram `license: MIT`, `compatibility` (Boost ≥ 2.4.12 com Project
+  Rules ativas e agente com MCP; o fallback sem `record-rule` que o SKILL já declara; sem MCP, o
+  gate 4 — `search-docs` — não é verificado e não há alternativa) e `metadata.requires:
+  "laravel/boost>=2.4.12; feature-wiki>=3.1.0"`, sem "opcional" dentro da string, para não quebrar
+  um parser futuro; que a `feature-wiki` só conta quando os candidatos vêm da wiki está dito na
+  `compatibility` e no README. `npx skills-ref validate` passa
+- **`description` reescrita** para o quê + quando + palavras-chave (728 → 788 caracteres). O que
+  era procedimento (4 gates, aprovação explícita, índice com uma linha por glob) já estava no corpo
+  e saiu da `description`
+- **README de 252 para 106 linhas**: por quê (wiki da feature × Project Rule × guideline do
+  Boost), quando usar e quando não usar, o que a skill entrega com ponteiro para a seção do
+  `SKILL.md` que faz cada coisa, limites e dependências. Gates, escada de enforcement, formato de
+  apresentação, modelo e regras do índice, modelo da rule, anti-padrões e o exemplo do
+  `search-docs` ficam só no `SKILL.md`
+
+### Corrigido
+
+- **Versão mínima do Boost é 2.4.12, não 2.5.0**: Project Rules e a tool MCP `record-rule`
+  entraram na v2.4.12 do laravel/boost (PR #852; ausentes na v2.4.11). O README dizia 2.5.0 desde a
+  1.2.1 — a entrada 1.2.1 ganhou nota de correção
+- Passo 8, só o parêntese (regra inalterada): os arquivos que o Boost regenera, e que por isso não
+  se commitam como as rules, são o `.mcp.json`, os arquivos de guidelines (`CLAUDE.md`,
+  `AGENTS.md` etc.) e o `boost.json`, conforme a doc do Boost. Desde o Boost 2.10.0, as guidelines
+  do Claude Code vão para o `AGENTS.md`
+- README: o link para `experimentos/` vira URL absoluta do repositório (o `boost:add-skill` copia o
+  README para `.ai/skills/<skill>/` do projeto, onde `../../../` não leva ao repositório)
+
+### Adicionado
+
+- README, seção **Limites**:
+  - não há poda de rule, e o Boost não oferece tool nem comando de remoção; o único gatilho de
+    revisão é a tabela `## Conformidade com Rules` do `03`;
+  - a escada de enforcement sugere e não prova;
+  - o gate 4 depende de `search-docs` (MCP), que a rota `analista` da `feature-wiki` não tem;
+  - vindo do step 9, a aprovação é pedida duas vezes;
+  - só alcança agentes que leem `.ai/rules/`;
+  - nenhuma execução medida em `experimentos/`
+- README, dependências com versão mínima: `laravel/boost` 2.4.12; `feature-wiki` 3.1.0, opcional
+  (step 9 desde a 2.10.0, `## Conformidade com Rules` do `03` desde a 3.1.0); `feature-test-design`
+  em qualquer versão, opcional
+
+
 ## [1.2.1] — 2026-09-26
 
 Patch de documentação, sem mudança de comportamento. Nasce da auditoria interna consolidada em
@@ -1495,6 +1884,11 @@ Patch de documentação, sem mudança de comportamento. Nasce da auditoria inter
 
 - URL da doc do Boost (Project Rules) nos dois lugares que a citavam sem link; dependência
   `laravel/boost ≥ 2.5.0` declarada no README
+
+> **Errata (2026-09-26, release 1 do roteiro).** O mínimo declarado acima está errado: Project
+> Rules e a tool MCP `record-rule` existem desde a **v2.4.12** do laravel/boost (PR #852; fonte: o
+> código e o CHANGELOG do laravel/boost), não desde a 2.5.0. A 1.3.0 declara
+> `laravel/boost>=2.4.12`. O mesmo erro está no estudo, §7.5 e §8, que ganhou errata no fim do §7.5.
 
 
 ## [1.2.0] — 2026-08-15
@@ -1550,6 +1944,62 @@ Patch de documentação, sem mudança de comportamento. Nasce da auditoria inter
 # Repositório
 
 Mudanças que não pertencem a uma skill específica.
+
+## 2026-09-26 — release 1 do roteiro
+
+- **CI: [`.github/workflows/skills-ref.yml`](.github/workflows/skills-ref.yml)** roda
+  `npx -y skills-ref@0.1.5 validate` em cada `.ai/skills/*/` com `SKILL.md`, em push e pull
+  request. Valida todas, acumula as falhas e reprova no fim (estudo, §1 e §8, item 1). Não confere
+  o corpo < 500 linhas, que é recomendação do spec, não regra do validador. O pacote npm é um port
+  não oficial, em TypeScript, do `skills-ref` — a biblioteca de referência do spec é a Python de
+  `agentskills/agentskills`; constantes e campos permitidos conferidos iguais em 2026-09-26. A
+  versão fixada não fixa as dependências transitivas (`commander` ^12.1.0, `js-yaml` ^4.1.0)
+- **`experimentos/README.md` passa a ser a única tabela de medição da coletânea**: uma linha por
+  rodada, com versões, host · modelo, C1/C2 (detectados · cegas · declaradas), total, fonte e a
+  coluna **Registro** (auditável / rejulgável / relato / contaminada). READMEs, `SKILL.md` e
+  CHANGELOG linkam em vez de copiar
+  - rodada 1 corrigida: mediu só o C1, com 12/18; o 17/18 do C2 era da rodada 4. A rodada 2 ganhou
+    o resultado real (C2 15/18, `ftd` 1.1.0, piso) e a rodada 4 ganhou número (16/18 e 17/18)
+  - rodada 8 contaminada (os conjuntos citam os IDs e as descrições do catálogo), fora de toda
+    contagem; rodadas 9 a 11 viram relato (conjunto arquivado em extrato; a 11 é paráfrase, CT a
+    CT, da 10); rodadas 12 e 13 só têm placar; a 6 é rejulgável. Das sete rodadas com a
+    `feature-test-design` 1.9.0, só a 7 é auditável, e sai "modelos 2025+ convergem em 0
+    iterações"
+  - tabela defeito a defeito das rodadas 5 a 7: o C1 caiu de 16 para 15 com o total igual,
+    reportado como observação de um braço, sem atribuição à 1.9.0
+  - o 100% (24/24) de mutation score da materialização fica não verificado (Windows, Pest 5.0.5)
+  - nova seção **Rodadas pendentes**: (a) a release de `references/` sem regressão, (b) o perfil
+    mínimo da `feature-test-design`, (c) a primeira execução real da `requirement-to-rule` — com
+    tags de partida e de chegada e critério de pronto
+- **Protocolo**: o prompt reutilizável saiu do README (fixava 1.9.0/3.0.0 e trazia pistas do
+  catálogo); [`protocolo/PROMPT-BRACO.md`](experimentos/protocolo/PROMPT-BRACO.md) é a fonte
+  única, não fixa versão, pede o `metadata.version` e executa os passos que o perfil de cada área
+  manda. [`PROTOCOLO.md`](experimentos/protocolo/PROTOCOLO.md) ganha a rodada de regressão entre
+  tags, "sem regressão" definida defeito a defeito, o conjunto conferido contra o catálogo (`grep`
+  dos IDs) antes do juiz, o projeto-cobaia limpo de rodadas anteriores e o registro obrigatório
+  por rodada (inclusive o modelo do juiz). Errata no `relatorio.html` das rodadas 1 a 4.
+  *Como repetir*, passo 2: no Claude Code a skill carregada vem de `.claude/skills/`, e nas cobaias
+  esses diretórios são cópias antigas (em 2026-09-26, `demo-wiki` com a `feature-wiki` 3.4.0 e
+  `demo-r8` com a 2.10.0). O passo passa a apagar e espelhar também `.claude/skills/<skill>` e a
+  conferir, antes do braço, a mesma versão nos dois diretórios
+- **README raiz**: versões da release 1; exemplo de frontmatter conforme o spec, com
+  `references/`, `{skills}` e `npx -y skills-ref@0.1.5 validate` (a versão do CI); a conferência
+  pós-instalação procura `metadata.version` com um padrão que também acha `version:` no topo de
+  uma skill antiga (`^\s*version:` no PowerShell, `^[[:space:]]*version:` no bash); instalação no
+  Claude Code com o comportamento do Boost 2.10 (o `boost:update` cria `.claude/skills/<skill>`
+  como symlink); números de medição trocados por link para a tabela única
+  - `ProcessTimedOutException`: o `php artisan test --list-tests` que estoura roda **dentro** do
+    `boost:update` que o `add-skill` chama, antes de gravar guidelines e skills (Boost 2.10,
+    `InstallCommand::determineTestEnforcement`, timeout padrão de 60 s). Rodar o `boost:update` de
+    novo repete o erro; o remédio documentado é definir `enforce_tests` em `config/boost.php`
+    (override não documentado na doc do Boost, laravel/boost PR #767) ou espelhar à mão. A Opção 1
+    do Claude Code só dá o `.claude/skills/` como pronto se o `add-skill` terminou sem exceção
+  - Opção 2 (global, PowerShell): `Copy-Item` com `-Force`; sem ele, a segunda execução — a
+    atualização — sai com um erro por diretório
+  - Ponytail, passo 1: sai o `php artisan boost:update` incondicional depois do `add-skill` (com
+    `boost.json` o `add-skill` já o chama; sem `boost.json` ele falha)
+- **Errata do Boost mínimo** (2.4.12, não 2.5.0) na entrada `requirement-to-rule` 1.2.1 e no
+  estudo, fim do §7.5
 
 ## 2026-08-14
 

@@ -1,24 +1,32 @@
 ---
 name: feature-quality-gate
-version: 1.5.2
 description: >
-  Etapa de QA dentro do agente — a próxima estação da esteira depois de
-  implementar e rodar os testes. Invoque no step 8 da skill feature-wiki, ou
-  sempre que precisar validar se uma feature entregue atende de fato ao que foi
-  pedido. Confronta 00-requisito.md x 01-plano-acao.md x app rodando, monta a
-  Matriz de Rastreabilidade para detectar omissão silenciosa (cláusula que nunca
-  virou passo, teste nem código), e valida 12 dimensões que CT e CT-B não cobrem:
-  cobertura do requisito, fronteiras, matriz de permissão, log real, N+1, UX de erro, tema/dark mode,
-  acessibilidade, segurança da superfície nova, regressão adjacente, adequação da
-  própria suíte de testes (oráculo fraco + mutation score via pest --mutate) e
-  consistência documental (PRD/ADR x código, rules x diff, docs pt x en x CHANGELOG,
-  citações arquivo:símbolo:linha e IDs de CT do teste x 04). Roda ANTES do PR.
-  Cada achado é classificado por severidade e roteado para um de 5 destinos — especificação,
-  implementação, teste, infra ou não-defeito. NÃO corrige nada: lê, reproduz e
-  reporta em 06-relatorio-qa.md. Loop converge em no máximo 3 ciclos.
-  No Claude Code roda como SUB-AGENTE sem Edit/Write (agents/fw-qa-gate.md desta skill, copiado
-  para .claude/agents/ com `cp .ai/skills/*/agents/*.md .claude/agents/`), cego à conversa que
-  escreveu a wiki e o código; o cabeçalho do 06 declara a Independência.
+  Etapa de QA dentro do agente, antes do PR. Invoque no step 8 da skill
+  feature-wiki, com a implementação e os testes verdes, ou sempre que precisar
+  validar se uma feature entregue atende ao que foi pedido: a pedido (revisar
+  como QA) ou antes de abrir PR com UI ou regra de negócio sensível.
+  Confronta 00-requisito.md x 01-plano-acao.md x app rodando; monta a Matriz
+  de Rastreabilidade para achar omissão silenciosa (cláusula RQ que nunca
+  virou passo, teste nem código); roda as dimensões do perfil de risco
+  (cobertura do requisito, fronteiras, matriz de permissão, log real, N+1, UX
+  de erro, dark mode, acessibilidade, segurança da superfície nova,
+  regressão, oráculo fraco e mutation score via pest --mutate, consistência
+  documental: PRD/ADR x código, rules x diff, docs pt x en x CHANGELOG); e
+  roteia cada achado por severidade a um destino: especificação,
+  implementação, teste, infra ou não-defeito. Não corrige nada: lê, reproduz
+  e reporta em 06-relatorio-qa.md. Palavras-chave: QA, quality gate.
+license: MIT
+compatibility: >
+  Projeto Laravel com Pest 4 ou 5. No Claude Code roda como sub-agente
+  fw-qa-gate, sem Edit/Write; em outro host roda em linha e o 06 declara a
+  independência degradada. Opcionais, com o que faltou declarado no
+  relatório: app servido na APP_URL (sem ele B a I ficam estáticas), Pest 5
+  (--tia), pest-plugin-agent (--agent), PCOV ou Xdebug (--mutate),
+  pest-plugin-browser, Playwright MCP, Boost MCP e skills de
+  petrkindlmann/qa-skills.
+metadata:
+  version: "1.6.0"
+  requires: "feature-wiki>=3.5.0; feature-test-design>=1.15.0"
 ---
 
 # Feature Quality Gate — QA no Agente, com Roteamento
@@ -34,6 +42,7 @@ description: >
 | **PRD** | Plano de ação (`01-plano-acao.md`) |
 | **SBTM** | Session-Based Test Management — exploratório com charter e time-box |
 | **RCRCRC** | Heurística de regressão: Recent, Core, Risk, Configuration, Repaired, Chronic |
+| **`{skills}`** | Diretório onde as skills estão instaladas: `.ai/skills/` (Boost), `.claude/skills/` (espelho local) ou `~/.claude/skills/` (global); use o primeiro que existir. `{skills}/feature-wiki/references/` existe desde a `feature-wiki` 3.6.0; numa versão anterior, o mesmo texto está no `SKILL.md` dela (*Superfície Livewire* do step 3, *Execução de Testes com Pest 5* e *Citações de código*) |
 
 ## Índice
 
@@ -124,7 +133,7 @@ Playwright MCP, skills de `qa-skills`, Pest 5, PCOV: **todos opcionais**. Sem el
 |---|---|---|
 | `00-requisito.md` com cláusulas `RQ-##` | **sim** | ver "oráculo degradado" abaixo |
 | `01-plano-acao.md` (+ `## Natureza da Wiki`, `## Cobertura do Requisito`) | **sim** | não roda — pedir ao usuário |
-| `02-decisoes-arquiteturais.md` | se existir | L3 confere só o PRD; `## Superfície Livewire` (dimensão I) via greps da `feature-wiki` |
+| `02-decisoes-arquiteturais.md` | se existir | L3 confere só o PRD; `## Superfície Livewire` (dimensão I) via greps da `feature-wiki` (`{skills}/feature-wiki/references/pesquisa-step-3.md`, §*Superfície Livewire — formato e greps*) |
 | `03-progresso.md` (+ `## Conformidade com Rules`, `## Verificação Final`) | sim | L4 e L6 ficam sem a declaração do implementador — declarar em "Não Verificado" |
 | `04-casos-de-teste.md` | sim | não roda |
 | `05-casos-de-teste-browser.md` | se houver UI | dimensões G/H limitadas |
@@ -327,7 +336,7 @@ Achado: contagem que cresce com o número de registros (N+1), query sem índice 
 
 ### G — Tema e Cor (dark mode)
 
-**Por que escapa — e é o caso mais traiçoeiro**: `assertSee('Salvar')` **passa** com texto branco em fundo branco. O texto está no DOM e na árvore de acessibilidade; só está invisível. E `assertScreenshotMatches()` detecta **mudança**, não erro — em feature nova ele **cria** o baseline, incluindo o bug.
+**Por que escapa — e é o caso mais traiçoeiro**: `assertSee('Salvar')` **passa** com texto branco em fundo branco. O texto está no DOM e na árvore de acessibilidade; só está invisível. E `assertScreenshotMatches()` detecta **mudança**, não erro — em feature nova ele **cria** o baseline, incluindo o bug. (Os demais fatos do plugin sobre tema, cor e acessibilidade, com as ressalvas: `{skills}/feature-test-design/references/pest-plugin-browser.md`, §*Tema, cor e acessibilidade — o que o plugin não prova*.)
 
 > **Atenção — aqui a regra da coletânea se inverte.** Em toda a `feature-wiki` a árvore de acessibilidade é preferida ao screenshot (~200–400 tokens × ~3.000–5.000). **Para defeito de cor, a árvore é justamente cega**: o texto está lá. Cor é o único caso em que a visão ganha da estrutura.
 
@@ -379,7 +388,7 @@ Escopo: **só o que o diff introduziu**. Não é auditoria do sistema.
 | Upload | validação de mime **e** extensão, path fora do webroot |
 | Dado sensível em resposta | API Resource devolvendo hash de senha, token, campo interno |
 | Query com input direto | `DB::raw` concatenando request |
-| **Ação do pacote de terceiro com id do cliente** | conferir contra `## Superfície Livewire` do `02`; sem a tabela, rodar os greps do step 3 da `feature-wiki`. `$wire.mountAction('x', {id: <alheio>})` é ponto de entrada como qualquer rota |
+| **Ação do pacote de terceiro com id do cliente** | conferir contra `## Superfície Livewire` do `02`; sem a tabela, rodar os greps do step 3 da `feature-wiki` (`{skills}/feature-wiki/references/pesquisa-step-3.md`, §*Superfície Livewire — formato e greps*). `$wire.mountAction('x', {id: <alheio>})` é ponto de entrada como qualquer rota |
 | **Propriedade pública Livewire sem `#[Locked]`** que decide **onde** a escrita cai (id de dono, tenant, agregado) | `Grep "public \$\|public ?"` nas páginas/componentes novos **e** nos do vendor que a feature estende. `#[Session]` não tranca: ele só repõe o valor no `mount()` |
 | **Escopo com discriminante nulo** | rodar a query sem tenant/owner resolvido: devolve tudo (falha **aberta**) ou nada (falha **fechada**)? |
 | **Estado de erro sem saída** | todo 403/404 novo: existe caminho alcançável a partir dele? par de redirect que se devolve mutuamente é **Blocker** |
@@ -422,7 +431,7 @@ XDEBUG_MODE=coverage vendor/bin/pest tests/Feature/{Feature} --mutate --path=app
 ```
 
 (No Windows, o prefixo de env não roda em cmd/PowerShell: usar o lançador `.cmd` descrito em
-*Pest 5* da `feature-wiki`, ou `$env:XDEBUG_MODE='coverage'` no PowerShell.)
+`{skills}/feature-wiki/references/pest-5.md` (§*`pest --mutate` no Windows — o lançador `.cmd`*), ou `$env:XDEBUG_MODE='coverage'` no PowerShell.)
 
 Exige driver de cobertura (PCOV ou Xdebug). Escopar sempre: mutar o projeto inteiro é caro e
 devolve ruído.
@@ -433,7 +442,7 @@ devolve ruído.
 3 s* para uma suíte de 200 s — e este gate, na primeira execução cega, aceitou um *"2 mutantes,
 100 %"* sem desconfiar. Regra: **score sem `Duration` compatível com N × tempo dos testes
 cobridores, ou sem a lista de sobreviventes, é "Não Verificado"**, não 100 %. No Windows, rodar
-por um lançador `.cmd` poliglota (texto na seção *Pest 5* da `feature-wiki`). Timeout conta como
+por um lançador `.cmd` poliglota (texto em `{skills}/feature-wiki/references/pest-5.md`, §*`pest --mutate` no Windows — o lançador `.cmd`*). Timeout conta como
 morto no score; o achado é sempre o **sobrevivente nomeado**.
 
 > **Armadilha verificada**: `covers(X::class)` no arquivo de teste **restringe o que conta como
@@ -443,9 +452,11 @@ morto no score; o achado é sempre o **sobrevivente nomeado**.
 
 > **O que este passo NÃO responde — e é o erro mais fácil de cometer com ele.**
 > Mutation testing só muta **código que existe**. Cláusula do requisito que nunca virou código não
-> gera mutante nenhum, e o score **não cai**. Medido contra a mesma implementação: duas suítes com
-> **100% de mutation score cada** detectaram 7 e 12 defeitos plantados de 18 — a métrica saturou e
-> não distinguiu as duas.
+> gera mutante nenhum, e o score **não cai**. Medido contra a mesma implementação: duas suítes
+> reportaram o **mesmo** mutation score (100 % cada, não verificado: Windows, sem `Duration`
+> registrada) e detectaram 7 e 12 defeitos plantados de 18 — a métrica não distinguiu as duas
+> (números e ressalva:
+> <https://github.com/gsferro/laravel-ai-skills/blob/main/experimentos/README.md#materialização-em-pest-rodada-1-cenário-1>).
 >
 > Portanto: score alto **não** absolve a dimensão A. Score baixo é achado; score alto é apenas
 > ausência de um achado específico — o de assertion fraca.
@@ -499,7 +510,7 @@ implementador **declarou**; esta dimensão confere a declaração.
 | # | Checagem | Como | Achado se |
 |---|---|---|---|
 | L1 | IDs de CT | `grep -o '\[CT-B\?[0-9]*\]'` nos arquivos de teste × índice do `04`/`05` | ID num lado só; linha de dataset sem Exemplo no Gherkin; contagem do cabeçalho do `04` diferente da real |
-| L2 | Citações `arquivo:símbolo:linha` | o grep da seção *Citações de código* da `feature-wiki` | símbolo não está na linha citada; citação sem símbolo |
+| L2 | Citações `arquivo:símbolo:linha` | o comando de `{skills}/feature-wiki/references/citacoes-de-codigo.md` (§*Conferência mecânica*); o formato obrigatório fica na seção *Citações de código* do `SKILL.md` da `feature-wiki` | símbolo não está na linha citada; citação sem símbolo |
 | L3 | PRD/ADR × código | para cada passo do `01` e cada "Decisão"/"Consequências" do `02`, abrir o arquivo citado e conferir a afirmação. **Toda afirmação com número é conferida por `grep -rn` do valor na wiki inteira**, não lendo o arquivo onde ela é esperada — número duplicado entre `01` e `02` é o que sobrevive ao gate | afirmação que o código contradiz sem marca `*(alterado em …)*`; desvio que existe só no `03`; número certo num arquivo e velho em outro |
 | L4 | Rules × diff | para cada rule cujo glob casa um arquivo do diff, conferir a linha da tabela do `03` **e** o código | rule sem linha na tabela; "aplicada" sem evidência; rule violada (`group` errado, chave de env fora do `phpunit.xml`, par de cenário exigido pela rule ausente) |
 | L5 | Docs × comportamento × rastro | docs pt × en × CHANGELOG × README contra o comportamento final; cada frase nova procurada no `00`/`02` | pt e en dizem coisas diferentes; consequência invalidada ainda descrita; frase em doc de usuário **sem `RQ` nem ADR** de origem — crescimento sem rastro, o mesmo padrão que a matriz chama de "código sem `RQ`" |

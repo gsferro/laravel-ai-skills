@@ -1,0 +1,73 @@
+# Valida cada skill de .ai/skills/ contra a especificação Agent Skills (https://agentskills.io/specification)
+# com `skills-ref validate` do pacote npm skills-ref: port não oficial, em TypeScript, do skills-ref, a
+# biblioteca de referência do spec (Python, https://github.com/agentskills/agentskills/tree/main/skills-ref).
+# As constantes e os campos permitidos batem com os da biblioteca Python (conferido em 2026-09-26);
+# as duas se declaram "for demonstration purposes only".
+#
+# O que o validador confere, por skill: frontmatter só com os campos do spec (name, description,
+# license, compatibility, metadata, allowed-tools), `name` igual ao nome do diretório, `description`
+# com no máximo 1024 caracteres e `compatibility` com no máximo 500.
+#
+# Por quê: até a release 1 (2026-09-26) as quatro skills reprovavam no validador (`version` no topo
+# do frontmatter, `description` acima de 1024) e ninguém via, porque nada rodava a checagem. O
+# estudo estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md (§1.2 a §1.4; roteiro §8, item 1)
+# pede o validador em CI nas quatro, para a conformidade não regredir sem aviso.
+#
+# O que ele NÃO confere: o corpo abaixo de 500 linhas (recomendação do spec, não regra do
+# validador; três skills estão acima, com o motivo declarado no CHANGELOG) e os links para
+# references/. A tolerância a campos de extensão do Claude Code (ex.: disable-model-invocation)
+# fica para a release 2 do roteiro.
+#
+# Versão fixada (0.1.5): fixa o pacote, não as dependências transitivas (commander ^12.1.0, js-yaml
+# ^4.1.0, sem lockfile), então o resultado pode mudar sem commit. Todas as skills são validadas;
+# a falha de uma não interrompe as outras, e o job reprova no fim se alguma falhou.
+
+name: skills-ref
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: skills-ref validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validar cada .ai/skills/*/ que tem SKILL.md
+        shell: bash
+        run: |
+          total=0
+          falhas=()
+          for dir in .ai/skills/*/; do
+            dir="${dir%/}"
+            [ -f "$dir/SKILL.md" ] || continue
+            total=$((total + 1))
+            echo "::group::$dir"
+            if npx -y skills-ref@0.1.5 validate "$dir"; then
+              echo "ok: $dir"
+            else
+              echo "::error file=$dir/SKILL.md::skills-ref validate reprovou $dir"
+              falhas+=("$dir")
+            fi
+            echo "::endgroup::"
+          done
+
+          if [ "$total" -eq 0 ]; then
+            echo "::error::nenhum .ai/skills/*/SKILL.md encontrado"
+            exit 1
+          fi
+
+          echo "$total skill(s) validada(s); ${#falhas[@]} reprovada(s)"
+          if [ "${#falhas[@]}" -gt 0 ]; then
+            printf '  - %s\n' "${falhas[@]}"
+            exit 1
+          fi

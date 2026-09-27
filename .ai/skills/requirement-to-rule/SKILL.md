@@ -1,16 +1,28 @@
 ---
 name: requirement-to-rule
-version: 1.2.1
 description: >
   Transforma decisões e restrições de um requisito em Project Rules do Laravel Boost
-  (.ai/rules/). Invoque quando uma decisão precisar valer para agentes futuros em
-  qualquer sessão — não só na wiki da feature atual. Valida cada candidato contra
-  4 gates (durável, escopável por path, não-inferível, não-redundante), deduplica
-  contra o index existente, exige aprovação explícita do usuário e grava sempre via
-  a tool MCP record-rule do Boost. Cria .ai/rules/index.md no modelo oficial quando
-  não existe e o mantém atualizado — uma linha por glob — porque rule fora do índice
-  não é descoberta pelos agentes. Complementa a feature-wiki (step 9) e o
-  infer-conventions do Boost: aquele varre o código existente, este parte do requisito.
+  (.ai/rules/), escopadas por glob, para que valham para agentes futuros em qualquer
+  sessão, não só na wiki da feature. Invoque no step 9 da feature-wiki, com candidatos
+  a rule aprovados; quando o usuário pedir explicitamente ("isso vira rule", "lembre
+  disso para sempre"); ou quando uma ADR aceita ou uma armadilha descoberta valer para
+  código futuro fora da feature. Filtra candidatos por gates, prefere enforcement
+  automático, grava via a tool MCP record-rule e mantém o índice .ai/rules/index.md.
+  Palavras-chave: Project Rules, Laravel Boost, .ai/rules, record-rule, índice de
+  rules, decisão durável. Não é para conhecimento de framework nem para varrer o
+  código existente (infer-conventions do Boost).
+license: MIT
+compatibility: >
+  Projeto Laravel com laravel/boost 2.4.12 ou superior, Project Rules ativas
+  (BOOST_RULES_ENABLED diferente de false) e agente com MCP, para as tools record-rule
+  e search-docs. Sem record-rule (Boost ausente, rules desativadas, agente sem MCP):
+  fallback declarado no SKILL, com gravação manual de .ai/rules/ e do índice, aviso ao
+  usuário e registro no commit. Sem MCP, o gate 4 (search-docs) não é verificado e
+  não há alternativa. feature-wiki 3.1.0 ou superior só quando os candidatos vêm da
+  wiki.
+metadata:
+  version: "1.3.0"
+  requires: "laravel/boost>=2.4.12; feature-wiki>=3.1.0"
 ---
 
 # Requirement → Rule — Decisão do Requisito Vira Regra Durável
@@ -199,7 +211,7 @@ Remember that all money values are stored as integer cents, never as floats.
 
 - `Read .ai/rules/index.md` e confirmar a linha `{glob} | .ai/rules/{area}.md`
 - `Read` o arquivo de rule gravado e checar se o `note` ficou fiel ao aprovado
-- **Commitar `.ai/rules/` inteiro** (rule + índice) — rules são artefato de equipe, versionado (diferente de `.mcp.json` e `CLAUDE.md`, que o Boost regenera)
+- **Commitar `.ai/rules/` inteiro** (rule + índice) — rules são artefato de equipe, versionado (diferente de `.mcp.json`, dos arquivos de guidelines — `CLAUDE.md`, `AGENTS.md` etc. — e do `boost.json`, que o Boost regenera)
 - Commit sugerido: `:memo: rules: {título da rule}` com corpo citando a origem (ADR / wiki / card)
 
 ---

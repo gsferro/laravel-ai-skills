@@ -665,6 +665,12 @@ Abertos ⏳:
   pode não existir. É exatamente o ponto do vídeo (§5.1) — regra determinística que **roda**, não
   que é descrita. Roteiro, item 4.
 
+> **Errata (2026-09-26, release 1 do roteiro).** "Rules existem desde o Boost 2.5.0", acima, e a
+> dependência "`laravel/boost ≥ 2.5.0`" deste parágrafo e dos itens 1 e 2 do roteiro (§8, "Boost
+> 2.5+" e "`laravel/boost ≥ 2.5`") estão errados: Project Rules e a tool MCP `record-rule` entraram
+> na **v2.4.12** do laravel/boost (PR #852; fonte: o código e o CHANGELOG do laravel/boost). As
+> skills da release 1 declaram `laravel/boost>=2.4.12`. O texto acima fica como foi escrito.
+
 ### 7.6 Os cinco sub-agentes
 
 | Agente | Frontmatter | Autossuficiente | Cegueira | Ferramenta × promessa | Retorno auditável |

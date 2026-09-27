@@ -12,10 +12,10 @@ Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude C
 
 | Skill | Versão | O que faz | Quando é invocada |
 |---|---|---|---|
-| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 3.5.2 | Cria a wiki da feature antes de implementar: requisito bruto, PRD, ADR e progresso, com padrão de log. Delega os casos de teste. No Claude Code, despacha para sub-agentes com modelo roteado e juiz cego | ao iniciar qualquer feature nova |
-| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.14.1 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes | step 4 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
-| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.5.2 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita a consistência wiki × código × docs × rules e roteia cada achado para especificação, implementação ou teste | step 8 da `feature-wiki`, após os testes passarem e **antes do PR** |
-| **[requirement-to-rule](.ai/skills/requirement-to-rule/README.md)** | 1.2.1 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | step 9 da `feature-wiki` ou sob pedido |
+| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 3.6.0 | Cria a wiki da feature antes de implementar: requisito bruto, PRD, ADR e progresso, com padrão de log. Delega os casos de teste. No Claude Code, despacha para sub-agentes com modelo roteado e juiz cego | ao iniciar qualquer feature nova |
+| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.15.0 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes | step 4 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
+| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.6.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita a consistência wiki × código × docs × rules e roteia cada achado para especificação, implementação ou teste | step 8 da `feature-wiki`, após os testes passarem e **antes do PR** |
+| **[requirement-to-rule](.ai/skills/requirement-to-rule/README.md)** | 1.3.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com aprovação do usuário | step 9 da `feature-wiki` ou sob pedido |
 
 O ciclo completo: **planejar** (`feature-wiki`) → **especificar teste** (`feature-test-design`) → **executar** (Ponytail) → **comunicar** (Caveman) → **testar** (Pest 5) → **validar** (`feature-quality-gate`) → **memorizar** (`requirement-to-rule`).
 
@@ -47,14 +47,14 @@ medível por feature, seja qual for o provedor. Instalação dos agentes:
 `cp .ai/skills/*/agents/*.md .claude/agents/` (ver [Como Instalar no Claude Code](#-como-instalar-no-claude-code)).
 
 > Medição de referência (2026-09-21, feature FERRO-830 no `demo-wiki`, esteira completa até o
-> quality gate ciclo 1): **48 despachos, ~4,6 M tokens de sub-agente**, a maior parte em `sonnet`
-> construindo; o `Explore` sozinho custou 139 k. 3 de 8 retornos `haiku` tinham defeito, todos
-> pegos por amostragem; num lote misto de 5 itens o `haiku` fez 1 e reportou 3 como feitos. Os
-> cinco achados mais graves do `04` vieram do `opus` **cego** revisando o que outro `opus` derivou;
-> o quality gate cego devolveu `REPROVADO → especificação` com 2 perguntas de requisito que ninguém
-> tinha feito e **2 achados contra a própria sessão** (número sem comando; degradação declarada
-> falsa). A cegueira pesou mais que o modelo — e o registro completo está em
-> *Validado em campo*, no `SKILL.md` da `feature-wiki`.
+> quality gate ciclo 1): a maior parte do custo de sub-agente foi `sonnet` construindo; os
+> retornos `haiku` com defeito só foram pegos por amostragem; os achados mais graves do `04`
+> vieram do `opus` **cego** revisando o que outro `opus` derivou; e o quality gate cego devolveu
+> `REPROVADO → especificação` com perguntas de requisito que ninguém tinha feito e **achados
+> contra a própria sessão** (número sem comando; degradação declarada falsa). A cegueira pesou
+> mais que o modelo. Os números e o registro completo estão em
+> [*Validado em campo*](.ai/skills/feature-wiki/references/casos-medidos.md#validado-em-campo--2026-09-21-feature-completa-no-demo-wiki),
+> nas `references/` da `feature-wiki`.
 
 ### Por que a derivação do teste virou skill própria
 
@@ -62,32 +62,15 @@ O `04-casos-de-teste.md` era escrito logo depois do PRD, pelo mesmo agente, para
 passos do PRD"*. É a direção invertida: o PRD é a **interpretação** do requisito, e testar a
 interpretação a confirma.
 
-Auditoria de 9 wikis reais desta coletânea, 125 casos de teste e 164 testes Pest em produção:
+Uma auditoria de 9 wikis reais desta coletânea (125 casos de teste) mostrou o efeito: pouco mais
+da metade dos casos caía nos arquétipos que o próprio template nomeava, e técnica formal — valor
+limite, tabela de decisão, pairwise — praticamente não aparecia. Os números estão no README da
+skill, em [O que a auditoria mediu](.ai/skills/feature-test-design/README.md#o-que-a-auditoria-mediu).
 
-| Medida | Resultado |
-|---|---|
-| Casos que caem nos 4 arquétipos que o próprio template nomeava | **52%** — e nada além |
-| Análise de valor limite genuína | **1 ocorrência em 125** |
-| Tabela de decisão implementada · pairwise | **0** · **0** |
-| Cláusulas `RQ` rastreáveis sem nenhum caso | **9 de 19** (razão CT/RQ = 1,11) |
-| Casos com oráculo fraco (implementação defeituosa passa) | **19 de 125**; 7 graves cobrindo 52 telas |
-| Telas `create` cobertas só por `visit()`, sem gravação | **5** |
-| Testes "órfãos" — achados depois, não pelo processo do `04` | **9**, dos quais 5 um particionamento formal listaria em minutos |
-
-E o resultado da troca, medido em experimento controlado com 18 defeitos plantados **antes** de
-qualquer conjunto existir, julgados por um agente cego que exigia citação literal da assertion que
-mata cada defeito:
-
-| Cenário | Gabarito | Pipeline novo |
-|---|---|---|
-| **Cupons** — cálculo, dinheiro, datas | 7 de 18 (38,9%) · 10 lacunas cegas | **16 de 18 (88,9%) · 1 lacuna cega** |
-| **Aprovação** — máquina de estados | 11 de 18 (61,1%) · 7 lacunas cegas | **17 de 18 (94,4%) · 1 lacuna cega** |
-
-> A rodada 6 (`feature-test-design` 1.8.0, num kit recriado do zero) mediu **16 de 18 com zero
-> lacunas cegas** e **17 de 18 com 21 de 21 células** da matriz de estados — **33 de 36**, e o
-> fuso horário morrendo pela primeira vez em seis rodadas. As rodadas 7 a 13 (1.9.0, em seis
-> famílias de modelos) repetiram 33 de 36 (15/18 + 18/18). O histórico completo está em
-> [`experimentos/`](experimentos/README.md).
+A troca foi medida em experimento controlado: 18 defeitos plantados **antes** de qualquer conjunto
+existir, julgados por um agente cego que exige citação literal da assertion que mata cada defeito.
+Resultado por rodada, da baseline à versão atual, em
+[`experimentos/`](experimentos/README.md#histórico).
 
 A causa não era desleixo: o critério de suficiência da skill era *"todo método público tem 1 CT,
 cada branch tem um CT"* — cobertura de um **código que ainda não existe** quando o `04` é escrito.
@@ -95,14 +78,14 @@ Isso obriga o agente a imaginar a implementação e testá-la.
 
 ### Onde está cada documentação
 
-Cada skill tem **dois arquivos com públicos diferentes** — o `README.md` explica para a pessoa; o `SKILL.md` instrui o agente. Procedimento não é duplicado entre eles.
+Cada skill tem **dois arquivos com públicos diferentes** — o `README.md` explica para a pessoa; o `SKILL.md` instrui o agente. Procedimento não é duplicado entre eles. Duas skills têm também `references/`: arquivos **para o agente, sob demanda**, que o `SKILL.md` manda abrir antes da ação que depende deles (templates, tabelas, comandos, casos medidos). Os gates e as proibições ficam no `SKILL.md`.
 
-| Skill | Para você ler | Para o agente seguir |
-|---|---|---|
-| feature-wiki | [README](.ai/skills/feature-wiki/README.md) — requisito, CT-B, Pest 5, `search-docs`, dependências | [SKILL.md](.ai/skills/feature-wiki/SKILL.md) |
-| feature-test-design | [README](.ai/skills/feature-test-design/README.md) — o problema medido, o pipeline de 7 passos, **por que Gherkin sem runner**, a camada Livewire que faltava | [SKILL.md](.ai/skills/feature-test-design/SKILL.md) |
-| feature-quality-gate | [README](.ai/skills/feature-quality-gate/README.md) — uso + **estudo de viabilidade** (pesquisa de mercado, lacuna verificada, critério eliminatório) | [SKILL.md](.ai/skills/feature-quality-gate/SKILL.md) |
-| requirement-to-rule | [README](.ai/skills/requirement-to-rule/README.md) — 4 gates, escada de enforcement, índice de rules | [SKILL.md](.ai/skills/requirement-to-rule/SKILL.md) |
+| Skill | Para você ler | Para o agente seguir | Para o agente, sob demanda |
+|---|---|---|---|
+| feature-wiki | [README](.ai/skills/feature-wiki/README.md) — por quê, os arquivos que ela cria, quando usar, dependências, instalação dos agentes, limites | [SKILL.md](.ai/skills/feature-wiki/SKILL.md) | [`references/`](.ai/skills/feature-wiki/references/) — templates `00`–`03`, padrão de log, pesquisa do step 3, roteamento, Pest 5, citações, casos medidos |
+| feature-test-design | [README](.ai/skills/feature-test-design/README.md) — o problema medido, o pipeline de 8 passos (0 a 7), **por que Gherkin sem runner**, a camada Livewire que faltava | [SKILL.md](.ai/skills/feature-test-design/SKILL.md) | [`references/`](.ai/skills/feature-test-design/references/) — técnicas por regra, taxonomia, templates `04`/`05`, mutation testing, `pest-plugin-browser` (fonte única da coletânea) |
+| feature-quality-gate | [README](.ai/skills/feature-quality-gate/README.md) — quando usar, limites, dependências + **estudo de viabilidade** (pesquisa de mercado, lacuna verificada, critério eliminatório) | [SKILL.md](.ai/skills/feature-quality-gate/SKILL.md) | — |
+| requirement-to-rule | [README](.ai/skills/requirement-to-rule/README.md) — por quê, quando usar/não usar, limites, dependências | [SKILL.md](.ai/skills/requirement-to-rule/SKILL.md) | — |
 
 > Histórico de evolução das skills: [CHANGELOG.md](CHANGELOG.md)
 
@@ -121,50 +104,96 @@ a medição a cada evolução em vez de discutir a mudança.
 
 ## 🏗️ Estrutura do Repositório (Como criar novas Skills)
 
-Para que o Laravel Boost e o Claude Code consigam detectar suas habilidades automaticamente, elas **devem** seguir rigorosamente a estrutura de pastas abaixo dentro do repositório:
+As skills seguem o [spec Agent Skills](https://agentskills.io/specification). Para que o Laravel Boost e o Claude Code as encontrem, cada uma vive numa pasta própria dentro de `.ai/skills/`:
 
 ```text
 .ai/
 └── skills/
-    ├── nome-da-sua-skill/
-    │   ├── SKILL.md      ← obrigatório: instruções para o agente
-    │   ├── README.md     ← opcional: explicação para a pessoa
-    │   └── agents/       ← opcional: sub-agentes da skill; copiar para .claude/agents/ (cp .ai/skills/*/agents/*.md .claude/agents/)
+    ├── nome-da-sua-skill/          ← o nome da pasta é o `name` do frontmatter
+    │   ├── SKILL.md                ← obrigatório: frontmatter + instruções para o agente
+    │   ├── README.md               ← opcional: explicação para a pessoa
+    │   ├── references/             ← opcional: arquivos que o SKILL.md manda o agente abrir sob demanda
+    │   │   └── tema.md             ←   um nível só: references/tema.md, sem subpasta
+    │   └── agents/                 ← opcional: sub-agentes da skill (convenção desta coletânea, não do spec)
+    │       └── nome-do-agente.md   ←   o Claude Code só os lê em .claude/agents/ — ver a instalação
     └── outra-skill/
         └── SKILL.md
 ```
+
+O `boost:add-skill` copia a pasta **inteira** de cada skill (menos arquivos `.php`) para
+`.ai/skills/<skill>/` do projeto; do `SKILL.md`, o Boost lê só o `name` e a `description`.
 
 Fora de `.ai/`, o repositório guarda **[`experimentos/`](experimentos/README.md)** (protocolo e
 rodadas medidas) e **`estudos/`** (análises comparativas datadas). Nenhum dos dois é instalado
 pelo Boost — são o registro de por que cada regra existe.
 
-**Convenção desta coletânea**: cada skill tem os dois arquivos, com públicos distintos.
+**Convenção desta coletânea**: cada arquivo tem um público.
 
 | Arquivo | Público | Conteúdo | Custo de contexto |
 |---|---|---|---|
-| `SKILL.md` | **agente** | procedimento, gates, templates, comandos, proibições | carregado on-demand pelo agente |
-| `README.md` | **pessoa** | por que existe, vantagens, escopo, dependências, limitações | **zero** — o Boost lê só o `SKILL.md` (e instala `agents/` junto); o Claude Code lê o `SKILL.md` e os agentes copiados para `.claude/agents/` |
+| `SKILL.md` | **agente** | gates, obrigações, proibições, a sequência de passos, checklist | o frontmatter (`name` + `description`) está em toda sessão, para o agente decidir invocar; o corpo carrega quando a skill é ativada |
+| `references/` | **agente** | templates, tabelas, comandos, exemplos, casos medidos — nunca um gate ou proibição que não esteja também no corpo | só quando o `SKILL.md` manda: *"antes de X, leia `references/Y.md`"* |
+| `agents/` | **Claude Code** | sub-agentes com modelo e ferramentas restritos | só no despacho, depois de copiados para `.claude/agents/` |
+| `README.md` | **pessoa** | por que existe, quando usar, dependências com versão mínima, limites | **zero** — nenhum agente o carrega por conta própria |
 
-A regra que evita duplicação: **procedimento vive apenas no `SKILL.md`**. O `README.md` explica o *porquê* e o *quando*, nunca repete o *como*.
+A regra que evita duplicação: **procedimento vive apenas no `SKILL.md`** (e nas `references/` que ele manda abrir). O `README.md` explica o *porquê* e o *quando*, nunca repete o *como*.
 
-### Regras importantes para o arquivo `SKILL.md`:
-Todo arquivo `SKILL.md` precisa começar obrigatoriamente com um cabeçalho **YAML** delimitado por `---`. É isso que descreve a habilidade para a inteligência artificial.
+### Regras importantes para o arquivo `SKILL.md`
 
-**Exemplo prático de um arquivo `SKILL.md`:**
+Todo `SKILL.md` começa com um cabeçalho **YAML** delimitado por `---`. É o que descreve a skill para o agente.
+
+**Exemplo prático:**
 ```markdown
 ---
 name: form-requests-padronizados
-version: 1.0.0
-description: Diretrizes para validação de dados usando Form Requests isolados no domínio do projeto.
+description: >
+  Valida dados de entrada com Form Requests isolados no domínio do projeto Laravel.
+  Invoque ao criar ou alterar endpoint, action ou componente que recebe dados do
+  usuário, e quando encontrar validação dentro de controller. Palavras-chave: Form
+  Request, validação, rules(), messages(), make:request.
+license: MIT
+compatibility: Projeto Laravel 10 ou superior.
+metadata:
+  version: "1.0.0"
+  requires: "laravel/framework>=10.0"
 ---
 
-# Diretrizes da Skill
+# Form Requests padronizados
+
 - Sempre utilize o comando `php artisan make:request`.
 - Nunca faça validações diretamente dentro das Controllers.
-- Adicione mensagens de erro customizadas no método `messages()`.
+- Antes de escrever as mensagens de erro, leia `references/mensagens.md`: o método `messages()`
+  segue o formato dele.
 ```
 
-> O `name` deve ser igual ao nome da pasta, em minúsculas com hífens ([spec Agent Skills](https://agentskills.io/specification)). O `version` é convenção desta coletânea, não do spec.
+- **`name`**: igual ao nome da pasta; até 64 caracteres, minúsculas, dígitos e hífens, sem hífen
+  nas pontas nem duplo.
+- **`description`**: até 1024 caracteres, dizendo **o que** a skill faz e **quando** invocar, com
+  as palavras-chave de gatilho. É o texto que o agente lê em toda sessão; release note e
+  procedimento vão para o README e para o corpo.
+- **`license`**: `MIT`, a licença do repositório.
+- **`compatibility`** (opcional, até 500 caracteres): só exigência real de ambiente — Boost com MCP,
+  versão do Pest, sub-agentes — e o que degrada sem ela.
+- **`metadata`** (mapa de texto para texto): `version`, convenção desta coletânea — **nunca**
+  `version:` no topo, que o validador reprova —, e `requires`, as versões mínimas de outras
+  skills e pacotes, separadas por `;`.
+- **Caminhos**: arquivo da própria skill, relativo à pasta dela (`references/mensagens.md`).
+  Arquivo de outra skill, `{skills}/<skill>/…`, onde **`{skills}`** é o diretório de instalação das
+  skills — `.ai/skills/`, `.claude/skills/` ou `~/.claude/skills/`, o primeiro que existir.
+- **Tamanho**: o spec recomenda corpo abaixo de 500 linhas, com o resto em `references/`. É
+  recomendação, não regra do validador.
+
+Para conferir, rode o mesmo validador que o CI deste repositório
+([`.github/workflows/skills-ref.yml`](.github/workflows/skills-ref.yml)) roda em cada push e pull
+request — o pacote npm `skills-ref` 0.1.5, port não oficial em TypeScript do `skills-ref`, a
+biblioteca de referência do spec (Python, em
+[agentskills/agentskills](https://github.com/agentskills/agentskills/tree/main/skills-ref)). As
+constantes conferidas batem com as da biblioteca Python (64 / 1024 / 500 caracteres e os mesmos
+campos permitidos); as duas se declaram só para demonstração:
+
+```bash
+npx -y skills-ref@0.1.5 validate .ai/skills/nome-da-sua-skill
+```
 
 ---
 
@@ -176,7 +205,14 @@ Para instalar **todas as skills de uma vez**, sem prompt de seleção, execute n
 php artisan boost:add-skill gsferro/laravel-ai-skills --all
 ```
 
-Isso baixa as quatro skills para o diretório `.ai/skills/` do seu projeto. Em seguida, para que o Boost processe as atualizações locais:
+Isso copia a pasta **inteira** de cada uma das quatro skills — `SKILL.md`, `README.md`,
+`references/` e `agents/`; nada `.php` — para `.ai/skills/<skill>/` do seu projeto. Se o projeto
+tem `boost.json`, o próprio `add-skill` termina chamando o `boost:update`, que sincroniza as skills
+para a pasta de cada agente configurado no Boost (comportamento do Boost 2.10; o do Claude Code
+está em [Como Instalar no Claude Code](#-como-instalar-no-claude-code)). Rodar o `boost:update` à
+mão só é preciso se o `add-skill` terminou com erro — e, se o erro foi
+[`ProcessTimedOutException`](#se-o-comando-terminar-com-processtimedoutexception), só depois do
+ajuste descrito lá, senão ele repete o mesmo timeout:
 
 ```bash
 php artisan boost:update
@@ -197,7 +233,26 @@ php artisan boost:add-skill gsferro/laravel-ai-skills \
   --skill=feature-wiki --skill=feature-test-design --skill=feature-quality-gate
 ```
 
-> **Atenção**: as skills são encadeadas pela wiki: `feature-test-design` e `feature-quality-gate` leem o `00-requisito.md`; `requirement-to-rule` lê `01`, `02` e `03`. A `feature-test-design` e a `feature-quality-gate` **exigem** a `feature-wiki` ≥ 2.10.0, porque dependem do `00-requisito.md` que ela cria — é o oráculo das duas. Instalar qualquer uma delas isolada não funciona.
+> **Atenção**: as skills são encadeadas pela wiki. A `feature-test-design` e a `feature-quality-gate`
+> leem o `00-requisito.md` que a `feature-wiki` cria — é o oráculo das duas —, e instalar qualquer
+> uma delas sem a `feature-wiki` não funciona. A `requirement-to-rule` lê `01`, `02`, `03` e o
+> checklist de taxonomia do `04`.
+
+As versões mínimas entre elas vêm do `metadata.requires` de cada `SKILL.md` e valem quando a
+dependência está presente. O que é obrigatório e o que só degrada está na seção *Dependências* do
+README de cada skill.
+
+| Skill | `metadata.requires` |
+|---|---|
+| `feature-wiki` 3.6.0 | `feature-test-design>=1.15.0; feature-quality-gate>=1.5.0; laravel/boost>=2.4.12` |
+| `feature-test-design` 1.15.0 | `feature-wiki>=3.5.2` |
+| `feature-quality-gate` 1.6.0 | `feature-wiki>=3.5.0; feature-test-design>=1.15.0` |
+| `requirement-to-rule` 1.3.0 | `laravel/boost>=2.4.12; feature-wiki>=3.1.0` |
+
+Na prática, instale as quatro juntas: a `feature-wiki` 3.6.0 e a `feature-quality-gate` 1.6.0
+apontam para `references/pest-plugin-browser.md`, que só existe a partir da `feature-test-design`
+1.15.0. O `laravel/boost` 2.4.12 é a versão em que nasceram as Project Rules e a tool
+`record-rule`.
 
 ### Todas as opções do `boost:add-skill`
 
@@ -225,12 +280,37 @@ Em projeto grande, o `boost:add-skill` pode encerrar com:
 The process "php artisan test --list-tests" exceeded the timeout of 60 seconds.
 ```
 
-**As skills já foram instaladas** — a tabela `Skills installed` é impressa **antes** da exceção, e
-o passo que estoura é posterior à cópia dos arquivos. Confira e siga:
+**As skills já foram instaladas em `.ai/skills/`** — a tabela `Skills installed` é impressa
+**antes** da exceção, e o passo que estoura é posterior à cópia dos arquivos. Confira as versões —
+ficam em `metadata.version`, indentadas no frontmatter, por isso o padrão aceita espaço antes (e
+também acha uma skill antiga, com `version:` no topo) — e siga:
 
 ```powershell
-Select-String -Path .ai\skills\*\SKILL.md -Pattern '^version:'
+Select-String -Path .ai\skills\*\SKILL.md -Pattern '^\s*version:'
 ```
+
+```bash
+grep -Hn '^[[:space:]]*version:' .ai/skills/*/SKILL.md
+```
+
+**O que não foi feito é a sincronização com as pastas dos agentes** (`.claude/skills/` e as
+guidelines). O `php artisan test --list-tests` que estoura roda **dentro** do `boost:update` que o
+`add-skill` chama: com as guidelines ativas no `boost.json`, o Boost detecta se o projeto tem
+testes antes de gravar guidelines e skills, com o timeout padrão de 60 s (Boost 2.10). Por isso
+**rodar o `boost:update` de novo repete o mesmo erro**. Defina antes a chave que dispensa a
+detecção — `enforce_tests`, override de config não documentado na doc do Boost (laravel/boost
+PR #767):
+
+```bash
+php artisan vendor:publish --tag=boost-config
+# em config/boost.php, dentro do array: 'enforce_tests' => true,
+# (true: as guidelines mandam o agente escrever testes; false: não mandam)
+php artisan boost:update
+```
+
+Com a chave definida, o Boost usa o valor dela e não roda o `test --list-tests`. A alternativa é
+espelhar à mão, como no caso *Sem `boost.json`* de [Como Instalar no Claude
+Code](#-como-instalar-no-claude-code).
 
 O `--skip-audit` **não** evita esse timeout: quem estoura não é a auditoria. Para saber se a
 descoberta de testes do projeto é lenta ou está travando — o que vale investigar por si só —
@@ -243,16 +323,44 @@ meça direto: `Measure-Command { php artisan test --list-tests | Out-Null }`.
 Você pode disponibilizar e carregar essas diretrizes no **Claude Code** através de duas abordagens:
 
 ### Opção 1: Uso Local por Projeto (Recomendado)
-Se você já executou o comando do Laravel Boost acima no seu projeto, basta criar um espelho das configurações para que o Claude Code dê prioridade a elas no repositório local:
+
+Depois do `boost:add-skill` acima, o que falta depende de o Boost estar configurado para o Claude
+Code no projeto.
+
+**Com `boost.json` e o Claude Code entre os agentes do Boost.** Se o `add-skill` terminou sem
+exceção, ele já chamou o `boost:update`, e o `boost:update` cria cada `.claude/skills/<skill>` como
+**symlink** de `.ai/skills/<skill>` (cópia, se o symlink falhar) — comportamento do Boost 2.10. (Se
+terminou com `ProcessTimedOutException`, o `.claude/skills/` não foi criado nem atualizado: resolva antes, como em
+[Se o comando terminar com `ProcessTimedOutException`](#se-o-comando-terminar-com-processtimedoutexception).)
+As skills já estão onde o Claude Code procura; **não copie** `.ai/skills/*` para `.claude/skills/`:
+com o symlink no lugar, a cópia escreve a pasta sobre ela mesma. Falta só copiar os sub-agentes:
 
 ```bash
-mkdir -p .claude/skills/ .claude/agents/
-cp -R .ai/skills/* .claude/skills/
+mkdir -p .claude/agents/
 cp .ai/skills/*/agents/*.md .claude/agents/   # sub-agentes da esteira (revisor do diff, construtor de testes, adversário, QA, CT-B)
+ls -la .claude/skills/                        # confira: cada skill como link para .ai/skills/<skill> (ou cópia, se o symlink falhou)
 ls .claude/agents/fw-*.md                     # confira: os agentes só carregam do diretório onde a sessão abre
 ```
 
 No **PowerShell** (`mkdir -p` e `cp` com glob não existem como no bash):
+
+```powershell
+New-Item -ItemType Directory -Force .claude\agents | Out-Null
+Copy-Item -Force .ai\skills\*\agents\*.md .claude\agents\
+Get-Item .claude\skills\* | Select-Object Name, LinkType, Target
+Get-ChildItem .claude\agents\fw-*.md        # cinco arquivos
+```
+
+**Sem `boost.json`, ou com o Claude Code fora dos agentes do Boost.** Nada sincroniza
+`.claude/skills/`; espelhe à mão, com a pasta inteira de cada skill (as `references/` precisam ir
+junto — o `SKILL.md` manda o agente abri-las):
+
+```bash
+mkdir -p .claude/skills/ .claude/agents/
+cp -R .ai/skills/* .claude/skills/
+cp .ai/skills/*/agents/*.md .claude/agents/
+ls .claude/agents/fw-*.md
+```
 
 ```powershell
 New-Item -ItemType Directory -Force .claude\skills, .claude\agents | Out-Null
@@ -261,11 +369,13 @@ Copy-Item -Force .ai\skills\*\agents\*.md .claude\agents\
 Get-ChildItem .claude\agents\fw-*.md        # cinco arquivos
 ```
 
-> **Os sub-agentes exigem a cópia.** O Claude Code lê agentes só em `.claude/agents/`, nunca em
-> `.ai/skills/*/agents/`. Cada skill traz o seu agente na própria pasta `agents/` (para o Boost
-> instalá-lo junto), então **repita a segunda cópia a cada `boost:add-skill`** — sem ela, os
-> cinco agentes `fw-*` não existem para o Claude Code (o que acontece então está no parágrafo
-> *Sem a cópia*, abaixo).
+Nesse caso, a cópia de `.claude/skills/` também se repete a cada atualização das skills.
+
+> **Os sub-agentes exigem a cópia, nos dois casos.** O Claude Code lê agentes só em
+> `.claude/agents/`, nunca em `.ai/skills/*/agents/` — e o `boost:update` sincroniza skills, não
+> agentes. Cada skill traz o seu agente na própria pasta `agents/` (para o Boost instalá-lo junto),
+> então **repita a cópia dos agentes a cada `boost:add-skill`** — sem ela, os cinco agentes `fw-*`
+> não existem para o Claude Code (o que acontece então está no parágrafo *Sem a cópia*, abaixo).
 >
 > **Verificar que a sessão os carregou** é outra coisa: a lista de sub-agentes é resolvida quando a
 > sessão **abre**, então agente copiado com a sessão em pé não aparece. Reinicie o Claude Code e
@@ -293,9 +403,14 @@ Para que o Claude Code use estas regras de arquitetura em **qualquer diretório*
 * **Windows (PowerShell):**
   ```powershell
   New-Item -ItemType Directory -Force -Path "$HOME\.claude\skills", "$HOME\.claude\agents"
-  Copy-Item -Path ".\.ai\skills\*" -Destination "$HOME\.claude\skills" -Recurse
+  Copy-Item -Path ".\.ai\skills\*" -Destination "$HOME\.claude\skills" -Recurse -Force
   Copy-Item -Force .ai\skills\*\agents\*.md "$HOME\.claude\agents\"
   ```
+
+> Copie sempre a pasta **inteira** de cada skill, como acima: copiar só o `SKILL.md` deixa os
+> *"leia `references/…`"* apontando para o vazio. Instalação global é `{skills}` =
+> `~/.claude/skills/`: as skills procuram umas às outras em `.ai/skills/`, `.claude/skills/` e
+> `~/.claude/skills/`, nessa ordem.
 
 > Instalação como plugin do Claude Code (`/plugin marketplace add`): ainda não disponível — o repositório não publica manifesto de marketplace.
 
@@ -400,10 +515,9 @@ O Caveman tem Auto-Clarity que desativa o modo terse em situações críticas. M
 
 ```bash
 php artisan boost:add-skill gsferro/laravel-ai-skills --all
-php artisan boost:update
 ```
 
-Isso baixa `feature-wiki`, `feature-test-design`, `feature-quality-gate` e `requirement-to-rule` para `.ai/skills/` no seu projeto Laravel.
+Isso baixa `feature-wiki`, `feature-test-design`, `feature-quality-gate` e `requirement-to-rule` para `.ai/skills/` no seu projeto Laravel. Com `boost.json`, o próprio `add-skill` termina chamando o `boost:update`; rodá-lo à mão só se o `add-skill` terminou com erro (ver [Como Instalar no Laravel Boost 2.0](#️-como-instalar-no-laravel-boost-20)). Sem `boost.json`, o `boost:update` falha (*Please set up Boost with [php artisan boost:install] first*).
 
 #### 2. Instalar o Ponytail e o Caveman no seu agente de IA
 
@@ -464,12 +578,21 @@ curl -o .clinerules/caveman.md https://raw.githubusercontent.com/JuliusBrussee/c
 
 #### 3. Espelhar a skill feature-wiki para o Claude Code (se aplicável)
 
-Se você usa Claude Code junto com Laravel Boost (é a Opção 1 de *Como Instalar no Claude Code*):
+Se você usa Claude Code junto com Laravel Boost (é a Opção 1 de *Como Instalar no Claude Code*).
+Com `boost.json` e o Claude Code configurado no Boost, o `boost:update` que o `add-skill` do passo 1 chama já criou
+`.claude/skills/<skill>` como symlink (Boost 2.10); falta só copiar os sub-agentes:
+
+```bash
+mkdir -p .claude/agents/
+cp .ai/skills/*/agents/*.md .claude/agents/   # sub-agentes da esteira (ver Opção 1)
+```
+
+Sem `boost.json`, espelhe também as skills, com a pasta inteira de cada uma:
 
 ```bash
 mkdir -p .claude/skills/ .claude/agents/
 cp -R .ai/skills/* .claude/skills/
-cp .ai/skills/*/agents/*.md .claude/agents/   # sub-agentes da esteira (ver Opção 1)
+cp .ai/skills/*/agents/*.md .claude/agents/
 ```
 
 #### 4. Fluxo de trabalho integrado
@@ -616,7 +739,7 @@ A partir de agora, para cada feature nova:
 │  • APRESENTAR ao usuário — decisão é dele           │
 │  • Se aprovado: gravar via record-rule (Boost)      │
 │  • Commitar .ai/rules/ (artefato de equipe)         │
-│  ⚠️ Teto: 3 rules por feature                       │
+│  ⚠️ Teto: 3 candidatos apresentados                 │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -726,10 +849,10 @@ Este README é o índice da coletânea. O detalhe de cada skill vive com ela:
 
 | Documento | O que você encontra |
 |---|---|
-| [**feature-wiki**](.ai/skills/feature-wiki/README.md) | como informar o requisito (card colado, `.pdf`/`.docx`/`.md`), os 7 arquivos da wiki (00 a 06), testes de browser com Pest + Playwright, o que o Pest 5 trouxe (`--parallel --tia`, `--agent`), Playwright MCP como observação, `search-docs` e suas lacunas, dependências e limitações conhecidas |
-| [**feature-test-design**](.ai/skills/feature-test-design/README.md) | o pipeline de 7 passos (o problema medido em 9 wikis reais está neste README, em [Por que a derivação do teste virou skill própria](#por-que-a-derivação-do-teste-virou-skill-própria)), **por que Gherkin sem runner**, a camada de componente Livewire que faltava, os fatos corrigidos sobre `pest-plugin-browser`, e o experimento controlado com o catálogo de defeitos plantados |
-| [**feature-quality-gate**](.ai/skills/feature-quality-gate/README.md) | uso da skill (omissão silenciosa, 12 dimensões incluindo mutation score e consistência documental, roteamento de 5 destinos) **e** o estudo de viabilidade completo: pesquisa de mercado, lacuna verificada, achados técnicos e critério eliminatório |
-| [**requirement-to-rule**](.ai/skills/requirement-to-rule/README.md) | as três camadas (guidelines × skills × rules), os 4 gates, escada de enforcement, índice `.ai/rules/index.md`, modelo base da rule e anti-padrões |
+| [**feature-wiki**](.ai/skills/feature-wiki/README.md) | por que a skill existe e o que entrega, os arquivos da wiki (00 a 06), quando usar, dependências com versão mínima e o que degrada sem cada uma, instalação dos agentes, como ela está organizada (`SKILL.md` × `references/` × `agents/`), limites, e o porquê das escolhas: sub-agentes no Claude Code, requisito verbatim (card colado, `.pdf`/`.docx`/`.md`), arquivo próprio para teste de browser, `search-docs` como primeira fonte |
+| [**feature-test-design**](.ai/skills/feature-test-design/README.md) | o problema medido (a auditoria de 9 wikis reais, em [O que a auditoria mediu](.ai/skills/feature-test-design/README.md#o-que-a-auditoria-mediu)), o pipeline de 8 passos (0 a 7), **por que Gherkin sem runner**, por que uma skill separada da `feature-wiki`, a camada de componente Livewire que faltava, onde estão os fatos do `pest-plugin-browser` ([`references/pest-plugin-browser.md`](.ai/skills/feature-test-design/references/pest-plugin-browser.md), fonte única da coletânea), o que foi medido (com link para [`experimentos/`](experimentos/README.md#histórico)), o que a skill não faz e dependências |
+| [**feature-quality-gate**](.ai/skills/feature-quality-gate/README.md) | quando usar, o que ela entrega (omissão silenciosa, veredito, destino por achado), limites, dependências com versão mínima, instalação do sub-agente **e** o estudo de viabilidade completo: pesquisa de mercado, lacuna verificada, achados técnicos e critério eliminatório |
+| [**requirement-to-rule**](.ai/skills/requirement-to-rule/README.md) | por que existe (wiki da feature × rule × guideline), quando usar e quando não usar, relação com o `infer-conventions`, limites, dependências com versão mínima; gates, escada, índice e modelo da rule ficam no `SKILL.md` |
 | [**CHANGELOG.md**](CHANGELOG.md) | histórico de evolução das quatro skills, com versionamento independente e convenção de tags |
 
 ---
