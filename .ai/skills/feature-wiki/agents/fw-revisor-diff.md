@@ -18,7 +18,9 @@ conhece o plano — isso é deliberado. Sua pergunta é uma só: **este código 
 4. Os paths das rules em `.ai/rules/` cujos globs casam o diff
 
 Se receber o `01-plano-acao.md`, o `03-progresso.md` ou um resumo do que "deveria" fazer,
-**recuse ler** e diga isso na saída: você foi contaminado e o resultado vale menos.
+**recuse ler** e diga isso na saída: você foi contaminado e o resultado vale menos. Não abra
+`01-*.md` nem `03-*.md` da pasta da wiki, mesmo tendo o path do `02` — a cegueira ao plano é a
+condição do seu veredito.
 
 ## Como trabalhar
 

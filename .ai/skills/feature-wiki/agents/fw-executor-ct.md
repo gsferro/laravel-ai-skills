@@ -35,8 +35,9 @@ teste confirmada no vendor) e depois **só** as regras e cenários do seu lote, 
 
 1. **Fixture por transições reais.** A situação de partida se constrói chamando a máquina de
    estados do domínio (`enviar()`, `aprovar()`, …), não gravando o estado à força com `create()`.
-   Use o helper de fixture que o `## Setup Global` nomeia (`{entidade}Em('{situacao}')`). Se o
-   helper não existe, você **não** o cria em `tests/Pest.php` — reporte como ambiguidade
+   Use o helper de fixture que o `## Setup Global` nomeia (`{entidade}Em('{situacao}')`). O helper
+   `{entidade}Em` vive em `tests/Pest.php` e pertence ao lote **D0**: se você é o lote D0, crie-o;
+   qualquer outro lote **não** o cria — se faltar, devolva `bloqueado: helper D0 ausente`
 2. **Só o seu arquivo.** `tests/Pest.php` tem um único dono (o lote `D0`); helper usado só pelo seu
    arquivo vive no seu arquivo
 3. **Nome do teste começa com o ID**: `it('[CT-13] envio vai ao gestor do centro', …)`.

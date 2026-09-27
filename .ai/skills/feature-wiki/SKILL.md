@@ -1,6 +1,6 @@
 ---
 name: feature-wiki
-version: 3.5.1
+version: 3.5.2
 description: >
   Cria estrutura de documentação wiki para uma feature antes de implementá-la.
   Invoque SEMPRE ao iniciar implementação de qualquer feature nova.
@@ -93,6 +93,7 @@ description: >
 | **DB** | Database — banco de dados |
 | **FK** | Foreign Key — chave estrangeira |
 | **TIA** | Test Impact Analysis — engine do Pest 5 que roda só os testes afetados |
+| **`{base}`** | Branch de destino do PR (`main`, salvo indicação do usuário); registrada no cabeçalho do `03` |
 
 ## Índice
 
@@ -114,8 +115,8 @@ description: >
   - [9. Candidatos a Rule](#9-candidatos-a-rule-de-projeto-decisão-do-usuário)
 - [Arquivo 00: Requisito](#arquivo-00-requisito--fonte-da-verdade)
 - [Arquivo 01: PRD](#arquivo-01-plano-de-ação-prd)
-- [Padrão de Log](#padrão-de-log--classeétodo-mensagem)
-- [Arquivo 02: ADR](#arquivo-02-decisões-arquiteturais)
+- [Padrão de Log](#padrão-de-log--classemétodo-mensagem)
+- [Arquivo 02: ADR](#arquivo-02-decisões-arquiteturais-adr)
 - [Arquivo 03: Progresso](#arquivo-03-progresso--tracking)
 - [Arquivos 04 e 05: Casos de Teste (delegados)](#arquivos-04-e-05-casos-de-teste--delegados-à-feature-test-design)
   - [Playwright MCP na validação](#playwright-mcp-na-validação-opcional--ferramenta-de-observação)
@@ -213,11 +214,11 @@ derivou"* (revisão adversarial da `feature-test-design`) e *"por quem não escr
 
 | Rota | Modelo | Uso nesta esteira | Ferramentas |
 |---|---|---|---|
-| **mecânico** | `haiku` | grep em lote com a tabela pronta (Superfície Livewire, classe irmã, factories, rotas, policies, config), conferência de citação `arquivo:símbolo:linha`, `diff` de IDs de CT, espelho `01` → `03`, contagens por `grep -c`, `search-docs` uma pergunta por consulta | leitura + Bash |
+| **mecânico** | `haiku` | grep em lote com a tabela pronta (Superfície Livewire, classe irmã, factories, rotas, policies, config), conferência de citação `arquivo:símbolo:linha`, `diff` de IDs de CT, espelho `01` → `03`, contagens por `grep -c`, `search-docs` uma pergunta por consulta — devolve o artefato **como texto**; a sessão grava | leitura + Bash |
 | **construtor** | `sonnet` | gerar artefato a partir de template e insumo: rascunho do `01`/`02` a partir do pacote de pesquisa, código de **um** passo do PRD guiado pelo plano e pelo `04`, arquivo de teste a partir do Gherkin | tudo |
-| **analista** | `opus` | julgamento com contexto: revisão profunda do plano (step 5), ADR, derivação do `04` pela `feature-test-design`, os 4 gates de candidato a rule, classificação de achado | leitura + Bash |
+| **analista** | `opus` | julgamento com contexto: revisão profunda do plano (step 5), ADR, derivação do `04` pela `feature-test-design`, os 4 gates de candidato a rule, classificação de achado — devolve o artefato **como texto**; a sessão grava | leitura + Bash |
 | **revisor-diff** | `opus` | step 6.5, passe de eixos sobre o diff. **Cego ao PRD** | leitura + Bash; **sem** Edit/Write |
-| **adversário-ct** | `opus` | revisão adversarial da `feature-test-design`. Recebe **só** `00` + `04`/`05` | leitura; **sem** Edit/Write |
+| **adversário-ct** | `opus` | revisão adversarial da `feature-test-design`. Recebe **só** `00` + `04`/`05` | leitura; **sem** Edit/Write/Bash |
 | **qa-gate** | `opus` | step 8: roda a `feature-quality-gate` inteira e devolve o `06` **como texto**. Não grava nada | leitura + Bash + MCP herdado (Boost, Playwright); **sem** Edit/Write |
 | **executor-ct** | `sonnet` | escrever e rodar os testes Pest de **backend** a partir do Gherkin do `04`, sob o [contrato do construtor de testes](#contrato-do-construtor-de-testes-executor-ct): classifica cada vermelho em a/b/c e **nunca toca `app/`** | tudo, sob o contrato |
 | **executor-ctb** | `sonnet` | escrever e rodar os CT-B em loop, sob o [contrato dos CT-B](#ciclo-de-escrita-e-auditoria-dos-ct-b-loop--sub-agente) | tudo, sob o contrato |
@@ -343,7 +344,7 @@ por `SendMessage` (o contexto dele sobrevive) em vez de despachar um novo sobre 
 | 4 | `00-requisito.md` | **sessão** | — | — |
 | 4 | rascunho do `01` e do `02` a partir do pacote de pesquisa | `construtor` | — | — |
 | 4 | `03` espelhando o `01` | `mecânico` | derivação do `04` | — |
-| 4 | derivação do `04`/`05` — lê e segue `feature-test-design/SKILL.md` | `analista` | `03` | recebe `00` inteiro e, do `01`, **só** paths, rotas e `## Superfície de UI` (a própria skill delimita). Perguntas voltam como saída; a sessão as leva ao usuário |
+| 4 | derivação do `04`/`05` — lê e segue `feature-test-design/SKILL.md` | `analista` | `03` | recebe `00` inteiro; do `01`, **só** paths, rotas e `## Superfície de UI`; do `02`, **só** `## Superfície Livewire` (a própria skill delimita). Perguntas voltam como saída; a sessão as leva ao usuário |
 | 4 | revisão adversarial do `04` | `adversário-ct` | — | recebe **só** `00` + `04`/`05` |
 | 5 | levantar cada premissa do plano no código: existe? assinatura? linha? | `mecânico` | classe irmã | — |
 | 5 | julgar as divergências e corrigir a wiki | `analista` ou **sessão** | — | — |
@@ -627,7 +628,8 @@ Criar os **5 arquivos obrigatórios** + extras se necessário.
 3. **`02-decisoes-arquiteturais.md`** — ADRs justificam escolhas do PRD
 4. **`04-casos-de-teste.md`** e, condicionalmente, **`05-casos-de-teste-browser.md`** —
    **invocar a skill `feature-test-design`**. Ela deriva os cenários do **`00-requisito.md`**;
-   o PRD entra só para paths, rotas e a tabela `## Superfície de UI`
+   o PRD entra só para paths, rotas e a tabela `## Superfície de UI`; o `02-decisoes-arquiteturais.md`
+   entra só pela `## Superfície Livewire`
 5. **`03-progresso.md`** — espelha os passos do PRD (por isso é o último; se houver CT-B, o progresso também os lista)
 
 > **Não escrever o `04` inline.** O caso de teste derivado do plano confirma o plano — é a
@@ -646,7 +648,7 @@ Criar os **5 arquivos obrigatórios** + extras se necessário.
 
 ### 5. Revisão Profunda Pós-Escrita (OBRIGATÓRIO)
 
-Após escrever os 4 arquivos, **re-validar cada premissa do plano contra o código real** antes de apresentar ao usuário:
+Após escrever os 5 arquivos, **re-validar cada premissa do plano contra o código real** antes de apresentar ao usuário:
 
 - Reler os pontos exatos citados no plano: imports dos arquivos a editar, assinaturas de métodos, relações de models, padrão das migrations-referência, factories/states usados nos CTs
 - **Corrigir a wiki imediatamente** quando a revisão contradisser o plano (ex: plano diz "adicionar import X" → import já existe; plano cita guard genérico → padrão real é `! app()->environment('testing')`)
@@ -697,6 +699,8 @@ estar escrita.
 Após a revisão profunda (step 5), **invocar automaticamente** `/ponytail:ponytail-review` para auditar a wiki criada. Este step é função direta da skill — o agente NÃO deve esperar o usuário pedir.
 
 **Por que auditar a wiki**: O plano de ação pode conter over-engineering — passos desnecessários, abstrações prematuras, complexidade que não agrega valor. A auditoria com Ponytail-review identifica esses pontos **antes** da implementação começar, economizando tempo de desenvolvimento.
+
+**Sem o plugin Ponytail instalado**: a sessão faz o passe de over-engineering manualmente com a escada de simplicidade e registra *'Ponytail indisponível — passe manual'* em `## Auditoria Pré-Implementação` do `03`.
 
 **Como executar**:
 1. Invocar `/ponytail:ponytail-review` apontando para os arquivos da wiki criada em `wikis/specs/{branch}/{feature}/`
@@ -874,7 +878,7 @@ de `.ai/rules/` cujos globs casam com o diff.
 
    ```bash
    diff <(grep -oh 'CT-B\?[0-9]\+' wikis/specs/{branch}/{feature}/0[45]-*.md | sort -u) \
-        <(grep -oh 'CT-B\?[0-9]\+' tests/**/*{Feature}*.php | sort -u)
+        <(find tests -name "*{Feature}*.php" -exec grep -oh 'CT-B\?[0-9]\+' {} + | sort -u)
    ```
 
    **Saída vazia é o critério**; linha com `<` é CT sem teste, linha com `>` é teste sem CT. A
@@ -963,7 +967,7 @@ as ferramentas MCP quando o arquivo do agente não restringe `tools`.
 | `REPROVADO → implementação` | volta à execução do passo do PRD indicado |
 | `REPROVADO → teste` | volta ao `04`/`05`: escrever o CT que falha **primeiro**, depois corrigir |
 
-**Quando pular**: feature sem nenhuma superfície validável (ex.: só refactor interno já coberto por CT verde) — registrar o motivo no `03-progresso.md`. Não pular por pressa.
+**Quando pular**: feature sem nenhuma superfície validável (ex.: só refactor interno já coberto por CT verde) — registrar o motivo no `03-progresso.md`, gravando mesmo assim um `06-relatorio-qa.md` mínimo com veredito `NÃO APLICÁVEL` e o motivo; o arquivo continua obrigatório. Não pular por pressa.
 
 > **Teto do loop**: no máximo **3 ciclos** de quality gate por feature. Ao estourar, escalar ao usuário com o que ficou aberto. Ver a skill `feature-quality-gate` para as regras de convergência.
 
@@ -980,7 +984,7 @@ as ferramentas MCP quando o arquivo do agente não restringe `tools`.
 
 ### 9. Candidatos a Rule de Projeto (DECISÃO DO USUÁRIO)
 
-**O problema que este step resolve**: hoje uma decisão registrada em `02-decisoes-arquiteturais.md` só é lida por quem abrir aquela wiki. Na sessão seguinte, em outra feature, o agente não sabe que ela existe e repete o erro que a ADR já resolveu. **Project Rules do Laravel Boost** (`.ai/rules/`) fecham esse ciclo: são carregadas automaticamente por glob de path, para qualquer agente, em qualquer sessão.
+**O problema que este step resolve**: hoje uma decisão registrada em `02-decisoes-arquiteturais.md` só é lida por quem abrir aquela wiki. Na sessão seguinte, em outra feature, o agente não sabe que ela existe e repete o erro que a ADR já resolveu. **Project Rules do Laravel Boost** (`.ai/rules/`) fecham esse ciclo: o agente é instruído pelo Boost a consultar o índice antes de planejar ou editar arquivos que casam o glob — qualquer agente, em qualquer sessão.
 
 Após o step 7, **varrer a wiki em busca de candidatos** e **apresentar ao usuário para decisão**. A skill nunca grava rule sem aprovação explícita.
 
@@ -997,13 +1001,13 @@ Após o step 7, **varrer a wiki em busca de candidatos** e **apresentar ao usuá
 1. **Durável** — vale além desta feature e desta sprint? (decisão de fluxo/negócio pontual → não é rule)
 2. **Escopável por path** — dá para expressar em glob (`app/Models/**`, `app/Http/Controllers/**`)? Se não se consegue nomear os paths, não é rule — é ADR.
 3. **Não-inferível** — um agente competente, lendo o código ao redor, erraria? Se ele acertaria sozinho, a rule é só imposto de contexto.
-4. **Não-redundante** — não é default do framework, não é coberto por Pint/Rector/PHPStan, não está nas guidelines do Boost e não duplica rule existente em `.ai/rules/index.md`.
+4. **Não-redundante** — não é default do framework, não é coberto por Pint/Rector/PHPStan, não está nas guidelines do Boost (conferido com `search-docs` — ver `requirement-to-rule`) e não duplica rule existente em `.ai/rules/index.md`.
 
 **Antes de propor**: `Read .ai/rules/index.md` e as rules dos globs afetados. **Atualizar rule existente é sempre preferível a criar uma nova.**
 
 **Teto**: no máximo **3 candidatos por feature**. Cada rule é imposto permanente de contexto em todo arquivo que casa com o glob — inflação de rules degrada o agente em vez de ajudar.
 
-**Preferir enforcement automático à prosa** (escada do Ponytail aplicada a rules): se a restrição pode ser verificada por teste de arquitetura (`pest --arch`), PHPStan ou Rector, implementar a verificação **e** deixar a rule curta apontando para ela. Prosa só onde a máquina não alcança.
+**Preferir enforcement automático à prosa** (escada do Ponytail aplicada a rules): se a restrição pode ser verificada por teste de arquitetura `arch()` do Pest, PHPStan ou Rector, implementar a verificação **e** deixar a rule curta apontando para ela. Prosa só onde a máquina não alcança.
 
 **Como apresentar**:
 
@@ -1202,6 +1206,8 @@ nova com `## Natureza da Wiki: evolução` e a ancestral apontada.
 - requirement-to-rule      → transformar decisão da wiki em Project Rule do Boost
 - feature-quality-gate     → QA no agente: confronto requisito × plano × app
 ```
+
+> `laravel-best-practices`, `eloquent-best-practices`, `laravel-specialist`, `laravel-11-12-app-guidelines`, `pest-testing`, `tailwindcss-development` e `livewire-development` são skills do **Laravel Boost**, instaladas pelo `boost:install`; não fazem parte desta coletânea.
 
 > **Integração com Ponytail**: Após a wiki ser aprovada, o Ponytail deve ser a skill de execução ativa durante toda a implementação. Ele garante que cada passo do plano seja executado com o mínimo de código necessário (reutilização → stdlib → feature nativa → uma linha → mínimo que funciona). Após implementar, rodar `/ponytail:ponytail-review` no diff para validar contra over-engineering. Atalhos deliberados devem ser marcados com `ponytail:` comment. Ver o README do repositório para o passo a passo completo da integração.
 
@@ -1679,8 +1685,6 @@ it('emite log no channel correto', function () {
 });
 ```
 
-> **Incluir CTs de log** no `04-casos-de-teste.md` para validar: channel correto, nível correto, mensagem no formato `[Classe@Método]`, e context com campos esperados.
-
 ### Trait UnicoLogging (se aplicável)
 
 Se o projeto possuir uma trait de logging (ex: `UnicoLogging`), verificar:
@@ -1869,9 +1873,10 @@ A **derivação e a escrita dos casos de teste não pertencem a esta skill**. El
 
 O `04` era escrito logo depois do `01`, pelo mesmo agente, para "validar os passos do PRD".
 Isso é a direção invertida: o PRD é a **interpretação** do requisito, e testar a interpretação a
-confirma. Medido sobre 318 defeitos reais com 11 modelos, derivar teste a partir do código/plano
-em vez da especificação multiplica por ~8 os testes que codificam o bug como comportamento
-esperado e corta por ~3 os que detectam o defeito.
+confirma. Medido sobre 318 métodos focais cobrindo 233 defeitos reais, com 11 modelos
+(arXiv 2607.22883), derivar teste a partir do código/plano em vez da especificação multiplica por
+~1,4 os testes que codificam o bug como comportamento esperado e corta por ~1,5 os que detectam o
+defeito — a especificação mitiga o efeito, não o reverte.
 
 É o mesmo princípio que criou o `00-requisito.md` como oráculo e que proíbe o
 `feature-quality-gate` de corrigir o que julga: **quem escreve o plano não deriva o teste do
@@ -1890,8 +1895,9 @@ Invocar: feature-test-design
 Entrada (nesta ordem de autoridade):
   1. 00-requisito.md            → ORÁCULO. É daqui que o comportamento esperado sai
   2. 01-plano-acao.md           → APENAS paths, rotas, stack e a tabela ## Superfície de UI
-  3. .ai/rules/, tests/Pest.php → convenção de teste do projeto
-  4. versões: Pest, Filament, Livewire, Laravel
+  3. 02-decisoes-arquiteturais.md → só ## Superfície Livewire
+  4. .ai/rules/, tests/Pest.php → convenção de teste do projeto
+  5. versões: Pest, Filament, Livewire, Laravel
 
 Saída:
   - 04-casos-de-teste.md   (sempre)
@@ -1975,7 +1981,7 @@ Entrada:
 
 Tarefa:
   1. Escrever tests/Browser/{Feature}/{Nome}Test.php a partir dos CT-B
-  2. Rodar: vendor/bin/pest --testsuite=Browser   (NUNCA com --parallel)
+  2. Rodar: vendor/bin/pest tests/Browser --filter={Feature}   (ou --testsuite=Browser, se o phpunit.xml define a suíte; NUNCA com --parallel)
   3. Se falhar, classificar a causa ANTES de mexer em qualquer coisa:
      (a) CT-B especificado errado (seletor/rota/texto)  → corrigir o CT-B no arquivo 05
      (b) Implementação divergente do PRD                → NÃO corrigir; registrar divergência
@@ -2056,7 +2062,7 @@ quando o elemento realmente aparece em UI assíncrona, e extrair seletores de te
 | **Loop do CT-B** — falha (a)/(c) | observar a página ao vivo e corrigir o CT-B | `browser_find`, `browser_generate_locator`, `browser_wait_for` |
 | **Step 7** — evidência | anexar console e rede ao roteiro *Desenhado × Implementado* | `browser_console_messages`, `browser_network_requests` |
 
-> Para o step 7, verificar primeiro se o **`Browser Logs`** do Boost MCP já resolve — é uma tool
+> Para o step 7, verificar primeiro se a tool **`browser-logs`** (Browser Logs) do Boost MCP já resolve — é uma tool
 > que o projeto provavelmente já tem, sem adicionar servidor novo.
 
 **Configuração obrigatória**:
@@ -2152,7 +2158,7 @@ vendor/bin/pest --baseline          # imprime o path do storage do grafo
 
 > **Replay não é atalho que pula trabalho.** A doc é explícita: cada teste em cache guarda tudo que produziu, **inclusive as linhas e branches cobertos** — um run replayado reporta a mesma cobertura de um run completo. É por isso que o `--tia` pode ser usado na Verificação Final sem perder confiança.
 
-**Cuidado com `--parallel` + CT-B**: browser em paralelo multiplica processos de navegador e exige DB por worker. Antes de adotar `--parallel` no comando de browser, confirmar que o projeto isola o DB por processo; se houver flake, rodar os CT-B em série (`vendor/bin/pest tests/Browser`) e deixar o `--parallel --tia` para o suite de backend.
+**Cuidado com `--parallel` + CT-B**: browser em paralelo multiplica processos de navegador e exige DB por worker. Nunca `--parallel` no comando de browser (ver *Fatos do pest-plugin-browser*): rodar os CT-B em série (`vendor/bin/pest tests/Browser`) e deixar o `--parallel --tia` para o suite de backend.
 
 **Onde encaixa no fluxo da skill**:
 
@@ -2291,7 +2297,7 @@ Antes de encerrar a invocação:
 - [ ] Tabela `## Superfície Livewire` no `02` preenchida — **sempre** que a feature cria página, widget ou componente: métodos públicos, propriedades públicas sem `#[Locked]` e os arrays de estado do framework que o código consome. Pacote de terceiro acrescenta os quatro greps do vendor, com um model por linha
 - [ ] Dados fornecidos pelo usuário validados contra o DB (quando aplicável)
 - [ ] Factories confirmadas (existência + states) para todos os CTs
-- [ ] Stack de testes verificado: versão do Pest, `pest-plugin-browser`, Playwright, `APP_URL`, traits em `tests/Pest.php`
+- [ ] Stack de testes verificado: versão do Pest, `pest-plugin-browser`, Playwright, traits em `tests/Pest.php`
 - [ ] **Baseline** da suíte completa em `{base}` registrada antes do primeiro commit, falhas pré-existentes por nome
 - [ ] Model novo cujo nome de tabela não é o plural inglês inferido declara `$table`
 
@@ -2445,7 +2451,7 @@ wikis/
                 ├── 01-plano-acao.md
                 ├── 02-decisoes-arquiteturais.md      ← formato ADR
                 ├── 03-progresso.md                   ← + Blockers, Desvios, Retrospectiva
-                ├── 04-casos-de-teste.md              ← backend: + CTs de log e autorização
+                ├── 04-casos-de-teste.md              ← backend: + CTs de autorização
                 ├── 05-casos-de-teste-browser.md      ← CT-B + roteiro desenhado × implementado
                 ├── 05-api-contract.md                ← extra quando necessário
                 ├── 05-rollback.md                    ← extra quando necessário

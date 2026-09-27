@@ -1,6 +1,6 @@
 ---
 name: feature-quality-gate
-version: 1.5.1
+version: 1.5.2
 description: >
   Etapa de QA dentro do agente — a próxima estação da esteira depois de
   implementar e rodar os testes. Invoque no step 8 da skill feature-wiki, ou
@@ -8,7 +8,7 @@ description: >
   pedido. Confronta 00-requisito.md x 01-plano-acao.md x app rodando, monta a
   Matriz de Rastreabilidade para detectar omissão silenciosa (cláusula que nunca
   virou passo, teste nem código), e valida 12 dimensões que CT e CT-B não cobrem:
-  fronteiras, matriz de permissão, log real, N+1, UX de erro, tema/dark mode,
+  cobertura do requisito, fronteiras, matriz de permissão, log real, N+1, UX de erro, tema/dark mode,
   acessibilidade, segurança da superfície nova, regressão adjacente, adequação da
   própria suíte de testes (oráculo fraco + mutation score via pest --mutate) e
   consistência documental (PRD/ADR x código, rules x diff, docs pt x en x CHANGELOG,
@@ -76,7 +76,7 @@ recebe **só** o path da wiki, a URL do app e o `git diff --stat` — nunca a co
 `01` e implementou. A definição do agente é [`agents/fw-qa-gate.md`](agents/fw-qa-gate.md), nesta
 skill; o Claude Code só a enxerga depois de `cp .ai/skills/*/agents/*.md .claude/agents/` (uma vez,
 e a cada atualização das skills). O relatório volta como texto e a sessão o grava verbatim. Em qualquer host, o
-cabeçalho do `06` declara a linha `Independência:` — `sub-agente {rota}/{modelo}, sem acesso à
+cabeçalho do `06` declara a linha `Independência:` — `sub-agente fw-qa-gate/{modelo}, sem acesso à
 conversa` ou `mesma sessão que escreveu a wiki`. A segunda é modo degradado: o leitor precisa
 saber que quem julgou foi quem escreveu.
 
@@ -124,9 +124,13 @@ Playwright MCP, skills de `qa-skills`, Pest 5, PCOV: **todos opcionais**. Sem el
 |---|---|---|
 | `00-requisito.md` com cláusulas `RQ-##` | **sim** | ver "oráculo degradado" abaixo |
 | `01-plano-acao.md` (+ `## Natureza da Wiki`, `## Cobertura do Requisito`) | **sim** | não roda — pedir ao usuário |
+| `02-decisoes-arquiteturais.md` | se existir | L3 confere só o PRD; `## Superfície Livewire` (dimensão I) via greps da `feature-wiki` |
+| `03-progresso.md` (+ `## Conformidade com Rules`, `## Verificação Final`) | sim | L4 e L6 ficam sem a declaração do implementador — declarar em "Não Verificado" |
 | `04-casos-de-teste.md` | sim | não roda |
 | `05-casos-de-teste-browser.md` | se houver UI | dimensões G/H limitadas |
-| App servido e acessível na `APP_URL` | para dimensões dinâmicas | dimensões B, D, F, G, H, I ficam estáticas |
+| `06-relatorio-qa.md` do ciclo anterior | ciclo ≥ 2 | sem dedupe — achado já rejeitado (destino 5) reaparece |
+| `.ai/rules/index.md` + rules cujos globs casam o diff, docs de usuário e `CHANGELOG` tocados | para a dimensão L | L4/L5 não rodam — declarar em "Não Verificado" |
+| App servido e acessível na `APP_URL` | para dimensões dinâmicas | dimensões B, C, D, E, F, G, H, I ficam estáticas |
 | Driver de cobertura (PCOV ou Xdebug) | para a dimensão K medida | K roda só o passo estático; a medição vai para "Não Verificado" |
 | Diff da feature (`git diff`) | sim | escopo indefinido |
 
@@ -136,7 +140,7 @@ Se o `00-requisito.md` **não existir** (wiki criada antes da `feature-wiki` 2.1
 
 1. **Pedir o requisito original ao usuário** — texto do card, arquivo, o que houver
 2. **Nunca derivar o `00` do PRD.** PRD derivado de PRD não é oráculo
-3. Se o usuário não tiver o requisito: rodar em **modo degradado**, validando só as dimensões B–K (que não dependem do requisito), e **estampar no topo do relatório**:
+3. Se o usuário não tiver o requisito: rodar em **modo degradado**, validando só as dimensões B–L (que não dependem do requisito), e **estampar no topo do relatório**:
 
 ```markdown
 > ⚠️ ORÁCULO DEGRADADO — sem 00-requisito.md. A dimensão A (cobertura do
@@ -211,21 +215,21 @@ Severidade + destino, pela [taxonomia](#classificação-e-roteamento). Todo acha
 
 ### 6. Escrever `06-relatorio-qa.md`
 
-Ver [template](#arquivo-06-relatório-de-qa). Teto: veredito + achados + matriz. Detalhe longo vai em anexo ou não vai.
+Ver [template](#arquivo-06-relatório-de-qa). Teto: veredito + achados + matriz. Detalhe longo vai em anexo ou não vai — **em sub-agente**: devolver como texto; a sessão grava o `06` verbatim e preenche `## Quality Gate` do `03`.
 
 ### 7. Emitir veredito e devolver o controle
 
 | Veredito | Condição |
 |---|---|
-| `APROVADO` | nenhum achado Blocker ou Major |
-| `APROVADO COM DÉBITO` | só Minor/Cosmético — registrados no `03-progresso.md` como débito |
+| `APROVADO` | nenhum achado aberto |
+| `APROVADO COM DÉBITO` | ≥ 1 Minor/Cosmético aberto e nenhum Blocker/Major — registrados no `03-progresso.md` como débito |
 | `REPROVADO → {destino}` | ≥ 1 Blocker ou Major, roteado ao destino de maior prioridade |
 
 Prioridade de destino quando há vários: **especificação > teste > implementação**. Corrigir código contra especificação ambígua é retrabalho garantido.
 
 ### 8. Atualizar o `03-progresso.md`
 
-Registrar: veredito, número do ciclo, achados abertos e débitos aceitos. O `03` continua sendo o tracking único da feature.
+Registrar: veredito, número do ciclo, achados abertos e débitos aceitos. O `03` continua sendo o tracking único da feature — **em sub-agente**: devolver como texto; a sessão grava o `06` verbatim e preenche `## Quality Gate` do `03`.
 
 ---
 
@@ -332,6 +336,7 @@ Achado: contagem que cresce com o número de registros (N+1), query sem índice 
 ```bash
 # classe no <html> com toggle, ou prefers-color-scheme puro?
 grep -rn "darkMode" tailwind.config.js 2>/dev/null
+grep -rn "@custom-variant dark" resources/css/   # Tailwind v4
 grep -rn "prefers-color-scheme" resources/css/
 grep -rln "class=\"dark\"\|classList.*dark" resources/
 ```
@@ -416,6 +421,9 @@ de linha é compatível com zero assertion útil.
 XDEBUG_MODE=coverage vendor/bin/pest tests/Feature/{Feature} --mutate --path=app/Services
 ```
 
+(No Windows, o prefixo de env não roda em cmd/PowerShell: usar o lançador `.cmd` descrito em
+*Pest 5* da `feature-wiki`, ou `$env:XDEBUG_MODE='coverage'` no PowerShell.)
+
 Exige driver de cobertura (PCOV ou Xdebug). Escopar sempre: mutar o projeto inteiro é caro e
 devolve ruído.
 
@@ -456,8 +464,9 @@ operador diz qual lacuna de derivação o deixou vivo:
 **Roteamento**: todo achado desta dimensão vai para o **destino 3**, e a correção é invocar a
 `feature-test-design` com o mutante como entrada — ela fecha a **classe** de lacuna, não só o caso.
 
-**Piso sugerido**: 70% de mutation score nas classes de regra de negócio da feature. Abaixo disso,
-`REPROVADO → teste`. Sem driver de cobertura, rodar só o passo 1 e declarar o passo 2 em
+**Piso sugerido**: 70% de mutation score nas classes de regra de negócio da feature — abaixo disso,
+**investigar**; o achado registrado é sempre o mutante nomeado que sobreviveu (nunca o percentual).
+Sem driver de cobertura, rodar só o passo 1 e declarar o passo 2 em
 "Não Verificado" — **depois de provar a ausência** (`php -m | grep -i "pcov\|xdebug"`,
 `ls vendor/pestphp/`). A wiki que declara a degradação sem a prova é achado **L6**: em
 2026-09-21 as duas declarações estavam lá e as duas eram falsas.
@@ -592,7 +601,7 @@ A Matriz de Rastreabilidade transforma roteamento em consequência, não opiniã
 > Requisito: `00-requisito.md` · Plano: `01-plano-acao.md`
 > Perfil de esforço: mínimo | padrão | completo
 > Natureza da wiki: {tipo} · Regressão: sim | não
-> Independência: sub-agente {rota}/{modelo}, sem acesso à conversa | mesma sessão que escreveu a wiki (degradado)
+> Independência: sub-agente {agente}/{modelo}, sem acesso à conversa | em linha — {motivo} (mesma sessão que escreveu a wiki, degradado) | comprometida — recebeu {o quê}
 
 ## Veredito — Ciclo {N}
 
@@ -630,7 +639,7 @@ A Matriz de Rastreabilidade transforma roteamento em consequência, não opiniã
 | # | Dimensão | Status | Observação |
 |---|----------|--------|------------|
 | A | Cobertura do requisito | ✅ / ⚠️ / ❌ | {n} achados |
-| L | Consistência documental | ✅ / ⚠️ / ❌ | {n} achados — L1…L5 |
+| L | Consistência documental | ✅ / ⚠️ / ❌ | {n} achados — L1…L6 |
 | B | Fronteiras e dados | ⏭️ pulada | fora do perfil `mínimo` |
 | G | Tema e cor | ⏭️ pulada | projeto sem dark mode |
 | … | | | |
@@ -705,7 +714,7 @@ Screenshot nos dois temas (dimensão G) e `browser_console_messages` / `browser_
 - `browser_find` antes de `browser_snapshot` cru
 - Proibido `browser_run_code_unsafe` e `--caps=vision`
 - **Sessão MCP não é cobertura.** Todo achado do MCP tem dois destinos: lacuna de cobertura → **vira CT-B** no `05`; defeito → **achado roteado**. Nunca "fica no relatório e pronto"
-- Antes de subir o MCP, checar se o **`Browser Logs` do Boost MCP** já resolve o caso de console/erro
+- Antes de subir o MCP, checar se o **`browser-logs` (Browser Logs) do Boost MCP** já resolve o caso de console/erro
 
 Sem MCP: `screenshot()` no ponto de interesse, `content()` filtrado com `Grep`, leitura do Blade/componente. Registrar em "Não Verificado" o que ficou fora.
 
@@ -787,9 +796,9 @@ Violação de qualquer uma invalida a execução:
 ### Saída
 - [ ] Cada achado tem: severidade, dimensão, esperado × observado, repro, evidência, destino, ação exigida
 - [ ] Roteamento por prioridade (especificação > teste > implementação)
-- [ ] `06-relatorio-qa.md` escrito, dentro do teto de tamanho
+- [ ] `06-relatorio-qa.md` escrito, dentro do teto de tamanho — **em sub-agente**: devolvido como texto; a sessão grava o `06` verbatim
 - [ ] Seção "Não Verificado" preenchida com honestidade
-- [ ] Veredito emitido e registrado no `03-progresso.md` com o número do ciclo
+- [ ] Veredito emitido e registrado no `03-progresso.md` com o número do ciclo — **em sub-agente**: devolvido como texto; a sessão preenche `## Quality Gate` do `03`
 - [ ] Nenhuma linha de código de aplicação ou de teste alterada por esta skill
 
 ---

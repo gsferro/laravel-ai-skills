@@ -1,6 +1,6 @@
 ---
 name: feature-test-design
-version: 1.14.0
+version: 1.14.1
 description: >
   Deriva casos de teste que MATAM defeito, a partir do requisito — não do plano e
   nunca do código. Invoque no step 4 da feature-wiki (antes de implementar), quando
@@ -65,11 +65,13 @@ description: >
 - [Escolha de Camada em Laravel/Filament](#escolha-de-camada-em-laravelfilament)
 - [Arquivo 04](#arquivo-04-casos-de-teste)
 - [Arquivo 05: Browser](#arquivo-05-casos-de-teste-de-browser--condicional)
+- [Precedência: Project Rule](#precedência-project-rule-do-projeto-vence-a-skill)
 - [Armadilhas de API](#armadilhas-de-api-que-invalidam-ct)
 - [Fechamento do Ciclo com Mutation Testing](#fechamento-do-ciclo-com-mutation-testing)
 - [Revisão Adversarial](#revisão-adversarial-obrigatória-no-perfil-completo-ou-com-impacto-3)
 - [Proibições](#proibições)
 - [Checklist Final](#checklist-final)
+- [Skills Companheiras](#skills-companheiras)
 
 ---
 
@@ -83,11 +85,11 @@ executa o código, fica verde e não prova nada.
 Fonte primária é o `00-requisito.md`. O PRD (`01`) entra só para nomes, paths e superfície —
 **nunca** como fonte do comportamento esperado.
 
-> **Por quê**: medido em 318 defeitos reais do Defects4J com 11 modelos — derivar testes a
-> partir do código em vez da especificação multiplica por ~8 os testes que **codificam o bug
-> como comportamento esperado** (0,46% → 3,84%) e corta por ~3 os testes que detectam o
-> defeito (8,51% → 2,98%). Trocar o código por uma descrição do comportamento pretendido no
-> prompt reverte os dois números. *(arXiv 2607.22883)*
+> **Por quê**: medido em 318 métodos focais cobrindo 233 defeitos reais do Defects4J com 11
+> modelos — derivar testes a partir do código defeituoso em vez da especificação multiplica por
+> ~1,4 os testes que **codificam o bug como comportamento esperado** (2,69% → 3,84%) e corta por
+> ~1,5 os testes que detectam o defeito (4,50% → 2,98%). Trocar o código por uma descrição do
+> comportamento pretendido no prompt mitiga o efeito; não o reverte. *(arXiv 2607.22883)*
 >
 > É o mesmo mecanismo pelo qual o PRD não serve de oráculo para o `feature-quality-gate`:
 > validar contra a interpretação confirma a interpretação.
@@ -123,7 +125,8 @@ exemplos. Escrever cenário direto produz variações do mesmo eixo e buracos no
 
 Regra que o requisito não determina não vira cenário com valor chutado. Vira pergunta
 registrada no `00-requisito.md` **e** um cenário marcado `@premissa` com a suposição explícita —
-para que, quando a resposta vier, se saiba exatamente o que muda.
+para que, quando a resposta vier, se saiba exatamente o que muda — quando esta skill roda em
+sub-agente, as perguntas voltam como **saída** e a sessão principal as grava no `00`.
 
 **A suposição não é livre**: quando ela decide se o sistema aceita ou recusa, a direção é
 [falha fechado](#premissa-escopo-apaga-mecanismo-escolhe-comportamento-falha-fechado) e o
@@ -197,7 +200,7 @@ que é exatamente o defeito que esta skill existe para evitar.
 
 ### Quando o `00-requisito.md` é somente leitura
 
-A skill obriga a devolver as perguntas novas para `## Ambiguidades` do `00`. Há casos em que isso
+A skill obriga a devolver as perguntas novas para `## Ambiguidades e Perguntas Abertas` do `00`. Há casos em que isso
 não é possível: o `00` está fechado para edição, pertence a outra branch, ou está sendo usado como
 linha de base de comparação.
 
@@ -210,7 +213,7 @@ O que não pode acontecer é a pergunta morrer porque o arquivo de destino estav
 
 ## O Pipeline de Derivação
 
-Sete passos, em ordem. Os passos 3 e 4 são onde nasce a cobertura; o 6 é onde ela é auditada.
+Oito passos (0 a 7), em ordem. Os passos 3 e 4 são onde nasce a cobertura; o 6 é onde ela é auditada.
 
 ### Passo 0 — Perfil de esforço por risco
 
@@ -279,7 +282,7 @@ regra pode atender várias `RQ`.
 |---|---|---|
 | 🟦 **Regra** | critério de aceite verificável | vira `Regra:` no `04` |
 | 🟩 **Exemplo** | caso concreto que ilustra a regra | vira `Cenário:` no `04` |
-| 🟥 **Pergunta** | o requisito não determina | vai para `## Ambiguidades` do `00-requisito.md` |
+| 🟥 **Pergunta** | o requisito não determina | vai para `## Ambiguidades e Perguntas Abertas` do `00-requisito.md` |
 
 Sinais de leitura do mapa, antes de seguir:
 
@@ -302,7 +305,7 @@ Para cada 🟦 Regra, escolher a técnica pelo **tipo** da regra. Uma regra pode
 | **ciclo de vida / status** | **tabela estado × evento** | matriz completa; **toda célula vazia é um cenário negativo** | dupla aprovação, transição ilegal aceita, ordem invertida |
 | **quem pode fazer o quê** | **matriz papel × ação** | células não cobertas por cenário existente; ação destrutiva é obrigatória | permissão validada só na UI |
 | **≥3 parâmetros independentes** | **pairwise** | gerar combinações 2-a-2 e registrar as restrições | falha de interação de configuração |
-| **efeito colateral** (e-mail, job, evento, log, auditoria) | **rastreio de efeito** | **primeiro o QUE**: canal/tipo exato que o requisito nomeia e destinatário. **Depois as direções**: aconteceu / **não** aconteceu quando não devia / aconteceu **uma só vez**; e uma quarta se a atomicidade importar | efeito removido, duplicado, fora da transação — ou **entregue pelo canal errado** |
+| **efeito colateral** (e-mail, job, evento, auditoria) | **rastreio de efeito** | **primeiro o QUE**: canal/tipo exato que o requisito nomeia e destinatário. **Depois as direções**: aconteceu / **não** aconteceu quando não devia / aconteceu **uma só vez**; e uma quarta se a atomicidade importar | efeito removido, duplicado, fora da transação — ou **entregue pelo canal errado** |
 | **identidade / unicidade** | **normalização** | caixa, espaços nas bordas, acento, unicode | `PROMO10` ≠ `promo10` |
 
 **Regras de execução que mudam o resultado:**
@@ -740,7 +743,7 @@ não a palavra "sim".
 | data/hora | **timezone do app × do banco × do usuário**; virada de meia-noite; DST; `date` comparado com `datetime` |
 | texto livre | acento, emoji (4 bytes), string no limite do `varchar`, só espaços, espaços nas bordas |
 | unicidade + `SoftDeletes` | criar → excluir → recriar com o mesmo valor único |
-| entidade removível ou desativável | **o registro removido/desligado ainda funciona?** — a operação de escrita sobre ele, não a ausência dele na listagem. Premissa de mecanismo ("a exclusão é física") fixa **como** escrever o cenário, [não dispensa escrevê-lo](#premissa-sobre-mecanismo-escolhe-qual-cenário-nunca-se-ele-existe) |
+| entidade removível ou desativável | **o registro removido/desligado ainda funciona?** — a operação de escrita sobre ele, não a ausência dele na listagem. Premissa de mecanismo ("a exclusão é física") fixa **como** escrever o cenário, [não dispensa escrevê-lo](#premissa-escopo-apaga-mecanismo-escolhe-comportamento-falha-fechado) |
 | CRUD | ler/editar/excluir ID inexistente; excluir duas vezes; editar sem alterar nada |
 | formulário/payload | **mass assignment**: enviar campo não previsto (`is_admin`, `user_id`, `status`) e provar que é ignorado |
 | upload | 0 byte, extensão que mente sobre o conteúdo, acima do limite |
@@ -891,7 +894,7 @@ os erros que os humanos cometem:
 | relacional | `>` ↔ `>=`, `<` ↔ `<=`, `==` ↔ `!=` | falta BVA na fronteira |
 | lógico | `&&` ↔ `\|\|`, condição negada | falta linha da tabela de decisão |
 | retorno | `return $x` → `return null` / `true` → `false` | assertion ausente ou fraca sobre o retorno |
-| **remoção de chamada** | o `Mail::send`, o `Log::`, o `->increment()` some | falta assertion de efeito colateral |
+| **remoção de chamada** | o `Mail::send`, o `->increment()`, o `event()` disparado some | falta assertion de efeito colateral |
 | literal | número → `0`/`1`, string → `''`, array → `[]` | valor mágico não verificado |
 | aritmético | `+` ↔ `-`, `*` ↔ `/` | falta assertion sobre o **valor** calculado |
 
@@ -959,7 +962,7 @@ refaz a análise do zero.
 ### Precedência: Project Rule do projeto vence a skill
 
 Quando uma instrução desta skill colidir com uma rule em `.ai/rules/` do projeto, **a rule vence** —
-ela é medição local, a skill é generalização. O caso concreto: a skill sugere `pest --parallel --tia`
+ela é medição local, a skill é generalização. O caso concreto: a `feature-wiki` sugere `pest --parallel --tia`
 como padrão, e um projeto pode ter medido que `--parallel` derruba os CT-B e que sem PCOV o `--tia`
 não termina.
 
@@ -1109,7 +1112,7 @@ passa hoje e quebra no upgrade.
 | {nome do método `aplicarEm()`} | escolha de implementação | detalhe do cenário |
 | {texto do erro na tela} | comportamento visível que o requisito não determina | pergunta ao usuário |
 
-**Perguntas em aberto** (replicadas em `00-requisito.md` → `## Ambiguidades`):
+**Perguntas em aberto** (replicadas em `00-requisito.md` → `## Ambiguidades e Perguntas Abertas`):
 - {pergunta} — bloqueia R{n}; premissa adotada: {…} (cenários marcados `@premissa`)
 
 ## Setup Global
@@ -1234,7 +1237,8 @@ Estes contradizem crenças comuns e cada um já custou tempo em projeto real:
    `ViteException` e todo cenário falha por um motivo que não é o dele.
 6. **Nunca `--parallel` com browser** — multiplica processos de navegador e produz timeout. E
    como `--tia` exige run completo, `--parallel --tia` e os CT-B não convivem numa invocação só.
-   São dois comandos.
+   São dois comandos: `vendor/bin/pest --filter={Feature} --compact` (backend) e
+   `vendor/bin/pest tests/Browser --filter={Feature}` (browser).
 7. **`assertNoSmoke()` só em tela de autoria própria.** Em tela de plugin de terceiro use
    `assertNoJavaScriptErrors()`, senão a suíte fica vermelha por `console.log` alheio.
 8. **`visit([...])` em lote aborta na primeira falha** — as rotas seguintes não são verificadas
@@ -1353,6 +1357,9 @@ vendor/bin/pest tests/Feature/{Feature} --mutate --path=app/Services
 vendor/bin/pest tests/Feature/{Feature} --mutate --path=app/Services --min=70
 ```
 
+- `--path` não consta na referência de CLI do Pest (que lista `--class`, `--ignore`,
+  `--covered-only`, `--min`, `--everything`, `--parallel`); funcionou nas medições desta coletânea
+  com Pest 5 — se falhar, usar `--class=`
 - Exige driver de cobertura (**PCOV ou Xdebug** com `XDEBUG_MODE=coverage`). *"Sem driver"* e
   *"plugin ausente"* só se declaram com a prova negativa colada (`php -m | grep -i "pcov\|xdebug"`,
   `ls vendor/pestphp/`) — em 2026-09-21 as duas afirmações estavam na wiki e as duas eram falsas
@@ -1371,7 +1378,7 @@ vendor/bin/pest tests/Feature/{Feature} --mutate --path=app/Services --min=70
   árvore de dependências e some num `composer update`. Se estiver só transitivo, incluir
   `composer require pestphp/pest-plugin-mutate --dev` como passo no PRD
 - **`pest()->mutate()` em `Pest.php` não existe** — não inventar
-- **Armadilha verificada: `covers(X::class)` restringe o que conta como coberto.** Mutantes em
+- **Armadilha medida em `experimentos/` (ver README de lá): `covers(X::class)` restringe o que conta como coberto.** Mutantes em
   qualquer classe fora do `covers()` são reportados como `uncovered` e o score vai a **0%** —
   mesmo que os testes executem aquele código em toda chamada. Para medir uma classe vizinha,
   declare-a em `covers()`/`mutates()` ou meça em execução separada
@@ -1405,9 +1412,14 @@ depois de `cp .ai/skills/*/agents/*.md .claude/agents/`) ou
 `general-purpose` com `model: opus` **explícito** — o mais forte disponível, porque classificar
 se um oráculo está correto é a tarefa em que modelos são comprovadamente piores do que em gerá-lo.
 A cegueira vem da construção: o sub-agente recebe **só** o que a linha `Entrada` lista, e o
-orquestrador registra o disparo em `## Despachos` do `03`. Host sem sub-agente: rodar em linha e
-declarar no `04` — *"Revisão adversarial: em linha, mesma sessão que derivou"* — porque o
-resultado vale menos:
+orquestrador registra o disparo em `## Despachos` do `03`. Quem despacha o adversário e fecha os
+achados é a **sessão principal** — um sub-agente não despacha sub-agente; se a derivação rodou em
+sub-agente, ela devolve o `04` e a sessão dispara a revisão. Host sem sub-agente: **não**
+autorrevisar; declarar no cabeçalho do `04` a lacuna `Revisão adversarial: NÃO FEITA — host sem
+sub-agente`, que o `feature-quality-gate` reporta como débito.
+
+O contrato completo e a fonte da verdade é [`agents/fw-adversario-ct.md`](agents/fw-adversario-ct.md);
+o resumo abaixo não o substitui:
 
 ```text
 Entrada: 00-requisito.md + 04-casos-de-teste.md (e 05, se houver)
@@ -1427,6 +1439,7 @@ Tarefa: PROVAR que este conjunto deixa passar um defeito.
      de toda notificação leva a um destino que o destinatário ainda vê?
   7. Para cada texto livre do requisito, pergunte: há cenário no teto (n, n+1) — no model, não
      só no formulário?
+  8. Aponte toda RQ do 00 sem cenário que a discrimine
 
 Saída: lista de lacunas, cada uma com a regra, a técnica faltante e o cenário sugerido,
        + a lista de áreas/regras percorridas (a revisão cobre o conjunto inteiro, não só
@@ -1434,7 +1447,9 @@ Saída: lista de lacunas, cada uma com a regra, a técnica faltante e o cenário
 PROIBIDO: elogiar o conjunto, reescrever os cenários, dizer "está bom".
 ```
 
-**O que fazer com os achados** (a revisão não termina na lista):
+**O que fazer com os achados** (a revisão não termina na lista). Quem despacha o adversário e fecha
+os achados é a **sessão principal** — um sub-agente não despacha sub-agente; se a derivação rodou em
+sub-agente, ela devolve o `04` e a sessão dispara a revisão:
 
 1. **Fechar todos** — cada lacuna vira cenário novo, ou oráculo reescrito, ou lacuna declarada com motivo
 2. **Re-revisar uma única vez**, e só se o fechamento tiver criado **cenário novo** (não se apenas reforçou oráculo existente). Cenário novo introduz superfície nova, e é aí que mora a lacuna de segunda ordem
@@ -1468,21 +1483,21 @@ cujos achados ninguém fecha é teatro caro.
    escrever o nome de qualquer helper.
 6. **Não marcar regra como coberta** enquanto houver mutante previsto sem matador — declarar a lacuna.
 7. **Não empurrar para o browser** o que um teste de componente prova.
-8. **Não editar o `00-requisito.md`** a não ser para acrescentar pergunta em `## Ambiguidades`.
-9. **Não autorrevisar** o conjunto no perfil completo.
+8. **Não editar o `00-requisito.md`** a não ser para acrescentar pergunta em `## Ambiguidades e Perguntas Abertas`.
+9. **Não autorrevisar** o conjunto no perfil completo ou com Impacto 3.
 10. **Não usar cobertura de código como critério de suficiência.** "Todo método público tem ao
     menos 1 CT" e "cada branch tem um CT" são critérios sobre um código que **ainda não existe**
     no momento da derivação — seguir isso obriga o agente a imaginar a implementação e testá-la,
     que é a definição de teste tautológico. O critério de suficiência aqui é: **toda regra tem
     seus mutantes previstos mortos**.
-12. **Não derivar CT de log.** Log não é cláusula do requisito; é saída observável do plano, e quem
-    a confere é a dimensão D do quality gate. Exceção: requisito que pede trilha de auditoria —
-    aí é `RQ`, e o cenário afirma o **registro**, não a linha de log.
 11. **Não escrever teste `[CT-nn]` sem o cenário no `04`/`05`.** Cenário descoberto durante a
     implementação nasce **aqui** — Gherkin, regra, mutante — e só depois vira código de teste.
     O caminho inverso, teste escrito e "documentado depois", é a Proibição 1 com outro nome, e
     foi medido: oito IDs de CT só no arquivo de teste, todos derivados do código. Requisito novo
     entra pelo **Adendo** do `00` (ver `feature-wiki`), não direto no teste.
+12. **Não derivar CT de log.** Log não é cláusula do requisito; é saída observável do plano, e quem
+    a confere é a dimensão D do quality gate. Exceção: requisito que pede trilha de auditoria —
+    aí é `RQ`, e o cenário afirma o **registro**, não a linha de log.
 
 ---
 
@@ -1521,7 +1536,7 @@ cujos achados ninguém fecha é teatro caro.
 - [ ] Cada cenário na camada mais barata que o prova
 - [ ] Toda regra de autorização e de validação de domínio tem **≥1 cenário por fora do componente de UI**
 - [ ] Teto do perfil respeitado, ou estouro justificado
-- [ ] Revisão adversarial executada por sub-agente independente (perfil completo)
+- [ ] Revisão adversarial executada por sub-agente independente (perfil completo ou Impacto 3)
 
 ### Pós-implementação
 - [ ] `pest --mutate --covered-only --path={escopo da feature}` executado — com **duração plausível** e sobreviventes listados (no Windows, via lançador `.cmd`); "sem driver/plugin" só com a prova negativa
@@ -1530,20 +1545,24 @@ cujos achados ninguém fecha é teatro caro.
 - [ ] Mutante sobrevivente traduzido em lacuna de derivação e convertido em cenário novo
 - [ ] Índice de cenários atualizado com o arquivo de teste real de cada CT
 - [ ] **Sincronia nos dois sentidos**: todo `[CT-nn]`/`[CT-Bnn]` do teste existe no `04`/`05`, e todo CT do índice aponta um teste existente ou declara "fundido em CT-nn"; linha de dataset nova existe como Exemplo no Gherkin
-- [ ] Contagem do cabeçalho (`Cenários: {n} · Mutantes: {n}`) recalculada — ou removida, se ninguém a lê
+- [ ] Contagem do cabeçalho (`Cenários: {n} · Mutantes: {n}`) recalculada por `grep -c` (nunca escrita à mão — ver feature-wiki 3.5.1)
 
 **Teste de arquitetura sugerido** — barato, um por projeto e não por feature: lê os `[CT-nn]` dos
-testes e dos `04`/`05` e falha com o ID que existe num lado só. O dataset é a lista declarada de
+testes e dos `04`/`05` e falha com o ID que existe num lado só — nas **duas** direções: ID do teste
+sem cenário na wiki, e ID do `04`/`05` sem `it('[CT-nn]…')`. O dataset é a lista declarada de
 pares (arquivo de teste, pasta da wiki); declará-la à mão é o custo, e é também o que impede um
 teste novo de nascer sem wiki.
 
 ```php
-it('todo [CT-nn] de um teste existe no 04/05 da wiki que ele cita', function (string $teste, string $wiki): void {
+it('todo [CT-nn] existe nos dois lados: teste e 04/05 da wiki', function (string $teste, string $wiki): void {
     $ids = fn (string $arquivo): array => preg_match_all('/\[(CT-B?\d{2,})\]/', file_get_contents($arquivo), $m) ? array_unique($m[1]) : [];
+    $noTeste   = $ids($teste);
     $naWiki    = array_merge([], ...array_map($ids, glob("$wiki/0[45]-*.md")));
-    $soNoTeste = array_diff($ids($teste), $naWiki);
+    $soNoTeste = array_diff($noTeste, $naWiki);
+    $soNaWiki  = array_diff($naWiki, $noTeste);
 
-    expect($soNoTeste)->toBeEmpty('IDs só no teste: '.implode(', ', $soNoTeste));
+    expect($soNoTeste)->toBeEmpty('IDs só no teste: '.implode(', ', $soNoTeste))
+        ->and($soNaWiki)->toBeEmpty('IDs só na wiki (sem it(\'[CT-nn]…\')): '.implode(', ', $soNaWiki));
 })->with('pares teste ↔ wiki');
 ```
 

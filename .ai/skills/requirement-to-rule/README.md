@@ -1,6 +1,6 @@
 # requirement-to-rule — Decisão da Wiki Vira Regra Durável
 
-> **Skill**: [`SKILL.md`](SKILL.md) · versão **1.1.0**
+> **Skill**: [`SKILL.md`](SKILL.md) · versão **1.2.1**
 > Este README fala com a **pessoa**: por que a skill existe, o que ela entrega, dependências e limitações. O procedimento que o agente segue está no `SKILL.md` e não é duplicado aqui.
 
 ## Índice
@@ -14,7 +14,7 @@
 
 ## O que a skill faz
 
-Transforma decisão e restrição descobertas numa feature em **Project Rules do Laravel Boost** (`.ai/rules/`) — arquivos escopados por glob de path que **qualquer agente, em qualquer sessão futura, carrega automaticamente** ao editar um arquivo que casa com o glob.
+Transforma decisão e restrição descobertas numa feature em **Project Rules do Laravel Boost** (`.ai/rules/`) — arquivos escopados por glob de path. O Boost instrui o agente a consultar o índice antes de planejar ou editar arquivos que casam o glob, em qualquer sessão futura — o custo de um glob largo é o agente ter de **ler** a rule a cada tarefa.
 
 **O problema que resolve**: a wiki tem memória, o agente não. Uma ADR aceita só é lida por quem abrir aquela pasta. Na feature seguinte, o agente não sabe que a decisão existe e repete o erro que a ADR já resolveu.
 
@@ -23,8 +23,8 @@ Transforma decisão e restrição descobertas numa feature em **Project Rules do
 | Vantagem | Como |
 |---|---|
 | Decisão para de morrer na wiki | ADR generalizável vira rule carregada por glob |
-| Sem inflação de contexto | 4 gates eliminatórios + teto de 3 rules por feature |
-| Automação antes de prosa | escada de enforcement: `pest --arch` → PHPStan → Rector → Pint → só então texto |
+| Sem inflação de contexto | 4 gates eliminatórios + teto de 3 candidatos apresentados por feature |
+| Automação antes de prosa | escada de enforcement: teste de arquitetura `arch()` do Pest → PHPStan → Rector → Pint → só então texto |
 | Rule que o agente obedece | anatomia obrigatória exige a **consequência** de ignorar, não só a regra |
 | Rule descoberta de fato | grava via `record-rule` e confere o `.ai/rules/index.md` |
 | Você decide, não o agente | nada é gravado sem aprovação explícita |
@@ -42,7 +42,7 @@ Transforma decisão e restrição descobertas numa feature em **Project Rules do
 
 Hoje uma decisão registrada em `02-decisoes-arquiteturais.md` só é lida por quem abrir **aquela** wiki. Na sessão seguinte, em outra feature, o agente não sabe que a decisão existe e repete o erro que a ADR já resolveu. A wiki tem memória; o **agente** não.
 
-**Project Rules do Laravel Boost** (`.ai/rules/`) fecham esse ciclo: são carregadas automaticamente por glob de path, para qualquer agente, em qualquer sessão. A skill `requirement-to-rule` faz a ponte entre as duas coisas.
+**Project Rules do Laravel Boost** (`.ai/rules/`) fecham esse ciclo: o Boost instrui qualquer agente, em qualquer sessão, a consultar o índice antes de editar arquivos que casam o glob. A skill `requirement-to-rule` faz a ponte entre as duas coisas.
 
 ### As três camadas — não confundir
 
@@ -56,7 +56,7 @@ Hoje uma decisão registrada em `02-decisoes-arquiteturais.md` só é lida por q
 
 ### De onde vêm os candidatos
 
-O **step 8** da `feature-wiki` varre a wiki recém-concluída em três lugares:
+O **step 9** da `feature-wiki` varre a wiki recém-concluída em três lugares:
 
 | Fonte | O que procurar | Exemplo real |
 |---|---|---|
@@ -75,7 +75,7 @@ Candidato só vira rule se passar em **todos**:
 | 1 | **Durável** | vale além desta feature e desta sprint? | regra de negócio de um fluxo → fica na ADR |
 | 2 | **Escopável por path** | dá para expressar em glob? | "vale para o projeto todo" → glob `**` é anti-padrão |
 | 3 | **Não-inferível** | um agente competente, lendo o código ao redor, erraria? | se ele acertaria sozinho, a rule é só imposto de contexto |
-| 4 | **Não-redundante** | não é default do framework, não é coberto por Pint/Rector/PHPStan, não duplica rule existente? | qualquer duplicação |
+| 4 | **Não-redundante** | não é default do framework (conferido com `search-docs`), não é coberto por Pint/Rector/PHPStan, não duplica rule existente? | qualquer duplicação |
 
 O gate 3 é o que mais elimina candidatos — e é o mais importante. `"Controllers ficam em app/Http/Controllers"` reprova; `"Enrollment::find() aplica scope global de tenant"` passa.
 
@@ -83,7 +83,7 @@ O gate 3 é o que mais elimina candidatos — e é o mais importante. `"Controll
 
 Antes de escrever prosa, subir a escada:
 
-1. **Teste de arquitetura** (`pest --arch`) resolve? → escrever o teste; a rule fica em 1 linha apontando para ele
+1. **Teste de arquitetura** (`arch()` do Pest) resolve? → escrever o teste; a rule fica em 1 linha apontando para ele
 2. **PHPStan / Larastan** pega? → configurar; sem rule em prosa
 3. **Rector** reescreve automaticamente? → adicionar ao `rector.php`
 4. **Pint** normaliza? → configurar o preset
@@ -109,7 +109,7 @@ Candidato 1 — [origem: ADR-02]
   Por quê:   float acumula erro de arredondamento em fechamento
   Evidência: 02-decisoes-arquiteturais.md ADR-02 + app/Models/Invoice.php:34
   Gates:     durável ✅ | escopável ✅ | não-inferível ✅ | não-redundante ✅
-  Enforcement: pest --arch em tests/Arch/MoneyTest.php + prosa
+  Enforcement: arch() do Pest em tests/Arch/MoneyTest.php + prosa
 
 Descartados:
   - "Controllers em app/Http/Controllers": falhou no gate 3 — o agente infere
@@ -117,11 +117,11 @@ Descartados:
 Gravar? (número, "todos", "nenhum")
 ```
 
-**Teto: 3 candidatos por feature.** Cada rule é imposto permanente de contexto em todo arquivo que casa com o glob — inflação de rules degrada o agente em vez de ajudar.
+**Teto: no máximo 3 candidatos apresentados por feature.** Cada rule é imposto permanente de contexto em todo arquivo que casa com o glob — inflação de rules degrada o agente em vez de ajudar.
 
 ### Gravação: sempre via `record-rule`
 
-A doc do Boost é explícita, e a skill obedece:
+A doc do Boost (https://laravel.com/framework/docs/13.x/boost#project-rules) é explícita, e a skill obedece:
 
 > "You should always record rules using the `record-rule` tool rather than creating rule files by hand. Boost regenerates `.ai/rules/index.md` as part of recording a rule (...). A rule file that is added manually will not be discovered until the index is next regenerated."
 
@@ -198,6 +198,7 @@ composer require laravel/boost --dev
 php artisan boost:install
 ```
 
+- `laravel/boost` ≥ 2.5.0 (Project Rules e `record-rule` existem a partir dela) — doc: https://laravel.com/framework/docs/13.x/boost#project-rules
 - Rules ficam em `.ai/rules/` e **devem ser commitadas** (diferente de `.mcp.json`, `CLAUDE.md` e `boost.json`, que o Boost regenera)
 - Desativar tudo: `BOOST_RULES_ENABLED=false` no `.env` (remove a tool `record-rule`)
 
@@ -223,7 +224,7 @@ Ordem recomendada: rodar `infer-conventions` uma vez para bootstrapar a base, e 
 | Rule que Pint/Rector/PHPStan já garante | prosa onde a máquina resolve; viola a escada |
 | Gravar sem aprovação do usuário | rules entram no git e afetam todo o time |
 | Escrever o arquivo à mão com Boost ativo | `index.md` não é regenerado → rule invisível |
-| Mais de 3 rules por feature | quanto mais rules, menos cada uma é respeitada |
+| Mais de 3 candidatos apresentados por feature | quanto mais rules, menos cada uma é respeitada |
 | Rule narrando história ("decidimos em reunião...") | isso é ADR; rule é imperativa e atemporal |
 
 ---

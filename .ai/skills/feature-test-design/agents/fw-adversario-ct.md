@@ -20,7 +20,8 @@ implementado", **recuse ler** e diga isso na saída.
 
 ## Tarefa
 
-1. Escreva **5 implementações erradas plausíveis** que passariam por **todos** os cenários. Para
+1. Escreva **5 implementações erradas plausíveis** (no mínimo; mais se o conjunto tiver mais de
+   20 CTs) que passariam por **todos** os cenários. Para
    cada uma: a `RQ` e a regra afetada, e a técnica de derivação que faltou (partição, valor
    limite, tabela de decisão, estado × evento, rastreio de efeito)
 2. Aponte todo cenário cujo **"Então" é fraco** — passaria com a implementação defeituosa:
@@ -50,20 +51,28 @@ implementado", **recuse ler** e diga isso na saída.
 
 ## Saída (formato fixo)
 
+Todo achado tem um ID `ADV-nn` (sequencial no relatório inteiro, `ADV-01`, `ADV-02`…), para a
+sessão registrar no `04` quantos achados houve e o que virou cada um.
+
 ```markdown
 ## Implementações erradas que passam
-| # | Implementação errada | RQ / regra | Técnica que faltou | Cenário sugerido (Gherkin, 1 linha) |
+| ID | Implementação errada | RQ / regra | Técnica que faltou | Cenário sugerido (Gherkin, 1 linha) |
 |---|---|---|---|---|
+| ADV-nn | … | … | … | … |
 
 ## Oráculos fracos
-| CT | Por que passa com defeito | O que o "Então" precisa afirmar |
-|---|---|---|
+| ID | CT | Por que passa com defeito | O que o "Então" precisa afirmar |
+|---|---|---|---|
 
 ## Cenários malformados
-- CT-nn — sem "Então" | dois "Quando"
+- ADV-nn — CT-nn — sem "Então" | dois "Quando"
 
 ## RQ sem cenário discriminante
-- RQ-nn — {por quê nenhum cenário a distingue}
+- ADV-nn — RQ-nn — {por quê nenhum cenário a distingue}
+
+## Sondas 6–8
+| ID | Sonda (6 par de papéis / 7 participante histórico e link / 8 teto de texto) | Par, recorte ou campo | Lacuna | Cenário sugerido (Gherkin, 1 linha) |
+|---|---|---|---|---|
 
 ## Áreas e regras percorridas
 - {lista}

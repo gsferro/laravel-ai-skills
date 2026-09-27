@@ -1,6 +1,6 @@
 # feature-test-design — Casos de Teste que Matam Defeito
 
-> **Skill**: [`SKILL.md`](SKILL.md) · versão **1.14.0**
+> **Skill**: [`SKILL.md`](SKILL.md) · versão **1.14.1**
 > Este README fala com a **pessoa**: por que a skill existe, que problema ela resolve, a
 > evidência por trás de cada decisão e o que ela não faz. O procedimento que o agente segue
 > está no `SKILL.md` e não é duplicado aqui.
@@ -20,11 +20,11 @@ O `04-casos-de-teste.md` dizia, literalmente, que os CTs "validam os passos do P
 PRD é a **interpretação** do requisito feita pelo mesmo agente que depois escreve o teste e
 implementa. Testar o plano confirma o plano.
 
-Não é opinião. Medido sobre **318 defeitos reais** do Defects4J com 11 modelos: gerar teste a
-partir do **código** em vez da **especificação** multiplica por ~8 os testes que codificam o bug
-como comportamento esperado (0,46% → 3,84%) e derruba por ~3 os que detectam o defeito
-(8,51% → 2,98%). Trocar o código por uma descrição do comportamento pretendido reverte os dois
-números — [arXiv 2607.22883](https://arxiv.org/html/2607.22883v1).
+Não é opinião. Medido sobre **318 métodos focais cobrindo 233 defeitos reais** do Defects4J com
+11 modelos: gerar teste a partir do **código defeituoso** em vez da **especificação** multiplica por
+~1,4 os testes que codificam o bug como comportamento esperado (2,69% → 3,84%) e derruba por ~1,5
+os que detectam o defeito (4,50% → 2,98%). Trocar o código por uma descrição do comportamento
+pretendido mitiga o efeito; não o reverte — [arXiv 2607.22883](https://arxiv.org/html/2607.22883v1).
 
 ### 2. O gabarito determinava a cobertura
 
@@ -45,7 +45,7 @@ prevê eficácia de detecção** ([Inozemtseva & Holmes, ICSE 2014](https://www.
 
 ## O que a skill faz
 
-Substitui **preencher gabarito** por um **pipeline de derivação** em 7 passos, com um gate no fim
+Substitui **preencher gabarito** por um **pipeline de derivação** em 8 passos (0 a 7), com um gate no fim
 que responde à pergunta que interessa: *este conjunto pega defeito?*
 
 | Passo | O que é | Que problema ataca |
@@ -137,7 +137,7 @@ Quatro razões, em ordem de peso:
 2. **Reuso fora do fluxo da wiki.** A derivação é necessária também quando o quality gate roteia
    um achado para *destino 3 — teste*, quando se escreve a regressão de um bug de produção, e
    para cobrir código legado sem wiki.
-3. **Tamanho.** O `SKILL.md` da `feature-wiki` já tem ~1.700 linhas. Embutir o pipeline levaria a
+3. **Tamanho.** O `SKILL.md` da `feature-wiki` já tem ~2.450 linhas. Embutir o pipeline levaria a
    ~2.200 — um monólito que o agente precisa carregar inteiro para qualquer feature, inclusive
    as que não têm teste a derivar.
 4. **Ciclo de vida próprio.** A tabela de taxonomia do passo 4 é **viva**: cada defeito que
@@ -214,6 +214,8 @@ assertion que mataria cada defeito.
 | Lacunas **cegas** | 7 | 2 | **1** |
 | Células inválidas da matriz estado × operação **executadas** | 9 de 21 | 21 de 21 | 21 de 21 |
 
+> Medições até a v1.5.0; rodadas posteriores (6 a 13) em `experimentos/README.md`.
+
 Depois, as duas especificações foram **materializadas em Pest** contra a **mesma** implementação
 (escrita por um terceiro agente que nunca viu nenhum dos dois `04`):
 
@@ -241,6 +243,8 @@ que atravessaram os conjuntos, e a versão seguinte fechou exatamente aqueles:
 | 1.8.0 | cenário por fora da UI; premissa de mecanismo não apaga cenário; matriz cartesiana fechada; oráculo invertido | policy só no form; excluído ainda aplicável; aprovar em rascunho |
 | 1.9.0 | premissa de comportamento falha fechado; não-efeito exige destinatário real; legenda da matriz auditada | validade no passado assumida como aceita; e-mail fora da transação |
 
+> Regras das versões 1.10.0 a 1.14.0 estão no `CHANGELOG.md`.
+
 Os três defeitos mais teimosos do cenário 2 — ciclo de volta, tela mentindo o estado e e-mail fora
 da transação — sobreviveram a **dois** conjuntos e caíram no terceiro, cada um pelo mecanismo que
 a versão correspondente introduziu. É o argumento mais forte a favor do método: as regras não são
@@ -249,7 +253,8 @@ opinião, são o registro do que já escapou.
 ## O que a skill não faz
 
 - **Não escreve o código de teste** — ela produz a especificação. Quem materializa em `.php` é o
-  agente implementador (ou o sub-agente do CT-B)
+  sub-agente `fw-executor-ct` — por construção quem **não** implementou — ou o `fw-executor-ctb`
+  para os CT-B (ver feature-wiki)
 - **Não corrige implementação**
 - **Não substitui o `feature-quality-gate`**: a derivação acontece *antes* do código; o gate
   valida o produto *depois*. Uma acha lacuna de especificação de teste, o outro acha lacuna
@@ -259,16 +264,17 @@ opinião, são o registro do que já escapou.
 
 ## Dependências
 
-Nenhuma obrigatória além de um projeto com testes. Degradações declaradas:
+**Obrigatória**: `00-requisito.md` produzido pela `feature-wiki` ≥ 2.10.0 — é o oráculo do
+pipeline; sem ele a skill **para e pede** o requisito (nunca deriva do PRD). Além disso, um projeto
+com testes. Degradações declaradas:
 
 | Item | O que habilita | Sem ele |
 |---|---|---|
-| `00-requisito.md` (feature-wiki ≥ 2.10) | o oráculo do pipeline | a skill **para e pede** o requisito |
 | `pestphp/pest-plugin-mutate` + PCOV/Xdebug | fechamento do ciclo (`pest --mutate`) | o passo 6 fica só como previsão, sem medição — declarar a ausência só com `php -m` / `ls vendor/pestphp/` colados. **No Windows o score é 100 % falso** sem o lançador `.cmd` (ver a `feature-wiki`, seção *Pest 5*) |
 | `pest-plugin-livewire` | camada de componente | cai para `Feature` HTTP, mais cara e mais cega |
 | `pest-plugin-browser` + Playwright | CT-B executáveis | o `05` fica como roteiro manual |
-| Sub-agente disponível | revisão adversarial | perfil completo perde o gate independente |
-| Claude Code com o agente `fw-adversario-ct` instalado | adversarial em `opus`, **sem Edit/Write/Bash**, recebendo só `00` + `04`/`05` — a cegueira vem da construção | cai em `general-purpose` com `model: opus` explícito; sem sub-agente nenhum, roda em linha e o `04` declara *"mesma sessão que derivou"* |
+| Sub-agente disponível | revisão adversarial | perfil completo ou Impacto 3 perde o gate independente |
+| Claude Code com o agente `fw-adversario-ct` instalado | adversarial em `opus`, **sem Edit/Write/Bash**, recebendo só `00` + `04`/`05` — a cegueira vem da construção | cai em `general-purpose` com `model: opus` explícito; sem sub-agente nenhum, **não** autorrevisa: o `04` declara *"Revisão adversarial: NÃO FEITA — host sem sub-agente"* e o `feature-quality-gate` reporta como débito |
 
 ### Instalação do sub-agente (Claude Code)
 
@@ -281,5 +287,9 @@ mkdir -p .claude/agents
 cp .ai/skills/*/agents/*.md .claude/agents/
 ```
 
-No PowerShell: `New-Item -ItemType Directory -Force .claudegents | Out-Null` e
-`Copy-Item -Force .ai\skills\*gents\*.md .claudegents\`.
+```powershell
+New-Item -ItemType Directory -Force .claude\skills, .claude\agents | Out-Null
+Copy-Item -Recurse -Force .ai\skills\* .claude\skills\
+Copy-Item -Force .ai\skills\*\agents\*.md .claude\agents\
+Get-ChildItem .claude\agents\fw-*.md        # cinco arquivos
+```

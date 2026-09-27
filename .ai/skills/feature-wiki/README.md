@@ -1,6 +1,6 @@
 # feature-wiki — Documentação Antes de Implementar
 
-> **Skill**: [`SKILL.md`](SKILL.md) · versão **3.5.1**
+> **Skill**: [`SKILL.md`](SKILL.md) · versão **3.5.2**
 > Este README fala com a **pessoa**: por que a skill existe, o que ela entrega, dependências e limitações. O procedimento que o agente segue está no `SKILL.md` e não é duplicado aqui.
 
 ## Índice
@@ -78,9 +78,10 @@ Os **cinco primeiros são obrigatórios** (o `05` de browser é condicional a um
 
 > **A partir da v3.0.0 o `04` e o `05` não são escritos por esta skill.** Ela invoca a
 > [`feature-test-design`](../feature-test-design/README.md) no step 4, passando o
-> `00-requisito.md` como oráculo. O motivo é medido: derivar teste do plano em vez do requisito
-> multiplica por ~8 os testes que codificam o bug como comportamento esperado. Testar o plano
-> confirma o plano.
+> `00-requisito.md` como oráculo. O motivo é medido (arXiv 2607.22883: 318 métodos focais cobrindo
+> 233 defeitos, 11 modelos): derivar teste do código/plano em vez da especificação multiplica por
+> ~1,4 os testes que codificam o bug como comportamento esperado e corta por ~1,5 os que detectam
+> o defeito — a especificação mitiga o efeito, não o reverte. Testar o plano confirma o plano.
 
 ## Quando é invocada
 
@@ -92,7 +93,7 @@ Os **cinco primeiros são obrigatórios** (o `05` de browser é condicional a um
 
 ### Obrigatórias
 
-Nenhuma além de um projeto Laravel com git. A skill funciona com Pest 3, 4 ou 5, com ou sem Boost.
+Nenhuma além de um projeto Laravel com git. A skill funciona com Pest 4 ou 5, com ou sem Boost; os comandos de Verificação Final (`--tia`, `--mutate`, `--agent`) assumem Pest 5.
 
 ### Opcionais — a skill degrada e declara o que não pôde fazer
 
@@ -104,9 +105,9 @@ Nenhuma além de um projeto Laravel com git. A skill funciona com Pest 3, 4 ou 5
 | `pest-plugin-browser` + Playwright | CT-B executáveis | `05` fica como roteiro manual |
 | Playwright MCP | observar a página no loop de correção do CT-B | `screenshot()`, `content()` filtrado, leitura do Blade |
 | PCOV ou Xdebug | pré-requisito do `--tia` | roda o suite completo |
-| Ponytail | escada de simplicidade na execução + auditoria do plano | step 6 fica manual |
+| Ponytail | escada de simplicidade na execução + auditoria do plano | step 6 obrigatório; sem o plugin, passe manual registrado no `03` |
 | Caveman | prosa terse na conversa (nunca nos arquivos wiki) | — |
-| [`feature-quality-gate`](../feature-quality-gate/README.md) | step 8: QA confrontando requisito × plano × app | step 8 é pulado |
+| [`feature-quality-gate`](../feature-quality-gate/README.md) | step 8: QA confrontando requisito × plano × app | step 8 é obrigatório; sem a skill, o PR não abre (o `06` é blocker) |
 | [`requirement-to-rule`](../requirement-to-rule/README.md) | step 9: decisão da wiki vira Project Rule | step 9 é pulado |
 | Claude Code com sub-agentes (`Agent`, `.claude/agents/`) | roteamento por modelo (`haiku`/`sonnet`/`opus`) e **juiz independente** por construção no 6.5, na adversarial e no step 8 | tudo roda em linha, na mesma sessão que implementou — e a degradação é declarada no `03` e no cabeçalho do `06` |
 
@@ -168,8 +169,14 @@ mkdir -p .claude/agents
 cp .ai/skills/*/agents/*.md .claude/agents/
 ```
 
-No PowerShell: `New-Item -ItemType Directory -Force .claudegents | Out-Null` e
-`Copy-Item -Force .ai\skills\*gents\*.md .claudegents\`.
+No PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force .claude\skills, .claude\agents | Out-Null
+Copy-Item -Recurse -Force .ai\skills\* .claude\skills\
+Copy-Item -Force .ai\skills\*\agents\*.md .claude\agents\
+Get-ChildItem .claude\agents\fw-*.md        # cinco arquivos
+```
 
 Sem essa cópia, o `subagent_type: "fw-…"` não existe e a skill cai no `general-purpose` com
 `model` explícito — funciona (segurou uma feature inteira em 2026-09-21), mas perde a restrição
@@ -290,12 +297,9 @@ O `01-plano-acao.md` passou a ter uma seção obrigatória `## Superfície de UI
 |---|---|---|---|---|
 | `RelatorioLoteForm` | Livewire | `/relatorios/lote` | seleciona turma, dispara geração | Sim |
 
-O `05-casos-de-teste-browser.md` só é criado se houver ao menos uma linha nessa tabela **e** pelo menos uma destas condições:
+O `05-casos-de-teste-browser.md` só é criado se houver ao menos uma linha nessa tabela **e** ao menos um cenário que afirma sobre algo que **só o navegador prova** — JavaScript executado, console/erro de JS, acessibilidade, cor/tema, layout. `Depende de JS? = Sim` é gatilho para examinar a linha, não critério suficiente: formulário, gravação, filtro e ação em Filament/Livewire são teste de componente e ficam no `04`.
 
-1. `Depende de JS? = Sim` (Livewire, Filament, Alpine, Inertia, upload, modal, polling), **ou**
-2. a interação atravessa ≥ 2 telas/etapas (wizard, checkout, aprovação em duas mãos)
-
-Se o gate não passar, a skill **não cria o arquivo** e registra no `04` a linha *"Sem CT-B: {motivo}"*. Feature de job, webhook, command ou import de CSV **não** gera CT-B — isso é deliberado, para a seção não virar burocracia morta.
+Se o gate não passar, a skill **não cria o arquivo** e registra no `04` a seção `## Sem CT-B` com o motivo. Feature de job, webhook, command ou import de CSV **não** gera CT-B — isso é deliberado, para a seção não virar burocracia morta.
 
 ### Fronteira entre o 04 e o 05 (revista na v3.0.0)
 
@@ -402,7 +406,7 @@ Roda só os testes afetados pelo diff e replica do cache o restante. Exige PCOV 
 
 **Sobre o `--parallel`**: ele **não** é pré-requisito técnico do `--tia` — `vendor/bin/pest --tia` funciona sozinho. Mas a invocação canônica da doc oficial é `./vendor/bin/pest --parallel --tia`, e os dois são complementares: o TIA corta **quanto** roda, o `--parallel` corta **quanto tempo** o que sobrou leva. A skill adotou `--parallel --tia` como padrão.
 
-> **Cuidado com `--parallel` + CT-B**: browser em paralelo multiplica processos de navegador e exige DB por worker. Se houver flake, rodar os CT-B em série e deixar o `--parallel --tia` para o backend.
+> **Cuidado com `--parallel` + CT-B**: browser em paralelo multiplica processos de navegador e exige DB por worker. Nunca `--parallel` no comando de browser (ver *Fatos do `pest-plugin-browser`* no `SKILL.md`): rodar os CT-B em série e deixar o `--parallel --tia` para o backend.
 
 E um ponto que a doc faz questão de deixar claro — replay **não** é atalho: *"each cached test stores everything it produced, including the exact lines and branches it covered, so a replayed run reports the same code coverage as a full run"*. É o que autoriza usar `--tia` na Verificação Final sem perder confiança.
 
@@ -488,7 +492,7 @@ O plugin tem ferramentas de debug excelentes — e **todas exigem um humano na f
 
 Para **rodar e atestar**, o plugin basta e é o único caminho. Para o agente **investigar sozinho** por que o seletor não casou, as opções nativas são um PNG ou um dump de HTML. É aí que o MCP ganha: `browser_snapshot` devolve a árvore de acessibilidade (~200–400 tokens de texto estruturado, contra ~3.000–5.000 de um screenshot) e `browser_generate_locator` converte o elemento observado em locator estável.
 
-Três lacunas concretas: **descobrir o locator verdadeiro** numa falha de seletor; **observar quando o elemento realmente aparece** em UI assíncrona (o plugin não documenta `waitFor(seletor)`, só `wait(segundos)` — sem observar, o agente chuta o tempo); e **extrair seletores de tela existente** antes de escrever o CT-B.
+Três lacunas concretas: **descobrir o locator verdadeiro** numa falha de seletor; **observar quando o elemento realmente aparece** em UI assíncrona (o plugin não tem `waitForText`/`waitForSelector`/`waitUntil` e `wait(segundos)` é proibido — ele reexecuta cada assertion até o timeout; sem observar, o agente não sabe qual estado final esperar); e **extrair seletores de tela existente** antes de escrever o CT-B.
 
 #### Os 3 pontos onde o MCP entra (todos opcionais)
 
@@ -541,7 +545,7 @@ doc. Foram corrigidas contra o comportamento real do plugin em projeto de produ�
 |---|---|
 | "a doc não explicita se o plugin sobe o app ou exige servidor externo — registrar no `05` como o projeto serve o app" | **O plugin sobe o próprio servidor**: HTTP in-process (amphp), porta aleatória. Nada de Herd, `php artisan serve`, Sail ou Vite dev server; **nada de `APP_URL` a configurar** |
 | "`actingAs()` em teste de browser não está documentado — não assumir" | Como é o **mesmo processo**, `$this->actingAs($user)` antes do `visit()` funciona, junto com `:memory:`, `RefreshDatabase` e `assertAuthenticated()`. **Use `actingAs()`** — login pela tela custa dezenas de segundos por cenário |
-| "o plugin expõe `wait(segundos)`; não há `waitFor(seletor)`" | Certo sobre a API, errado sobre a conclusão: **nunca use `wait()`**. O plugin reexecuta cada assertion até o teto de `pest()->browser()->timeout()`. Espere pelo estado final visível |
+| "o plugin expõe `wait(segundos)`; não há `waitFor(seletor)`" | Certo sobre a API, errado sobre a conclusão: **nunca use `wait()`**. O plugin reexecuta cada assertion até o teto de `pest()->browser()->timeout()`. Espere pelo estado final visível; `waitForText`, `waitForSelector` e `waitUntil` **não existem** — não inventar |
 
 E três armadilhas que não estavam documentadas:
 
@@ -557,11 +561,13 @@ Limitação que continua válida:
 
 ```text
 wikis/specs/ferro/579/relatorio-mba-lote/
+├── 00-requisito.md                  ← requisito bruto imutável + RQ-##
 ├── 01-plano-acao.md                 ← + seção ## Superfície de UI (gate do CT-B)
 ├── 02-decisoes-arquiteturais.md
 ├── 03-progresso.md                  ← + checkboxes de CT-B
-├── 04-casos-de-teste.md             ← backend: Feature/Unit, log, autorização
-└── 05-casos-de-teste-browser.md     ← CT-B + roteiro Desenhado × Implementado
+├── 04-casos-de-teste.md             ← backend: Feature/Unit, autorização
+├── 05-casos-de-teste-browser.md     ← CT-B + roteiro Desenhado × Implementado
+└── 06-relatorio-qa.md               ← saída do feature-quality-gate
 ```
 
 ---

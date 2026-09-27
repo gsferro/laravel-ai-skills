@@ -8,10 +8,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 
 | Skill | Versão | Tag |
 |---|---|---|
-| `feature-wiki` | 3.5.1 | `feature-wiki-v3.5.1` |
-| `feature-test-design` | 1.14.0 | `feature-test-design-v1.14.0` |
-| `feature-quality-gate` | 1.5.1 | `feature-quality-gate-v1.5.1` |
-| `requirement-to-rule` | 1.2.0 | `requirement-to-rule-v1.2.0` |
+| `feature-wiki` | 3.5.2 | `feature-wiki-v3.5.2` |
+| `feature-test-design` | 1.14.1 | `feature-test-design-v1.14.1` |
+| `feature-quality-gate` | 1.5.2 | `feature-quality-gate-v1.5.2` |
+| `requirement-to-rule` | 1.2.1 | `requirement-to-rule-v1.2.1` |
 
 ## Convenção de tags
 
@@ -30,12 +30,64 @@ requirement-to-rule-v1.0.0
 | 2.3.0 | — | liberada sem tag |
 | 2.5.0, 2.6.0 | — | versões intermediárias, nunca commitadas isoladamente — consolidadas na 2.7.0 |
 | 2.7.0 em diante | `feature-wiki-vX.Y.Z` | série namespaced |
+| `feature-wiki` 3.4.0 | — | liberada sem tag — consolidada na 3.5.0 (ver nota na entrada 3.5.0) |
+| `feature-test-design` 1.13.0 · `feature-quality-gate` 1.4.0 | — | liberadas sem tag (o mesmo dia da versão seguinte); as entradas existem no CHANGELOG |
+| patches de 2026-09-26 (3.5.2 · 1.14.1 · 1.5.2 · 1.2.1) | a criar no commit | tag por skill, como as demais |
 
 ---
 
 # feature-wiki
 
 Cria a estrutura de documentação de uma feature **antes** de implementá-la: requisito bruto, PRD, ADR, tracking de progresso e padrão de log.
+
+## [3.5.2] — 2026-09-26
+
+Patch de documentação e de coerência, sem step novo. Nasce da auditoria interna consolidada em
+[`estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md`](estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md) (§7.2) — cinco auditores cegos, um por skill e um de consistência cruzada.
+
+### Corrigido
+
+- **Log não vira CT** (regra da 3.5.0) ainda estava contradita em duas linhas ("Incluir CTs de log
+  no `04`" e a legenda da árvore final) — removidas
+- `--parallel` com browser era **proibido** num lugar e **condicional** noutro (e no README) — só a
+  proibição fica, alinhada à `feature-test-design` e ao `fw-executor-ctb`
+- Rotas `mecânico` e `analista` têm "leitura + Bash" e o mapa por step mandava "espelhar 01 → 03",
+  "derivar o 04/05", "corrigir a wiki" — agora, como a rota `qa-gate`, **devolvem texto e a sessão
+  grava**
+- Contrato de delegação à `feature-test-design` não entregava o `02` (`## Superfície Livewire`), que
+  ela declara obrigatório e este próprio arquivo dizia ser "entrada obrigatória do step 4"
+- Step 8 "pode pular" × checklist "`06` ausente é blocker do PR": ao pular, grava-se um `06` mínimo
+  com veredito `NÃO APLICÁVEL`
+- Duas âncoras do índice quebradas (Padrão de Log, Arquivo 02); "após escrever os 4 arquivos" (são
+  5 desde a 2.10.0); `APP_URL` no checklist contra "nada de `APP_URL` a configurar"; rota
+  `adversário-ct` sem o "sem Bash" do frontmatter real
+- `tests/**/*{Feature}*.php` no `diff` de IDs não funciona sem `globstar` (o `**` vira `*`) —
+  trocado por `find`; `--testsuite=Browser` × `tests/Browser --filter` unificados; `pest --arch`
+  (não é flag) → `arch()`; `Browser Logs` → `browser-logs`
+- `{base}` era usado cinco vezes sem definição — definido no Glossário (branch de destino do PR,
+  registrada no cabeçalho do `03`)
+- Citação do arXiv 2607.22883 corrigida (318 métodos focais / 233 defeitos, ≈1,4×, ≈1,5×, "mitiga")
+  no SKILL e no README
+- "Rules carregadas automaticamente por glob" → o Boost instrui o agente a consultar o índice; gate
+  4 dos candidatos a rule agora cita o `search-docs`, como a `requirement-to-rule` exige
+- Lista de "skills disponíveis para referenciar no PRD" não dizia que são skills do **Laravel
+  Boost**, não desta coletânea
+- README: degradações de Ponytail e `feature-quality-gate` diziam "step 6 fica manual" / "step 8 é
+  pulado" contra o SKILL (obrigatórios); gate do `05` descrito de dois jeitos em 10 linhas; `wait()`
+  "só isso existe" × "nunca use"; árvore final sem `00` e `06`; "Pest 3, 4 ou 5" (os comandos de
+  Verificação Final assumem Pest 5); bloco PowerShell com bytes de controle (`\a` → BEL, `\f` → FF)
+  que não rodava
+- `fw-executor-ct`: dizia ao mesmo tempo "não crie o helper em `tests/Pest.php`" e "o helper vive
+  em `tests/Pest.php` e é do lote D0" — o D0 cria; os outros devolvem `bloqueado`
+- `fw-executor-ctb`: único agente sem bloco "você recebe do orquestrador", sem exigência de saída
+  literal do `pest` e sem o caminho do blocker após 3 iterações — os três acrescentados
+- `fw-revisor-diff`: proibição explícita de abrir `01-*.md`/`03-*.md` da pasta da wiki mesmo tendo
+  o path do `02` (a cegueira era só "recuse o que receber")
+
+### Adicionado
+
+- Step 6 declara a degradação sem o plugin Ponytail (passe manual registrado no `03`)
+
 
 ## [3.5.1] — 2026-09-22
 
@@ -401,9 +453,9 @@ Auditoria de 9 wikis reais produzidas por esta skill em produção (125 casos de
 Duas causas estruturais, ambas dentro da própria skill:
 
 1. **O `04` era derivado do PRD** ("os CTs validam os passos do PRD"). O PRD é a interpretação do
-   requisito — testar a interpretação a confirma. Medido sobre 318 defeitos reais com 11 modelos:
-   derivar teste do código/plano em vez da especificação multiplica por ~8 os testes que codificam
-   o bug como comportamento esperado e corta por ~3 os que o detectam.
+   requisito — testar a interpretação a confirma. Medido sobre 318 métodos focais / 233 defeitos reais com 11 modelos:
+   derivar teste do código/plano em vez da especificação multiplica por ~1,4 os testes que codificam
+   o bug como comportamento esperado e corta por ~1,5 os que o detectam *(números corrigidos em 2026-09-26 — a versão original desta entrada dizia "318 defeitos", "~8×" e "~3×"; ver `estudos/2026-09-04-spdd-x-coletanea.md` §3.4)*.
 2. **O critério de suficiência era cobertura de código** ("todo método público tem 1 CT, cada
    branch tem um CT") — sobre um código que **ainda não existe** quando o `04` é escrito. Isso
    obriga o agente a imaginar a implementação e testá-la.
@@ -604,6 +656,44 @@ Consolida as versões 2.5.0 e 2.6.0 (nunca commitadas isoladamente) e adiciona a
 # feature-test-design
 
 Deriva casos de teste que **matam defeito**, a partir do requisito — nunca do plano e nunca do código.
+
+## [1.14.1] — 2026-09-26
+
+Patch de documentação e de coerência, sem técnica nova. Nasce da auditoria interna consolidada em
+[`estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md`](estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md) (§7.3).
+
+### Corrigido
+
+- Citação do arXiv 2607.22883 estava errada no SKILL, no README e na entrada 1.0.0 deste CHANGELOG
+  ("318 defeitos", "~8×", "~3×", "reverte"): são **318 métodos focais / 233 defeitos, ≈1,4× e
+  ≈1,5×, "mitiga"** — o estudo SPDD de 2026-09-04 já tinha apontado e a correção estava pendente
+- "Sete passos" com oito (0 a 7); Proibições fora de ordem (10, 12, 11) — reordenadas sem mudar os
+  números, que outras skills citam
+- `Log::` ainda aparecia como efeito colateral a rastrear (passo 3) e como exemplo de mutante,
+  contra a Proibição 12 ("não derivar CT de log") — trocado por outro efeito colateral
+- Gatilho da revisão adversarial é "perfil completo **ou Impacto 3**": faltava o "ou Impacto 3" na
+  Proibição 9, no checklist e no README
+- "Host sem sub-agente: rodar em linha" contradizia "não autorrevisar": agora é **lacuna
+  declarada** no cabeçalho do `04` (`Revisão adversarial: NÃO FEITA`), nunca autorrevisão
+- Contrato do adversário existia em duas fontes já divergentes (7 itens no SKILL, 8 no agente): o
+  agente é a fonte; o SKILL resume e ganhou o 8º item
+- Quem despacha o adversário e fecha os achados é a **sessão principal** — sub-agente não despacha
+  sub-agente; quando a derivação roda em sub-agente, as perguntas ao usuário voltam como saída
+- Teste de arquitetura de sincronia de IDs só olhava teste → wiki; ganhou a direção wiki → teste
+- "`covers()` → 0 %" rotulado "verificado" é **medido** (experimentos); `--mutate --path=` não
+  consta na referência de CLI do Pest — ressalva com alternativa `--class=`
+- Âncora quebrada desde a 1.9.0 (Premissa do passo 3); `## Ambiguidades` (a seção do `00` chama-se
+  `## Ambiguidades e Perguntas Abertas`); "a skill sugere `--parallel --tia`" (é a `feature-wiki`);
+  "são dois comandos" sem os comandos; contagem do cabeçalho "ou removida" contra o `grep -c`
+  exigido pela `feature-wiki` 3.5.1; índice sem "Precedência: Project Rule" e "Skills Companheiras"
+- README: "nenhuma dependência obrigatória" contra o README raiz e o próprio SKILL (o `00` da
+  `feature-wiki ≥ 2.10.0` é obrigatório); "~1.700 linhas" da `feature-wiki` (são ~2.450); "quem
+  materializa é o agente implementador" (é o `fw-executor-ct`, por construção quem **não**
+  implementou); tabelas de medição sem nota de que param na v1.5.0; bloco PowerShell com bytes de
+  controle que não rodava
+- Agente `fw-adversario-ct`: formato de retorno sem seção para as sondas 6–8 e sem ID por achado
+  (`ADV-nn`); "5 implementações erradas" vira piso, não teto
+
 
 ## [1.14.0] — 2026-09-22
 
@@ -1171,6 +1261,45 @@ preenchimento de gabarito por um pipeline de derivação com gate de auditoria.
 
 # feature-quality-gate
 
+## [1.5.2] — 2026-09-26
+
+Patch de documentação e de coerência, sem dimensão nova. Nasce da auditoria interna consolidada em
+[`estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md`](estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md) (§7.4).
+
+### Corrigido
+
+- **Veredito era indecidível**: `APROVADO` ("nenhum Blocker ou Major") e `APROVADO COM DÉBITO`
+  ("só Minor/Cosmético") se sobrepunham. Agora `APROVADO` = **nenhum achado aberto**;
+  `COM DÉBITO` = ≥ 1 Minor/Cosmético e nenhum Blocker/Major
+- "Piso 70 % → `REPROVADO → teste`" contradizia "o achado é sempre um mutante nomeado, nunca um
+  percentual": o piso manda **investigar**; o achado registrado é o mutante
+- "12 dimensões" eram **11** na `description` (faltava a A, cobertura do requisito), **10** num
+  trecho do README (sem K e L) e "**3**" noutro (o perfil mínimo roda **5**: A, D, J, K, L)
+- Modo degradado validava "B–K" (sem a L); template do `06` listava "L1…L5" (a L6 existe desde a
+  1.5.0)
+- Fluxo (passos 6 e 8) e checklist mandavam a skill **gravar** o `06` e o `03` — em sub-agente ela
+  devolve texto e a sessão grava; agora os quatro pontos bifurcam
+- Tabela de Entradas não listava `02`, `03`, o `06` do ciclo anterior, `.ai/rules/index.md`, docs
+  e CHANGELOG — todos exigidos pelo corpo (L3, L6, convergência, dimensão L)
+- Sem app "ficam estáticas" B, D, F, G, H, I — faltavam **C** e **E**
+- Linha `Independência:` tinha dois valores no template e três no agente
+  (`comprometida — recebeu {o quê}`); e o placeholder era `{rota}` num lugar e `fw-qa-gate`
+  noutro
+- Detecção de dark mode só olhava `tailwind.config.js` — cega ao Tailwind 4 (`@custom-variant dark`
+  em CSS); comando acrescentado
+- `XDEBUG_MODE=coverage vendor/bin/pest` (prefixo POSIX) num passo que manda usar o `.cmd` no
+  Windows — alternativa PowerShell/`.cmd` ao lado
+- `Browser Logs` → id real da tool: `browser-logs`; path do log `{feature}.log` →
+  `{feature-name}-*.log` (driver `daily`)
+- README: "v1.0.0", "na futura SKILL.md", "10 proibições" (são 11), destino 1 "(`01`/`02`)" (é
+  `00`/`01`/`02`), heading `Dependências` duplicada, linha de tabela órfã (PCOV/Xdebug), estudo de
+  viabilidade sem data (pesquisa de 2026-08-14) e citação atribuída a "doc" que as Fontes chamam de
+  post; bloco PowerShell com bytes de controle (`\a` → BEL) que não rodava
+- Agente `fw-qa-gate`: "executa as 12 dimensões" (são as do perfil: 5, 9 ou 12); pedia para
+  **acrescentar** a linha `Independência:` que o template já tem; não recebia a branch base do PR;
+  não listava `browser-logs` entre as tools do Boost
+
+
 ## [1.5.1] — 2026-09-22
 
 O gate aprende a conferir número por `grep`, não por leitura. Acompanha a `feature-wiki` 3.5.1.
@@ -1336,6 +1465,37 @@ Etapa de QA dentro do agente — a próxima estação da esteira depois de imple
 # requirement-to-rule
 
 Transforma decisões e restrições de um requisito em **Project Rules do Laravel Boost** (`.ai/rules/`), com aprovação explícita do usuário.
+
+## [1.2.1] — 2026-09-26
+
+Patch de documentação, sem mudança de comportamento. Nasce da auditoria interna consolidada em
+[`estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md`](estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md) (§7.5).
+
+### Corrigido
+
+- `description` do frontmatter dizia **step 8** da `feature-wiki`; é o **step 9** (o corpo já dizia
+  9 desde a 1.2.0 — a `description` é o que o agente lê para decidir invocar)
+- README estava em **1.1.0** e também dizia "step 8"
+- `pest --arch` não é flag do Pest: em 8 lugares (SKILL e README) virou "teste de arquitetura
+  `arch()` do Pest"; o exemplo de código já estava certo
+- Passo 7 mandava **editar o índice à mão** com o `record-rule` disponível — a própria skill chama
+  isso de anti-padrão e avisa que o Boost regenera o `index.md`. Agora: não editar; conferir depois
+  da última chamada
+- `record-rule` recebe **um** `glob` por chamada e o `title` é parâmetro próprio: candidato com dois
+  globs vira duas chamadas; o `note` leva só o corpo, sem frontmatter nem `#` (issue
+  laravel/boost#1034 documenta que uma segunda chamada pode anexar glob à rule existente)
+- "Rules carregadas automaticamente por glob" → o Boost **instrui o agente a consultar o índice**;
+  o custo de um glob largo é a leitura, não um carregamento
+- Cursor listado como agente "sem suporte a `.ai/rules`" — o Boost o suporta; removido
+- "3 rules por feature" × "3 candidatos": unificado em **3 candidatos apresentados**
+- Passo 1 não lia a tabela `## Conformidade com Rules` do `03` nem o checklist de taxonomia do
+  `04`, que a entrada 1.2.0 dizia ter adicionado como fonte
+
+### Adicionado
+
+- URL da doc do Boost (Project Rules) nos dois lugares que a citavam sem link; dependência
+  `laravel/boost ≥ 2.5.0` declarada no README
+
 
 ## [1.2.0] — 2026-08-15
 

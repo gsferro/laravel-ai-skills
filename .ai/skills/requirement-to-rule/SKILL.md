@@ -1,6 +1,6 @@
 ---
 name: requirement-to-rule
-version: 1.2.0
+version: 1.2.1
 description: >
   Transforma decisões e restrições de um requisito em Project Rules do Laravel Boost
   (.ai/rules/). Invoque quando uma decisão precisar valer para agentes futuros em
@@ -9,7 +9,7 @@ description: >
   contra o index existente, exige aprovação explícita do usuário e grava sempre via
   a tool MCP record-rule do Boost. Cria .ai/rules/index.md no modelo oficial quando
   não existe e o mantém atualizado — uma linha por glob — porque rule fora do índice
-  não é descoberta pelos agentes. Complementa a feature-wiki (step 8) e o
+  não é descoberta pelos agentes. Complementa a feature-wiki (step 9) e o
   infer-conventions do Boost: aquele varre o código existente, este parte do requisito.
 ---
 
@@ -68,10 +68,10 @@ Candidato só vira rule se passar em **todos**. Registrar o veredito de cada gat
 
 > Dá para expressar em glob?
 
-Rules são carregadas por casamento de glob. Se não se consegue nomear os paths onde a regra se aplica, **não é rule** — é ADR ou guideline interna.
+O Boost instrui o agente a consultar o índice antes de planejar ou editar arquivos que casam o glob. Se não se consegue nomear os paths onde a regra se aplica, **não é rule** — é ADR ou guideline interna.
 
 - ✅ `app/Models/**`, `app/Http/Controllers/Api/**`, `database/migrations/**`
-- ❌ "vale para o projeto todo" → glob `**` é anti-padrão: carrega em cada edição e vira ruído permanente
+- ❌ "vale para o projeto todo" → glob `**` é anti-padrão: o custo de um glob largo é o agente ter de **ler** a rule a cada tarefa, e ela vira ruído permanente
 
 **Preferir o glob mais estreito que cobre o caso.** Uma rule em `app/Models/Enrollment.php` é melhor que a mesma rule em `app/**`.
 
@@ -117,7 +117,7 @@ Candidato: "Enrollment::find() aplica scope global de tenant"
 
 ### 1. Coletar candidatos
 
-**Se vindo da feature-wiki**: ler `01-plano-acao.md`, `02-decisoes-arquiteturais.md` e a seção "Notas de Implementação" do `03-progresso.md`.
+**Se vindo da feature-wiki**: ler `01-plano-acao.md`, `02-decisoes-arquiteturais.md` e a seção "Notas de Implementação" do `03-progresso.md`; também a tabela `## Conformidade com Rules` do `03` (rule `violada`/`n.a.` recorrente é candidata a atualizar ou remover) e o checklist de taxonomia do `04` da `feature-test-design`.
 
 **Se vindo de um requisito solto** (card, ticket, conversa): extrair as afirmações normativas — frases com "sempre", "nunca", "todo", "deve", "não pode".
 
@@ -149,13 +149,13 @@ Descartar candidato que falhe em qualquer gate, **dizendo qual gate falhou**. N�
 
 Antes de escrever prosa, subir esta escada:
 
-1. **Teste de arquitetura** (`pest --arch`) resolve? → escrever o teste; rule fica em 1 linha apontando para ele
+1. **Teste de arquitetura** (`arch()` do Pest) resolve? → escrever o teste; rule fica em 1 linha apontando para ele
 2. **PHPStan / Larastan** pega? → configurar a regra; sem rule em prosa
 3. **Rector** pode reescrever automaticamente? → adicionar a regra ao `rector.php`
 4. **Pint** normaliza? → configurar o preset
 5. **Só então**: rule em prosa
 
-> Exemplo: "Controllers devem estender `BaseController`" é um `pest --arch` de uma linha:
+> Exemplo: "Controllers devem estender `BaseController`" é um teste de arquitetura `arch()` do Pest de uma linha:
 > `arch()->expect('App\Http\Controllers')->toExtend('App\Http\Controllers\BaseController');`
 > A rule então diz: *"Enforçado em `tests/Arch/ControllersTest.php` — não contornar."*
 
@@ -171,7 +171,7 @@ Candidato 1 — [origem: ADR-02 / Nota de implementação / requisito]
   Por quê:   {consequência de ignorar — é isto que faz o agente obedecer}
   Evidência: {arquivo:linha ou seção da wiki}
   Gates:     durável ✅ | escopável ✅ | não-inferível ✅ | não-redundante ✅
-  Enforcement: {prosa | pest --arch em tests/Arch/X.php | phpstan | rector}
+  Enforcement: {prosa | arch() do Pest em tests/Arch/X.php | phpstan | rector}
 
 Descartados:
   - {candidato}: falhou no gate {N} — {motivo}
@@ -181,7 +181,7 @@ Gravar? (número, "todos", "nenhum")
 
 ### 6. Gravar via `record-rule` (obrigatório)
 
-Gravar **sempre** pela tool MCP `record-rule` do Boost, passando `glob`, `title` e `note`. A doc do Boost é explícita:
+Gravar **sempre** pela tool MCP `record-rule` do Boost, passando `glob`, `title` e `note`. A doc do Boost (https://laravel.com/framework/docs/13.x/boost#project-rules) é explícita:
 
 > "You should always record rules using the `record-rule` tool rather than creating rule files by hand. Boost regenerates `.ai/rules/index.md` as part of recording a rule, and agents rely on that index to discover which rules apply to the file they are working on. A rule file that is added manually will not be discovered until the index is next regenerated."
 
@@ -236,7 +236,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | Situação | Ação |
 |---|---|
 | `record-rule` disponível **e** índice foi regenerado com a linha nova | nada a fazer além de conferir |
-| `record-rule` disponível **mas** índice não existe / não tem a linha | criar/atualizar o índice à mão, no modelo oficial acima, e avisar o usuário da inconsistência |
+| `record-rule` disponível | **não editar o índice à mão**: cada gravação regenera o `index.md`; conferir o resultado depois da última chamada |
 | `record-rule` indisponível (fallback) | criar/atualizar o índice à mão, obrigatoriamente |
 
 **Ao criar o arquivo pela primeira vez**: copiar o modelo oficial, substituindo as linhas de exemplo pelas rules reais do projeto. Não deixar as linhas de exemplo (`controllers.md`, `models.md`) se elas não existirem — índice apontando para arquivo inexistente faz o agente perder tempo tentando ler.
@@ -247,6 +247,8 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/** | .ai/rules/models.md |
 | app/Services/Billing/** | .ai/rules/models.md |
 ```
+
+> `record-rule` recebe **um** `glob` por chamada e o Boost escolhe o arquivo; para dois globs, fazer duas chamadas com o mesmo `title`/`note` e conferir no índice se caíram no mesmo arquivo (issue laravel/boost#1034: uma segunda chamada pode anexar o glob à rule existente).
 
 ### Regras de manutenção do índice
 
@@ -297,6 +299,8 @@ Enforçado parcialmente por `tests/Arch/MoneyTest.php`. Origem: ADR-02 de
 | Parte | Regra | Por quê |
 |---|---|---|
 | **Título (`##`)** | imperativo, curto, uma restrição só | O agente varre títulos; título vago não é aplicado |
+
+> O `title` vai no parâmetro próprio do `record-rule`; o `note` leva só o corpo (regra, porquê, enforcement) — sem frontmatter e sem `#`, que o Boost gera.
 | **Restrição** | 1-2 frases, afirmativa, sem hedge ("deve preferencialmente" → não) | Ambiguidade vira desvio |
 | **Consequência** | o que quebra se ignorar, concretamente | **A parte mais importante.** É a consequência que faz o agente obedecer em vez de "otimizar" |
 | **Escape hatch** | quando a regra **não** se aplica, se houver | Rule sem exceção declarada é contornada em silêncio |
@@ -342,7 +346,7 @@ Se `record-rule` não estiver disponível (`BOOST_RULES_ENABLED=false`, Boost n�
 5. Se havia rules órfãs (sem linha no índice), incluí-las agora — o índice deve refletir tudo que existe em `.ai/rules/`
 6. Registrar no commit que a rule e o índice foram gravados manualmente, para reconciliar quando o Boost voltar (`record-rule` regenera o índice e sobrescreve edições manuais)
 
-Para agentes sem suporte a `.ai/rules` (Windsurf, Cursor, Cline), espelhar o conteúdo no formato do agente (`.windsurf/rules/`, `.cursor/rules/`), mantendo `.ai/rules/` como fonte da verdade.
+Para agentes sem suporte a `.ai/rules` (Windsurf, Cline e outros que não leem `.ai/rules`), espelhar o conteúdo no formato do agente (`.windsurf/rules/`, etc.), mantendo `.ai/rules/` como fonte da verdade.
 
 ---
 
@@ -360,7 +364,7 @@ Para agentes sem suporte a `.ai/rules` (Windsurf, Cursor, Cline), espelhar o con
 | Gravar a rule e não conferir o `index.md` | Rule no disco sem linha no índice = rule que nenhum agente lê |
 | Deixar as linhas de exemplo do modelo no índice | Índice aponta para `controllers.md`/`models.md` inexistentes e o agente perde tempo |
 | Traduzir ou reescrever a frase de instrução do índice | É a instrução que o agente lê para usar a tabela; alterá-la quebra o contrato |
-| Mais de 3 rules por feature | Inflação: quanto mais rules, menos cada uma é respeitada |
+| Mais de 3 **candidatos apresentados** por feature | Inflação: quanto mais rules, menos cada uma é respeitada |
 | Rule contando história ("decidimos em reunião que...") | Isso é ADR. Rule é imperativa e atemporal |
 
 ---
@@ -383,16 +387,16 @@ Para agentes sem suporte a `.ai/rules` (Windsurf, Cursor, Cline), espelhar o con
 - [ ] Todo path citado no índice existe de fato; nenhuma linha órfã, duplicada ou de exemplo
 - [ ] Cabeçalho e frase de instrução do índice preservados na forma oficial
 - [ ] `.ai/rules/` commitado **inteiro** (rule + índice) com gitmoji `:memo: rules:`
-- [ ] Teto de 3 rules por feature respeitado
+- [ ] Teto de no máximo 3 **candidatos apresentados** por feature respeitado
 
 ## Skills Companheiras
 
 | Skill | Relação |
 |---|---|
 | `feature-wiki` | Produz as fontes (ADR, notas, PRD). O step 9 dela invoca esta skill |
-| `feature-test-design` | Fonte de candidato com evidência forte: linha nova do **checklist de taxonomia de defeito**, nascida de defeito que escapou para produção. Se generaliza além da feature, é rule — de preferência com enforcement em `pest --arch` |
+| `feature-test-design` | Fonte de candidato com evidência forte: linha nova do **checklist de taxonomia de defeito**, nascida de defeito que escapou para produção. Se generaliza além da feature, é rule — de preferência com enforcement em teste de arquitetura `arch()` do Pest |
 | `infer-conventions` (Boost) | Caminho inverso: varre o **código existente** para bootstrapar rules. Rodar uma vez, no início do projeto; esta skill é o incremento contínuo |
 | `ponytail` | A escada de enforcement é a escada de simplicidade aplicada a rules: automação antes de prosa, nada antes de automação desnecessária |
-| `pest-testing` | Materializa o enforcement em `pest --arch` quando o gate 4 aponta para automação |
+| `pest-testing` | Materializa o enforcement em teste de arquitetura `arch()` do Pest quando o gate 4 aponta para automação |
 
 > **Caveman**: arquivos de rule são **boundary** — prosa normal. A rule é lida por todo agente futuro; compressão aqui multiplica ambiguidade.

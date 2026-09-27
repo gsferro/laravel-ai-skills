@@ -13,6 +13,8 @@ material necessário para **repetir a medição** a cada evolução relevante.
 experimentos/
 ├── protocolo/                      # o que se reusa a cada rodada
 │   ├── PROTOCOLO.md                # a definição do experimento e das métricas
+│   ├── PROMPT-BRACO.md             # prompt do braço (agente que deriva os CTs)
+│   ├── PROMPT-JUIZ-CEGO.md         # prompt do juiz cego
 │   ├── cenario-1-requisito.md      # card FERRO-812 (cálculo/valor — cupons)
 │   ├── cenario-1-catalogo-defeitos.md   # 18 mutantes + 9 ambiguidades plantadas
 │   ├── cenario-2-requisito.md      # card FERRO-830 (máquina de estados — aprovação)
@@ -24,7 +26,16 @@ experimentos/
 │   ├── relatorio.html              # o relatório completo (abrir no navegador)
 │   ├── anexo-correcoes-factuais.md
 │   └── conjuntos/                  # os arquivos 04 julgados em cada rodada
-└── 2026-08-15-rodada-5/            # rodada 5 — ver o README de lá
+├── 2026-08-15-rodada-5/            # rodada 5 — ver vereditos.md e relatorio.html de lá
+├── 2026-08-15-rodada-6/            # rodada 6 — feature-test-design 1.8.0 (conjuntos/ + vereditos.md)
+├── 2026-08-15-rodada-7/            # rodada 7 — feature-test-design 1.9.0
+├── 2026-08-15-rodada-8-cascade/    # rodadas 8 a 13 — 1.9.0 em outras famílias de modelo
+├── 2026-08-15-rodada-9-glm5.2-high/
+├── 2026-08-16-rodada-10-kimi-k3-high/
+├── 2026-08-16-rodada-11-gemini/
+├── 2026-08-16-rodada-12-gpt5-high-thinking/
+├── 2026-08-16-rodada-13-deepseek-v4-pro-max/
+└── analise-comparativa-3-rodadas.md   # rodadas 7, 8 e 9 lado a lado (3 agentes/modelos)
 ```
 
 ## O protocolo, em uma tela
@@ -62,7 +73,8 @@ auditoria forense da saída real, não só teste sintético.
 |---|---|---|---|---|
 | Baseline | 2026-08-14 | C1, C2 | `feature-wiki` 2.10.0 (sem skill de derivação) | 7/18 e 11/18 |
 | 1 | 2026-08-14 | C1, C2 | `feature-test-design` 1.0.0 | 12/18 e 17/18 |
-| 3 | 2026-08-14 | C1 | 1.3.0 | 16/18 |
+| 2 | 2026-08-14 | — | — | sem linha própria: medição contaminada para menos (recorte tirado antes da revisão adversarial — ver *Como repetir*, passo 4) |
+| 3 | 2026-08-14 | C1 | 1.3.0 | 16/18 (contaminação conhecida, para menos — `relatorio.html` das rodadas 1 a 4) |
 | 4 | 2026-08-15 | C1, C2 | 1.5.0 | ver `2026-08-14-defeitos-plantados/relatorio.html` |
 | 5 | 2026-08-15 | C1, C2 | `feature-wiki` 3.0.0 · `feature-test-design` 1.7.0 | 14/18 e 17/18 — `2026-08-15-rodada-5/vereditos.md` |
 | 6 | 2026-08-15 | C1, C2 | `feature-wiki` 3.0.0 · `feature-test-design` 1.8.0 | 16/18 e 17/18 — `2026-08-15-rodada-6/vereditos.md` |
@@ -231,7 +243,7 @@ npm install -g @opencode-ai/cli      # ou pip install opencode-agent
 # No diretório do projeto-cobaia (demo-r8)
 opencode run \
   --model ollama/qwen2.5-coder:32b \
-  --prompt-file experimentos/protocolo/PROMPT-AGENTE.md \
+  --prompt-file experimentos/protocolo/PROMPT-BRACO.md \
   --max-turns 50 \
   --output-dir wikis/specs/exp-local-1/
 ```
@@ -251,7 +263,7 @@ a codificação para modelos locais (onde o custo é zero e a qualidade do insum
 
 ### Expectativa de DDR com modelos locais
 
-Com base nos resultados das 7 rodadas (skill domina, modelo influencia eficiência):
+Com base nos resultados das 13 rodadas — em especial as rodadas 7 a 13, todas com o pipeline 1.9.0 (skill domina, modelo influencia eficiência):
 
 | Modelo local | DDR esperado C1 | DDR esperado C2 | Notas |
 |---|---|---|---|

@@ -15,11 +15,21 @@ implementou** a feature.
 - 1–2 testes existentes em `tests/Browser/` para herdar o padrão do projeto (helper de login,
   traits do `Pest.php`, seletores)
 
+## Você recebe do orquestrador
+
+No prompt:
+
+- o path do `05-casos-de-teste-browser.md` e a lista de **CT-B do seu lote** (IDs `CT-Bnn`)
+- o `{Feature}` — nome da pasta em `tests/Browser/` e valor do `--filter`
+- versões: PHP, Pest, `pest-plugin-browser`, Playwright, Filament, Livewire, Laravel
+- prefixo de comando para o diretório do projeto (o cwd reseta entre chamadas)
+
 ## Tarefa
 
 1. Escrever `tests/Browser/{Feature}/{Nome}Test.php` a partir dos CT-B, com o ID `[CT-Bnn]` no
    nome de cada teste
-2. Rodar `vendor/bin/pest --testsuite=Browser` (**nunca** com `--parallel`)
+2. Rodar `vendor/bin/pest tests/Browser --filter={Feature}` (ou `--testsuite=Browser`, se o
+   `phpunit.xml` define a suíte; **nunca** com `--parallel`)
 3. Se falhar, **classificar a causa antes de mexer em qualquer coisa**:
    - **(a)** CT-B especificado errado (seletor, rota, texto) → corrigir o CT-B no arquivo `05`
    - **(b)** implementação divergente do PRD → **não corrigir**; registrar a divergência
@@ -27,6 +37,8 @@ implementou** a feature.
 4. Nas causas (a) e (c), se o Playwright MCP estiver disponível, observar a página ao vivo para
    descobrir o locator ou o estado real. Na causa (b), **não** usar o MCP para contornar
 5. No máximo **3 iterações**. Vermelho por causa (b) é **resultado válido**, não falha do ciclo
+6. Após 3 iterações sem verde no mesmo CT-B: parar e devolver o item como **blocker**, com a saída
+   literal, para a sessão registrar em `## Blockers` do `03`
 
 ## Fatos do plugin que você precisa respeitar
 
@@ -59,4 +71,8 @@ implementou** a feature.
 
 ## Divergências para "Desvios do Plano"
 - {CT-B, o que o PRD desenhou, o que a tela faz}
+
+## Saída do pest (literal)
 ```
+
+Retorno sem a saída **literal** do `pest` (não resumo) é devolvido pelo orquestrador.
