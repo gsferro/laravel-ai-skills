@@ -21,12 +21,17 @@
 #    guarda-subagente.sh da feature-wiki com PHP (a lógica do hook é PHP embutido no .sh): casos de
 #    nega/permite por perfil, JSON inválido, e o bloco hooks: de cada um dos cinco agentes fw-*:
 #    idêntico nos cinco além do perfil, com o evento PreToolUse e o matcher das oito ferramentas, e um
-#    comando que tem de achar o script e falhar fechado quando não acha. O mesmo comando roda também
-#    com pwsh -NoProfile -Command: no Windows sem Git Bash, o Claude Code roda o hook no PowerShell,
-#    onde o `exec` do comando não existe e a linha cai no `exit 2` do fim — com o JSON que o bash
-#    permite, tem de sair com 2 (falha fechado). Sem pwsh no runner, esse caso vira ::warning e é
-#    pulado. O smoke test não substitui o teste ao vivo do item 9 do roteiro (README da feature-wiki,
-#    "Teste do hook") e não prova como o Claude Code chama o PowerShell.
+#    comando que tem de achar o script e falhar fechado quando não acha.
+#
+# 3. hook-powershell (windows-latest) — o mesmo comando de cada agente rodado com
+#    `pwsh -NoProfile -Command` e `powershell -NoProfile -Command` (5.1): no Windows sem Git Bash, o
+#    Claude Code roda o hook no PowerShell, onde o `exec` do comando não existe e a linha cai no
+#    `exit 2` do fim — com o JSON que o bash permite, tem de sair com 2 (falha fechado). Roda no
+#    Windows porque é lá que o caso existe: no Linux, o pwsh 7 tem `exec` (Switch-Process), que troca o
+#    processo pelo `sh`, e o comando segue o código do script (medido no runner ubuntu: 0) — irrelevante
+#    fora do Windows, onde o Claude Code roda o hook em bash. Nenhum smoke test substitui o teste ao
+#    vivo do item 9 do roteiro (README da feature-wiki, "Teste do hook"), nem prova como o Claude Code
+#    chama o PowerShell.
 #
 # Por quê: até a release 1 (2026-09-26) as skills reprovavam no validador e ninguém via, porque nada
 # rodava a checagem (estudo estudos/2026-09-26-agentskills-spec-to-spec-to-tickets.md, §1.2 a §1.4;
@@ -229,11 +234,7 @@ jobs:
           # (3) o comando (escalar dobrado >-): com a skill em $CLAUDE_PROJECT_DIR/.ai/skills, acha o
           #     script e aplica o perfil; sem o script nos três lugares, falha fechado (exit 2,
           #     "nao encontrado");
-          # (4) o mesmo comando pelo pwsh -NoProfile -Command, com o script no lugar e o JSON que o
-          #     bash permitiu em (3) (Read do 00 → 0 nos cinco perfis; o Read de app/ o adversario-ct
-          #     nega também no bash): tem de sair com 2. É o Windows sem Git Bash, onde o Claude Code
-          #     roda o hook no PowerShell — o `exec` não existe e a linha cai no `exit 2` do fim. Um
-          #     comando sem esse desenho (o antigo `sh -c '…'` sai com 1, que não bloqueia) reprova aqui.
+          # O mesmo comando pelo PowerShell (Windows sem Git Bash) está no job hook-powershell.
           bloco() {
             awk '{ sub(/\r$/, "") }
                  /^---[ \t]*$/ { if (++fm == 2) exit; next }
@@ -254,12 +255,6 @@ jobs:
           vazio="$(mktemp -d)"
           modelo=""
           agentes=0
-          pwsh="$(command -v pwsh)"
-          if [ -n "$pwsh" ]; then
-            echo "pwsh $("$pwsh" -NoProfile -Command '$PSVersionTable.PSVersion.ToString()' 2>/dev/null)"
-          else
-            echo "::warning::pwsh não está no PATH: o caso (4), o comando do hook rodado pelo PowerShell (Windows sem Git Bash), foi pulado"
-          fi
           for a in .ai/skills/*/agents/fw-*.md; do
             agentes=$((agentes + 1))
             nome="$(basename "$a" .md)"
@@ -294,16 +289,6 @@ jobs:
               echo "::error file=$a::$nome: Read do 00 → $r1 (esperado 0), Edit em app/ → $r2 (esperado 2), sem o script → $r3 (esperado 2, 'nao encontrado')${msg:+ — $msg}"
               falhas=$((falhas + 1))
             fi
-            if [ -n "$pwsh" ]; then
-              n=$((n + 1))
-              printf '%s' "$ler00" | CLAUDE_PROJECT_DIR="$PWD" HOME="$vazio" "$pwsh" -NoProfile -Command "$cmd" >/dev/null 2>&1; r4=$?
-              if [ "$r4" -eq 2 ]; then
-                echo "ok   $nome: pelo pwsh -Command, falha fechado (Read do 00, que o bash permite → 2)"
-              else
-                echo "::error file=$a::$nome: pelo pwsh -Command, Read do 00 → $r4 (esperado 2: no Windows sem Git Bash o hook roda no PowerShell e tem de negar tudo; só o exit 2 bloqueia)"
-                falhas=$((falhas + 1))
-              fi
-            fi
           done
           rm -rf "$vazio"
           if [ "$agentes" -ne 5 ]; then
@@ -311,5 +296,65 @@ jobs:
             falhas=$((falhas + 1))
           fi
 
+          echo "$n caso(s); $falhas falha(s)"
+          [ "$falhas" -eq 0 ]
+
+  hook-powershell:
+    name: hook dos agentes pelo PowerShell (Windows sem Git Bash)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: O comando do hook de cada agente fw-* falha fechado no PowerShell
+        # O bash do runner (Git Bash) só extrai o comando e alimenta o stdin; quem roda o comando é o
+        # PowerShell, como no Claude Code sem Git Bash. O JSON (Read do 00) é um que o bash permite nos
+        # cinco perfis: no PowerShell o `exec` não existe e a linha tem de cair no `exit 2` do fim.
+        shell: bash
+        run: |
+          set +e +o pipefail
+          extrai() {
+            awk '{ sub(/\r$/, "") }
+                 /^---[ \t]*$/ { if (++fm == 2) exit; next }
+                 fm == 1 && /^[ \t]+command:[ \t]*>-[ \t]*$/ { on = 1; ind = -1; next }
+                 on { if ($0 ~ /^[ \t]*$/) exit
+                      match($0, /^[ \t]*/); if (ind < 0) ind = RLENGTH; if (RLENGTH < ind) exit
+                      l = substr($0, ind + 1); out = (out == "" ? l : out " " l) }
+                 END { print out }' "$1"
+          }
+          ler00='{"tool_name":"Read","tool_input":{"file_path":"wikis/specs/b/f/00-requisito.md"}}'
+          n=0; falhas=0; agentes=0
+          shells=()
+          command -v pwsh >/dev/null 2>&1 && shells+=("pwsh")
+          command -v powershell >/dev/null 2>&1 && shells+=("powershell")
+          if [ "${#shells[@]}" -eq 0 ]; then
+            echo "::error::nem pwsh nem powershell no runner Windows"
+            exit 1
+          fi
+          for s in "${shells[@]}"; do
+            echo "$s $("$s" -NoProfile -Command '$PSVersionTable.PSVersion.ToString()' 2>/dev/null)"
+          done
+          for a in .ai/skills/*/agents/fw-*.md; do
+            agentes=$((agentes + 1))
+            nome="$(basename "$a" .md)"
+            cmd="$(extrai "$a")"
+            if [ -z "$cmd" ]; then
+              echo "::error file=$a::$nome: comando do hook não encontrado no frontmatter"
+              falhas=$((falhas + 1)); continue
+            fi
+            for s in "${shells[@]}"; do
+              n=$((n + 1))
+              printf '%s' "$ler00" | CLAUDE_PROJECT_DIR="$PWD" "$s" -NoProfile -Command "$cmd" >/dev/null 2>&1; r=$?
+              if [ "$r" -eq 2 ]; then
+                echo "ok   $nome: pelo $s -Command, falha fechado (Read do 00, que o bash permite → 2)"
+              else
+                echo "::error file=$a::$nome: pelo $s -Command, Read do 00 → $r (esperado 2: no Windows sem Git Bash o hook roda no PowerShell e tem de negar tudo; só o exit 2 bloqueia)"
+                falhas=$((falhas + 1))
+              fi
+            done
+          done
+          if [ "$agentes" -ne 5 ]; then
+            echo "::error::esperados 5 agentes fw-* com hook, achados $agentes"
+            falhas=$((falhas + 1))
+          fi
           echo "$n caso(s); $falhas falha(s)"
           [ "$falhas" -eq 0 ]

@@ -238,9 +238,12 @@ O CI tem ainda um segundo job, para os `scripts/`: `bash -n` em cada `.sh`, nenh
 `pestw.cmd` em CRLF e um smoke test do hook dos agentes com PHP: nega/permite por perfil, e o bloco
 `hooks:` de cada agente — um evento só, `PreToolUse`, com o matcher das oito ferramentas, o bloco
 idêntico nos cinco além do perfil, e o comando, que tem de achar o script e falhar fechado sem ele. O
-comando roda com `sh -c` no bash do Linux e de novo com `pwsh -NoProfile -Command`, o caso do Windows
-sem Git Bash: com o mesmo JSON que o bash permite, tem de sair com 2 — é o teste que trava o falha
-fechado fora do bash. Sem `pwsh` no runner, esse caso vira aviso e é pulado.
+comando roda com `sh -c` no bash do Linux. Um terceiro job, em `windows-latest`, roda o mesmo comando
+de cada agente com `pwsh -NoProfile -Command` e `powershell -NoProfile -Command` (5.1) — o caso do
+Windows sem Git Bash: com um JSON que o bash permite, tem de sair com 2. É o teste que trava o falha
+fechado fora do bash, e roda no Windows porque é lá que o caso existe: no Linux o `pwsh` tem `exec`
+(`Switch-Process`), que troca o processo pelo `sh`, e o comando segue o código do script — medido no
+runner ubuntu, que saiu com 0 na primeira versão deste teste.
 
 ---
 

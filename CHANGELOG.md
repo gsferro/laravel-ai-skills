@@ -141,7 +141,7 @@ O alvo do spec (< 500 linhas) continua longe.
   `PreToolUse`: no reteste final, uma matriz de 97 casos em três configurações de ambiente
   (`CLAUDE_PROJECT_DIR` em forma Windows, em forma POSIX, e o `cwd` numa fixture), sem divergência,
   mais 20 casos que dependem do disco. O comando de cada agente foi extraído do frontmatter e rodado
-  com `sh -c` e, depois da correção do caso Windows (abaixo), com `pwsh -NoProfile -Command`. O
+  com `sh -c` e, depois da correção do caso Windows (abaixo), com `pwsh` e `powershell` no Windows. O
   procedimento ao vivo está no README, em *Teste do hook*;
 - a primeira feature entregue por tickets (item g) e o efeito de perguntar antes, na entrevista,
   sobre o defeito entregue;
@@ -169,11 +169,13 @@ também com ele, e no `PreToolUse` só o exit 2 bloqueia.
   inutilizáveis — o agente para, e a sessão cai no fallback declarado (`general-purpose` com `model`,
   sem hook) —, em vez de rodar sem cegueira. Para usá-los no Windows, é preciso o Git for Windows (Git
   Bash); o Claude Code não o exige
-- **CI**: o smoke test roda o comando de cada agente também com `pwsh -NoProfile -Command` e exige
-  exit 2 com o JSON que o bash permite. Controles, rodados a partir do YAML: com o comando antigo, o
-  caso reprova nos cinco agentes (o pwsh sai com 0, porque o `sh` do Git estava no PATH e o script
-  permitiu); sem o `; exit 2` do fim, reprova (sai com 1); sem `pwsh` no PATH, vira `::warning` e o job
-  passa
+- **CI**: o job `hook-powershell` (`windows-latest`) roda o comando de cada agente com
+  `pwsh -NoProfile -Command` e `powershell -NoProfile -Command` (5.1) e exige exit 2 com o JSON que o
+  bash permite. Roda no Windows porque no Linux o `pwsh` tem `exec` (`Switch-Process`), que troca o
+  processo pelo `sh`: a primeira versão do teste, no runner ubuntu, saiu com 0 nos cinco agentes — o
+  hook estava certo, a plataforma do teste é que não era a do caso. Controles locais (Windows): com o
+  comando antigo, sem `exec`, o caso reprova (o pwsh sai com 0 quando o `sh` do Git está no PATH e o
+  script permite); sem o `; exit 2` do fim, reprova (sai com 1)
 
 Como o Claude Code chama o PowerShell não foi conferido. O teste ao vivo do caso segue na rodada (f)
 de [Rodadas pendentes](experimentos/README.md#f-item-9--teste-ao-vivo-do-hook).
@@ -2678,10 +2680,10 @@ Mudanças que não pertencem a uma skill específica.
   perfil, JSON inválido, perfil desconhecido), mais o bloco `hooks:` de cada um dos cinco agentes:
   um evento só, `PreToolUse`, com o matcher das oito ferramentas logo abaixo, conferidos por extenso;
   o bloco inteiro idêntico nos cinco além do perfil; e o comando, que tem de achar o script e falhar
-  fechado sem ele. O smoke test roda o comando com `sh -c` no bash do Linux e com
-  `pwsh -NoProfile -Command`, o caso do Windows sem Git Bash, que tem de sair com 2 no JSON que o bash
-  permite — trava o falha fechado fora do bash; sem `pwsh` no runner, o caso vira `::warning` e é
-  pulado (conferido tirando o `pwsh` do PATH). Os dois jobs acumulam as falhas e reprovam no fim.
+  fechado sem ele. O smoke test roda o comando com `sh -c` no bash do Linux; o terceiro job,
+  `hook-powershell` em `windows-latest`, roda o mesmo comando com `pwsh` e `powershell` (5.1) — o caso
+  do Windows sem Git Bash, que tem de sair com 2 no JSON que o bash permite (no Linux o `pwsh` tem
+  `exec`/`Switch-Process` e o teste não mediria o caso). Os jobs acumulam as falhas e reprovam no fim.
   Rodado localmente a partir do próprio YAML: verde no repositório, e vermelho nos controles negativos
   (campo `user-invocable` fora da lista, `version` no topo, `.sh` em CRLF, `.cmd` em LF, erro de sintaxe,
   agente com o perfil trocado, comando de hook diferente, hook que permite tudo, matcher sem `Bash`,
