@@ -2668,8 +2668,15 @@ tag, com 32 casos de regressão:
 
 Mudanças que não pertencem a uma skill específica.
 
-## 2026-09-28 — CI
+## 2026-09-28 — CI e README
 
+- **README raiz**: o fluxo da `feature-wiki` 4.0.0 em Mermaid logo depois do ciclo completo (com a
+  numeração da 3.x em "era N"; validado com o parser do `mermaid`); seção nova **Atualizar da 3.x para a
+  4.0** (os cinco passos e onde a numeração mudou, com link para a tabela de correspondência do README
+  da `feature-wiki`); subseção **Limites e o que ainda não foi medido** (versões sem rodada, limiares que
+  são hipótese, corpo acima de 500 linhas, cegueira por construção só nas ferramentas de arquivo, teto
+  do gate nos perfis Mínimo e Padrão, espelho do GitHub Projects só contra simulador), apontando para
+  `experimentos/` e o CHANGELOG em vez de copiar números.
 - **Teste do hook pelo PowerShell em `windows-latest`** (job `hook-powershell`, `pwsh` e
   `powershell` 5.1): no runner ubuntu o `pwsh` tem `exec` (`Switch-Process`) e o teste não media o
   caso do Windows sem Git Bash — reprovou os cinco agentes com o hook certo.

@@ -20,6 +20,33 @@ Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude C
 
 O ciclo completo: **planejar** (`feature-wiki`, steps 0–6) → **especificar teste** (`feature-test-design`, step 7) → **fatiar** (`feature-tickets`, step 8 — **só quando o plano não cabe numa sessão**) → **executar** (Ponytail; os passos do `01`, ou um ticket por sessão) → **comunicar** (Caveman) → **testar** (Pest 5) → **revisar o diff** (step 9) → **reconciliar** (step 10) → **validar** (`feature-quality-gate`, step 11) → **memorizar** (`requirement-to-rule`, step 12).
 
+O fluxo da `feature-wiki` 4.0.0, com a numeração da 3.x em "era N":
+
+```mermaid
+flowchart TD
+    S03["0–3 · Captura<br/>requisito e pesquisa"] --> S4["4 · Cria 00–03<br/>entrevista em três raias"]
+    S4 --> S5["5 · Revisão profunda<br/>premissas × código"]
+    S5 --> S6["6 · Ponytail<br/>corta o 01 e o 02"]
+    S6 --> S7["7 · Deriva 04/05<br/>era parte do step 4"]
+    S7 --> D{"Cabe numa<br/>sessão?"}
+    D -- sim --> IMP["Implementação<br/>passos do 01"]
+    D -- não --> S8["8 · Fatiar em tickets<br/>feature-tickets, condicional"]
+    S8 --> IMPT["Implementação<br/>um ticket por sessão"]
+    IMP --> S9["9 · Revisão do diff<br/>era 6.5"]
+    IMPT --> S9
+    S9 --> S10["10 · Reconciliação<br/>era 7"]
+    S10 --> S11["11 · Quality gate e PR<br/>era 8"]
+    S11 --> S12["12 · Candidatos a rule<br/>era 9, delegado"]
+    classDef movido fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#0b1f44
+    classDef condicional stroke-dasharray:5 4
+    class S7 movido
+    class S8 condicional
+```
+
+A derivação dos casos de teste saiu do step 4 e virou o 7, **depois** do corte do Ponytail: o `04`
+deixa de herdar o que o Ponytail remove do plano. Vindo da 3.x? Veja
+[Atualizar da 3.x para a 4.0](#-atualizar-da-3x-para-a-40).
+
 ### Sub-agentes da esteira × modelo (referência)
 
 No Claude Code, a `feature-wiki` (desde a 3.5.0) despacha tarefas para sub-agentes com o modelo roteado por
@@ -123,6 +150,25 @@ com citação literal obrigatória → materialização em Pest contra a mesma i
 O material completo — protocolo, catálogos, oráculo fixo, prompt do juiz, conjuntos julgados e
 vereditos de cada rodada — vive em **[`experimentos/`](experimentos/README.md)**, e é o que permite repetir
 a medição a cada evolução em vez de discutir a mudança.
+
+### Limites e o que ainda não foi medido
+
+- **As versões de 2026-09-26/27 não foram medidas.** A `feature-wiki` 3.6.0 e 4.0.0, a
+  `feature-test-design` 1.15.0 e 1.16.0, o gate 1.7.0, a `requirement-to-rule` 1.4.0 e a
+  `feature-tickets` 1.0.0 saíram sem rodada do protocolo. As sete rodadas que faltam, com tags de partida
+  e critério, estão em [Rodadas pendentes](experimentos/README.md#rodadas-pendentes).
+- **Os limiares novos são hipóteses a calibrar**, tirados de uma única feature medida: 18 `RQ` ou 60
+  CT para sugerir o fatiamento, 30 perguntas na entrevista, poda de rule em 3 features seguidas,
+  `maxTurns` dos executores.
+- **O corpo de três `SKILL.md` passa de 500 linhas**, o alvo do spec Agent Skills: `feature-wiki`,
+  `feature-quality-gate` e `feature-test-design`. Descer mais exigiria parafrasear regra; o piso de cada
+  um está no [CHANGELOG](CHANGELOG.md).
+- **A cegueira dos agentes é por construção só nas ferramentas de arquivo**; no `Bash` é heurística, e
+  tudo depende do hook instalado ([o que é construção e o que é heurística](#sub-agentes-da-esteira--modelo-referência)).
+- **O `APROVADO` do quality gate só existe no perfil Completo.** Nos perfis Mínimo e Padrão o teto é
+  `APROVADO COM DÉBITO`, de propósito: não bloqueia nada, declara o que não foi verificado.
+- **O espelho dos tickets no GitHub Projects** (`espelho-gh.sh --aplicar`) só rodou contra um simulador
+  do `gh`, nunca contra o GitHub real.
 
 ---
 
@@ -520,6 +566,31 @@ Para que o Claude Code use estas regras de arquitetura em **qualquer diretório*
 > diretório que contém a skill procurada.
 
 > Instalação como plugin do Claude Code (`/plugin marketplace add`): ainda não disponível — o repositório não publica manifesto de marketplace.
+
+---
+
+## 🔄 Atualizar da 3.x para a 4.0
+
+A `feature-wiki` 4.0.0 renumerou os steps, e as outras skills passaram a citar a numeração nova. Na
+raiz de cada projeto:
+
+1. `php artisan boost:add-skill gsferro/laravel-ai-skills --all --force` — traz as cinco skills com
+   `references/` e `scripts/`. Com `boost.json`, o comando já roda o `boost:update`, que liga
+   `.claude/skills/` às skills. Se terminar com `ProcessTimedOutException`, as skills já foram
+   instaladas: ver [o que fazer](#se-o-comando-terminar-com-processtimedoutexception).
+2. `cp .ai/skills/*/agents/*.md .claude/agents/` — os cinco agentes `fw-*` agora têm hook e só carregam
+   dali. Reabra a sessão do Claude Code depois.
+3. No Windows, instale o Git for Windows (Git Bash): sem ele, o hook dos agentes nega toda ferramenta e a
+   sessão cai no fallback ([por quê](#hooks-dos-agentes-e-scripts-onde-precisam-estar)).
+4. Confira `bash` e `php` no PATH: os `scripts/` e o hook usam os dois.
+5. Opcional: `"respondToBashCommands": false` no `.claude/settings.json`, para o status dos tickets por
+   `!` custar zero token de modelo ([detalhes](.ai/skills/feature-tickets/README.md#duas-formas-de-ver-o-status)).
+
+Onde a numeração mudou: a derivação do `04`/`05` era parte do step 4 e virou o **7**; o **8** é novo
+(fatiar em tickets, condicional); **6.5 → 9**, **7 → 10**, **8 → 11**, **9 → 12**. Os steps 0 a 6
+ficaram com o mesmo número. Wikis em andamento e documentos que citam steps usam a
+[tabela de correspondência](.ai/skills/feature-wiki/README.md#numeração-dos-steps--3x--400) do README
+da `feature-wiki`; o que cada versão mudou está no [CHANGELOG](CHANGELOG.md).
 
 ---
 
