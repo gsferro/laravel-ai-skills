@@ -1,12 +1,15 @@
-<p align="center">
-  <img src="art/banner.png" alt="Laravel AI Skills Collection" width="100%">
-</p>
+<img alt="Laravel AI Skills" src="https://raw.githubusercontent.com/gsferro/laravel-ai-skills/main/art/thumbnail.png"/>
 
 # Laravel AI Skills Collection 🚀
 
 Uma coletânea de diretrizes de inteligência artificial (Skills) personalizadas para o ecossistema Laravel, focada em boas práticas de arquitetura de software e design patterns.
 
 Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude Code, Cursor e Copilot) a gerarem códigos exatamente de acordo com os padrões definidos neste repositório.
+
+**Para começar:** [instalar pelo Laravel Boost](#️-como-instalar-no-laravel-boost-20) ·
+[instalar no Claude Code](#-como-instalar-no-claude-code) ·
+[atualizar da 3.x para a 4.0](#-atualizar-da-3x-para-a-40) ·
+[commits sugeridos](#-padrão-de-commit-ao-instalaratualizar-skills)
 
 ## 📚 Skills desta coletânea
 

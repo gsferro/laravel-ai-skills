@@ -1,0 +1,144 @@
+<!doctype html>
+<!--
+  Fonte da art/thumbnail.png (1600x900). Para regerar, na raiz do repositório:
+    chrome --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 \n      --window-size=1600,900 --virtual-time-budget=8000 --screenshot=art/thumbnail.png art/thumbnail.html
+  Logo: simple-icons (laravel.svg). Fontes: Inter e Space Mono (Google Fonts).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=block">
+<style>
+  :root { --red: #FF2D20; --ink: #0b0b0c; --muted: #52525b; --line: #e7e7ea; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 900px; overflow: hidden; background: #fff; }
+  body { position: relative; font-family: 'Inter', system-ui, sans-serif; color: var(--ink); }
+  .bg { position: absolute; inset: 0; }
+  .logo { position: absolute; left: 96px; top: 180px; width: 82px; height: 82px; }
+  .logo svg { width: 100%; height: 100%; fill: var(--red); }
+  h1 { position: absolute; left: 92px; top: 282px; font-size: 92px; font-weight: 800; letter-spacing: -2.5px; line-height: 1; }
+  .sub { position: absolute; left: 96px; top: 422px; font-size: 34px; font-weight: 400; letter-spacing: -0.4px; }
+  .sub b { font-weight: 700; }
+  .desc { position: absolute; left: 96px; top: 492px; width: 740px; font-size: 25px; line-height: 1.55; color: var(--muted); }
+  .pills { position: absolute; left: 96px; top: 606px; display: flex; gap: 12px; }
+  .pill { display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 20px 0 18px; border: 1.5px solid var(--line); border-radius: 999px; background: #fff; font-size: 21px; color: #27272a; }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .cmd { position: absolute; left: 97px; top: 690px; font-family: 'Space Mono', monospace; font-weight: 700; font-size: 24px; color: var(--red); letter-spacing: -0.2px; }
+
+  .card { position: absolute; left: 900px; top: 182px; width: 820px; height: 538px; background: #fff; border-radius: 14px 0 0 14px; border-top: 3px solid var(--red); box-shadow: 0 24px 60px rgba(15, 15, 20, .13), 0 2px 8px rgba(15, 15, 20, .06); overflow: hidden; font-size: 11px; color: #18181b; }
+  .bar { height: 34px; display: flex; align-items: center; gap: 12px; padding: 0 16px; border-bottom: 1px solid #efeff1; font-weight: 600; font-size: 11.5px; }
+  .bar .back { color: #a1a1aa; font-weight: 500; }
+  .bar .crumb { color: #a1a1aa; font-weight: 500; }
+  .side { position: absolute; left: 0; top: 34px; bottom: 0; width: 168px; border-right: 1px solid #f1f1f3; padding: 12px 8px; }
+  .grp { font-size: 9.5px; color: #a1a1aa; padding: 10px 8px 6px; letter-spacing: .2px; }
+  .it { display: flex; align-items: center; gap: 7px; height: 25px; padding: 0 8px; border-radius: 6px; color: #3f3f46; font-size: 10.5px; }
+  .it.on { background: #fff3f1; color: var(--red); font-weight: 600; }
+  .ic { width: 11px; height: 13px; border: 1.2px solid currentColor; border-radius: 2px; opacity: .55; flex: none; }
+  .badge { margin-left: auto; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 5px; background: #fef3c7; color: #b45309; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+  .main { position: absolute; left: 168px; top: 34px; right: 0; bottom: 0; padding: 18px 22px; }
+  .h { font-size: 16px; font-weight: 700; letter-spacing: -.2px; margin-bottom: 14px; }
+  .row { display: flex; gap: 12px; margin-bottom: 12px; }
+  .stat { width: 212px; height: 78px; border: 1px solid #ededf0; border-left: 3px solid #f59e0b; border-radius: 8px; padding: 10px 12px; position: relative; flex: none; }
+  .stat.blue { border-left-color: #3b82f6; }
+  .stat .l { font-size: 9.5px; color: #71717a; }
+  .stat .n { font-size: 19px; font-weight: 700; margin: 4px 0 3px; }
+  .stat .c { font-size: 9px; color: #a1a1aa; }
+  .stat .i { position: absolute; right: 10px; top: 10px; width: 20px; height: 20px; border-radius: 6px; background: #fef3c7; color: #b45309; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+  .stat.blue .i { color: #1d4ed8; }
+  .tbl { width: 642px; border: 1px solid #ededf0; border-radius: 8px; overflow: hidden; }
+  .tr { display: grid; grid-template-columns: 70px 190px 70px 170px 1fr; height: 26px; align-items: center; padding: 0 14px; font-size: 9.5px; border-top: 1px solid #f4f4f5; color: #3f3f46; }
+  .tr.hd { border-top: 0; background: #fafafa; color: #71717a; font-size: 9px; font-weight: 600; }
+  .ok { color: #047857; }
+  .stat.blue .i { background: #dbeafe; }
+  .panel { border: 1px solid #ededf0; border-radius: 8px; padding: 12px 14px; flex: none; }
+  .pt { font-size: 10.5px; font-weight: 600; }
+  .ps { font-size: 8.5px; color: #a1a1aa; margin: 2px 0 10px; }
+  .tk { display: grid; grid-template-columns: 132px 1fr 58px; align-items: center; gap: 8px; height: 22px; font-size: 9.5px; color: #3f3f46; }
+  .track { height: 4px; border-radius: 4px; background: #f1f1f3; position: relative; }
+  .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: #f59e0b; }
+  .st { font-size: 8.5px; text-align: right; color: #71717a; }
+  .step { display: flex; align-items: center; gap: 8px; height: 24px; font-size: 9.8px; }
+  .ck { width: 14px; height: 14px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #fff; }
+  .step .tag { margin-left: auto; font-size: 8.5px; padding: 2px 6px; border-radius: 5px; }
+</style>
+</head>
+<body>
+  <svg class="bg" width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+    <g stroke="#ececef" stroke-width="1">
+      <line x1="38" y1="0" x2="46" y2="900"/><line x1="118" y1="0" x2="110" y2="900"/><line x1="190" y1="0" x2="201" y2="900"/>
+      <line x1="262" y1="0" x2="255" y2="900"/><line x1="331" y1="0" x2="344" y2="900"/><line x1="402" y1="0" x2="396" y2="900"/>
+      <line x1="470" y1="0" x2="481" y2="900"/><line x1="548" y1="0" x2="539" y2="900"/><line x1="612" y1="0" x2="626" y2="900"/>
+      <line x1="690" y1="0" x2="682" y2="900"/><line x1="757" y1="0" x2="769" y2="900"/><line x1="833" y1="0" x2="824" y2="900"/>
+      <line x1="905" y1="0" x2="917" y2="900"/><line x1="978" y1="0" x2="969" y2="900"/><line x1="1046" y1="0" x2="1060" y2="900"/>
+      <line x1="1121" y1="0" x2="1112" y2="900"/><line x1="1190" y1="0" x2="1203" y2="900"/><line x1="1266" y1="0" x2="1258" y2="900"/>
+      <line x1="1334" y1="0" x2="1347" y2="900"/><line x1="1409" y1="0" x2="1400" y2="900"/><line x1="1478" y1="0" x2="1490" y2="900"/>
+      <line x1="1552" y1="0" x2="1545" y2="900"/>
+    </g>
+  </svg>
+
+  <div class="logo"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23.642 5.43a.364.364 0 01.014.1v5.149c0 .135-.073.26-.189.326l-4.323 2.49v4.934a.378.378 0 01-.188.326L9.93 23.949a.316.316 0 01-.066.027c-.008.002-.016.008-.024.01a.348.348 0 01-.192 0c-.011-.002-.02-.008-.03-.012-.02-.008-.042-.014-.062-.025L.533 18.755a.376.376 0 01-.189-.326V2.974c0-.033.005-.066.014-.098.003-.012.01-.02.014-.032a.369.369 0 01.023-.058c.004-.013.015-.022.023-.033l.033-.045c.012-.01.025-.018.037-.027.014-.012.027-.024.041-.034H.53L5.043.05a.375.375 0 01.375 0L9.93 2.647h.002c.015.01.027.021.04.033l.038.027c.013.014.02.03.033.045.008.011.02.021.025.033.01.02.017.038.024.058.003.011.01.021.013.032.01.031.014.064.014.098v9.652l3.76-2.164V5.527c0-.033.004-.066.013-.098.003-.01.01-.02.013-.032a.487.487 0 01.024-.059c.007-.012.018-.02.025-.033.012-.015.021-.03.033-.043.012-.012.025-.02.037-.028.014-.01.026-.023.041-.032h.001l4.513-2.598a.375.375 0 01.375 0l4.513 2.598c.016.01.027.021.042.031.012.01.025.018.036.028.013.014.022.03.034.044.008.012.019.021.024.033.011.02.018.04.024.06.006.01.012.021.015.032zm-.74 5.032V6.179l-1.578.908-2.182 1.256v4.283zm-4.51 7.75v-4.287l-2.147 1.225-6.126 3.498v4.325zM1.093 3.624v14.588l8.273 4.761v-4.325l-4.322-2.445-.002-.003H5.04c-.014-.01-.025-.021-.04-.031-.011-.01-.024-.018-.035-.027l-.001-.002c-.013-.012-.021-.025-.031-.04-.01-.011-.021-.022-.028-.036h-.002c-.008-.014-.013-.031-.02-.047-.006-.016-.014-.027-.018-.043a.49.49 0 01-.008-.057c-.002-.014-.006-.027-.006-.041V5.789l-2.18-1.257zM5.23.81L1.47 2.974l3.76 2.164 3.758-2.164zm1.956 13.505l2.182-1.256V3.624l-1.58.91-2.182 1.255v9.435zm11.581-10.95l-3.76 2.163 3.76 2.163 3.759-2.164zm-.376 4.978L16.21 7.087 14.63 6.18v4.283l2.182 1.256 1.58.908zm-8.65 9.654l5.514-3.148 2.756-1.572-3.757-2.163-4.323 2.489-3.941 2.27z"/></svg></div>
+  <h1>Laravel AI Skills</h1>
+  <div class="sub"><b>Requirement → PR</b>, with AI agents.</div>
+  <div class="desc">Wiki before code, tests derived from the requirement, blind sub-agents and a QA gate before the PR.</div>
+  <div class="pills">
+    <div class="pill"><span class="dot" style="background:#FF2D20"></span>wiki</div>
+    <div class="pill"><span class="dot" style="background:#f59e0b"></span>test-design</div>
+    <div class="pill"><span class="dot" style="background:#3b82f6"></span>quality-gate</div>
+    <div class="pill"><span class="dot" style="background:#10b981"></span>tickets</div>
+    <div class="pill"><span class="dot" style="background:#8b5cf6"></span>rules</div>
+  </div>
+  <div class="cmd">php artisan boost:add-skill gsferro/laravel-ai-skills</div>
+
+  <div class="card">
+    <div class="bar"><span class="back">‹</span><span>aprovacao-compra</span><span class="crumb">· wikis/specs/feature/ferro-830 · feature-wiki 4.0</span></div>
+    <div class="side">
+      <div class="it on"><span class="ic"></span>00-requisito.md</div>
+      <div class="it"><span class="ic"></span>01-plano-acao.md</div>
+      <div class="it"><span class="ic"></span>02-decisoes-arquit…</div>
+      <div class="it"><span class="ic"></span>03-progresso.md</div>
+      <div class="it"><span class="ic"></span>04-casos-de-teste.md</div>
+      <div class="it"><span class="ic"></span>06-relatorio-qa.md</div>
+      <div class="it"><span class="ic"></span>07-tickets/<span class="badge">5</span></div>
+      <div class="grp">Sub-agentes</div>
+      <div class="it"><span class="ic"></span>fw-revisor-diff</div>
+      <div class="it"><span class="ic"></span>fw-adversario-ct</div>
+      <div class="it"><span class="ic"></span>fw-qa-gate</div>
+      <div class="grp">Rules</div>
+      <div class="it"><span class="ic"></span>.ai/rules/index.md</div>
+    </div>
+    <div class="main">
+      <div class="h">Esteira da feature</div>
+      <div class="row">
+        <div class="stat"><span class="i">≡</span><div class="l">Cláusulas do requisito</div><div class="n">18 RQ</div><div class="c">rastreadas até o código</div></div>
+        <div class="stat"><span class="i">✓</span><div class="l">Casos de teste</div><div class="n">79 CT</div><div class="c">derivados do requisito, com mutantes</div></div>
+        <div class="stat blue"><span class="i">◎</span><div class="l">Sub-agentes</div><div class="n">5</div><div class="c">cegos por hook</div></div>
+      </div>
+      <div class="row">
+        <div class="panel" style="width:330px;height:188px">
+          <div class="pt">Tickets · 2/5 concluídos</div>
+          <div class="ps">cada ticket: RQ do 00 + CT do 04 que ficam verdes</div>
+          <div class="tk"><span>00 · prefactor</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="st">concluído</span></div>
+          <div class="tk"><span>01 · envia pedido</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="st">concluído</span></div>
+          <div class="tk"><span>02 · gestor decide</span><span class="track"><span class="fill" style="width:50%"></span></span><span class="st">em execução</span></div>
+          <div class="tk"><span>03 · acompanha pedidos</span><span class="track"><span class="fill" style="width:85%;background:#3b82f6"></span></span><span class="st">em revisão</span></div>
+          <div class="tk"><span>04 · aviso por e-mail</span><span class="track"><span class="fill" style="width:0%"></span></span><span class="st">pronto</span></div>
+        </div>
+        <div class="panel" style="width:300px;height:188px">
+          <div class="pt">Depois dos testes</div>
+          <div class="ps">steps 9 a 12, uma vez por feature</div>
+          <div class="step"><span class="ck" style="background:#10b981">✓</span>9 · Revisão do diff<span class="tag" style="background:#ecfdf5;color:#047857">cego ao plano</span></div>
+          <div class="step"><span class="ck" style="background:#10b981">✓</span>10 · Reconciliação<span class="tag" style="background:#ecfdf5;color:#047857">scripts</span></div>
+          <div class="step"><span class="ck" style="background:#f59e0b">!</span>11 · Quality gate<span class="tag" style="background:#fffbeb;color:#b45309">com débito</span></div>
+          <div class="step"><span class="ck" style="background:#d4d4d8">·</span>12 · Rules<span class="tag" style="background:#f4f4f5;color:#52525b">delegado</span></div>
+        </div>
+      </div>
+      <div class="tbl">
+        <div class="tr hd"><span>RQ</span><span>Cláusula</span><span>Passo</span><span>CT</span><span>Ticket</span></div>
+        <div class="tr"><span>RQ-02</span><span>gestor aprova ou recusa</span><span>3, 4</span><span>CT-04, CT-05, CT-07</span><span class="ok">02 · em execução</span></div>
+        <div class="tr"><span>RQ-05</span><span>solicitante vê o histórico</span><span>6</span><span>CT-11, CT-12</span><span class="ok">03 · em revisão</span></div>
+        <div class="tr"><span>RQ-09</span><span>aviso por e-mail</span><span>8</span><span>CT-15, CT-16</span><span>04 · pronto</span></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -2670,6 +2670,14 @@ Mudanças que não pertencem a uma skill específica.
 
 ## 2026-09-28 — CI e README
 
+- **Thumbnail do projeto** ([`art/thumbnail.png`](art/thumbnail.png), 1600×900) no topo do README raiz,
+  no lugar do banner, no mesmo estilo da do `filament-starter-kit-easy`: título, as cinco skills, o
+  comando de instalação e um painel com a wiki de uma feature. A fonte é [`art/thumbnail.html`](art/thumbnail.html),
+  com o comando para regerar pelo Chrome headless no comentário do topo. O `art/banner.png` continua no
+  repositório.
+- **README raiz**: linha "Para começar" logo abaixo da introdução, com atalhos para instalar pelo Boost,
+  instalar no Claude Code, atualizar da 3.x e os commits sugeridos — que existiam, mas só a partir da
+  metade do arquivo.
 - **README raiz**: o fluxo da `feature-wiki` 4.0.0 em Mermaid logo depois do ciclo completo (com a
   numeração da 3.x em "era N"; validado com o parser do `mermaid`); seção nova **Atualizar da 3.x para a
   4.0** (os cinco passos e onde a numeração mudou, com link para a tabela de correspondência do README
