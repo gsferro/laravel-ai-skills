@@ -2673,10 +2673,15 @@ Mudanças que não pertencem a uma skill específica.
 - **Teste do hook pelo PowerShell em `windows-latest`** (job `hook-powershell`, `pwsh` e
   `powershell` 5.1): no runner ubuntu o `pwsh` tem `exec` (`Switch-Process`) e o teste não media o
   caso do Windows sem Git Bash — reprovou os cinco agentes com o hook certo.
-- **Actions para a v5**: `actions/checkout@v5` e `actions/setup-node@v5`, que rodam em Node 24 (a v4
-  usava Node 20, obsoleto nos runners do GitHub, e o CI avisava a cada execução). O
+- **Actions para a v7** (passando pela v5 no mesmo dia): `actions/checkout@v7` e
+  `actions/setup-node@v7`, que rodam em Node 24 (a v4 usava Node 20, obsoleto nos runners do GitHub, e o
+  CI avisava a cada execução). Mudanças incompatíveis das v6/v7 conferidas nas release notes, nenhuma
+  com efeito aqui: `checkout` v6 grava as credenciais em arquivo separado (o CI não faz push) e v7
+  bloqueia checkout de PR de fork em `pull_request_target`/`workflow_run` (o CI usa `pull_request`);
+  `setup-node` v6 limita o cache automático ao npm (o repositório não tem `package.json`). O
   `shivammathur/setup-php@v2` já roda em Node 24. O exemplo de CI dos CT-B no README da
-  `feature-wiki` também passa a `actions/setup-node@v5`.
+  `feature-wiki` também passa a `actions/setup-node@v7` — num projeto com `package.json`, a v6+ liga o
+  cache do npm sozinha.
 
 ## 2026-09-27 — release 2 do roteiro
 
