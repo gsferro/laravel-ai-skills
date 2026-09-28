@@ -529,7 +529,7 @@ pecl install pcov     # ou Xdebug
 **CI (GitHub Actions)** — os CT-B exigem Node e browsers no runner:
 
 ```yaml
-- uses: actions/setup-node@v4
+- uses: actions/setup-node@v5
   with:
     node-version: lts/*
 - run: npm ci

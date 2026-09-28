@@ -2668,6 +2668,16 @@ tag, com 32 casos de regressão:
 
 Mudanças que não pertencem a uma skill específica.
 
+## 2026-09-28 — CI
+
+- **Teste do hook pelo PowerShell em `windows-latest`** (job `hook-powershell`, `pwsh` e
+  `powershell` 5.1): no runner ubuntu o `pwsh` tem `exec` (`Switch-Process`) e o teste não media o
+  caso do Windows sem Git Bash — reprovou os cinco agentes com o hook certo.
+- **Actions para a v5**: `actions/checkout@v5` e `actions/setup-node@v5`, que rodam em Node 24 (a v4
+  usava Node 20, obsoleto nos runners do GitHub, e o CI avisava a cada execução). O
+  `shivammathur/setup-php@v2` já roda em Node 24. O exemplo de CI dos CT-B no README da
+  `feature-wiki` também passa a `actions/setup-node@v5`.
+
 ## 2026-09-27 — release 2 do roteiro
 
 - **CI: [`.github/workflows/skills-ref.yml`](.github/workflows/skills-ref.yml)** valida as cinco
