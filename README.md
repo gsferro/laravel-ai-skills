@@ -49,7 +49,50 @@ Leia a [avaliação completa](experimentos/2026-10-09-projeto-real/RELATORIO.md)
 [métricas centrais](experimentos/README.md#projeto-laravel-real--2026-10-09).
 As melhorias de portabilidade e as correções posteriores não são prova de superioridade geral.
 
+Publicação conjunta em **2026-10-10**: `feature-wiki-v4.1.1`, `feature-test-design-v1.17.3`,
+`feature-quality-gate-v1.8.0`, `requirement-to-rule-v1.5.0` e `feature-tickets-v1.1.0`.
+As cinco tags identificam o mesmo estado da coletânea. Consulte as
+[releases](https://github.com/gsferro/laravel-ai-skills/releases) e o [CHANGELOG](CHANGELOG.md).
+
 ### Instalar e usar no Codex
+
+**Passo a passo no projeto Laravel consumidor:**
+
+1. Abra o terminal na raiz do projeto, onde estão `artisan` e `.git`. Use um cliente Codex
+   atual com suporte a agentes TOML. O procedimento foi conferido com CLI 0.162.0;
+   isso não é uma afirmação de versão mínima universal.
+2. Com Laravel Boost instalado, execute `php artisan boost:add-skill gsferro/laravel-ai-skills --all`.
+   Confira as cinco versões com `Select-String -Path .ai/skills/*/SKILL.md -Pattern '^\s*version:'`.
+   Se as skills já existem, compare personalizações antes de usar `--force` para atualizá-las.
+   Sem Boost, copie as cinco pastas de `.ai/skills/` de uma das tags conjuntas para o mesmo
+   caminho no projeto. O `AGENTS.md` da coletânea descreve manutenção deste repositório;
+   preserve as instruções próprias do projeto consumidor.
+3. Execute o bloco PowerShell ou Bash abaixo. Ele torna as skills descobríveis em
+   `.agents/skills/` e copia os cinco perfis para `.codex/agents/`, preservando destinos existentes.
+   Ao atualizar, compare também os TOML existentes: o bloco não os substitui automaticamente.
+4. Em `.codex/config.toml` do projeto consumidor, mescle `[agents]`, `enabled = true` e
+   `max_concurrent_threads_per_session = 3`, sem duplicar uma tabela `[agents]` já existente.
+   Para esforço, use a preferência explicada abaixo; preserve modelo, permissões e configurações locais.
+5. Abra uma **nova sessão Codex nesse projeto** e confira os cinco arquivos de `.codex/agents/`.
+   Peça ao Codex: “Liste as skills e agentes deste projeto. Use `fw-revisor-diff` em contexto
+   independente para revisar o diff; informe o perfil efetivamente usado e qualquer capacidade ausente.”
+   Listar arquivos prova instalação; só a execução com o perfil selecionado verifica uso nativo.
+6. Inicie o fluxo com `$feature-wiki` e o requisito. A skill coordena testes, adversarial,
+   revisão e QA conforme as capacidades disponíveis. Para revisão cega, forneça somente
+   as entradas permitidas do papel; não reaproveite a conversa de implementação.
+
+Configuração mínima a mesclar, se ainda não houver `[agents]`:
+
+```toml
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 3
+```
+
+Agentes de projeto em `.codex/agents/` e descoberta de skills em `.agents/skills/` seguem a
+[documentação oficial de subagentes](https://learn.chatgpt.com/docs/agent-configuration/subagents)
+e de [skills](https://learn.chatgpt.com/docs/build-skills). Recursos disponíveis e políticas
+efetivas do cliente continuam determinando o que pode ser executado.
 
 A fonte continua em `.ai/skills/`, preservando Laravel Boost. A descoberta local do Codex usa
 `.agents/skills/`. Faça um vínculo para a fonte em vez de manter duas cópias independentes.

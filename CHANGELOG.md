@@ -8,11 +8,22 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 
 | Skill | Versão | Tag |
 |---|---|---|
-| `feature-wiki` | 4.1.1 | não publicada |
-| `feature-test-design` | 1.17.3 | não publicada |
-| `feature-quality-gate` | 1.8.0 | não publicada |
-| `requirement-to-rule` | 1.5.0 | não publicada |
-| `feature-tickets` | 1.1.0 | não publicada |
+| `feature-wiki` | 4.1.1 | `feature-wiki-v4.1.1` |
+| `feature-test-design` | 1.17.3 | `feature-test-design-v1.17.3` |
+| `feature-quality-gate` | 1.8.0 | `feature-quality-gate-v1.8.0` |
+| `requirement-to-rule` | 1.5.0 | `requirement-to-rule-v1.5.0` |
+| `feature-tickets` | 1.1.0 | `feature-tickets-v1.1.0` |
+
+## 2026-10-10 — publicação da revisão de portabilidade
+
+- Publicação conjunta das cinco versões da tabela, com tags namespaced no mesmo commit.
+- README oferece o roteiro de instalação no projeto consumidor: skills, descoberta Codex,
+  cinco agentes TOML, configuração, nova sessão e verificação de uso.
+- As entradas de 2026-10-09 abaixo registram a preparação ainda não publicada naquele dia.
+  As correções intermediárias de patch foram incorporadas às versões finais; não ganharam
+  tags próprias. Os artefatos históricos congelados não foram reescritos.
+- A publicação distribui contratos e correções. Não transforma o gate reprovado em aprovação,
+  nem comprova eficácia das correções posteriores ou equivalência entre hosts.
 
 ## Não publicado — 2026-10-09 — feature-wiki 4.1.1 e feature-test-design 1.17.3
 
