@@ -1,4 +1,4 @@
-# Dois jobs, em push e pull request:
+# Três jobs, em push e pull request:
 #
 # 1. validate — cada skill de .ai/skills/ contra a especificação Agent Skills
 #    (https://agentskills.io/specification), com `skills-ref validate` do pacote npm skills-ref: port
@@ -41,7 +41,8 @@
 #
 # O que NÃO confere: o corpo abaixo de 500 linhas (recomendação do spec, não regra do validador; três
 # skills estão acima, com o motivo no CHANGELOG), os links para references/ e o comportamento dos
-# scripts contra uma wiki real (as fixtures ficaram fora do repositório).
+# scripts contra uma aplicação Laravel real. Regressões com fixtures temporárias e contratos Codex
+# agora ficam em tests/ e rodam no job scripts; não substituem uma rodada DDR.
 #
 # Versão fixada (0.1.5): fixa o pacote, não as dependências transitivas (commander ^12.1.0, js-yaml
 # ^4.1.0, sem lockfile), então o resultado pode mudar sem commit. Nos dois jobs, a falha de um item não
@@ -181,6 +182,13 @@ jobs:
           done
           echo "${#scripts[@]} .sh conferido(s); $falhas falha(s)"
           [ "$falhas" -eq 0 ]
+
+      - name: Regressões com fixtures temporárias e contratos Codex
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          python3 tests/run.py
+          python3 -m unittest discover -s tests -p 'test_*.py' -v
 
       - name: Smoke test do hook guarda-subagente.sh (PHP)
         if: ${{ !cancelled() }}
