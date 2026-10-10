@@ -1,0 +1,7 @@
+# Preferência deste projeto. Exige um modelo e cliente que aceitem ultra.
+# Não altera permissões, aprovação, modelo ou configuração global do usuário.
+model_reasoning_effort = "ultra"
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 3
