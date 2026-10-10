@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\ExperimentoReal\ControleReferencia\CupomEnumTest" file="tests\ExperimentoReal\ControleReferencia\CupomEnumTest.php" tests="1" assertions="21" errors="0" failures="0" skipped="0" time="1.378429">
+    <testcase name="it aplica o teto percentual de P05 recusando 101 e persistindo exatamente 100" file="tests\ExperimentoReal\ControleReferencia\CupomEnumTest.php::it aplica o teto percentual de P05 recusando 101 e persistindo exatamente 100" class="Tests\ExperimentoReal\ControleReferencia\CupomEnumTest" classname="Tests.ExperimentoReal.ControleReferencia.CupomEnumTest" assertions="21" time="1.378429"/>
+  </testsuite>
+</testsuites>

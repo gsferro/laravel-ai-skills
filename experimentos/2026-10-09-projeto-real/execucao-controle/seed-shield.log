@@ -1,0 +1,5 @@
+
+   INFO  Seeding database.  
+
+Tabela `permissions` ausente — rode as migrations antes.
+exit=0

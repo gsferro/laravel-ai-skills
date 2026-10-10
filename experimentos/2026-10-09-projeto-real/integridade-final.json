@@ -1,0 +1,11 @@
+{
+  "verified_treatment_files": {
+    "project-71": 64,
+    "project-26": 71
+  },
+  "verified_implementation_files": 42,
+  "implementation_manifest": "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\referencia-v3\\manifest.json",
+  "implementation_restored": true,
+  "treatments_unchanged": true,
+  "limitation": "Hashes verify file integrity, not read isolation or behavioral correctness."
+}

@@ -1,5 +1,12 @@
 # Prompt do juiz cego
 
+Versão do instrumento: **2 — 2026-10-09**, correção factual do contraexemplo percentual.
+O exemplo anterior de 29% de 10.000 não discriminava o mutante em PHP 8.4.10.
+A rodada `2026-10-09-projeto-real` preserva e usa literalmente a versão anterior arquivada
+em `instrumentos-congelados/`; seus vereditos brutos não são reescritos com esta versão.
+Rodadas futuras devem registrar o hash da versão usada e aplicar o mesmo prompt aos dois
+braços. Comparações entre instrumentos diferentes precisam declarar a mudança.
+
 Reusar **literalmente** a cada rodada. Trocar o juiz de prompt entre rodadas destrói a
 comparabilidade tanto quanto trocar o oráculo.
 
@@ -34,7 +41,7 @@ geração.
 >   que revela `D`;
 > - exemplo numérico que **não discrimina** — se o número escolhido dá o mesmo resultado na
 >   implementação correta e na defeituosa, não há detecção (ex.: 10% de 10.000 não distingue
->   `float` de inteiro; 29% de 10.000 distingue).
+>   `float` de inteiro; `(int)(100*0.29)` dá 28, contra 29 no inteiro).
 >
 > ### Regras que fazem o resultado valer
 >

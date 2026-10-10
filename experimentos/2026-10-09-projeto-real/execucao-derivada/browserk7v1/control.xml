@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\BrowserTenancy\ComparacaoK7Test" file="tests\BrowserTenancy\ComparacaoK7Test.php" tests="2" assertions="5" errors="0" failures="2" skipped="0" time="45.722563">
+    <testsuite name="it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida" tests="2" assertions="5" errors="0" failures="2" skipped="0" time="45.722563">
+      <testcase name="it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set &quot;dataset &quot;porcentagem para fixo / unidade centavos&quot;&quot;" file="tests\BrowserTenancy\ComparacaoK7Test.php::it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set &quot;dataset &quot;porcentagem para fixo / unidade centavos&quot;&quot;" class="Tests\BrowserTenancy\ComparacaoK7Test" classname="Tests.BrowserTenancy.ComparacaoK7Test" assertions="3" time="24.511919">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set "dataset "porcentagem para fixo / unidade centavos""Expected JavaScript expression [function () {
+    const campo = document.querySelector('input[id$=".valor"]');
+    if (!campo) return false;
+    const visivel = elemento =&gt; elemento.getClientRects().length &gt; 0
+        &amp;&amp; getComputedStyle(elemento).display !== 'none'
+        &amp;&amp; getComputedStyle(elemento).visibility !== 'hidden';
+    const labels = Array.from(document.querySelectorAll('label'))
+        .filter(label =&gt; label.htmlFor === campo.id &amp;&amp; visivel(label));
+    const texto = labels.map(label =&gt; label.innerText).join(' ').toLowerCase();
+    const centavos = /centavo/.test(texto);
+    const percentual = /%|porcent|percentual/.test(texto);
+    return visivel(campo) &amp;&amp; ('centavos' === 'centavos'
+        ? centavos &amp;&amp; !percentual : percentual &amp;&amp; !centavos);
+}] to evaluate to true on the page initially with the url [http://127.0.0.1:65469/app/acme/cupons/create], but got false.
+Failed asserting that false is identical to true. A screenshot of the page has been saved to [Tests/Browser/Screenshots/it_CT_B01__K7__Chromium_troca_tipo_e_mostra_a_nova_unidade_sem_reload__gravação_omitida].&#13;
+at vendor\pestphp\pest-plugin-browser\src\Exceptions\BrowserExpectationFailedException.php:60
+at vendor\pestphp\pest-plugin-browser\src\Api\AwaitableWebpage.php:64
+at tests\BrowserTenancy\ComparacaoK7Test.php:51</failure>
+      </testcase>
+      <testcase name="it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set &quot;dataset &quot;fixo para porcentagem / unidade pontos percentuais&quot;&quot;" file="tests\BrowserTenancy\ComparacaoK7Test.php::it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set &quot;dataset &quot;fixo para porcentagem / unidade pontos percentuais&quot;&quot;" class="Tests\BrowserTenancy\ComparacaoK7Test" classname="Tests.BrowserTenancy.ComparacaoK7Test" assertions="2" time="21.210645">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set "dataset "fixo para porcentagem / unidade pontos percentuais""Expected JavaScript expression [function () {
+    const campo = document.querySelector('input[id$=".valor"]');
+    if (!campo) return false;
+    const visivel = elemento =&gt; elemento.getClientRects().length &gt; 0
+        &amp;&amp; getComputedStyle(elemento).display !== 'none'
+        &amp;&amp; getComputedStyle(elemento).visibility !== 'hidden';
+    const labels = Array.from(document.querySelectorAll('label'))
+        .filter(label =&gt; label.htmlFor === campo.id &amp;&amp; visivel(label));
+    const texto = labels.map(label =&gt; label.innerText).join(' ').toLowerCase();
+    const centavos = /centavo/.test(texto);
+    const percentual = /%|porcent|percentual/.test(texto);
+    return visivel(campo) &amp;&amp; ('centavos' === 'centavos'
+        ? centavos &amp;&amp; !percentual : percentual &amp;&amp; !centavos);
+}] to evaluate to true on the page initially with the url [http://127.0.0.1:65469/app/acme/cupons/create], but got false.
+Failed asserting that false is identical to true. A screenshot of the page has been saved to [Tests/Browser/Screenshots/it_CT_B01__K7__Chromium_troca_tipo_e_mostra_a_nova_unidade_sem_reload__gravação_omitida].&#13;
+at vendor\pestphp\pest-plugin-browser\src\Exceptions\BrowserExpectationFailedException.php:60
+at vendor\pestphp\pest-plugin-browser\src\Api\AwaitableWebpage.php:64
+at tests\BrowserTenancy\ComparacaoK7Test.php:49</failure>
+      </testcase>
+    </testsuite>
+  </testsuite>
+</testsuites>

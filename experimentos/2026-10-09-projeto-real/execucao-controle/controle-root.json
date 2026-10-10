@@ -1,0 +1,15 @@
+{
+  "command": [
+    "php",
+    "vendor/bin/pest",
+    "tests/Feature/LaboratorioContratoTest.php",
+    "--colors=never",
+    "--log-junit",
+    "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-controle\\controle-root.xml"
+  ],
+  "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+  "exit_code": 0,
+  "duration_seconds": 6.938000000009197,
+  "stdout_bytes": 91,
+  "stderr_bytes": 0
+}

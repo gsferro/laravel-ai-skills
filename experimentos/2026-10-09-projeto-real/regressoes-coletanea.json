@@ -1,0 +1,82 @@
+{
+  "root": "D:\\PROJECTS\\SKILLS\\laravel-ai-skills",
+  "instrument_sha256": "99b4b99b7fbda4a7b677f4250d4a046bcaaab0279aa9d7ab7b67ac8ea4938383",
+  "tests": 45,
+  "passed": [
+    "test_checkbox_evidence",
+    "test_checkbox_missing_evidence",
+    "test_codex_roles",
+    "test_dark_inline_media",
+    "test_hook_01_revisor-diff",
+    "test_hook_02_revisor-diff",
+    "test_hook_03_revisor-diff",
+    "test_hook_04_revisor-diff",
+    "test_hook_05_adversario-ct",
+    "test_hook_06_adversario-ct",
+    "test_hook_07_executor-ct",
+    "test_hook_08_executor-ct",
+    "test_hook_09_executor-ctb",
+    "test_hook_10_qa-gate",
+    "test_hook_11_qa-gate",
+    "test_hook_12_desconhecido",
+    "test_ids_attribute_is_not_test",
+    "test_ids_comment_is_not_test",
+    "test_ids_constructor_is_not_test",
+    "test_ids_empty_glob",
+    "test_ids_fixture_string_is_not_test",
+    "test_ids_match",
+    "test_ids_method_is_not_test",
+    "test_ids_unknown",
+    "test_rules_clean",
+    "test_rules_committed",
+    "test_rules_staged",
+    "test_rules_unstaged",
+    "test_rules_untracked",
+    "test_strong_oracle",
+    "test_syntax_checkbox_sem_evidencia",
+    "test_syntax_citacoes",
+    "test_syntax_conformidade_rules",
+    "test_syntax_dark_mode",
+    "test_syntax_espelho_gh",
+    "test_syntax_guarda_subagente",
+    "test_syntax_ids_ct",
+    "test_syntax_indice",
+    "test_syntax_k1_oraculo_fraco",
+    "test_syntax_prova_arch",
+    "test_syntax_rastreabilidade",
+    "test_tickets_explicit_codex",
+    "test_trace_complete",
+    "test_trace_missing_scenario",
+    "test_weak_oracle"
+  ],
+  "failed": [],
+  "skipped": [],
+  "seconds": 7.547,
+  "skills": {
+    "feature-quality-gate": {
+      "body_lines": 880,
+      "description_chars": 221,
+      "bytes": 68286
+    },
+    "feature-test-design": {
+      "body_lines": 807,
+      "description_chars": 238,
+      "bytes": 60630
+    },
+    "feature-tickets": {
+      "body_lines": 482,
+      "description_chars": 248,
+      "bytes": 35687
+    },
+    "feature-wiki": {
+      "body_lines": 1342,
+      "description_chars": 240,
+      "bytes": 116468
+    },
+    "requirement-to-rule": {
+      "body_lines": 458,
+      "description_chars": 241,
+      "bytes": 38245
+    }
+  }
+}

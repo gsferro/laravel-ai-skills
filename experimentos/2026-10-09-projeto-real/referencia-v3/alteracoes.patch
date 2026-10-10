@@ -1,0 +1,13 @@
+--- a/app/Filament/App/Resources/Cupons/CupomResource.php
++++ b/app/Filament/App/Resources/Cupons/CupomResource.php
+@@ -47,8 +47,8 @@
+                 ->dehydrateStateUsing(fn (?string $state): string => mb_strtoupper(trim($state ?? '')))
+                 ->scopedUnique(ignoreRecord: true),
+             Select::make('tipo')->label('Tipo')->options(TipoDeDesconto::class)->default(TipoDeDesconto::Porcentagem)->required()->live(),
+-            TextInput::make('valor')->label(fn (Get $get): string => $get('tipo') === TipoDeDesconto::Fixo->value ? 'Valor do desconto (centavos)' : 'Percentual de desconto')
+-                ->required()->numeric()->rules(['integer'])->minValue(1)->maxValue(fn (Get $get): ?int => $get('tipo') === TipoDeDesconto::Porcentagem->value ? 100 : null),
++            TextInput::make('valor')->label(fn (Get $get): string => $get->enum('tipo', TipoDeDesconto::class) === TipoDeDesconto::Fixo ? 'Valor do desconto (centavos)' : 'Percentual de desconto')
++                ->required()->numeric()->rules(['integer'])->minValue(1)->maxValue(fn (Get $get): ?int => $get->enum('tipo', TipoDeDesconto::class) === TipoDeDesconto::Porcentagem ? 100 : null),
+             DateTimePicker::make('expira_em')->label('Válido até')->required()->seconds(false)->minDate(now())->helperText('Depois deste instante o cupom deixa de ser aceito.'),
+             TextInput::make('limite_de_usos')->label('Limite de usos')->required()->numeric()->rules(['integer'])->minValue(1),
+         ]);

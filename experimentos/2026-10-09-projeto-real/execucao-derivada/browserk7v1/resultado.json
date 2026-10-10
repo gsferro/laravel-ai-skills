@@ -1,0 +1,45 @@
+{
+  "command": [
+    "php",
+    "vendor/bin/pest",
+    "tests/BrowserTenancy/ComparacaoK7Test.php",
+    "--colors=never",
+    "--log-junit",
+    "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-derivada\\browserk7v1\\control.xml"
+  ],
+  "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+  "exit_code": 1,
+  "timed_out": false,
+  "duration_seconds": 47.422,
+  "cases": [
+    {
+      "name": "it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set \"dataset \"porcentagem para fixo / unidade centavos\"\"",
+      "class": "Tests.BrowserTenancy.ComparacaoK7Test",
+      "assertions": 3,
+      "problems": [
+        {
+          "kind": "failure",
+          "type": "PHPUnit\\Framework\\ExpectationFailedException",
+          "message": null,
+          "text": "it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set \"dataset \"porcentagem para fixo / unidade centavos\"\"Expected JavaScript expression [function () {\n    const campo = document.querySelector('input[id$=\".valor\"]');\n    if (!campo) return false;\n    const visivel = elemento => elemento.getClientRects().length > 0\n        && getComputedStyle(elemento).display !== 'none'\n        && getComputedStyle(elemento).visibility !== 'hidden';\n    const labels = Array.from(document.querySelectorAll('label'))\n        .filter(label => label.htmlFor === campo.id && visivel(label));\n    const texto = labels.map(label => label.innerText).join(' ').toLowerCase();\n    const centavos = /centavo/.test(texto);\n    const percentual = /%|porcent|percentual/.test(texto);\n    return visivel(campo) && ('centavos' === 'centavos'\n        ? centavos && !percentual : percentual && !centavos);\n}] to evaluate to true on the page initially with the url [http://127.0.0.1:65469/app/acme/cupons/create], but got false.\nFailed asserting that false is identical to true. A screenshot of the page has been saved to [Tests/Browser/Screenshots/it_CT_B01__K7__Chromium_troca_tipo_e_mostra_a_nova_unidade_sem_reload__gravação_omitida].\r\nat vendor\\pestphp\\pest-plugin-browser\\src\\Exceptions\\BrowserExpectationFailedException.php:60\nat vendor\\pestphp\\pest-plugin-browser\\src\\Api\\AwaitableWebpage.php:64\nat tests\\BrowserTenancy\\ComparacaoK7Test.php:51"
+        }
+      ]
+    },
+    {
+      "name": "it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set \"dataset \"fixo para porcentagem / unidade pontos percentuais\"\"",
+      "class": "Tests.BrowserTenancy.ComparacaoK7Test",
+      "assertions": 2,
+      "problems": [
+        {
+          "kind": "failure",
+          "type": "PHPUnit\\Framework\\ExpectationFailedException",
+          "message": null,
+          "text": "it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set \"dataset \"fixo para porcentagem / unidade pontos percentuais\"\"Expected JavaScript expression [function () {\n    const campo = document.querySelector('input[id$=\".valor\"]');\n    if (!campo) return false;\n    const visivel = elemento => elemento.getClientRects().length > 0\n        && getComputedStyle(elemento).display !== 'none'\n        && getComputedStyle(elemento).visibility !== 'hidden';\n    const labels = Array.from(document.querySelectorAll('label'))\n        .filter(label => label.htmlFor === campo.id && visivel(label));\n    const texto = labels.map(label => label.innerText).join(' ').toLowerCase();\n    const centavos = /centavo/.test(texto);\n    const percentual = /%|porcent|percentual/.test(texto);\n    return visivel(campo) && ('centavos' === 'centavos'\n        ? centavos && !percentual : percentual && !centavos);\n}] to evaluate to true on the page initially with the url [http://127.0.0.1:65469/app/acme/cupons/create], but got false.\nFailed asserting that false is identical to true. A screenshot of the page has been saved to [Tests/Browser/Screenshots/it_CT_B01__K7__Chromium_troca_tipo_e_mostra_a_nova_unidade_sem_reload__gravação_omitida].\r\nat vendor\\pestphp\\pest-plugin-browser\\src\\Exceptions\\BrowserExpectationFailedException.php:60\nat vendor\\pestphp\\pest-plugin-browser\\src\\Api\\AwaitableWebpage.php:64\nat tests\\BrowserTenancy\\ComparacaoK7Test.php:49"
+        }
+      ]
+    }
+  ],
+  "test_sha256": {
+    "tests\\BrowserTenancy\\ComparacaoK7Test.php": "e0e7d70e5e9daada24e502d504bf1413a45facc8b8a3ef1e2effaffb1c005a60"
+  }
+}

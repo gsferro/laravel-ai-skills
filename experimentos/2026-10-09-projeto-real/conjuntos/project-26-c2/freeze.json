@@ -1,0 +1,21 @@
+{
+  "project": "project-26",
+  "scenario": 2,
+  "anonymous_id": "conjunto-v9",
+  "redactions": [
+    {
+      "pattern": "D:\\\\PROJECTS\\\\SKILLS\\\\blind\\-20261009\\\\project\\-26",
+      "replacement": "[PROJETO]",
+      "count": 1
+    },
+    {
+      "pattern": "\\b(?:4\\.0\\.0|4\\.1\\.0|1\\.16\\.0|1\\.17\\.0)\\b",
+      "replacement": "[VERSÃO ANONIMIZADA]",
+      "count": 2
+    }
+  ],
+  "sha256": {
+    "04-casos-de-teste.md": "da843df41fb1bea4d73759b6b5f1d130d4abd0bef1f372953e0eab2fe44472d3"
+  },
+  "anonymous_sha256": "fff248ff99405477056560052ec518a780b06b63613a06d82639fb9605631e57"
+}

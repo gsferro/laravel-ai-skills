@@ -1,0 +1,8 @@
+{
+  "command": "python -m unittest discover -s tests -p 'test_*.py' -v",
+  "exit_code": 0,
+  "tests": 13,
+  "failures": 0,
+  "errors": 0,
+  "scope": "Arch, expand-contract, tickets e expressão percentual publicada; não mede DDR."
+}

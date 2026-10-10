@@ -1,0 +1,20 @@
+{
+  "reference": ".ai\\skills\\feature-test-design\\references\\tecnicas-por-regra.md",
+  "reference_sha256": "8af27ceb58f3d2470d29a8d4d4a8b66705ef10ef18d588f591e4e7afecdc6bae",
+  "published_row": "| percentual em `float` em vez de inteiro | 29% de 10.000 \u2192 2.900 nos dois | **29% de 100** \u2192 `(int)(100*0.29)` = 28, inteiro d\u00e1 29 |",
+  "command": [
+    "php",
+    "-r",
+    "echo json_encode(['float'=>(int)(100*0.29),'inteiro'=>intdiv(100*29, 100)]);"
+  ],
+  "exit_code": 0,
+  "actual": {
+    "float": 28,
+    "inteiro": 29
+  },
+  "claimed": {
+    "float": 28,
+    "inteiro": 29
+  },
+  "valid": true
+}

@@ -15,3 +15,9 @@
 # O CI (.github/workflows/skills-ref.yml, job de scripts) reprova .sh com CR e .cmd sem CRLF.
 *.sh  text eol=lf
 *.cmd -text
+
+# Evidências congeladas: hashes descrevem bytes, incluindo os finais de linha históricos.
+# Preserve-os no blob e em qualquer checkout, independentemente de core.autocrlf.
+# Logs e snapshots históricos não são reformados para satisfazer lint de whitespace.
+/experimentos/2026-10-09-auditoria-portabilidade/** -text -whitespace
+/experimentos/2026-10-09-projeto-real/** -text -whitespace

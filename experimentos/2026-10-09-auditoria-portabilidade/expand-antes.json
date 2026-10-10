@@ -1,0 +1,50 @@
+{
+  "skills_root": "C:\\Users\\CASA\\AppData\\Local\\Temp\\skills-baseline-qyv90rud",
+  "test_files_sha256": {
+    "test_expand.py": "96026b8a143688bf361faf0a2cca22ef5476c22154a5416bcdbf658386555669"
+  },
+  "reference_sha256": "890ec51e88f894a8acf75edcab7e0dde9dc2adb716ab4176af29e3b88b9f777a",
+  "tests_run": 1,
+  "cases_run": 5,
+  "passed_cases": 4,
+  "failed_cases": 1,
+  "errors": 0,
+  "skipped": 0,
+  "duration_seconds": 0.33,
+  "success": false,
+  "integration": "literal Markdown callback; PHP model, validation exception and persistence stubs; no Laravel, database or Pest integration",
+  "cases": [
+    {
+      "case": "old_writer",
+      "returncode": 0,
+      "stdout": "PASS old_writer\n",
+      "stderr": ""
+    },
+    {
+      "case": "new_writer",
+      "returncode": 0,
+      "stdout": "PASS new_writer\n",
+      "stderr": ""
+    },
+    {
+      "case": "equal_both",
+      "returncode": 0,
+      "stdout": "PASS equal_both\n",
+      "stderr": ""
+    },
+    {
+      "case": "no_dirty",
+      "returncode": 0,
+      "stdout": "PASS no_dirty\n",
+      "stderr": ""
+    },
+    {
+      "case": "conflicting_both",
+      "returncode": 255,
+      "stdout": "\nFatal error: Uncaught AssertionError: ambos dirty divergentes devem rejeitar in C:\\Users\\CASA\\AppData\\Local\\Temp\\skills-expand-36la0r4w\\callback.php:36\nStack trace:\n#0 C:\\Users\\CASA\\AppData\\Local\\Temp\\skills-expand-36la0r4w\\callback.php(36): assert(false, 'ambos dirty div...')\n#1 {main}\n  thrown in C:\\Users\\CASA\\AppData\\Local\\Temp\\skills-expand-36la0r4w\\callback.php on line 36\n",
+      "stderr": "PHP Fatal error:  Uncaught AssertionError: ambos dirty divergentes devem rejeitar in C:\\Users\\CASA\\AppData\\Local\\Temp\\skills-expand-36la0r4w\\callback.php:36\nStack trace:\n#0 C:\\Users\\CASA\\AppData\\Local\\Temp\\skills-expand-36la0r4w\\callback.php(36): assert(false, 'ambos dirty div...')\n#1 {main}\n  thrown in C:\\Users\\CASA\\AppData\\Local\\Temp\\skills-expand-36la0r4w\\callback.php on line 36\n"
+    }
+  ],
+  "output": "test_published_callback_preserves_double_write_contract (test_expand.ExpandContractTests.test_published_callback_preserves_double_write_contract) ... \n  test_published_callback_preserves_double_write_contract (test_expand.ExpandContractTests.test_published_callback_preserves_double_write_contract) (case='conflicting_both') ... FAIL\n\n======================================================================\nFAIL: test_published_callback_preserves_double_write_contract (test_expand.ExpandContractTests.test_published_callback_preserves_double_write_contract) (case='conflicting_both')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\test_expand.py\", line 99, in test_published_callback_preserves_double_write_contract\n    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)\nAssertionError: 255 != 0 : \nFatal error: Uncaught AssertionError: ambos dirty divergentes devem rejeitar in C:\\Users\\CASA\\AppData\\Local\\Temp\\skills-expand-36la0r4w\\callback.php:36\nStack trace:\n#0 C:\\Users\\CASA\\AppData\\Local\\Temp\\skills-expand-36la0r4w\\callback.php(36): assert(false, 'ambos dirty div...')\n#1 {main}\n  thrown in C:\\Users\\CASA\\AppData\\Local\\Temp\\skills-expand-36la0r4w\\callback.php on line 36\nPHP Fatal error:  Uncaught AssertionError: ambos dirty divergentes devem rejeitar in C:\\Users\\CASA\\AppData\\Local\\Temp\\skills-expand-36la0r4w\\callback.php:36\nStack trace:\n#0 C:\\Users\\CASA\\AppData\\Local\\Temp\\skills-expand-36la0r4w\\callback.php(36): assert(false, 'ambos dirty div...')\n#1 {main}\n  thrown in C:\\Users\\CASA\\AppData\\Local\\Temp\\skills-expand-36la0r4w\\callback.php on line 36\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.329s\n\nFAILED (failures=1)\n",
+  "runner_returncode": 1
+}

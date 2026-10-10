@@ -1,0 +1,8 @@
+{
+  "tests\\ExperimentoReal\\K7\\CuponsTest.php": "bdc6fb5c8c1f744c9d0ac1b158440caff895f6d5c9ec2ccb4b3cb121477deeb4",
+  "tests\\ExperimentoReal\\M4\\CuponsTest.php": "23465c4d71f9328a2be0b6846aba35f610af74fbfcb8b878b40fd9bdf5ff3fba",
+  "tests\\BrowserTenancy\\ComparacaoK7Test.php": "e0e7d70e5e9daada24e502d504bf1413a45facc8b8a3ef1e2effaffb1c005a60",
+  "tests\\BrowserTenancy\\ComparacaoM4Test.php": "c4edd2b13521652e3c3ea89e554dacf8f942e9614119e2e20c496f2488177fdc",
+  "validation\\materializacao-cupons-k7.md": "d67e7425503edf4ff5dc0752094ca063976de6662174e42d0b17a23650acb979",
+  "validation\\materializacao-cupons-m4.md": "2000d743fbeece4c51cb12af4079bda3044dd82adf6ee5272d814efffe18197f"
+}

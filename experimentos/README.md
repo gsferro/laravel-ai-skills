@@ -3,6 +3,98 @@
 Esta pasta guarda **as medições** que motivaram as versões das skills desta coletânea, e o
 material necessário para **repetir a medição** a cada evolução relevante.
 
+## Auditoria de portabilidade — 2026-10-09
+
+A [rodada de auditoria](2026-10-09-auditoria-portabilidade/RELATORIO.md) preserva baseline, candidata,
+hashes e resultados dos mesmos testes mecânicos: scripts, fixtures, contrato Codex e exemplos
+executáveis. Está separada do histórico DDR abaixo: não usa juiz de CT, não mede mutation score
+real e não demonstra equivalência entre Claude e Codex. As versões desta revisão ainda não foram
+publicadas. A rodada real abaixo acrescenta prova comportamental delimitada, sem converter os
+checks mecânicos em eficácia de CT.
+
+## Projeto Laravel real — 2026-10-09
+
+[Relatório completo](2026-10-09-projeto-real/RELATORIO.md),
+[pré-registro](2026-10-09-projeto-real/PLANO.md),
+[JSON comparativo](2026-10-09-projeto-real/comparacao-documental.json) e
+[limites do instrumento](2026-10-09-projeto-real/VALIDADE-INSTRUMENTO.md).
+
+A = FW4.0.0/FTD1.16.0; B = FW4.1.0/FTD1.17.0. Snapshots completos, uma geração por versão/cenário,
+mesmo kit Laravel/Filament/Livewire/Pest e requisito fixo. Codex, família GPT-6, esforço ultra
+solicitado; deployment exato não exposto. Derivadores sem catálogo; juízes com conjunto completo
+anônimo + catálogo. Filesystem irrestrito: contexto/prompt/cópias são controles procedimentais.
+
+| Julgamento | Cenário | Braço anônimo | Detectados / 18 | DDR | NCT | Cegas | Declaradas |
+|---|---|---|---:|---:|---:|---:|---:|
+| Primário | Cupons | A / K7 | 13 | 72,22% | 53 | 0 | 5 |
+| Primário | Cupons | B / M4 | 14 | 77,78% | 47 | 0 | 4 |
+| Primário | Aprovação | A / H2 | 15 | 83,33% | 78 | 1 | 2 |
+| Primário | Aprovação | B / V9 | 12 | 66,67% | 61 | 4 | 2 |
+| Pareado secundário | Aprovação | A / H2 | 16 | 88,89% | 78 | 0 | 2 |
+| Pareado secundário | Aprovação | B / V9 | 14 | 77,78% | 61 | 2 | 2 |
+
+Os quatro [vereditos primários](2026-10-09-projeto-real/vereditos/) permanecem íntegros.
+Uma [conferência pareada posterior](2026-10-09-projeto-real/PLANO-ADJUDICACAO.md) aplicou o mesmo
+critério aos dois conjuntos de aprovação depois de identificar divergência semântica entre
+juízes. Seus [vereditos separados](2026-10-09-projeto-real/vereditos-pareados/) não substituem os
+primários: E06/E08 receberam interpretações diferentes entre juízes originais; E12 também
+mudou na conferência. Citação literal, sozinha, não elimina variação do julgamento.
+
+Cupons ganha D11 e conserva as outras 13 detecções, com 11,32% menos cenários. Aprovação perde
+E12/E15 na conferência de critério comum, com 21,79% menos cenários. Há falso ✅ em E15;
+as três marcas do juiz primário B incluem E08, que contradiz a permissão expressa do 00.
+Não se declara que cumprir o 00 seja um defeito de negócio. O denominador bruto continua 18.
+**Gate de evolução não aprovado:** B não chega a 85% nos dois cenários e perde cobertura;
+redução de NCT não compensa perda. A rodada não comprova superioridade geral da candidata.
+
+### Execução física no kit, referência final v3
+
+Controles comparativos derivados, sem somar reexecuções como novos casos:
+
+| Conjunto | Backend Pest: casos / asserções | Chromium: casos / asserções | Limite browser |
+|---|---:|---:|---|
+| A / K7 | 33 / 166 | 2 / 8 | CT-B01 parcial, sem gravação |
+| B / M4 | 29 / 103 | 1 / 4 | CT-B01 parcial, sem gravação |
+| A / H2 | 30 / 236 | não executado | nenhum CT-B materializado |
+| B / V9 | 17 / 145 | não executado | nenhum CT-B materializado |
+
+Todos esses controles passaram. Os controles próprios da referência são separados: 32 casos /
+127 asserções, mais um controle enum posterior de 1 caso / 21 asserções. Não contam como CT
+derivados pelas skills. Inventários integrais das traduções registram os casos e Examples omitidos.
+
+| Seleção e operador concreto | A | B |
+|---|---|---|
+| Inicial: percentual float | morto | morto |
+| Inicial: total fixo sem piso zero | morto | morto |
+| Inicial: contador não incrementa | morto | morto |
+| Inicial: expiração inclusiva | morto | morto |
+| Inicial: limite de usos inclusivo | morto | morto |
+| Inicial: diretor também na igualdade da alçada | morto | morto |
+| Inicial: remove recusa de justificativa vazia | morto | sobrevive à tradução selecionada |
+| Adição posterior: libera criação de fixo negativo, condição enum corrigida | sobrevive | morto |
+
+Na seleção inicial, A matou 7/7 e B matou 6/7. A adição posterior confirma um ganho diferente,
+condicionado ao CT literal de B; não torna a seleção um MSI completo. Cada braço deixa sobreviver
+um operador diferente ao juntar os oito. V9 CT-44 testa argumento ausente, que a assinatura recusa;
+seu CT-45 de formulário não foi materializado. Portanto a sobrevivência física não prova ausência
+de toda possível detecção no conjunto completo. O primeiro operador de fixo negativo foi
+**ineficaz** por comparação enum/string: seus verdes foram excluídos desse denominador.
+
+[Resultado executável com hashes e classificações](2026-10-09-projeto-real/resultado-executavel.json),
+[traduções congeladas](2026-10-09-projeto-real/testes/),
+[logs e JUnit completos](2026-10-09-projeto-real/execucao-mutantes/) e
+[integridade após restauração](2026-10-09-projeto-real/integridade-final.json).
+São alterações manuais concretas executadas com Pest, sem medição completa de `pest --mutate`.
+Bootstrap quebrado e operador ineficaz não foram contados como detecção ou sobrevivência válida.
+
+As correções da fonte FW4.1.1 e FTD1.17.1/1.17.2/1.17.3 surgiram de defeitos desta execução,
+mas são posteriores aos snapshots. Sua eficácia em uma nova geração está **não medida**.
+Não reutilizar este catálogo já conhecido como holdout, nem repetir até escolher um placar bom.
+
+As regressões mecânicas anteriores mantêm o instrumento pareado de 57 checks, com 37 antes
+e 57 depois. A expressão percentual executada acrescenta um instrumento novo: o estado atual
+tem 45 checks principais e 13 auxiliares. Não comparar 37/57 com 58/58 como o mesmo experimento.
+
 **Esta página é a fonte única de medição da coletânea.** READMEs, `SKILL.md` e `CHANGELOG.md`
 citam o resultado de uma rodada com um link para cá, não com uma cópia do número. Cópia de número
 que ainda exista fora daqui é pendência a corrigir, não segunda fonte. As tabelas das entradas

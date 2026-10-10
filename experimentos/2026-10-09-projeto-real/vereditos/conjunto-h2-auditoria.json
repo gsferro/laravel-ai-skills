@@ -1,0 +1,378 @@
+{
+  "anonymous_id": "conjunto-h2",
+  "scenario": 2,
+  "verdict_sha256": "fb25013c46908c382f726998d4622fa5115c9feb577b88ed73c28a5eb6759d9b",
+  "source_sha256": "e83a09c025c390b0310efb4c0f9752a4156a6a87eb6245be0a967274c66a8d20",
+  "rows": [
+    {
+      "id": "E01",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-29"
+      ],
+      "quotes": [
+        {
+          "quote": "Então a operação é recusada e a situação persistida permanece <origem>, as decisões anteriores ficam iguais, zero decisões de aprovação são acrescentadas e não há e-mail para Sofia, Geraldo, Paula ou Daniela",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E02",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-66"
+      ],
+      "quotes": [
+        {
+          "quote": "Então a gravação é recusada e a mesma compra conserva ID, solicitante, organização, descrição, valor, centro, situação <origem> e o conjunto anterior de decisões e justificativas",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E03",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-15"
+      ],
+      "quotes": [
+        {
+          "quote": "Então o banco contém situação <destino>, uma decisão aprovada de gestor por Geraldo e zero decisões de diretor",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E Daniela recebe <emails_diretora> e-mails de aprovação",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E04",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-35"
+      ],
+      "quotes": [
+        {
+          "quote": "Então a operação é recusada e a situação <origem> e todas as decisões e justificativas anteriores permanecem gravadas",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E05",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-19"
+      ],
+      "quotes": [
+        {
+          "quote": "Então a rejeição é recusada e a situação persistida continua <origem>, com o mesmo conjunto de decisões e justificativas anteriores",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E06",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-21",
+        "CT-22"
+      ],
+      "quotes": [
+        {
+          "quote": "Então a situação gravada é aguardando_gestor e as <decisoes> decisões do ciclo anterior conservam autores, etapas e justificativas",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a situação gravada é aprovada com valor “4999.99",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E07",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-35"
+      ],
+      "quotes": [
+        {
+          "quote": "Então a operação é recusada e a situação <origem> e todas as decisões e justificativas anteriores permanecem gravadas",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E08",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-35"
+      ],
+      "quotes": [
+        {
+          "quote": "Então a operação é recusada e a situação <origem> e todas as decisões e justificativas anteriores permanecem gravadas",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E09",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-31"
+      ],
+      "quotes": [
+        {
+          "quote": "Então a operação é recusada e a situação persistida permanece <origem>, as decisões anteriores ficam iguais, zero decisões são acrescentadas e não há e-mail para Sofia, Geraldo, Paula ou Daniela",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E10",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-41",
+        "CT-05"
+      ],
+      "quotes": [
+        {
+          "quote": "Então Geraldo recebe exatamente uma AprovacaoPendente dessa solicitação para a etapa gestor no canal mail",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E o total de avisos de aprovação é um e Sofia, Paula e Daniela recebem zero",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E o histórico de decisões continua vazio e não há e-mail de aprovação para Geraldo, Paula ou Daniela",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E11",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-42"
+      ],
+      "quotes": [
+        {
+          "quote": "Então a situação persistida é aguardando_diretor e cada diretor de Acme recebe exatamente um aviso dessa solicitação para a etapa diretor no canal mail, total <diretores_acme>",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E12",
+      "decision": "NÃO DETECTA",
+      "ct": [],
+      "quotes": [],
+      "valid_quote": false
+    },
+    {
+      "id": "E13",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-17"
+      ],
+      "quotes": [
+        {
+          "quote": "Então a situação persistida é aprovada e o histórico contém exatamente gestor aprovado por Geraldo e diretor aprovado por Daniela",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E14",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-27"
+      ],
+      "quotes": [
+        {
+          "quote": "Então a operação é recusada e o registro continua existindo com a mesma situação, descrição “Notebook",
+          "literal_in_source": true
+        },
+        {
+          "quote": "8000.01",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E15",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-38"
+      ],
+      "quotes": [
+        {
+          "quote": "Então a situação persistida é <destino>, o histórico ganhou <novas_decisoes> decisões da intenção e cada destinatário da próxima etapa recebeu exatamente <avisos> e-mails dessa intenção",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E16",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-46"
+      ],
+      "quotes": [
+        {
+          "quote": "Então o detalhe identifica a solicitação de Sofia e mostra status correspondente a <situacao>, sem trocar aguardando_diretor por aprovada",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E17",
+      "decision": "NÃO DETECTA",
+      "ct": [],
+      "quotes": [
+        {
+          "quote": "não dá máximo monetário nem tratamento de três casas decimais, zero ou valor negativo",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E18",
+      "decision": "NÃO DETECTA",
+      "ct": [],
+      "quotes": [
+        {
+          "quote": "A sonda de falha após envio/antes do commit e uma garantia outbox/after-commit ficam não medidas, sem algoritmo imposto.",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    }
+  ],
+  "detected": [
+    "E01",
+    "E02",
+    "E03",
+    "E04",
+    "E05",
+    "E06",
+    "E07",
+    "E08",
+    "E09",
+    "E10",
+    "E11",
+    "E13",
+    "E14",
+    "E15",
+    "E16"
+  ],
+  "ddr_denominator": 18,
+  "scenario_declarations": [
+    "CT-01",
+    "CT-02",
+    "CT-03",
+    "CT-04",
+    "CT-05",
+    "CT-06",
+    "CT-07",
+    "CT-08",
+    "CT-09",
+    "CT-10",
+    "CT-11",
+    "CT-68",
+    "CT-12",
+    "CT-13",
+    "CT-14",
+    "CT-65",
+    "CT-15",
+    "CT-16",
+    "CT-17",
+    "CT-18",
+    "CT-19",
+    "CT-20",
+    "CT-21",
+    "CT-22",
+    "CT-23",
+    "CT-70",
+    "CT-76",
+    "CT-24",
+    "CT-25",
+    "CT-26",
+    "CT-27",
+    "CT-28",
+    "CT-29",
+    "CT-30",
+    "CT-31",
+    "CT-66",
+    "CT-75",
+    "CT-32",
+    "CT-33",
+    "CT-34",
+    "CT-73",
+    "CT-35",
+    "CT-36",
+    "CT-37",
+    "CT-72",
+    "CT-74",
+    "CT-38",
+    "CT-39",
+    "CT-40",
+    "CT-41",
+    "CT-42",
+    "CT-43",
+    "CT-44",
+    "CT-45",
+    "CT-46",
+    "CT-47",
+    "CT-67",
+    "CT-48",
+    "CT-49",
+    "CT-50",
+    "CT-71",
+    "CT-51",
+    "CT-52",
+    "CT-53",
+    "CT-54",
+    "CT-69",
+    "CT-55",
+    "CT-56",
+    "CT-57",
+    "CT-58",
+    "CT-59",
+    "CT-60",
+    "CT-61",
+    "CT-62",
+    "CT-63",
+    "CT-64",
+    "CT-B01",
+    "CT-B02"
+  ],
+  "nct": 78,
+  "all_detected_have_literal_quotes": true,
+  "freeze_hash_check": {
+    "recorded": "e83a09c025c390b0310efb4c0f9752a4156a6a87eb6245be0a967274c66a8d20",
+    "actual_bytes": "e83a09c025c390b0310efb4c0f9752a4156a6a87eb6245be0a967274c66a8d20",
+    "normalized_lf": "e83a09c025c390b0310efb4c0f9752a4156a6a87eb6245be0a967274c66a8d20",
+    "metadata_describes_bytes": true,
+    "legacy_note": null
+  }
+}

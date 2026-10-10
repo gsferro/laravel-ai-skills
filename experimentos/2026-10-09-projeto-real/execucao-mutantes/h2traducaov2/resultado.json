@@ -1,0 +1,656 @@
+{
+  "anonymous_id": "h2traducaov2",
+  "catalog_complete": false,
+  "implementation_manifest": "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\referencia-v3\\manifest.json",
+  "control": {
+    "command": [
+      "php",
+      "vendor/bin/pest",
+      "tests/ExperimentoReal/H2/ComprasTest.php",
+      "--colors=never",
+      "--log-junit",
+      "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\h2traducaov2\\control.xml"
+    ],
+    "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+    "exit_code": 0,
+    "timed_out": false,
+    "duration_seconds": 3.328,
+    "cases": [
+      {
+        "name": "H2 CT-12/CT-41: envio começa no gestor e envia somente seu mail with data set \"dataset \"4999.99 — abaixo\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 8,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-12/CT-41: envio começa no gestor e envia somente seu mail with data set \"dataset \"5000.00 — igualdade\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 8,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-12/CT-41: envio começa no gestor e envia somente seu mail with data set \"dataset \"5000.01 — acima\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 8,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-15: o centavo determina a etapa depois do gestor with data set \"dataset \"4999.99\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 7,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-15: o centavo determina a etapa depois do gestor with data set \"dataset \"5000.00\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 7,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-15: o centavo determina a etapa depois do gestor with data set \"dataset \"5000.01\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 8,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-16: a configuração 7000.00 dispensa diretor para 6000.01",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 7,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-17: diretor encerra depois da decisão real do gestor",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 12,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-18: rejeição preserva texto e histórico e volta a rascunho with data set \"dataset \"gestor — Sem verba\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 11,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-18: rejeição preserva texto e histórico e volta a rascunho with data set \"dataset \"diretor — Sem verba\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 11,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-18: rejeição preserva texto e histórico e volta a rascunho with data set \"dataset \"gestor — Unicode\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 11,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — vazia\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — três espaços\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — U+0009 U+000A\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — null\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — ausente\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — vazia\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — três espaços\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — U+0009 U+000A\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — null\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — ausente\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-21: reenvio após qualquer rejeição reinicia no gestor e conserva decisões with data set \"dataset \"gestor — uma decisão\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-21: reenvio após qualquer rejeição reinicia no gestor e conserva decisões with data set \"dataset \"diretor — duas decisões\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-22: correção de alta para baixa muda a alçada do novo ciclo",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 8,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-35 parcial: diretor não decide antes do gestor with data set \"dataset \"diretor antes do gestor — aprovar\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 8,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-35 parcial: diretor não decide antes do gestor with data set \"dataset \"diretor antes do gestor — rejeitar\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 8,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-42: todos os diretores de Acme recebem uma vez e Globex não recebe with data set \"dataset \"um — Daniela\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 7,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-42: todos os diretores de Acme recebem uma vez e Globex não recebe with data set \"dataset \"dois — Daniela e Paula\"\"",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 9,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-70: correção de baixa para alta exige diretor e conserva a rejeição antiga",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 15,
+        "problems": []
+      },
+      {
+        "name": "H2 CT-76: terceiro envio após duas rejeições conserva ambas e avisa somente gestor",
+        "class": "Tests.ExperimentoReal.H2.ComprasTest",
+        "assertions": 11,
+        "problems": []
+      }
+    ]
+  },
+  "mutants": [
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/H2/ComprasTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\h2traducaov2\\c2-director-at-limit.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 3.359,
+      "cases": [
+        {
+          "name": "H2 CT-12/CT-41: envio começa no gestor e envia somente seu mail with data set \"dataset \"4999.99 — abaixo\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-12/CT-41: envio começa no gestor e envia somente seu mail with data set \"dataset \"5000.00 — igualdade\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-12/CT-41: envio começa no gestor e envia somente seu mail with data set \"dataset \"5000.01 — acima\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-15: o centavo determina a etapa depois do gestor with data set \"dataset \"4999.99\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-15: o centavo determina a etapa depois do gestor with data set \"dataset \"5000.00\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "H2 CT-15: o centavo determina a etapa depois do gestor with data set \"dataset \"5000.00\"\"Failed asserting that two strings are identical.\r\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:134"
+            }
+          ]
+        },
+        {
+          "name": "H2 CT-15: o centavo determina a etapa depois do gestor with data set \"dataset \"5000.01\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-16: a configuração 7000.00 dispensa diretor para 6000.01",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-17: diretor encerra depois da decisão real do gestor",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 12,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-18: rejeição preserva texto e histórico e volta a rascunho with data set \"dataset \"gestor — Sem verba\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 11,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-18: rejeição preserva texto e histórico e volta a rascunho with data set \"dataset \"diretor — Sem verba\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 11,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-18: rejeição preserva texto e histórico e volta a rascunho with data set \"dataset \"gestor — Unicode\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 11,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — vazia\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — três espaços\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — U+0009 U+000A\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — null\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — ausente\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — vazia\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — três espaços\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — U+0009 U+000A\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — null\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — ausente\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-21: reenvio após qualquer rejeição reinicia no gestor e conserva decisões with data set \"dataset \"gestor — uma decisão\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-21: reenvio após qualquer rejeição reinicia no gestor e conserva decisões with data set \"dataset \"diretor — duas decisões\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-22: correção de alta para baixa muda a alçada do novo ciclo",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-35 parcial: diretor não decide antes do gestor with data set \"dataset \"diretor antes do gestor — aprovar\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-35 parcial: diretor não decide antes do gestor with data set \"dataset \"diretor antes do gestor — rejeitar\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-42: todos os diretores de Acme recebem uma vez e Globex não recebe with data set \"dataset \"um — Daniela\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-42: todos os diretores de Acme recebem uma vez e Globex não recebe with data set \"dataset \"dois — Daniela e Paula\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-70: correção de baixa para alta exige diretor e conserva a rejeição antiga",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 15,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-76: terceiro envio após duas rejeições conserva ambas e avisa somente gestor",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 11,
+          "problems": []
+        }
+      ],
+      "name": "c2-director-at-limit",
+      "file": "app/Models/SolicitacaoCompra.php",
+      "before": "return (float) $this->valor > (float) config('kit.compras.limite_diretor', 5000.00);",
+      "after": "return (float) $this->valor >= (float) config('kit.compras.limite_diretor', 5000.00);",
+      "original_sha256": "220df322367a15469597a8c5eeaaca968481d135db685d256eaa5e77536581a4",
+      "mutated_sha256": "4bf69db085517278c856c3693a562e3848ec22343cb0502c7278ada9c787204e"
+    },
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/H2/ComprasTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\h2traducaov2\\c2-empty-rejection.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 3.391,
+      "cases": [
+        {
+          "name": "H2 CT-12/CT-41: envio começa no gestor e envia somente seu mail with data set \"dataset \"4999.99 — abaixo\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-12/CT-41: envio começa no gestor e envia somente seu mail with data set \"dataset \"5000.00 — igualdade\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-12/CT-41: envio começa no gestor e envia somente seu mail with data set \"dataset \"5000.01 — acima\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-15: o centavo determina a etapa depois do gestor with data set \"dataset \"4999.99\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-15: o centavo determina a etapa depois do gestor with data set \"dataset \"5000.00\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-15: o centavo determina a etapa depois do gestor with data set \"dataset \"5000.01\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-16: a configuração 7000.00 dispensa diretor para 6000.01",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-17: diretor encerra depois da decisão real do gestor",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 12,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-18: rejeição preserva texto e histórico e volta a rascunho with data set \"dataset \"gestor — Sem verba\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 11,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-18: rejeição preserva texto e histórico e volta a rascunho with data set \"dataset \"diretor — Sem verba\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 11,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-18: rejeição preserva texto e histórico e volta a rascunho with data set \"dataset \"gestor — Unicode\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 11,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — vazia\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — vazia\"\"A operação de negócio não foi recusada.\r\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:103\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:215"
+            }
+          ]
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — três espaços\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — três espaços\"\"A operação de negócio não foi recusada.\r\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:103\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:215"
+            }
+          ]
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — U+0009 U+000A\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — U+0009 U+000A\"\"A operação de negócio não foi recusada.\r\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:103\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:215"
+            }
+          ]
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — null\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — ausente\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — vazia\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — vazia\"\"A operação de negócio não foi recusada.\r\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:103\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:215"
+            }
+          ]
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — três espaços\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — três espaços\"\"A operação de negócio não foi recusada.\r\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:103\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:215"
+            }
+          ]
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — U+0009 U+000A\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — U+0009 U+000A\"\"A operação de negócio não foi recusada.\r\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:103\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:215"
+            }
+          ]
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — null\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — ausente\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-21: reenvio após qualquer rejeição reinicia no gestor e conserva decisões with data set \"dataset \"gestor — uma decisão\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-21: reenvio após qualquer rejeição reinicia no gestor e conserva decisões with data set \"dataset \"diretor — duas decisões\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-22: correção de alta para baixa muda a alçada do novo ciclo",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-35 parcial: diretor não decide antes do gestor with data set \"dataset \"diretor antes do gestor — aprovar\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-35 parcial: diretor não decide antes do gestor with data set \"dataset \"diretor antes do gestor — rejeitar\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-42: todos os diretores de Acme recebem uma vez e Globex não recebe with data set \"dataset \"um — Daniela\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-42: todos os diretores de Acme recebem uma vez e Globex não recebe with data set \"dataset \"dois — Daniela e Paula\"\"",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-70: correção de baixa para alta exige diretor e conserva a rejeição antiga",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 15,
+          "problems": []
+        },
+        {
+          "name": "H2 CT-76: terceiro envio após duas rejeições conserva ambas e avisa somente gestor",
+          "class": "Tests.ExperimentoReal.H2.ComprasTest",
+          "assertions": 11,
+          "problems": []
+        }
+      ],
+      "name": "c2-empty-rejection",
+      "file": "app/Models/SolicitacaoCompra.php",
+      "before": "if (blank($justificativa)) {",
+      "after": "if (false) {",
+      "original_sha256": "220df322367a15469597a8c5eeaaca968481d135db685d256eaa5e77536581a4",
+      "mutated_sha256": "d03e3381b0151398577ae895accb627f660d0aab04f02af98c00f2be6d0f477b"
+    }
+  ]
+}

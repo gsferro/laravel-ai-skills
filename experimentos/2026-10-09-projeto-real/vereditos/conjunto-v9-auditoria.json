@@ -1,0 +1,407 @@
+{
+  "anonymous_id": "conjunto-v9",
+  "scenario": 2,
+  "verdict_sha256": "358ac289f892d98306038f06588f87d8932d8759902e89305b260d6193ba16dd",
+  "source_sha256": "fff248ff99405477056560052ec518a780b06b63613a06d82639fb9605631e57",
+  "rows": [
+    {
+      "id": "E01",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-17"
+      ],
+      "quotes": [
+        {
+          "quote": "Esquema do Cenário: [CT-17] Gestor não aprova fora da sua etapa",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a operação é recusada; situação/campos persistidos e histórico permanecem iguais; G/D não recebem e-mail",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E02",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-02"
+      ],
+      "quotes": [
+        {
+          "quote": "Esquema do Cenário: [CT-02] Editar fora do rascunho preserva os três campos",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a edição é recusada e a consulta nova conserva \"Notebook\", \"3000.00\", C1, situação e histórico; G/D não recebem e-mail",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E03",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-41"
+      ],
+      "quotes": [
+        {
+          "quote": "Esquema do Cenário: [CT-41] A fronteira literal decide o destino após o gestor",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a consulta nova mostra <destino>, conserva <valor> e registra exatamente uma aprovação de gestor por G; a etapa pendente de diretor é <pendência>",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E04",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-26"
+      ],
+      "quotes": [
+        {
+          "quote": "Esquema do Cenário: [CT-26] Diretor não aprova antes do gestor nem depois do encerramento",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a operação é recusada; situação/campos persistidos e histórico permanecem iguais; G/D não recebem e-mail",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E05",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-44"
+      ],
+      "quotes": [
+        {
+          "quote": "Esquema do Cenário: [CT-44] Ausência de justificativa é recusada fora do formulário",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a rejeição é recusada; situação/campos persistidos e histórico continuam iguais, sem nova decisão de rejeição e sem e-mail para S/G/D",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E06",
+      "decision": "NÃO DETECTA",
+      "ct": [
+        "CT-24",
+        "CT-55"
+      ],
+      "quotes": [],
+      "valid_quote": false
+    },
+    {
+      "id": "E07",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-18"
+      ],
+      "quotes": [
+        {
+          "quote": "Esquema do Cenário: [CT-18] Aprovar exige a identidade do gestor do centro",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a operação é recusada; permanece aguardando_gestor com campos/histórico iguais; G/D não recebem e-mail",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E08",
+      "decision": "NÃO DETECTA",
+      "ct": [
+        "CT-19",
+        "CT-18"
+      ],
+      "quotes": [],
+      "valid_quote": false
+    },
+    {
+      "id": "E09",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-29"
+      ],
+      "quotes": [
+        {
+          "quote": "Esquema do Cenário: [CT-29] Cancelar fora do trânsito conserva a situação",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a operação é recusada; situação/campos persistidos e histórico permanecem iguais; S/G/D não recebem e-mail",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E10",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-49",
+        "CT-20"
+      ],
+      "quotes": [
+        {
+          "quote": "Esquema do Cenário: [CT-49] Enviar notifica somente o gestor pelo canal e-mail",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então consulta nova mostra aguardando_gestor e G recebe exatamente uma notificação dessa solicitação pelo canal mail; S/H/D não recebem aviso dessa etapa",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Esquema do Cenário: [CT-20] Rejeitar a etapa corrente devolve para correção",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a consulta mostra rascunho, conserva Notebook/6000.00/C1 e registra rejeição de <ator> com \"Sem verba\"; S/G/D não recebem e-mail",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E11",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-50"
+      ],
+      "quotes": [
+        {
+          "quote": "Esquema do Cenário: [CT-50] O aval do gestor notifica todos os diretores da organização",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então consulta nova mostra aguardando_diretor e cada usuário de <diretores_A> recebe exatamente uma notificação dessa solicitação pelo canal mail; S/G/X não recebem aviso dessa etapa",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E12",
+      "decision": "NÃO DETECTA",
+      "ct": [
+        "CT-02",
+        "CT-41",
+        "CT-24"
+      ],
+      "quotes": [],
+      "valid_quote": false
+    },
+    {
+      "id": "E13",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-42"
+      ],
+      "quotes": [
+        {
+          "quote": "Cenário: [CT-42] O diretor encerra a segunda etapa depois do gestor",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a consulta nova mostra aprovada, conserva 6000.00 e contém uma aprovação de gestor por G seguida de uma aprovação de diretor por D, sem etapa pendente e sem e-mail para S/G/D",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E14",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-07"
+      ],
+      "quotes": [
+        {
+          "quote": "Esquema do Cenário: [CT-07] Excluir fora do rascunho não apaga a solicitação",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a operação é recusada; a consulta nova encontra a mesma situação, descrição, valor, centro e histórico; G/D não recebem e-mail",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E15",
+      "decision": "NÃO DETECTA",
+      "ct": [
+        "CT-17",
+        "CT-56"
+      ],
+      "quotes": [
+        {
+          "quote": "Idempotência de toda escrita",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E16",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-46",
+        "CT-47"
+      ],
+      "quotes": [
+        {
+          "quote": "Esquema do Cenário: [CT-46] A listagem apresenta a situação da solicitação",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a linha dessa solicitação apresenta o status atual <situação>, sem substituí-lo pelo de outra etapa",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Esquema do Cenário: [CT-47] O detalhe apresenta a situação da solicitação",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então o detalhe dessa solicitação apresenta o status atual <situação>, sem substituí-lo pelo de outra etapa",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E17",
+      "decision": "NÃO DETECTA",
+      "ct": [],
+      "quotes": [
+        {
+          "quote": "EP dinheiro",
+          "literal_in_source": true
+        },
+        {
+          "quote": "positividade/teto/escala/arredondamento Q?1",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "E18",
+      "decision": "NÃO DETECTA",
+      "ct": [],
+      "quotes": [
+        {
+          "quote": "Atomicidade com mundo sem destinatário/falha antes do efeito",
+          "literal_in_source": true
+        },
+        {
+          "quote": "não discrimina; lacuna até direção e arnês permitido",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    }
+  ],
+  "detected": [
+    "E01",
+    "E02",
+    "E03",
+    "E04",
+    "E05",
+    "E07",
+    "E09",
+    "E10",
+    "E11",
+    "E13",
+    "E14",
+    "E16"
+  ],
+  "ddr_denominator": 18,
+  "scenario_declarations": [
+    "CT-01",
+    "CT-02",
+    "CT-03",
+    "CT-04",
+    "CT-05",
+    "CT-06",
+    "CT-07",
+    "CT-08",
+    "CT-09",
+    "CT-10",
+    "CT-11",
+    "CT-12",
+    "CT-13",
+    "CT-14",
+    "CT-15",
+    "CT-16",
+    "CT-17",
+    "CT-18",
+    "CT-19",
+    "CT-20",
+    "CT-21",
+    "CT-22",
+    "CT-23",
+    "CT-24",
+    "CT-25",
+    "CT-26",
+    "CT-27",
+    "CT-28",
+    "CT-29",
+    "CT-30",
+    "CT-31",
+    "CT-32",
+    "CT-33",
+    "CT-34",
+    "CT-35",
+    "CT-36",
+    "CT-37",
+    "CT-38",
+    "CT-39",
+    "CT-40",
+    "CT-41",
+    "CT-42",
+    "CT-43",
+    "CT-44",
+    "CT-45",
+    "CT-46",
+    "CT-47",
+    "CT-48",
+    "CT-49",
+    "CT-50",
+    "CT-51",
+    "CT-52",
+    "CT-53",
+    "CT-54",
+    "CT-55",
+    "CT-56",
+    "CT-57",
+    "CT-58",
+    "CT-59",
+    "CT-60",
+    "CT-61"
+  ],
+  "nct": 61,
+  "all_detected_have_literal_quotes": true,
+  "freeze_hash_check": {
+    "recorded": "fff248ff99405477056560052ec518a780b06b63613a06d82639fb9605631e57",
+    "actual_bytes": "fff248ff99405477056560052ec518a780b06b63613a06d82639fb9605631e57",
+    "normalized_lf": "fff248ff99405477056560052ec518a780b06b63613a06d82639fb9605631e57",
+    "metadata_describes_bytes": true,
+    "legacy_note": null
+  }
+}

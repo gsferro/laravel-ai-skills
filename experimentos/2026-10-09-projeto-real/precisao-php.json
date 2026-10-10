@@ -1,0 +1,10 @@
+{
+  "command": [
+    "php",
+    "-r",
+    "foreach ([100,200,300,500,10000] as $total) { echo json_encode([\"total\"=>$total,\"percentual\"=>29,\"inteiro\"=>intdiv($total*29,100),\"float\"=>(int)($total*(29/100))]),PHP_EOL; }"
+  ],
+  "exit_code": 0,
+  "stdout": "{\"total\":100,\"percentual\":29,\"inteiro\":29,\"float\":28}\n{\"total\":200,\"percentual\":29,\"inteiro\":58,\"float\":57}\n{\"total\":300,\"percentual\":29,\"inteiro\":87,\"float\":87}\n{\"total\":500,\"percentual\":29,\"inteiro\":145,\"float\":145}\n{\"total\":10000,\"percentual\":29,\"inteiro\":2900,\"float\":2900}\n",
+  "stderr": ""
+}

@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "changed_files": [
+    "app/Models/Cupom.php",
+    "contrato-publico.md",
+    "tests/Feature/LaboratorioContratoTest.php"
+  ],
+  "reason": "00 requires User; v1 incorrectly followed the nullable signature from 01.",
+  "domain_expectations_changed": false,
+  "tests_not_yet_run_at_capture": true
+}

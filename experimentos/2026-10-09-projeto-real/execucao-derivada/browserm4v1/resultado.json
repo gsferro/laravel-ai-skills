@@ -1,0 +1,32 @@
+{
+  "command": [
+    "php",
+    "vendor/bin/pest",
+    "tests/BrowserTenancy/ComparacaoM4Test.php",
+    "--colors=never",
+    "--log-junit",
+    "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-derivada\\browserm4v1\\control.xml"
+  ],
+  "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+  "exit_code": 1,
+  "timed_out": false,
+  "duration_seconds": 23.234,
+  "cases": [
+    {
+      "name": "it CT-B01 [M4] Chromium seleciona fixo e mostra centavos com campo operável; gravação omitida",
+      "class": "Tests.BrowserTenancy.ComparacaoM4Test",
+      "assertions": 3,
+      "problems": [
+        {
+          "kind": "failure",
+          "type": "PHPUnit\\Framework\\ExpectationFailedException",
+          "message": null,
+          "text": "it CT-B01 [M4] Chromium seleciona fixo e mostra centavos com campo operável; gravação omitidaExpected JavaScript expression [function () {\n    const valor = document.querySelector('input[id$=\".valor\"]');\n    if (!valor) return false;\n    const labels = Array.from(document.querySelectorAll('label')).filter(label => label.htmlFor === valor.id);\n    const visiveis = labels.filter(label => label.getClientRects().length > 0\n        && getComputedStyle(label).display !== 'none'\n        && getComputedStyle(label).visibility !== 'hidden');\n    const texto = visiveis.map(label => label.innerText).join(' ').toLowerCase();\n    return /centavo/.test(texto) && !/%|porcent|percentual/.test(texto)\n        && valor.getClientRects().length > 0\n        && getComputedStyle(valor).display !== 'none'\n        && getComputedStyle(valor).visibility !== 'hidden'\n        && !valor.disabled && !valor.readOnly;\n}] to evaluate to true on the page initially with the url [http://127.0.0.1:61423/app/acme/cupons/create], but got false.\nFailed asserting that false is identical to true. A screenshot of the page has been saved to [Tests/Browser/Screenshots/it_CT_B01__M4__Chromium_seleciona_fixo_e_mostra_centavos_com_campo_operável__gravação_omitida].\r\nat vendor\\pestphp\\pest-plugin-browser\\src\\Exceptions\\BrowserExpectationFailedException.php:60\nat vendor\\pestphp\\pest-plugin-browser\\src\\Api\\AwaitableWebpage.php:64\nat tests\\BrowserTenancy\\ComparacaoM4Test.php:39"
+        }
+      ]
+    }
+  ],
+  "test_sha256": {
+    "tests\\BrowserTenancy\\ComparacaoM4Test.php": "c4edd2b13521652e3c3ea89e554dacf8f942e9614119e2e20c496f2488177fdc"
+  }
+}

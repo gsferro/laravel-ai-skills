@@ -1,0 +1,16 @@
+
+   INFO  Seeding database.  
+
+
+In Connection.php line 857:
+                                                                                                                       
+  SQLSTATE[HY000]: General error: 1 no such table: roles (Connection: sqlite, Database: :memory:, SQL: select * from   
+  "roles" where ("name" = master_global and "guard_name" = web) limit 1)                                               
+                                                                                                                       
+
+In Connection.php line 435:
+                                                          
+  SQLSTATE[HY000]: General error: 1 no such table: roles  
+                                                          
+
+exit=1

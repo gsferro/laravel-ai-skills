@@ -1,0 +1,7 @@
+{
+  "file": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime\\tests\\Pest.php",
+  "original_sha256": "658ac55d25fded30d415f119615738296fe1bd28a9969c7ba62a0da8499bbd46",
+  "comparison_sha256": "b071340d40b0e24642b578744617c5ae3f96ee303d262528de7818067197a76f",
+  "addition": "\n// Registro exclusivo da comparação cega; a implementação congelada permanece intacta.\npest()->extend(TenancyTestCase::class)\n    ->use(RefreshDatabase::class)\n    ->in('ExperimentoReal');\n",
+  "scope": "Registro Pest separado; nenhum app/config/migration do controle foi alterado."
+}

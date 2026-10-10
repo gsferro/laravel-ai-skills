@@ -1,0 +1,18 @@
+test_directory_suffix_must_match_the_test_filename (test_arch.ArchCoverageTests.test_directory_suffix_must_match_the_test_filename) ... ok
+test_directory_that_covers_the_actual_test (test_arch.ArchCoverageTests.test_directory_that_covers_the_actual_test) ... ok
+test_excluded_test_or_directory_is_not_covered (test_arch.ArchCoverageTests.test_excluded_test_or_directory_is_not_covered) ... ok
+test_exclusion_in_one_suite_does_not_exclude_other_suites (test_arch.ArchCoverageTests.test_exclusion_in_one_suite_does_not_exclude_other_suites) ... ok
+test_explicit_file_is_covered (test_arch.ArchCoverageTests.test_explicit_file_is_covered) ... ok
+test_published_callback_preserves_double_write_contract (test_expand.ExpandContractTests.test_published_callback_preserves_double_write_contract) ... ok
+test_published_float_counterexample_is_true_and_discriminating (test_precision.PublishedPrecisionTests.test_published_float_counterexample_is_true_and_discriminating) ... ok
+test_ct_without_requirement_origin_is_rejected (test_tickets.TicketsTests.test_ct_without_requirement_origin_is_rejected) ... ok
+test_ct_without_rule_is_rejected (test_tickets.TicketsTests.test_ct_without_rule_is_rejected) ... ok
+test_mirror_records_issue_once_for_every_accepted_status_format (test_tickets.TicketsTests.test_mirror_records_issue_once_for_every_accepted_status_format) ... ok
+test_progress_status_prefix_is_rejected (test_tickets.TicketsTests.test_progress_status_prefix_is_rejected) ... ok
+test_status_prefix_is_not_an_enum_value (test_tickets.TicketsTests.test_status_prefix_is_not_an_enum_value) ... ok
+test_valid_ticket (test_tickets.TicketsTests.test_valid_ticket) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 15.129s
+
+OK

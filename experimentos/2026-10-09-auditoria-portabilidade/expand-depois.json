@@ -1,0 +1,50 @@
+{
+  "skills_root": "D:\\PROJECTS\\SKILLS\\laravel-ai-skills",
+  "test_files_sha256": {
+    "test_expand.py": "96026b8a143688bf361faf0a2cca22ef5476c22154a5416bcdbf658386555669"
+  },
+  "reference_sha256": "9fa7c009998ac570a2eef570b819788e6528de710f13548d8e955e583a94b744",
+  "tests_run": 1,
+  "cases_run": 5,
+  "passed_cases": 5,
+  "failed_cases": 0,
+  "errors": 0,
+  "skipped": 0,
+  "duration_seconds": 0.313,
+  "success": true,
+  "integration": "literal Markdown callback; PHP model, validation exception and persistence stubs; no Laravel, database or Pest integration",
+  "cases": [
+    {
+      "case": "old_writer",
+      "returncode": 0,
+      "stdout": "PASS old_writer\n",
+      "stderr": ""
+    },
+    {
+      "case": "new_writer",
+      "returncode": 0,
+      "stdout": "PASS new_writer\n",
+      "stderr": ""
+    },
+    {
+      "case": "equal_both",
+      "returncode": 0,
+      "stdout": "PASS equal_both\n",
+      "stderr": ""
+    },
+    {
+      "case": "no_dirty",
+      "returncode": 0,
+      "stdout": "PASS no_dirty\n",
+      "stderr": ""
+    },
+    {
+      "case": "conflicting_both",
+      "returncode": 0,
+      "stdout": "PASS conflicting_both\n",
+      "stderr": ""
+    }
+  ],
+  "output": "test_published_callback_preserves_double_write_contract (test_expand.ExpandContractTests.test_published_callback_preserves_double_write_contract) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.313s\n\nOK\n",
+  "runner_returncode": 0
+}

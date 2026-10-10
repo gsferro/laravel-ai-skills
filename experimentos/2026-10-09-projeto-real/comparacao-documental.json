@@ -1,0 +1,271 @@
+{
+  "treatments": {
+    "baseline": "FW4.0.0/FTD1.16.0",
+    "candidate": "FW4.1.0/FTD1.17.0"
+  },
+  "primary": {
+    "scenario_1": {
+      "baseline": {
+        "anonymous_id": "conjunto-k7",
+        "scenario": 1,
+        "verdict_filename": "veredito.md",
+        "verdict_sha256": "4dcc43c3c9db8a727d4f181cd1abc090795792cdf221ed7f53470df041b38e48",
+        "source_sha256": "8fff814403e0b1df8a6d49da01d64a287672bee6b66849ca960a7c6e40970570",
+        "detected": [
+          "D01",
+          "D02",
+          "D03",
+          "D04",
+          "D06",
+          "D07",
+          "D08",
+          "D09",
+          "D10",
+          "D13",
+          "D14",
+          "D15",
+          "D16"
+        ],
+        "nct": 53,
+        "ddr_denominator": 18,
+        "ddr": 0.7222222222222222,
+        "blind_gaps": [],
+        "declared_gaps": [
+          "D05",
+          "D11",
+          "D12",
+          "D17",
+          "D18"
+        ],
+        "density": 0.24528301886792453
+      },
+      "candidate": {
+        "anonymous_id": "conjunto-m4",
+        "scenario": 1,
+        "verdict_filename": "veredito.md",
+        "verdict_sha256": "6022c540d3f3424df3b9d1b936be67cdfc7c0b79ea1de76c31000bf53966d6fe",
+        "source_sha256": "7ac968e5811e295889a414a6209cc84e17c7bc8a17b2158875ed909e0c467bd7",
+        "detected": [
+          "D01",
+          "D02",
+          "D03",
+          "D04",
+          "D06",
+          "D07",
+          "D08",
+          "D09",
+          "D10",
+          "D11",
+          "D13",
+          "D14",
+          "D15",
+          "D16"
+        ],
+        "nct": 47,
+        "ddr_denominator": 18,
+        "ddr": 0.7777777777777778,
+        "blind_gaps": [],
+        "declared_gaps": [
+          "D05",
+          "D12",
+          "D17",
+          "D18"
+        ],
+        "density": 0.2978723404255319
+      },
+      "comparison": {
+        "gained": [
+          "D11"
+        ],
+        "lost": [],
+        "new_blind_gaps": [],
+        "non_regression": true,
+        "nct_ratio": 0.8867924528301887,
+        "candidate_ddr_at_least_85_percent": false,
+        "candidate_nct_less_than_double": true
+      }
+    },
+    "scenario_2": {
+      "baseline": {
+        "anonymous_id": "conjunto-h2",
+        "scenario": 2,
+        "verdict_filename": "veredito.md",
+        "verdict_sha256": "fb25013c46908c382f726998d4622fa5115c9feb577b88ed73c28a5eb6759d9b",
+        "source_sha256": "e83a09c025c390b0310efb4c0f9752a4156a6a87eb6245be0a967274c66a8d20",
+        "detected": [
+          "E01",
+          "E02",
+          "E03",
+          "E04",
+          "E05",
+          "E06",
+          "E07",
+          "E08",
+          "E09",
+          "E10",
+          "E11",
+          "E13",
+          "E14",
+          "E15",
+          "E16"
+        ],
+        "nct": 78,
+        "ddr_denominator": 18,
+        "ddr": 0.8333333333333334,
+        "blind_gaps": [
+          "E12"
+        ],
+        "declared_gaps": [
+          "E17",
+          "E18"
+        ],
+        "density": 0.19230769230769232
+      },
+      "candidate": {
+        "anonymous_id": "conjunto-v9",
+        "scenario": 2,
+        "verdict_filename": "veredito.md",
+        "verdict_sha256": "358ac289f892d98306038f06588f87d8932d8759902e89305b260d6193ba16dd",
+        "source_sha256": "fff248ff99405477056560052ec518a780b06b63613a06d82639fb9605631e57",
+        "detected": [
+          "E01",
+          "E02",
+          "E03",
+          "E04",
+          "E05",
+          "E07",
+          "E09",
+          "E10",
+          "E11",
+          "E13",
+          "E14",
+          "E16"
+        ],
+        "nct": 61,
+        "ddr_denominator": 18,
+        "ddr": 0.6666666666666666,
+        "blind_gaps": [
+          "E06",
+          "E08",
+          "E12",
+          "E15"
+        ],
+        "declared_gaps": [
+          "E17",
+          "E18"
+        ],
+        "density": 0.19672131147540983
+      },
+      "comparison": {
+        "gained": [],
+        "lost": [
+          "E06",
+          "E08",
+          "E15"
+        ],
+        "new_blind_gaps": [
+          "E06",
+          "E08",
+          "E15"
+        ],
+        "non_regression": false,
+        "nct_ratio": 0.782051282051282,
+        "candidate_ddr_at_least_85_percent": false,
+        "candidate_nct_less_than_double": true
+      }
+    }
+  },
+  "secondary_paired_c2": {
+    "post_hoc": true,
+    "baseline": {
+      "anonymous_id": "conjunto-h2",
+      "scenario": 2,
+      "verdict_filename": "veredito-pareado.md",
+      "verdict_sha256": "521fe2e4355d8a58b1f3b11531e8daf3121780afa90cacd76be723206736475c",
+      "source_sha256": "e83a09c025c390b0310efb4c0f9752a4156a6a87eb6245be0a967274c66a8d20",
+      "detected": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E15",
+        "E16"
+      ],
+      "nct": 78,
+      "ddr_denominator": 18,
+      "ddr": 0.8888888888888888,
+      "blind_gaps": [],
+      "declared_gaps": [
+        "E17",
+        "E18"
+      ],
+      "density": 0.20512820512820512
+    },
+    "candidate": {
+      "anonymous_id": "conjunto-v9",
+      "scenario": 2,
+      "verdict_filename": "veredito-pareado.md",
+      "verdict_sha256": "16817a5402f3d9abe8de81a2461af2bb80f800e74783eae118ccde403866e4e9",
+      "source_sha256": "fff248ff99405477056560052ec518a780b06b63613a06d82639fb9605631e57",
+      "detected": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E13",
+        "E14",
+        "E16"
+      ],
+      "nct": 61,
+      "ddr_denominator": 18,
+      "ddr": 0.7777777777777778,
+      "blind_gaps": [
+        "E12",
+        "E15"
+      ],
+      "declared_gaps": [
+        "E17",
+        "E18"
+      ],
+      "density": 0.22950819672131148
+    },
+    "comparison": {
+      "gained": [],
+      "lost": [
+        "E12",
+        "E15"
+      ],
+      "new_blind_gaps": [
+        "E12",
+        "E15"
+      ],
+      "non_regression": false,
+      "nct_ratio": 0.782051282051282,
+      "candidate_ddr_at_least_85_percent": false,
+      "candidate_nct_less_than_double": true
+    }
+  },
+  "limits": [
+    "One generation per treatment/scenario",
+    "Documentary DDR is not executed mutation score",
+    "Source corrections after treatment freeze are not measured by these verdicts"
+  ],
+  "primary_preregistered_gate_passed": false
+}

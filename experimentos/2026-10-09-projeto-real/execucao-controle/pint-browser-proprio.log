@@ -1,0 +1,2 @@
+{"tool":"pint","result":"fixed","files":[{"path":"tests\\BrowserTenancy\\LaboratorioContratoBrowserTest.php","fixers":["line_ending","binary_operator_spaces"]}]}
+exit=0

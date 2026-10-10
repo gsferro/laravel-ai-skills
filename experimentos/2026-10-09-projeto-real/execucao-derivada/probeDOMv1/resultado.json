@@ -1,0 +1,25 @@
+{
+  "command": [
+    "php",
+    "vendor/bin/pest",
+    "tests/BrowserTenancy/DiagnosticoCuponsTest.php",
+    "--colors=never",
+    "--log-junit",
+    "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-derivada\\probeDOMv1\\control.xml"
+  ],
+  "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+  "exit_code": 0,
+  "timed_out": false,
+  "duration_seconds": 8.25,
+  "cases": [
+    {
+      "name": "it probe DOM do campo valor depois de selecionar fixo em Chromium",
+      "class": "Tests.BrowserTenancy.DiagnosticoCuponsTest",
+      "assertions": 1,
+      "problems": []
+    }
+  ],
+  "test_sha256": {
+    "tests\\BrowserTenancy\\DiagnosticoCuponsTest.php": "f379c8f5da841edd41cc549c668e06e490cb298033d3a2d33ae54a3142dd4a25"
+  }
+}

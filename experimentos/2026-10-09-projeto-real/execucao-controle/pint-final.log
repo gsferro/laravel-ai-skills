@@ -1,0 +1,2 @@
+{"tool":"pint","result":"fixed","files":[{"path":"app\\Models\\SolicitacaoCompra.php","fixers":["line_ending","unary_operator_spaces","not_operator_with_successor_space"]},{"path":"tests\\Feature\\LaboratorioContratoTest.php","fixers":["line_ending"]}]}
+exit=0

@@ -1,0 +1,25 @@
+{
+  "command": [
+    "php",
+    "vendor/bin/pest",
+    "tests/ExperimentoReal/ControleReferencia/CupomEnumTest.php",
+    "--colors=never",
+    "--log-junit",
+    "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-derivada\\controleenumv3\\control.xml"
+  ],
+  "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+  "exit_code": 0,
+  "timed_out": false,
+  "duration_seconds": 1.625,
+  "cases": [
+    {
+      "name": "it aplica o teto percentual de P05 recusando 101 e persistindo exatamente 100",
+      "class": "Tests.ExperimentoReal.ControleReferencia.CupomEnumTest",
+      "assertions": 21,
+      "problems": []
+    }
+  ],
+  "test_sha256": {
+    "tests\\ExperimentoReal\\ControleReferencia\\CupomEnumTest.php": "c30b3e7496b34eeae0e86a9614b8cbf1ddd45b71e7a392576c354ffff1c2deec"
+  }
+}

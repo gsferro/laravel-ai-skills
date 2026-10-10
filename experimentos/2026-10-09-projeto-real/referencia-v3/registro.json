@@ -1,0 +1,9 @@
+{
+  "version": 3,
+  "changed_files": [
+    "app/Filament/App/Resources/Cupons/CupomResource.php"
+  ],
+  "reason": "Filament Get returns enum; scalar comparisons broke the label and percentage maximum.",
+  "domain_expectations_changed": false,
+  "tests_not_yet_run_at_capture": true
+}

@@ -1,0 +1,217 @@
+{
+  "command": [
+    "php",
+    "vendor/bin/pest",
+    "tests/Feature/LaboratorioContratoTest.php",
+    "tests/Kit/PaineisTest.php",
+    "tests/Kit/AdminDaOrganizacaoTest.php",
+    "tests/BrowserTenancy/LaboratorioContratoBrowserTest.php",
+    "--colors=never",
+    "--log-junit",
+    "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-derivada\\referenciav2\\control.xml"
+  ],
+  "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+  "exit_code": 0,
+  "timed_out": false,
+  "duration_seconds": 23.906,
+  "cases": [
+    {
+      "name": "it consome percentual truncado e registra ator horario e valores sem exceder o limite",
+      "class": "Tests.Feature.LaboratorioContratoTest",
+      "assertions": 11,
+      "problems": []
+    },
+    {
+      "name": "it limita o total em zero e recusa cupons fora da validade",
+      "class": "Tests.Feature.LaboratorioContratoTest",
+      "assertions": 6,
+      "problems": []
+    },
+    {
+      "name": "it segue gestor e diretor acima do limite preservando ambas identidades no historico",
+      "class": "Tests.Feature.LaboratorioContratoTest",
+      "assertions": 11,
+      "problems": []
+    },
+    {
+      "name": "it aprova no gestor no limite exato e exige justificativa antes de retornar ao rascunho",
+      "class": "Tests.Feature.LaboratorioContratoTest",
+      "assertions": 5,
+      "problems": []
+    },
+    {
+      "name": "it recusa pessoa errada e falta de gestor sem mudar o rascunho e cancela somente antes do final",
+      "class": "Tests.Feature.LaboratorioContratoTest",
+      "assertions": 7,
+      "problems": []
+    },
+    {
+      "name": "it grava cupom e centro pela tela e mantem o usuario comum somente na leitura ativa",
+      "class": "Tests.Feature.LaboratorioContratoTest",
+      "assertions": 14,
+      "problems": []
+    },
+    {
+      "name": "it grava e edita solicitacao pela tela e a acao envia com status e historico visiveis",
+      "class": "Tests.Feature.LaboratorioContratoTest",
+      "assertions": 16,
+      "problems": []
+    },
+    {
+      "name": "it serve as telas de login dos três painéis sem autenticação with data set \"('app')\"",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it serve as telas de login dos três painéis sem autenticação with data set \"('admin')\"",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it serve as telas de login dos três painéis sem autenticação with data set \"('infra')\"",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it deixa o master_global entrar em todos os painéis with data set \"('app')\"",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it deixa o master_global entrar em todos os painéis with data set \"('admin')\"",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it deixa o master_global entrar em todos os painéis with data set \"('infra')\"",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it recorta admin e infra por papel",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 4,
+      "problems": []
+    },
+    {
+      "name": "it abre o painel app para quem tem papel do painel app",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it fecha os três painéis para quem não tem papel nenhum with data set \"('app')\"",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it fecha os três painéis para quem não tem papel nenhum with data set \"('admin')\"",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it fecha os três painéis para quem não tem papel nenhum with data set \"('infra')\"",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it não trata painel nulo como coringa",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it nega painel registrando o motivo no log",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it roda em modo single-tenant",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 3,
+      "problems": []
+    },
+    {
+      "name": "it carrega o dashboard de cada painel autenticado with data set \"('app')\"",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it carrega o dashboard de cada painel autenticado with data set \"('admin')\"",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it carrega o dashboard de cada painel autenticado with data set \"('infra')\"",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it dá 403 no painel errado",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 1,
+      "problems": []
+    },
+    {
+      "name": "it gera permission para os três painéis, não só para o admin",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 4,
+      "problems": []
+    },
+    {
+      "name": "it recorta a matriz do papel pelo painel",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 5,
+      "problems": []
+    },
+    {
+      "name": "it alcanca Page e Widget na subtracao do painel app",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 6,
+      "problems": []
+    },
+    {
+      "name": "it registra o RoleResource publicado, não o do vendor",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 2,
+      "problems": []
+    },
+    {
+      "name": "it agrupa as permissões por painel na tela de papéis",
+      "class": "Tests.Kit.PaineisTest",
+      "assertions": 4,
+      "problems": []
+    },
+    {
+      "name": "it nao semeia o admin da organizacao sem tenancy",
+      "class": "Tests.Kit.AdminDaOrganizacaoTest",
+      "assertions": 5,
+      "problems": []
+    },
+    {
+      "name": "it renderiza cupons ativos e o historico com quem aprovou em Chromium real",
+      "class": "Tests.BrowserTenancy.LaboratorioContratoBrowserTest",
+      "assertions": 8,
+      "problems": []
+    }
+  ],
+  "test_sha256": {
+    "tests\\Feature\\LaboratorioContratoTest.php": "506dd4880cd9a192f41d12383ba880ed9aee3f7652e864529ec8e6f2cf701ad2",
+    "tests\\Kit\\PaineisTest.php": "614e772084f387b9411052efa5df3639c73a386f269608d3740170130090d98b",
+    "tests\\Kit\\AdminDaOrganizacaoTest.php": "8318234cf5237527ac7c07cebcfaea6072d6a8aa2b8d2c3989a093a582de8edf",
+    "tests\\BrowserTenancy\\LaboratorioContratoBrowserTest.php": "0ae4430a7c3de377789008e0d491d1e8674d7823dafbaddeb5c683b808b73f82"
+  }
+}

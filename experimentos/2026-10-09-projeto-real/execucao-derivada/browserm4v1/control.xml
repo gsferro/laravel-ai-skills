@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\BrowserTenancy\ComparacaoM4Test" file="tests\BrowserTenancy\ComparacaoM4Test.php" tests="1" assertions="3" errors="0" failures="1" skipped="0" time="21.801552">
+    <testcase name="it CT-B01 [M4] Chromium seleciona fixo e mostra centavos com campo operável; gravação omitida" file="tests\BrowserTenancy\ComparacaoM4Test.php::it CT-B01 [M4] Chromium seleciona fixo e mostra centavos com campo operável; gravação omitida" class="Tests\BrowserTenancy\ComparacaoM4Test" classname="Tests.BrowserTenancy.ComparacaoM4Test" assertions="3" time="21.801552">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-B01 [M4] Chromium seleciona fixo e mostra centavos com campo operável; gravação omitidaExpected JavaScript expression [function () {
+    const valor = document.querySelector('input[id$=".valor"]');
+    if (!valor) return false;
+    const labels = Array.from(document.querySelectorAll('label')).filter(label =&gt; label.htmlFor === valor.id);
+    const visiveis = labels.filter(label =&gt; label.getClientRects().length &gt; 0
+        &amp;&amp; getComputedStyle(label).display !== 'none'
+        &amp;&amp; getComputedStyle(label).visibility !== 'hidden');
+    const texto = visiveis.map(label =&gt; label.innerText).join(' ').toLowerCase();
+    return /centavo/.test(texto) &amp;&amp; !/%|porcent|percentual/.test(texto)
+        &amp;&amp; valor.getClientRects().length &gt; 0
+        &amp;&amp; getComputedStyle(valor).display !== 'none'
+        &amp;&amp; getComputedStyle(valor).visibility !== 'hidden'
+        &amp;&amp; !valor.disabled &amp;&amp; !valor.readOnly;
+}] to evaluate to true on the page initially with the url [http://127.0.0.1:61423/app/acme/cupons/create], but got false.
+Failed asserting that false is identical to true. A screenshot of the page has been saved to [Tests/Browser/Screenshots/it_CT_B01__M4__Chromium_seleciona_fixo_e_mostra_centavos_com_campo_operável__gravação_omitida].&#13;
+at vendor\pestphp\pest-plugin-browser\src\Exceptions\BrowserExpectationFailedException.php:60
+at vendor\pestphp\pest-plugin-browser\src\Api\AwaitableWebpage.php:64
+at tests\BrowserTenancy\ComparacaoM4Test.php:39</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

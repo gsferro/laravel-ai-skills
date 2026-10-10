@@ -1,0 +1,117 @@
+{
+  "estado": "Implementação entregue para congelamento e revisão independente; sem claim de DDR/economia/equivalência de hosts.",
+  "timestamp_utc": "2026-10-10T00:19:08.045450+00:00",
+  "projeto_exclusivo": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+  "fonte_dominio": [
+    "wikis/specs/oraculo/cupons-de-desconto/00-requisito.md",
+    "wikis/specs/oraculo/cupons-de-desconto/01-plano-acao.md",
+    "wikis/specs/oraculo/aprovacao-de-compra/00-requisito.md",
+    "wikis/specs/oraculo/aprovacao-de-compra/01-plano-acao.md"
+  ],
+  "restricoes_efetivas": "Host danger-full-access/unrestricted; paths de comandos e arquivos foram mantidos no runtime por instrução, sem enforcement de whitelist ou isolamento de leitura. Não foram lidos project-* externos, catálogo, experimentos da coletânea ou conjuntos derivados. Não houve comandos no projeto original.",
+  "dependencias": "vendor e Composer não modificados pelo implementador. Node/Chromium preparados pela root. MCP Boost/PhpStorm indisponíveis; fallback vendor instalado e documentação oficial.",
+  "versoes": {
+    "php": "8.4.10",
+    "laravel": "13.25.0",
+    "filament": "5.7.6",
+    "livewire": "4.4.0",
+    "pest_installedversions": "5.1.1",
+    "pest_cli": "5.0.5",
+    "divergencia": "vendor/pestphp/pest/src/Pest.php::version() retorna literal5.0.5; InstalledVersions registra5.1.1."
+  },
+  "implementado": [
+    "Cupons: enum/model/schema/factory, código normalizado, ativo derivado, desconto truncado/cap zero, consumo condicional com histórico na transação, CRUD Filament e permissões apenas leitura para panel_user/diretor.",
+    "Compras: centro de custo e gestor, enum de5estados, rascunho editável/excluível só pelo autor nas APIs/telas, envio/duas alçadas/rejeição com justificativa e reenvio/cancelamento, decisões atômicas e histórico, destinatários por contexto da solicitação, notificação mail afterCommit, telas e policies, papel diretor e recorte de administração."
+  ],
+  "validacoes": [
+    {
+      "tipo": "Contrato Pest próprio",
+      "arquivo": "tests/Feature/LaboratorioContratoTest.php",
+      "testes": 7,
+      "assertions": 70,
+      "exit": 0,
+      "log": "validation/contrato-final.log"
+    },
+    {
+      "tipo": "Regressão real do kit",
+      "arquivos": [
+        "tests/Kit/PaineisTest.php",
+        "tests/Kit/AdminDaOrganizacaoTest.php"
+      ],
+      "testes": 24,
+      "assertions": 49,
+      "exit": 0,
+      "log": "validation/regressao-autorizacao.log"
+    },
+    {
+      "tipo": "Chromium real exclusivo",
+      "arquivo": "tests/BrowserTenancy/LaboratorioContratoBrowserTest.php",
+      "testes": 1,
+      "assertions": 8,
+      "exit": 0,
+      "escopo": "Cupons ativos/inativos na listagem, status e gestor no histórico, ausência de JavaScript errors. Não prova criação/interação completa de todo fluxo em browser.",
+      "log": "validation/browser-final.log"
+    },
+    {
+      "tipo": "Artisan em SQLite persistente descartável",
+      "exit_migrate": 0,
+      "exit_shield": 0,
+      "exit_papeis": 0,
+      "exit_matrix": 0,
+      "permissions": 235,
+      "roles_singletenant": [
+        "admin",
+        "diretor",
+        "infra",
+        "master_global",
+        "panel_user"
+      ],
+      "panel_user_cupom_write": false,
+      "panel_user_centro_write": false,
+      "panel_user_compra_create": true,
+      "log": "validation/artisan-persistente.log"
+    },
+    {
+      "tipo": "Rotas reais",
+      "rotas_app": 19,
+      "exit": 0,
+      "log": "validation/routes.log"
+    },
+    {
+      "tipo": "Pint explícito nos arquivos próprios",
+      "exit": 0,
+      "logs": [
+        "validation/pint-owned.log",
+        "validation/pint-final.log",
+        "validation/pint-browser-proprio.log"
+      ],
+      "limite": "--dirty tentado e indisponível: runtime não tem Git; validation/pint-dirty.log preservado."
+    },
+    {
+      "tipo": "PHP lint",
+      "arquivos": 40,
+      "falhas": 0,
+      "exit": 0,
+      "log": "validation/lint-owned.log"
+    }
+  ],
+  "falhas_encontradas_e_resolvidas": [
+    "Primeiro contrato:6/7 verde, falha no harness por assertCanSeeTableRecords antes de carregar a tabela deferida; corrigido call(loadTable), última execução7/7.",
+    "Guarda save/delete recusava apenas quando fresh retornava model; ausência no contexto corrente era bypass. Corrigida recusa quando fresh=null, com teste de contexto diferente no próprio contrato.",
+    "Migrate em :memory: seguido de seed em CLI separado perde schema: Shield retornou0 com warning, Papeis exit1. Logs preservados; repetidos migrate+seed+assert da matriz em arquivo SQLite descartável, todos0 com235permissions reais."
+  ],
+  "limites": [
+    "Sem SMTP externo real; Notification::fake observa destinatários e etapa, não entrega SMTP.",
+    "Sem stress concorrente multiprocesso ou mutation/cobertura completa. A disputa é comprovada por instâncias obsoletas e UPDATE condicional, não por carga real.",
+    "Sem revisão independente de implementação nesta sub-sessão; root fará revisão cega após congelamento.",
+    "Compra exige tenant_id NOT NULL conforme00/01; .env do runtime continua singletenant. Smoke usa TenancyTestCase antes de bootstrap/migrations. Para navegador operacional fora dos testes, tenancy precisa ser configurada coerentemente.",
+    "Unique tenant_id+codigo com NULL em singletenant possui limite conhecido contra criação concorrente fora do formulário, conforme01; scopedUnique cobre formulário.",
+    "aplicarEm permite User nullable conforme assinatura01: integrador deve informar usuário para auditoria do ator; sem isso aplicado_por_id é null.",
+    "Sem afirmação de isolamento pelo prompt/read-only/hook/status: filesystem irrestrito. Sem DDR, tokens ou equivalência hosts medida."
+  ],
+  "artefatos": [
+    "contrato-publico.md",
+    "validation/manifest-implementacao.json"
+  ],
+  "arquivos_feature_manifest": 42
+}

@@ -1,0 +1,25 @@
+{
+  "command": [
+    "php",
+    "vendor/bin/pest",
+    "tests/BrowserTenancy/ComparacaoM4Test.php",
+    "--colors=never",
+    "--log-junit",
+    "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-derivada\\browserm4v3\\control.xml"
+  ],
+  "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+  "exit_code": 0,
+  "timed_out": false,
+  "duration_seconds": 3.187,
+  "cases": [
+    {
+      "name": "it CT-B01 [M4] Chromium seleciona fixo e mostra centavos com campo operável; gravação omitida",
+      "class": "Tests.BrowserTenancy.ComparacaoM4Test",
+      "assertions": 4,
+      "problems": []
+    }
+  ],
+  "test_sha256": {
+    "tests\\BrowserTenancy\\ComparacaoM4Test.php": "c4edd2b13521652e3c3ea89e554dacf8f942e9614119e2e20c496f2488177fdc"
+  }
+}

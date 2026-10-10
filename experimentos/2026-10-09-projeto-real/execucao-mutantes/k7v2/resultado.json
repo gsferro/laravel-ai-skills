@@ -1,0 +1,1821 @@
+{
+  "anonymous_id": "k7v2",
+  "catalog_complete": false,
+  "implementation_manifest": "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\referencia-v2\\manifest.json",
+  "control": {
+    "command": [
+      "php",
+      "vendor/bin/pest",
+      "tests/ExperimentoReal/K7/CuponsTest.php",
+      "--colors=never",
+      "--log-junit",
+      "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\k7v2\\control.xml"
+    ],
+    "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+    "exit_code": 0,
+    "timed_out": false,
+    "duration_seconds": 16.704,
+    "cases": [
+      {
+        "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 10000\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 100\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"10 / 9999\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"5 / 50\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"1 / 100\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"100 / 9999\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 999\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1000\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1001\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1 / 1\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 0\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T-1s\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T+1s\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T-1s\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T+1s\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 2 / 3\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 3 / 3\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 2 / 3\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 3 / 3\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 4 / 3 legado\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"porcentagem\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 5,
+        "problems": []
+      },
+      {
+        "name": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"fixo\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 5,
+        "problems": []
+      },
+      {
+        "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / ausente\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 7,
+        "problems": []
+      },
+      {
+        "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Beto\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Ana\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / ausente\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 7,
+        "problems": []
+      },
+      {
+        "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Beto\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Ana\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"porcentagem\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 17,
+        "problems": []
+      },
+      {
+        "name": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"fixo\"\"",
+        "class": "Tests.ExperimentoReal.K7.CuponsTest",
+        "assertions": 17,
+        "problems": []
+      }
+    ]
+  },
+  "mutants": [
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/K7/CuponsTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\k7v2\\c1-float.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 16.984,
+      "cases": [
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 10000\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 100\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 100\"\"Failed asserting that 72 is identical to 71.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:65"
+            }
+          ]
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"10 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"5 / 50\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"1 / 100\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"100 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1000\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1001\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1 / 1\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 0\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T-1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T+1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T-1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T+1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        },
+        {
+          "name": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / ausente\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Beto\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Ana\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / ausente\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Beto\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Ana\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 17,
+          "problems": []
+        },
+        {
+          "name": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 17,
+          "problems": []
+        }
+      ],
+      "name": "c1-float",
+      "file": "app/Models/Cupom.php",
+      "before": "intdiv($valorTotalEmCentavos, 100) * $this->valor + intdiv(($valorTotalEmCentavos % 100) * $this->valor, 100)",
+      "after": "(int) ($valorTotalEmCentavos * ($this->valor / 100))",
+      "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+      "mutated_sha256": "496c884382a0cbe5605e3600a78df6d0ed553ad8b7a8a72568279997c8918a25"
+    },
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/K7/CuponsTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\k7v2\\c1-negative.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 17.125,
+      "cases": [
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 10000\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 100\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"10 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"5 / 50\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"1 / 100\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"100 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 999\"\"Failed asserting that -1 is identical to 0.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:82"
+            }
+          ]
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1000\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1001\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1 / 1\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 0\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 0\"\"Failed asserting that -1000 is identical to 0.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:82"
+            }
+          ]
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T-1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T+1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T-1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T+1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        },
+        {
+          "name": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / ausente\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Beto\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Ana\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / ausente\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Beto\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Ana\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 17,
+          "problems": []
+        },
+        {
+          "name": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 17,
+          "problems": []
+        }
+      ],
+      "name": "c1-negative",
+      "file": "app/Models/Cupom.php",
+      "before": "return max(0, $valorTotalEmCentavos - $desconto);",
+      "after": "return $valorTotalEmCentavos - $desconto;",
+      "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+      "mutated_sha256": "04520882fd44b72da7001849287d24b469e7ee029415a3939e6870df5eabc21a"
+    },
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/K7/CuponsTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\k7v2\\c1-no-increment.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 16.734,
+      "cases": [
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 10000\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 10000\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:66"
+            }
+          ]
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 100\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 100\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:66"
+            }
+          ]
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"10 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"10 / 9999\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:66"
+            }
+          ]
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"5 / 50\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"5 / 50\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:66"
+            }
+          ]
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"1 / 100\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"1 / 100\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:66"
+            }
+          ]
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"100 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"100 / 9999\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:66"
+            }
+          ]
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 999\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:83"
+            }
+          ]
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1000\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1000\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:83"
+            }
+          ]
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1001\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1001\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:83"
+            }
+          ]
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1 / 1\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1 / 1\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:83"
+            }
+          ]
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 0\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 0\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:83"
+            }
+          ]
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T-1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T-1s\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:107"
+            }
+          ]
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:107"
+            }
+          ]
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T+1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T+1s\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:107"
+            }
+          ]
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T-1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T-1s\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:107"
+            }
+          ]
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:107"
+            }
+          ]
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T+1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T+1s\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:107"
+            }
+          ]
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 2 / 3\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:130"
+            }
+          ]
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 3 / 3\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:125"
+            }
+          ]
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 4 / 3 legado\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:125"
+            }
+          ]
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 2 / 3\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:130"
+            }
+          ]
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 3 / 3\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:125"
+            }
+          ]
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 4 / 3 legado\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:125"
+            }
+          ]
+        },
+        {
+          "name": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"porcentagem\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:148"
+            }
+          ]
+        },
+        {
+          "name": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"fixo\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:148"
+            }
+          ]
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / ausente\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / ausente\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:167"
+            }
+          ]
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Beto\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Beto\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:167"
+            }
+          ]
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Ana\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Ana\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:167"
+            }
+          ]
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / ausente\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / ausente\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:167"
+            }
+          ]
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Beto\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Beto\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:167"
+            }
+          ]
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Ana\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Ana\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:167"
+            }
+          ]
+        },
+        {
+          "name": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"porcentagem\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:199"
+            }
+          ]
+        },
+        {
+          "name": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"fixo\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:199"
+            }
+          ]
+        }
+      ],
+      "name": "c1-no-increment",
+      "file": "app/Models/Cupom.php",
+      "before": "->increment('usos');",
+      "after": "->increment('usos', 0);",
+      "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+      "mutated_sha256": "d5a94401160b4a99c5ac78091d904a1e661328f36370d228be208e133d737571"
+    },
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/K7/CuponsTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\k7v2\\c1-expiry-inclusive.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 16.875,
+      "cases": [
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 10000\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 100\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"10 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"5 / 50\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"1 / 100\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"100 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1000\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1001\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1 / 1\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 0\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T-1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:102"
+            }
+          ]
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T+1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T-1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:102"
+            }
+          ]
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T+1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        },
+        {
+          "name": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / ausente\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Beto\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Ana\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / ausente\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Beto\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Ana\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 17,
+          "problems": []
+        },
+        {
+          "name": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 17,
+          "problems": []
+        }
+      ],
+      "name": "c1-expiry-inclusive",
+      "file": "app/Models/Cupom.php",
+      "before": "->where('expira_em', '>', now())",
+      "after": "->where('expira_em', '>=', now())",
+      "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+      "mutated_sha256": "29d0e575936ffd0eff40130bbad09569b8f85a1dee7dec9f0984ca92b53d9b74"
+    },
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/K7/CuponsTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\k7v2\\c1-limit-inclusive.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 16.782,
+      "cases": [
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 10000\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 100\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"10 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"5 / 50\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"1 / 100\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"100 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1000\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1001\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1 / 1\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 0\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T-1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T+1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T-1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T+1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 3 / 3\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:125"
+            }
+          ]
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 3 / 3\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:125"
+            }
+          ]
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        },
+        {
+          "name": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / ausente\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Beto\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Ana\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / ausente\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Beto\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Ana\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 17,
+          "problems": []
+        },
+        {
+          "name": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 17,
+          "problems": []
+        }
+      ],
+      "name": "c1-limit-inclusive",
+      "file": "app/Models/Cupom.php",
+      "before": "->whereColumn('usos', '<', 'limite_de_usos')",
+      "after": "->whereColumn('usos', '<=', 'limite_de_usos')",
+      "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+      "mutated_sha256": "4a963d506c95ca24342af1154a85f30393a6703c2149d1a6a8eab67db14818b3"
+    },
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/K7/CuponsTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\k7v2\\c1-negative-fixed-input.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 16.75,
+      "cases": [
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 10000\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 100\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"10 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"5 / 50\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"1 / 100\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"100 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 999\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1000\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1001\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1 / 1\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 0\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T-1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T+1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T-1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T+1s\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        },
+        {
+          "name": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / ausente\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Beto\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Ana\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / ausente\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Beto\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Ana\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 17,
+          "problems": []
+        },
+        {
+          "name": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.K7.CuponsTest",
+          "assertions": 17,
+          "problems": []
+        }
+      ],
+      "name": "c1-negative-fixed-input",
+      "file": "app/Filament/App/Resources/Cupons/CupomResource.php",
+      "before": "->minValue(1)->maxValue(fn (Get $get): ?int => $get('tipo') === TipoDeDesconto::Porcentagem->value ? 100 : null)",
+      "after": "->minValue(fn (Get $get): int => $get('tipo') === TipoDeDesconto::Fixo->value ? -1 : 1)->maxValue(fn (Get $get): ?int => $get('tipo') === TipoDeDesconto::Porcentagem->value ? 100 : null)",
+      "original_sha256": "46e2b4c45c5e2e0bdf381bf9da1c44deed9c0e772f0b278c1040008c4289acf9",
+      "mutated_sha256": "57a108ef0bd233696c621b4068a0fda19e336f67e2bf99c32809a7b5770ec40c"
+    }
+  ]
+}

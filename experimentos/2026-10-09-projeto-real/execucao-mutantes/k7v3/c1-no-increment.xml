@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\ExperimentoReal\K7\CuponsTest" file="tests\ExperimentoReal\K7\CuponsTest.php" tests="33" assertions="64" errors="0" failures="33" skipped="0" time="16.950370">
+    <testsuite name="it CT-31 [K7] percentual inteiro trunca a fração do desconto" tests="6" assertions="12" errors="0" failures="6" skipped="0" time="3.588834">
+      <testcase name="it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set &quot;dataset &quot;29 / 10000&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set &quot;dataset &quot;29 / 10000&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="1.220177">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set "dataset "29 / 10000""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:66</failure>
+      </testcase>
+      <testcase name="it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set &quot;dataset &quot;29 / 100&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set &quot;dataset &quot;29 / 100&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.497239">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set "dataset "29 / 100""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:66</failure>
+      </testcase>
+      <testcase name="it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set &quot;dataset &quot;10 / 9999&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set &quot;dataset &quot;10 / 9999&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.469730">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set "dataset "10 / 9999""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:66</failure>
+      </testcase>
+      <testcase name="it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set &quot;dataset &quot;5 / 50&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set &quot;dataset &quot;5 / 50&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.453133">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set "dataset "5 / 50""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:66</failure>
+      </testcase>
+      <testcase name="it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set &quot;dataset &quot;1 / 100&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set &quot;dataset &quot;1 / 100&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.466695">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set "dataset "1 / 100""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:66</failure>
+      </testcase>
+      <testcase name="it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set &quot;dataset &quot;100 / 9999&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set &quot;dataset &quot;100 / 9999&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.481861">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set "dataset "100 / 9999""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:66</failure>
+      </testcase>
+    </testsuite>
+    <testsuite name="it CT-32 [K7] desconto fixo conserva piso zero" tests="5" assertions="10" errors="0" failures="5" skipped="0" time="2.431322">
+      <testcase name="it CT-32 [K7] desconto fixo conserva piso zero with data set &quot;dataset &quot;1000 / 999&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-32 [K7] desconto fixo conserva piso zero with data set &quot;dataset &quot;1000 / 999&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.529031">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-32 [K7] desconto fixo conserva piso zero with data set "dataset "1000 / 999""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:83</failure>
+      </testcase>
+      <testcase name="it CT-32 [K7] desconto fixo conserva piso zero with data set &quot;dataset &quot;1000 / 1000&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-32 [K7] desconto fixo conserva piso zero with data set &quot;dataset &quot;1000 / 1000&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.493621">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-32 [K7] desconto fixo conserva piso zero with data set "dataset "1000 / 1000""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:83</failure>
+      </testcase>
+      <testcase name="it CT-32 [K7] desconto fixo conserva piso zero with data set &quot;dataset &quot;1000 / 1001&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-32 [K7] desconto fixo conserva piso zero with data set &quot;dataset &quot;1000 / 1001&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.464217">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-32 [K7] desconto fixo conserva piso zero with data set "dataset "1000 / 1001""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:83</failure>
+      </testcase>
+      <testcase name="it CT-32 [K7] desconto fixo conserva piso zero with data set &quot;dataset &quot;1 / 1&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-32 [K7] desconto fixo conserva piso zero with data set &quot;dataset &quot;1 / 1&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.474897">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-32 [K7] desconto fixo conserva piso zero with data set "dataset "1 / 1""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:83</failure>
+      </testcase>
+      <testcase name="it CT-32 [K7] desconto fixo conserva piso zero with data set &quot;dataset &quot;1000 / 0&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-32 [K7] desconto fixo conserva piso zero with data set &quot;dataset &quot;1000 / 0&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.469555">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-32 [K7] desconto fixo conserva piso zero with data set "dataset "1000 / 0""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:83</failure>
+      </testcase>
+    </testsuite>
+    <testsuite name="it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito" tests="6" assertions="8" errors="0" failures="6" skipped="0" time="2.983929">
+      <testcase name="it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set &quot;dataset &quot;porcentagem T-1s&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set &quot;dataset &quot;porcentagem T-1s&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.462271">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set "dataset "porcentagem T-1s""Failed asserting that 0 is identical to 3.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:107</failure>
+      </testcase>
+      <testcase name="it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set &quot;dataset &quot;porcentagem T&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set &quot;dataset &quot;porcentagem T&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="1" time="0.503112">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set "dataset "porcentagem T""Failed asserting that 0 is identical to 2.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:107</failure>
+      </testcase>
+      <testcase name="it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set &quot;dataset &quot;porcentagem T+1s&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set &quot;dataset &quot;porcentagem T+1s&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="1" time="0.606644">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set "dataset "porcentagem T+1s""Failed asserting that 0 is identical to 2.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:107</failure>
+      </testcase>
+      <testcase name="it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set &quot;dataset &quot;fixo T-1s&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set &quot;dataset &quot;fixo T-1s&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.474537">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set "dataset "fixo T-1s""Failed asserting that 0 is identical to 3.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:107</failure>
+      </testcase>
+      <testcase name="it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set &quot;dataset &quot;fixo T&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set &quot;dataset &quot;fixo T&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="1" time="0.470802">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set "dataset "fixo T""Failed asserting that 0 is identical to 2.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:107</failure>
+      </testcase>
+      <testcase name="it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set &quot;dataset &quot;fixo T+1s&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set &quot;dataset &quot;fixo T+1s&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="1" time="0.466563">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set "dataset "fixo T+1s""Failed asserting that 0 is identical to 2.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:107</failure>
+      </testcase>
+    </testsuite>
+    <testsuite name="it CT-28 [K7] limite atingido recusa com último uso disponível aceito" tests="6" assertions="8" errors="0" failures="6" skipped="0" time="2.903795">
+      <testcase name="it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set &quot;dataset &quot;porcentagem 2 / 3&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set &quot;dataset &quot;porcentagem 2 / 3&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.466558">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set "dataset "porcentagem 2 / 3""Failed asserting that 0 is identical to 3.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:130</failure>
+      </testcase>
+      <testcase name="it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set &quot;dataset &quot;porcentagem 3 / 3&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set &quot;dataset &quot;porcentagem 3 / 3&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="1" time="0.478756">
+        <failure type="PHPUnit\Framework\AssertionFailedError">it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set "dataset "porcentagem 3 / 3""K7 exige recusa sem retorno de total com desconto.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:54
+at tests\ExperimentoReal\K7\CuponsTest.php:125</failure>
+      </testcase>
+      <testcase name="it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set &quot;dataset &quot;porcentagem 4 / 3 legado&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set &quot;dataset &quot;porcentagem 4 / 3 legado&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="1" time="0.496497">
+        <failure type="PHPUnit\Framework\AssertionFailedError">it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set "dataset "porcentagem 4 / 3 legado""K7 exige recusa sem retorno de total com desconto.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:54
+at tests\ExperimentoReal\K7\CuponsTest.php:125</failure>
+      </testcase>
+      <testcase name="it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set &quot;dataset &quot;fixo 2 / 3&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set &quot;dataset &quot;fixo 2 / 3&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.473095">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set "dataset "fixo 2 / 3""Failed asserting that 0 is identical to 3.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:130</failure>
+      </testcase>
+      <testcase name="it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set &quot;dataset &quot;fixo 3 / 3&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set &quot;dataset &quot;fixo 3 / 3&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="1" time="0.503886">
+        <failure type="PHPUnit\Framework\AssertionFailedError">it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set "dataset "fixo 3 / 3""K7 exige recusa sem retorno de total com desconto.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:54
+at tests\ExperimentoReal\K7\CuponsTest.php:125</failure>
+      </testcase>
+      <testcase name="it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set &quot;dataset &quot;fixo 4 / 3 legado&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set &quot;dataset &quot;fixo 4 / 3 legado&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="1" time="0.485004">
+        <failure type="PHPUnit\Framework\AssertionFailedError">it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set "dataset "fixo 4 / 3 legado""K7 exige recusa sem retorno de total com desconto.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:54
+at tests\ExperimentoReal\K7\CuponsTest.php:125</failure>
+      </testcase>
+    </testsuite>
+    <testsuite name="it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores" tests="2" assertions="4" errors="0" failures="2" skipped="0" time="1.044652">
+      <testcase name="it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set &quot;dataset &quot;porcentagem&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set &quot;dataset &quot;porcentagem&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.510978">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set "dataset "porcentagem""Failed asserting that 0 is identical to 3.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:148</failure>
+      </testcase>
+      <testcase name="it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set &quot;dataset &quot;fixo&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set &quot;dataset &quot;fixo&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.533674">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set "dataset "fixo""Failed asserting that 0 is identical to 3.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:148</failure>
+      </testcase>
+    </testsuite>
+    <testsuite name="it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto" tests="6" assertions="14" errors="0" failures="6" skipped="0" time="3.017831">
+      <testcase name="it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set &quot;dataset &quot;porcentagem / ausente&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set &quot;dataset &quot;porcentagem / ausente&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="3" time="0.493576">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set "dataset "porcentagem / ausente""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:167</failure>
+      </testcase>
+      <testcase name="it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set &quot;dataset &quot;porcentagem / Beto&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set &quot;dataset &quot;porcentagem / Beto&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.484838">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set "dataset "porcentagem / Beto""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:167</failure>
+      </testcase>
+      <testcase name="it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set &quot;dataset &quot;porcentagem / Ana&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set &quot;dataset &quot;porcentagem / Ana&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.474355">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set "dataset "porcentagem / Ana""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:167</failure>
+      </testcase>
+      <testcase name="it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set &quot;dataset &quot;fixo / ausente&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set &quot;dataset &quot;fixo / ausente&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="3" time="0.562070">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set "dataset "fixo / ausente""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:167</failure>
+      </testcase>
+      <testcase name="it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set &quot;dataset &quot;fixo / Beto&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set &quot;dataset &quot;fixo / Beto&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.508234">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set "dataset "fixo / Beto""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:167</failure>
+      </testcase>
+      <testcase name="it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set &quot;dataset &quot;fixo / Ana&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set &quot;dataset &quot;fixo / Ana&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="2" time="0.494758">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set "dataset "fixo / Ana""Failed asserting that 0 is identical to 1.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:167</failure>
+      </testcase>
+    </testsuite>
+    <testsuite name="it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior" tests="2" assertions="8" errors="0" failures="2" skipped="0" time="0.980006">
+      <testcase name="it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set &quot;dataset &quot;porcentagem&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set &quot;dataset &quot;porcentagem&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="4" time="0.476448">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set "dataset "porcentagem""Failed asserting that 0 is identical to 2.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:199</failure>
+      </testcase>
+      <testcase name="it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set &quot;dataset &quot;fixo&quot;&quot;" file="tests\ExperimentoReal\K7\CuponsTest.php::it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set &quot;dataset &quot;fixo&quot;&quot;" class="Tests\ExperimentoReal\K7\CuponsTest" classname="Tests.ExperimentoReal.K7.CuponsTest" assertions="4" time="0.503557">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set "dataset "fixo""Failed asserting that 0 is identical to 2.&#13;
+at tests\ExperimentoReal\K7\CuponsTest.php:199</failure>
+      </testcase>
+    </testsuite>
+  </testsuite>
+</testsuites>

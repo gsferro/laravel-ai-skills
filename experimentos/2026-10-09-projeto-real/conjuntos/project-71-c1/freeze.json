@@ -1,0 +1,27 @@
+{
+  "project": "project-71",
+  "scenario": 1,
+  "anonymous_id": "conjunto-k7",
+  "redactions": [
+    {
+      "pattern": "\\b(?:4\\.0\\.0|4\\.1\\.0|1\\.16\\.0|1\\.17\\.0)\\b",
+      "replacement": "[VERSÃO ANONIMIZADA]",
+      "count": 2
+    },
+    {
+      "pattern": "\\bproject-(?:71|26)\\b",
+      "replacement": "[PROJETO]",
+      "count": 1
+    },
+    {
+      "pattern": "/root/(?:blind|adversarial)_[a-z0-9_]+",
+      "replacement": "[EXECUTOR]",
+      "count": 2
+    }
+  ],
+  "sha256": {
+    "04-casos-de-teste.md": "44934db27aa8ff7a5142a43f1d34c8f39bf0fd577b6789cbd13bc1c2f755f8bc",
+    "05-casos-de-teste-browser.md": "8b2131f732c547e8c83f6c9bdb5dba4b4766f7d4bfd65a8c3df62059a880eb11"
+  },
+  "anonymous_sha256": "c791d33fab989bf207e19b06f2ae4207c2f169376c309c48ec45923cedb36561"
+}

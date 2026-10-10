@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\BrowserTenancy\DiagnosticoCuponsTest" file="tests\BrowserTenancy\DiagnosticoCuponsTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="6.001447">
+    <testcase name="it probe DOM do campo valor depois de selecionar fixo em Chromium" file="tests\BrowserTenancy\DiagnosticoCuponsTest.php::it probe DOM do campo valor depois de selecionar fixo em Chromium" class="Tests\BrowserTenancy\DiagnosticoCuponsTest" classname="Tests.BrowserTenancy.DiagnosticoCuponsTest" assertions="1" time="6.001447"/>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,391 @@
+{
+  "anonymous_id": "conjunto-m4",
+  "scenario": 1,
+  "verdict_sha256": "6022c540d3f3424df3b9d1b936be67cdfc7c0b79ea1de76c31000bf53966d6fe",
+  "source_sha256": "7ac968e5811e295889a414a6209cc84e17c7bc8a17b2158875ed909e0c467bd7",
+  "rows": [
+    {
+      "id": "D01",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-B02"
+      ],
+      "quotes": [
+        {
+          "quote": "Quando Ana troca o tipo para porcentagem e tenta salvar valor 101 sem recarregar a página durante a troca",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então o valor passa a indicar percentual de forma visível e recebe um erro visível associado a esse campo, com o formulário ainda operável",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E a linha persistida continua fixo 150, contador 1 e a mesma trilha anterior, sem novo registro de aplicação",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D02",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-12"
+      ],
+      "quotes": [
+        {
+          "quote": "Então o retorno é exatamente o inteiro <final> centavos",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D03",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-13"
+      ],
+      "quotes": [
+        {
+          "quote": "Então o resultado é <resultado> com <final> centavos se aceito, contador <usos> e exatamente <trilhas> registros de aplicação",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E na recusa nenhum total descontado é devolvido e a trilha anterior conserva autor e instante",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D04",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-22"
+      ],
+      "quotes": [
+        {
+          "quote": "Então o resultado é <resultado>; aceite retorna 9000, contador vira <depois> e trilha tem <depois> linhas",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E recusa não devolve total descontado e preserva exatamente contador e linhas anteriores",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D05",
+      "decision": "NÃO DETECTA",
+      "ct": [],
+      "quotes": [
+        {
+          "quote": "aberta; ramos de normalização/teto sem cenário",
+          "literal_in_source": true
+        },
+        {
+          "quote": "normalização e teto de texto ficam em Q1",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D06",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-14"
+      ],
+      "quotes": [
+        {
+          "quote": "Quando Beto aplica esse mesmo objeto às 18:00:00Z sem reconsultar validade pelo chamador",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a aplicação é recusada sem retorno descontado, o contador persistido continua 1 e a trilha continua exatamente a anterior",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D07",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-26"
+      ],
+      "quotes": [
+        {
+          "quote": "Então o retorno é 9000, contador persistido é 1 e existe exatamente um registro de aplicação ligado ao cupom e a Beto naquele instante",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D08",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-24"
+      ],
+      "quotes": [
+        {
+          "quote": "Quando Beto e Carla executam a aplicação a 10000 centavos em paralelo, por conexões distintas do mesmo banco, sincronizadas antes do consumo",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então exatamente um retorna 9000 e o outro recebe recusa de negócio, sem total descontado",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E o banco termina com usos <limite> e somente uma linha nova, atribuída ao vencedor; a trilha anterior permanece idêntica",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D09",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-32"
+      ],
+      "quotes": [
+        {
+          "quote": "Quando Beto executa diretamente <operacao>, por fora de Resource e componente",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a operação é recusada: nenhum NOVO é criado, PROMO-A não muda valor e não é excluído",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E contador e trilha de PROMO-A continuam idênticos ao Dado",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D10",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-38"
+      ],
+      "quotes": [
+        {
+          "quote": "Então os IDs/códigos visíveis são exatamente ATIVO-P e ATIVO-F, sem os outros seis códigos",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D11",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-07"
+      ],
+      "quotes": [
+        {
+          "quote": "Então o resultado é <resultado> e, se aceito, o tipo e o inteiro <valor> são persistidos exatamente",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E se recusado nenhum cupom nem registro em cupom_usos é criado",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D12",
+      "decision": "NÃO DETECTA",
+      "ct": [],
+      "quotes": [
+        {
+          "quote": "aberta; direção de cadastro passado sem cenário",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D13",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-26"
+      ],
+      "quotes": [
+        {
+          "quote": "Então o retorno é 9000, contador persistido é 1 e existe exatamente um registro de aplicação ligado ao cupom e a Beto naquele instante",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E nenhuma linha dessa aplicação atribui autoria a Ana ou deixa o autor nulo",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D14",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-15"
+      ],
+      "quotes": [
+        {
+          "quote": "Então o resultado é <resultado>; aceite retorna 9000, contador 1 e uma linha com o instante epoch exato, e recusa deixa contador 0 e nenhuma linha",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D15",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-20"
+      ],
+      "quotes": [
+        {
+          "quote": "Dado Beto existe, carregou um cupom <tipo> ativo ainda sem uso, e esse cupom foi realmente excluído",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a aplicação é recusada sem retorno descontado e sem recriar o cupom",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E nenhum contador de cupom de controle muda e nenhum registro órfão de aplicação é criado",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D16",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-10"
+      ],
+      "quotes": [
+        {
+          "quote": "Então o retorno é exatamente o inteiro <final> centavos",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D17",
+      "decision": "NÃO DETECTA",
+      "ct": [],
+      "quotes": [
+        {
+          "quote": "aberta; ramos de normalização/teto sem cenário",
+          "literal_in_source": true
+        },
+        {
+          "quote": "lacuna declarada: Q1; 00 não fixa normalização nem teto e não se importou 40 do 01",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D18",
+      "decision": "NÃO DETECTA",
+      "ct": [],
+      "quotes": [
+        {
+          "quote": "aberta; idempotência de Pedido não testável nesta entrega",
+          "literal_in_source": true
+        },
+        {
+          "quote": "lacuna declarada: P-01 tira Pedido do escopo; nenhuma fixture de retorno/contador discrimina reaplicação no Pedido; Q5",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    }
+  ],
+  "detected": [
+    "D01",
+    "D02",
+    "D03",
+    "D04",
+    "D06",
+    "D07",
+    "D08",
+    "D09",
+    "D10",
+    "D11",
+    "D13",
+    "D14",
+    "D15",
+    "D16"
+  ],
+  "ddr_denominator": 18,
+  "scenario_declarations": [
+    "CT-01",
+    "CT-02",
+    "CT-03",
+    "CT-43",
+    "CT-04",
+    "CT-05",
+    "CT-06",
+    "CT-07",
+    "CT-08",
+    "CT-09",
+    "CT-10",
+    "CT-11",
+    "CT-12",
+    "CT-13",
+    "CT-14",
+    "CT-15",
+    "CT-16",
+    "CT-17",
+    "CT-18",
+    "CT-19",
+    "CT-20",
+    "CT-21",
+    "CT-22",
+    "CT-23",
+    "CT-24",
+    "CT-25",
+    "CT-26",
+    "CT-27",
+    "CT-28",
+    "CT-29",
+    "CT-41",
+    "CT-30",
+    "CT-31",
+    "CT-32",
+    "CT-44",
+    "CT-33",
+    "CT-34",
+    "CT-35",
+    "CT-36",
+    "CT-37",
+    "CT-42",
+    "CT-38",
+    "CT-39",
+    "CT-40",
+    "CT-45",
+    "CT-B01",
+    "CT-B02"
+  ],
+  "nct": 47,
+  "all_detected_have_literal_quotes": true,
+  "freeze_hash_check": {
+    "recorded": "bf5783f6cdea7ff5b96d4a22189beedf63a48cf528aba8c8675a1504c0d11aee",
+    "actual_bytes": "7ac968e5811e295889a414a6209cc84e17c7bc8a17b2158875ed909e0c467bd7",
+    "normalized_lf": "bf5783f6cdea7ff5b96d4a22189beedf63a48cf528aba8c8675a1504c0d11aee",
+    "metadata_describes_bytes": false,
+    "legacy_note": "The first freezer hashed LF text before Windows wrote CRLF. Original metadata is preserved; actual input bytes are identical to the archived anonymous set."
+  }
+}

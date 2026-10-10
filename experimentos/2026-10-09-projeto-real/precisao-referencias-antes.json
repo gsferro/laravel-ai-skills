@@ -1,0 +1,42 @@
+{
+  "project-71": {
+    "reference": "D:\\PROJECTS\\SKILLS\\blind-20261009\\project-71\\.ai\\skills\\feature-test-design\\references\\tecnicas-por-regra.md",
+    "reference_sha256": "81aa40b41e98d49de37b5675df3df3ff9d3f2e23494474a522719e3cfb600cb7",
+    "published_row": "| percentual em `float` em vez de inteiro | 10% de 10.000 → 1.000 nos dois | **29% de 10.000** → `(int)(10000*0.29)` = 2.899, inteiro dá 2.900 |",
+    "command": [
+      "php",
+      "-r",
+      "echo json_encode(['float'=>(int)(10000*0.29),'inteiro'=>intdiv(10000*29, 100)]);"
+    ],
+    "exit_code": 0,
+    "actual": {
+      "float": 2900,
+      "inteiro": 2900
+    },
+    "claimed": {
+      "float": 2899,
+      "inteiro": 2900
+    },
+    "valid": false
+  },
+  "project-26": {
+    "reference": "D:\\PROJECTS\\SKILLS\\blind-20261009\\project-26\\.ai\\skills\\feature-test-design\\references\\tecnicas-por-regra.md",
+    "reference_sha256": "b592f894bc90fcc3ecebc619c78d2c8bff04993363666d010fe2a17cc0cf0abd",
+    "published_row": "| percentual em `float` em vez de inteiro | 10% de 10.000 → 1.000 nos dois | **29% de 10.000** → `(int)(10000*0.29)` = 2.899, inteiro dá 2.900 |",
+    "command": [
+      "php",
+      "-r",
+      "echo json_encode(['float'=>(int)(10000*0.29),'inteiro'=>intdiv(10000*29, 100)]);"
+    ],
+    "exit_code": 0,
+    "actual": {
+      "float": 2900,
+      "inteiro": 2900
+    },
+    "claimed": {
+      "float": 2899,
+      "inteiro": 2900
+    },
+    "valid": false
+  }
+}

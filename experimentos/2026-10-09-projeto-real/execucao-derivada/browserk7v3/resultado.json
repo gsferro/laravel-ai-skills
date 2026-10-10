@@ -1,0 +1,31 @@
+{
+  "command": [
+    "php",
+    "vendor/bin/pest",
+    "tests/BrowserTenancy/ComparacaoK7Test.php",
+    "--colors=never",
+    "--log-junit",
+    "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-derivada\\browserk7v3\\control.xml"
+  ],
+  "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+  "exit_code": 0,
+  "timed_out": false,
+  "duration_seconds": 4.187,
+  "cases": [
+    {
+      "name": "it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set \"dataset \"porcentagem para fixo / unidade centavos\"\"",
+      "class": "Tests.BrowserTenancy.ComparacaoK7Test",
+      "assertions": 4,
+      "problems": []
+    },
+    {
+      "name": "it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set \"dataset \"fixo para porcentagem / unidade pontos percentuais\"\"",
+      "class": "Tests.BrowserTenancy.ComparacaoK7Test",
+      "assertions": 4,
+      "problems": []
+    }
+  ],
+  "test_sha256": {
+    "tests\\BrowserTenancy\\ComparacaoK7Test.php": "e0e7d70e5e9daada24e502d504bf1413a45facc8b8a3ef1e2effaffb1c005a60"
+  }
+}

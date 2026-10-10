@@ -1,0 +1,438 @@
+{
+  "anonymous_id": "conjunto-k7",
+  "scenario": 1,
+  "verdict_sha256": "4dcc43c3c9db8a727d4f181cd1abc090795792cdf221ed7f53470df041b38e48",
+  "source_sha256": "8fff814403e0b1df8a6d49da01d64a287672bee6b66849ca960a7c6e40970570",
+  "rows": [
+    {
+      "id": "D01",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-10"
+      ],
+      "quotes": [
+        {
+          "quote": "O percentual inválido é recusado também na escrita direta",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a escrita é recusada sem gravar o percentual inválido e sem acrescentar qualquer cupom",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D02",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-32"
+      ],
+      "quotes": [
+        {
+          "quote": "O desconto fixo nunca produz total negativo",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então o total devolvido é exatamente <final> centavos",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D03",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-27"
+      ],
+      "quotes": [
+        {
+          "quote": "A comparação usa o mesmo instante entre fuso local e UTC",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Dado um cupom porcentagem/10 da Acme, usos 0, limite 3 e expiração 2026-10-10 23:59:59 America/Sao_Paulo",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então o resultado é <resultado>, contador <contador> e novas linhas em cupom_usos <novas_linhas>",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D04",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-28"
+      ],
+      "quotes": [
+        {
+          "quote": "O limite autoriza somente usos ainda disponíveis",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então o resultado é <resultado> e o contador persistido é <contador>",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D05",
+      "decision": "NÃO DETECTA",
+      "ct": [],
+      "quotes": [
+        {
+          "quote": "Qual teto e quais caracteres definem o código; caixa, espaços nas bordas e Unicode mudam sua identidade?",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Texto livre, Unicode, espaços, n/n+1",
+          "literal_in_source": true
+        },
+        {
+          "quote": "**lacuna L2**",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D06",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-33"
+      ],
+      "quotes": [
+        {
+          "quote": "A inexistência e cada condição inválida recusam sem efeitos",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a aplicação é recusada sem total com desconto",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E o contador <contador> e cada linha anterior de cupom_usos permanecem inalterados e não há nova linha",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D07",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-35"
+      ],
+      "quotes": [
+        {
+          "quote": "Ambos os tipos incrementam uma vez o contador persistido",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Dado a aplicadora da Acme e um cupom <tipo> ativo com contador 2, limite 5 e duas linhas anteriores de cupom_usos",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então o retorno é 9000 e o contador recarregado do banco é 3",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D08",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-30"
+      ],
+      "quotes": [
+        {
+          "quote": "Duas aplicações simultâneas disputam a última unidade",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E ambas execuções carregaram o cupom e aguardam a mesma barreira antes de consumir",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então exatamente uma aplicação retorna 9000 e a outra é recusada por indisponibilidade",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E o contador persistido é <limite> e há exatamente uma nova linha de cupom_usos com o vencedor e seu instante",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D09",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-15"
+      ],
+      "quotes": [
+        {
+          "quote": "O domínio aplica a matriz de autorização em cada verbo",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Quando o ator executa diretamente <acao> pela via de escrita do domínio sem montar componente",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então o resultado é <resultado> com <persistencia>",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D10",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-22"
+      ],
+      "quotes": [
+        {
+          "quote": "Ativo requer validade futura e uso disponível",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Dado a usuária comum da Acme e um cupom <tipo> com validade <validade>, usos <usos> e limite 3",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a presença desse cupom é <presenca>",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D11",
+      "decision": "NÃO DETECTA",
+      "ct": [],
+      "quotes": [
+        {
+          "quote": "O fixo admite zero e qual o domínio máximo de centavos/total?",
+          "literal_in_source": true
+        },
+        {
+          "quote": "**RQ-04 — aberta (Q4), sem cenário até a resposta**, apenas no recorte de mínimo/máximo do fixo",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D12",
+      "decision": "NÃO DETECTA",
+      "ct": [],
+      "quotes": [
+        {
+          "quote": "**RQ-05 — aberta (Q2), sem cenário até a resposta**, apenas no recorte de aceitar validade passada na gravação.",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D13",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-36"
+      ],
+      "quotes": [
+        {
+          "quote": "A aplicação registra pessoa e instante sem depender de eventos do cupom",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Dado Beto da Acme como argumento aplicadoPor do motor, Ana como pessoa real distinta e um cupom <tipo> ativo com contador 0 e limite 3",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então cupom_usos contém exatamente uma nova linha vinculada ao cupom, à chave de Beto e ao instante 2026-10-10T12:34:56Z",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D14",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-27"
+      ],
+      "quotes": [
+        {
+          "quote": "A comparação usa o mesmo instante entre fuso local e UTC",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E o armazenamento representa esse instante como 2026-10-11 02:59:59 UTC e o relógio está em <agora_utc>",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então o resultado é <resultado>, contador <contador> e novas linhas em cupom_usos <novas_linhas>",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D15",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-41"
+      ],
+      "quotes": [
+        {
+          "quote": "Excluir e aplicar por objeto retido recusa a aplicação",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Dado a administradora da Acme, um objeto <tipo> carregado enquanto ativo e seu cupom excluído por uma exclusão real",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então a aplicação é recusada sem total com desconto e o cupom excluído não reaparece",
+          "literal_in_source": true
+        },
+        {
+          "quote": "E SENTINELA continua com contador 0 e não há nova linha de cupom_usos para a chave excluída",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D16",
+      "decision": "DETECTA",
+      "ct": [
+        "CT-31"
+      ],
+      "quotes": [
+        {
+          "quote": "O percentual inteiro trunca apenas a fração do desconto",
+          "literal_in_source": true
+        },
+        {
+          "quote": "Então o total devolvido é exatamente <final> centavos",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D17",
+      "decision": "NÃO DETECTA",
+      "ct": [],
+      "quotes": [
+        {
+          "quote": "**lacuna L2**: RQ-02 aberta Q1; não assumir 40, maiúsculas ou trim do PRD",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    },
+    {
+      "id": "D18",
+      "decision": "NÃO DETECTA",
+      "ct": [],
+      "quotes": [
+        {
+          "quote": "**lacuna L1**: Pedido fora de escopo P-01; retorno de duas chamadas não prova agregado. Não criar Pedido nem chamar duas vezes e marcar idempotente.",
+          "literal_in_source": true
+        }
+      ],
+      "valid_quote": true
+    }
+  ],
+  "detected": [
+    "D01",
+    "D02",
+    "D03",
+    "D04",
+    "D06",
+    "D07",
+    "D08",
+    "D09",
+    "D10",
+    "D13",
+    "D14",
+    "D15",
+    "D16"
+  ],
+  "ddr_denominator": 18,
+  "scenario_declarations": [
+    "CT-01",
+    "CT-02",
+    "CT-03",
+    "CT-04",
+    "CT-50",
+    "CT-05",
+    "CT-06",
+    "CT-07",
+    "CT-08",
+    "CT-09",
+    "CT-10",
+    "CT-11",
+    "CT-12",
+    "CT-13",
+    "CT-14",
+    "CT-15",
+    "CT-16",
+    "CT-17",
+    "CT-48",
+    "CT-18",
+    "CT-19",
+    "CT-20",
+    "CT-21",
+    "CT-51",
+    "CT-22",
+    "CT-23",
+    "CT-24",
+    "CT-46",
+    "CT-25",
+    "CT-26",
+    "CT-27",
+    "CT-28",
+    "CT-29",
+    "CT-30",
+    "CT-31",
+    "CT-32",
+    "CT-33",
+    "CT-34",
+    "CT-47",
+    "CT-35",
+    "CT-36",
+    "CT-37",
+    "CT-38",
+    "CT-39",
+    "CT-49",
+    "CT-40",
+    "CT-41",
+    "CT-42",
+    "CT-43",
+    "CT-44",
+    "CT-45",
+    "CT-B01",
+    "CT-B02"
+  ],
+  "nct": 53,
+  "all_detected_have_literal_quotes": true,
+  "freeze_hash_check": {
+    "recorded": "c791d33fab989bf207e19b06f2ae4207c2f169376c309c48ec45923cedb36561",
+    "actual_bytes": "8fff814403e0b1df8a6d49da01d64a287672bee6b66849ca960a7c6e40970570",
+    "normalized_lf": "c791d33fab989bf207e19b06f2ae4207c2f169376c309c48ec45923cedb36561",
+    "metadata_describes_bytes": false,
+    "legacy_note": "The first freezer hashed LF text before Windows wrote CRLF. Original metadata is preserved; actual input bytes are identical to the archived anonymous set."
+  }
+}

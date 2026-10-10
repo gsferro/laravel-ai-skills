@@ -1,0 +1,8 @@
+{
+  "instrument_used_this_round": "experimentos\\2026-10-09-projeto-real\\instrumentos-congelados\\PROMPT-JUIZ-CEGO.md",
+  "sha256_used": "599c342d976e6dbb468dd1333471b00cfebe0821ca74bc8e9623fd3c8eca5995",
+  "published_instrument_after_fix": "experimentos\\protocolo\\PROMPT-JUIZ-CEGO.md",
+  "sha256_published": "4e0b40203804620d045eb80202fbb9e64214d962a7d676dbe3d5e11141a9e2c5",
+  "reason": "Contraexemplo não discriminante confirmado no PHP; prompt v2 somente para rodadas futuras.",
+  "judges_this_round": "Todos recebem literalmente o prompt anterior congelado."
+}

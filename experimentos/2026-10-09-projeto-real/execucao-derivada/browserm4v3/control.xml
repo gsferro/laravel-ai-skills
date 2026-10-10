@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\BrowserTenancy\ComparacaoM4Test" file="tests\BrowserTenancy\ComparacaoM4Test.php" tests="1" assertions="4" errors="0" failures="0" skipped="0" time="1.759525">
+    <testcase name="it CT-B01 [M4] Chromium seleciona fixo e mostra centavos com campo operável; gravação omitida" file="tests\BrowserTenancy\ComparacaoM4Test.php::it CT-B01 [M4] Chromium seleciona fixo e mostra centavos com campo operável; gravação omitida" class="Tests\BrowserTenancy\ComparacaoM4Test" classname="Tests.BrowserTenancy.ComparacaoM4Test" assertions="4" time="1.759525"/>
+  </testsuite>
+</testsuites>

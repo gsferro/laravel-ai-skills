@@ -1,0 +1,116 @@
+{
+  "root": "C:\\Users\\CASA\\AppData\\Local\\Temp\\skills-baseline-qyv90rud",
+  "instrument_sha256": "99b4b99b7fbda4a7b677f4250d4a046bcaaab0279aa9d7ab7b67ac8ea4938383",
+  "tests": 45,
+  "passed": [
+    "test_checkbox_evidence",
+    "test_checkbox_missing_evidence",
+    "test_hook_01_revisor-diff",
+    "test_hook_02_revisor-diff",
+    "test_hook_03_revisor-diff",
+    "test_hook_04_revisor-diff",
+    "test_hook_05_adversario-ct",
+    "test_hook_06_adversario-ct",
+    "test_hook_07_executor-ct",
+    "test_hook_08_executor-ct",
+    "test_hook_09_executor-ctb",
+    "test_hook_10_qa-gate",
+    "test_hook_11_qa-gate",
+    "test_hook_12_desconhecido",
+    "test_ids_empty_glob",
+    "test_ids_match",
+    "test_ids_unknown",
+    "test_rules_clean",
+    "test_rules_committed",
+    "test_strong_oracle",
+    "test_syntax_checkbox_sem_evidencia",
+    "test_syntax_citacoes",
+    "test_syntax_conformidade_rules",
+    "test_syntax_dark_mode",
+    "test_syntax_espelho_gh",
+    "test_syntax_guarda_subagente",
+    "test_syntax_ids_ct",
+    "test_syntax_indice",
+    "test_syntax_k1_oraculo_fraco",
+    "test_syntax_prova_arch",
+    "test_syntax_rastreabilidade",
+    "test_trace_complete",
+    "test_trace_missing_scenario",
+    "test_weak_oracle"
+  ],
+  "failed": [
+    {
+      "test": "test_codex_roles",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 216, in test_codex_roles\n    self.assertEqual(len(roles), 5)\nAssertionError: 0 != 5\n"
+    },
+    {
+      "test": "test_dark_inline_media",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 159, in test_dark_inline_media\n    self.assert_exit(result, 1)\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 53, in assert_exit\n    self.assertEqual(result.returncode, code, result.stdout + result.stderr)\nAssertionError: 0 != 1 : \n"
+    },
+    {
+      "test": "test_ids_attribute_is_not_test",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 154, in test_ids_attribute_is_not_test\n    self.assert_exit(self.script(\"feature-wiki\", \"ids-ct.sh\", self.wiki, \"tests/**/*.php\"), 1)\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 53, in assert_exit\n    self.assertEqual(result.returncode, code, result.stdout + result.stderr)\nAssertionError: 0 != 1 : \n"
+    },
+    {
+      "test": "test_ids_comment_is_not_test",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 128, in test_ids_comment_is_not_test\n    self.assert_exit(result, 1)\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 53, in assert_exit\n    self.assertEqual(result.returncode, code, result.stdout + result.stderr)\nAssertionError: 0 != 1 : \n"
+    },
+    {
+      "test": "test_ids_constructor_is_not_test",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 149, in test_ids_constructor_is_not_test\n    self.assert_exit(self.script(\"feature-wiki\", \"ids-ct.sh\", self.wiki, \"tests/**/*.php\"), 1)\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 53, in assert_exit\n    self.assertEqual(result.returncode, code, result.stdout + result.stderr)\nAssertionError: 0 != 1 : \n"
+    },
+    {
+      "test": "test_ids_fixture_string_is_not_test",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 139, in test_ids_fixture_string_is_not_test\n    self.assert_exit(self.script(\"feature-wiki\", \"ids-ct.sh\", self.wiki, \"tests/**/*.php\"), 1)\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 53, in assert_exit\n    self.assertEqual(result.returncode, code, result.stdout + result.stderr)\nAssertionError: 0 != 1 : \n"
+    },
+    {
+      "test": "test_ids_method_is_not_test",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 144, in test_ids_method_is_not_test\n    self.assert_exit(self.script(\"feature-wiki\", \"ids-ct.sh\", self.wiki, \"tests/**/*.php\"), 1)\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 53, in assert_exit\n    self.assertEqual(result.returncode, code, result.stdout + result.stderr)\nAssertionError: 0 != 1 : \n"
+    },
+    {
+      "test": "test_rules_staged",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 193, in test_rules_staged\n    self.check_rules_change(\"staged\")\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 186, in check_rules_change\n    self.assert_exit(result, 1)\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 53, in assert_exit\n    self.assertEqual(result.returncode, code, result.stdout + result.stderr)\nAssertionError: 0 != 1 : \n"
+    },
+    {
+      "test": "test_rules_unstaged",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 190, in test_rules_unstaged\n    self.check_rules_change(\"unstaged\")\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 186, in check_rules_change\n    self.assert_exit(result, 1)\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 53, in assert_exit\n    self.assertEqual(result.returncode, code, result.stdout + result.stderr)\nAssertionError: 0 != 1 : \n"
+    },
+    {
+      "test": "test_rules_untracked",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 196, in test_rules_untracked\n    self.check_rules_change(\"untracked\")\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 186, in check_rules_change\n    self.assert_exit(result, 1)\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 53, in assert_exit\n    self.assertEqual(result.returncode, code, result.stdout + result.stderr)\nAssertionError: 0 != 1 : \n"
+    },
+    {
+      "test": "test_tickets_explicit_codex",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\tests\\run.py\", line 211, in test_tickets_explicit_codex\n    self.assertTrue(path.is_file(), \"Codex precisa de política explícita própria\")\nAssertionError: False is not true : Codex precisa de política explícita própria\n"
+    }
+  ],
+  "skipped": [],
+  "seconds": 7.469,
+  "skills": {
+    "feature-quality-gate": {
+      "body_lines": 851,
+      "description_chars": 997,
+      "bytes": 67173
+    },
+    "feature-test-design": {
+      "body_lines": 789,
+      "description_chars": 989,
+      "bytes": 60582
+    },
+    "feature-tickets": {
+      "body_lines": 474,
+      "description_chars": 798,
+      "bytes": 36434
+    },
+    "feature-wiki": {
+      "body_lines": 1314,
+      "description_chars": 998,
+      "bytes": 115641
+    },
+    "requirement-to-rule": {
+      "body_lines": 450,
+      "description_chars": 886,
+      "bytes": 38966
+    }
+  }
+}

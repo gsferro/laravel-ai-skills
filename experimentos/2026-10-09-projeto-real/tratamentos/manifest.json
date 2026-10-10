@@ -1,0 +1,14 @@
+{
+  "baseline": {
+    "project": "project-71",
+    "files": 64,
+    "zip_sha256": "9ab2c72b48e5229b82d6f88363abbe58c194733c0be1fe61d6e8e57605b811d6",
+    "size_bytes": 398164
+  },
+  "candidata": {
+    "project": "project-26",
+    "files": 71,
+    "zip_sha256": "d5ebfcc1be8f2529b3afe20e605b343a94f5d4f1a07e5a95d90fd6c8a3fc93ed",
+    "size_bytes": 414163
+  }
+}

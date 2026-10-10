@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\BrowserTenancy\ComparacaoK7Test" file="tests\BrowserTenancy\ComparacaoK7Test.php" tests="2" assertions="8" errors="0" failures="0" skipped="0" time="2.769329">
+    <testsuite name="it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida" tests="2" assertions="8" errors="0" failures="0" skipped="0" time="2.769329">
+      <testcase name="it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set &quot;dataset &quot;porcentagem para fixo / unidade centavos&quot;&quot;" file="tests\BrowserTenancy\ComparacaoK7Test.php::it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set &quot;dataset &quot;porcentagem para fixo / unidade centavos&quot;&quot;" class="Tests\BrowserTenancy\ComparacaoK7Test" classname="Tests.BrowserTenancy.ComparacaoK7Test" assertions="4" time="1.847440"/>
+      <testcase name="it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set &quot;dataset &quot;fixo para porcentagem / unidade pontos percentuais&quot;&quot;" file="tests\BrowserTenancy\ComparacaoK7Test.php::it CT-B01 [K7] Chromium troca tipo e mostra a nova unidade sem reload; gravação omitida with data set &quot;dataset &quot;fixo para porcentagem / unidade pontos percentuais&quot;&quot;" class="Tests\BrowserTenancy\ComparacaoK7Test" classname="Tests.BrowserTenancy.ComparacaoK7Test" assertions="4" time="0.921888"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

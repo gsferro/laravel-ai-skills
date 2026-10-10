@@ -1,0 +1,1860 @@
+--- a/.env.example
++++ b/.env.example
+@@ -131,0 +132,4 @@
++
++LOG_CUPOM_LEVEL=
++LOG_COMPRAS_LEVEL=
++KIT_COMPRAS_LIMITE_DIRETOR=5000.00
+--- /dev/null
++++ b/app/Enums/SituacaoSolicitacao.php
+@@ -0,0 +1,36 @@
++<?php
++
++namespace App\Enums;
++
++use Filament\Support\Contracts\HasColor;
++use Filament\Support\Contracts\HasLabel;
++
++enum SituacaoSolicitacao: string implements HasColor, HasLabel
++{
++    case Rascunho          = 'rascunho';
++    case AguardandoGestor  = 'aguardando_gestor';
++    case AguardandoDiretor = 'aguardando_diretor';
++    case Aprovada          = 'aprovada';
++    case Cancelada         = 'cancelada';
++
++    public function getLabel(): string
++    {
++        return match ($this) {
++            self::Rascunho          => 'Rascunho', self::AguardandoGestor => 'Aguardando gestor',
++            self::AguardandoDiretor => 'Aguardando diretor', self::Aprovada => 'Aprovada', self::Cancelada => 'Cancelada',
++        };
++    }
++
++    public function getColor(): string
++    {
++        return match ($this) {
++            self::Rascunho => 'gray', self::AguardandoGestor, self::AguardandoDiretor => 'warning',
++            self::Aprovada => 'success', self::Cancelada => 'danger',
++        };
++    }
++
++    public function emTransito(): bool
++    {
++        return in_array($this, [self::AguardandoGestor, self::AguardandoDiretor], true);
++    }
++}
+--- /dev/null
++++ b/app/Enums/TipoDeDesconto.php
+@@ -0,0 +1,18 @@
++<?php
++
++namespace App\Enums;
++
++use Filament\Support\Contracts\HasLabel;
++
++enum TipoDeDesconto: string implements HasLabel
++{
++    case Porcentagem = 'porcentagem';
++    case Fixo        = 'fixo';
++
++    public function getLabel(): string
++    {
++        return match ($this) {
++            self::Porcentagem => 'Porcentagem', self::Fixo => 'Valor fixo'
++        };
++    }
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/CentrosCusto/CentroCustoResource.php
+@@ -0,0 +1,56 @@
++<?php
++
++namespace App\Filament\App\Resources\CentrosCusto;
++
++use App\Filament\App\Resources\CentrosCusto\Pages\CreateCentroCusto;
++use App\Filament\App\Resources\CentrosCusto\Pages\EditCentroCusto;
++use App\Filament\App\Resources\CentrosCusto\Pages\ListCentrosCusto;
++use App\Filament\Concerns\BadgeContagemNavegacao;
++use App\Models\CentroCusto;
++use BackedEnum;
++use Filament\Actions\DeleteAction;
++use Filament\Actions\EditAction;
++use Filament\Facades\Filament;
++use Filament\Forms\Components\Select;
++use Filament\Forms\Components\TextInput;
++use Filament\Resources\Resource;
++use Filament\Schemas\Schema;
++use Filament\Support\Icons\Heroicon;
++use Filament\Tables\Columns\TextColumn;
++use Filament\Tables\Table;
++use Illuminate\Database\Eloquent\Builder;
++
++class CentroCustoResource extends Resource
++{
++    use BadgeContagemNavegacao;
++
++    protected static ?string $model = CentroCusto::class;
++
++    protected static ?string $slug = 'centros-de-custo';
++
++    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice;
++
++    protected static ?string $modelLabel = 'centro de custo';
++
++    protected static ?string $pluralModelLabel = 'centros de custo';
++
++    protected static ?string $recordTitleAttribute = 'nome';
++
++    public static function form(Schema $schema): Schema
++    {
++        return $schema->components([
++            TextInput::make('nome')->label('Nome')->required()->maxLength(120)->scopedUnique(ignoreRecord: true),
++            Select::make('gestor_id')->label('Gestor')->relationship('gestor', 'name', modifyQueryUsing: fn (Builder $query): Builder => Filament::getTenant() ? $query->whereHas('tenants', fn (Builder $tenants): Builder => $tenants->whereKey(Filament::getTenant()->getKey())) : $query)->searchable()->preload(),
++        ]);
++    }
++
++    public static function table(Table $table): Table
++    {
++        return $table->columns([TextColumn::make('nome')->label('Nome')->searchable()->sortable(), TextColumn::make('gestor.name')->label('Gestor')])->recordActions([EditAction::make(), DeleteAction::make()]);
++    }
++
++    public static function getPages(): array
++    {
++        return ['index' => ListCentrosCusto::route('/'), 'create' => CreateCentroCusto::route('/create'), 'edit' => EditCentroCusto::route('/{record}/edit')];
++    }
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/CentrosCusto/Pages/CreateCentroCusto.php
+@@ -0,0 +1,11 @@
++<?php
++
++namespace App\Filament\App\Resources\CentrosCusto\Pages;
++
++use App\Filament\App\Resources\CentrosCusto\CentroCustoResource;
++use Filament\Resources\Pages\CreateRecord;
++
++class CreateCentroCusto extends CreateRecord
++{
++    protected static string $resource = CentroCustoResource::class;
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/CentrosCusto/Pages/EditCentroCusto.php
+@@ -0,0 +1,19 @@
++<?php
++
++namespace App\Filament\App\Resources\CentrosCusto\Pages;
++
++use App\Filament\App\Resources\CentrosCusto\CentroCustoResource;
++use Filament\Actions\DeleteAction;
++use Filament\Resources\Pages\EditRecord;
++
++class EditCentroCusto extends EditRecord
++{
++    protected static string $resource = CentroCustoResource::class;
++
++    protected function getHeaderActions(): array
++    {
++        return [
++            DeleteAction::make(),
++        ];
++    }
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/CentrosCusto/Pages/ListCentrosCusto.php
+@@ -0,0 +1,22 @@
++<?php
++
++namespace App\Filament\App\Resources\CentrosCusto\Pages;
++
++use App\Filament\App\Resources\CentrosCusto\CentroCustoResource;
++use Asmit\ResizedColumn\HasResizableColumn;
++use Filament\Actions\CreateAction;
++use Filament\Resources\Pages\ListRecords;
++
++class ListCentrosCusto extends ListRecords
++{
++    use HasResizableColumn;
++
++    protected static string $resource = CentroCustoResource::class;
++
++    protected function getHeaderActions(): array
++    {
++        return [
++            CreateAction::make(),
++        ];
++    }
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/Cupons/CupomResource.php
+@@ -0,0 +1,82 @@
++<?php
++
++namespace App\Filament\App\Resources\Cupons;
++
++use App\Enums\TipoDeDesconto;
++use App\Filament\App\Resources\Cupons\Pages\CreateCupom;
++use App\Filament\App\Resources\Cupons\Pages\EditCupom;
++use App\Filament\App\Resources\Cupons\Pages\ListCupons;
++use App\Filament\Concerns\BadgeContagemNavegacao;
++use App\Models\Cupom;
++use BackedEnum;
++use Filament\Actions\DeleteAction;
++use Filament\Actions\EditAction;
++use Filament\Forms\Components\DateTimePicker;
++use Filament\Forms\Components\Select;
++use Filament\Forms\Components\TextInput;
++use Filament\Resources\Resource;
++use Filament\Schemas\Components\Utilities\Get;
++use Filament\Schemas\Schema;
++use Filament\Support\Icons\Heroicon;
++use Filament\Tables\Columns\TextColumn;
++use Filament\Tables\Table;
++use Illuminate\Database\Eloquent\Builder;
++use Illuminate\Support\Facades\Auth;
++
++class CupomResource extends Resource
++{
++    use BadgeContagemNavegacao;
++
++    protected static ?string $model = Cupom::class;
++
++    protected static ?string $slug = 'cupons';
++
++    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTicket;
++
++    protected static ?string $modelLabel = 'cupom';
++
++    protected static ?string $pluralModelLabel = 'cupons';
++
++    protected static ?string $recordTitleAttribute = 'codigo';
++
++    public static function form(Schema $schema): Schema
++    {
++        return $schema->components([
++            TextInput::make('codigo')->label('Código')->required()->maxLength(40)
++                ->mutateStateForValidationUsing(fn (?string $state): string => mb_strtoupper(trim($state ?? '')))
++                ->dehydrateStateUsing(fn (?string $state): string => mb_strtoupper(trim($state ?? '')))
++                ->scopedUnique(ignoreRecord: true),
++            Select::make('tipo')->label('Tipo')->options(TipoDeDesconto::class)->default(TipoDeDesconto::Porcentagem)->required()->live(),
++            TextInput::make('valor')->label(fn (Get $get): string => $get('tipo') === TipoDeDesconto::Fixo->value ? 'Valor do desconto (centavos)' : 'Percentual de desconto')
++                ->required()->numeric()->rules(['integer'])->minValue(1)->maxValue(fn (Get $get): ?int => $get('tipo') === TipoDeDesconto::Porcentagem->value ? 100 : null),
++            DateTimePicker::make('expira_em')->label('Válido até')->required()->seconds(false)->minDate(now())->helperText('Depois deste instante o cupom deixa de ser aceito.'),
++            TextInput::make('limite_de_usos')->label('Limite de usos')->required()->numeric()->rules(['integer'])->minValue(1),
++        ]);
++    }
++
++    public static function table(Table $table): Table
++    {
++        return $table->defaultSort('expira_em', 'desc')->columns([
++            TextColumn::make('codigo')->label('Código')->searchable()->sortable(),
++            TextColumn::make('tipo')->label('Tipo')->badge(),
++            TextColumn::make('valor')->label('Desconto')->formatStateUsing(fn (Cupom $record): string => $record->tipo === TipoDeDesconto::Fixo ? 'R$ '.number_format($record->valor / 100, 2, ',', '.') : $record->valor.'%'),
++            TextColumn::make('usos')->label('Usos')->formatStateUsing(fn (Cupom $record): string => $record->usos.'/'.$record->limite_de_usos),
++            TextColumn::make('expira_em')->label('Válido até')->dateTime('d/m/Y H:i')->sortable(),
++            TextColumn::make('situacao')->label('Situação')->badge()->state(fn (Cupom $record): string => $record->situacao())->color(fn (string $state): string => match ($state) {
++                'Ativo' => 'success', 'Esgotado' => 'warning', default => 'danger'
++            }),
++        ])->recordActions([EditAction::make(), DeleteAction::make()]);
++    }
++
++    public static function getEloquentQuery(): Builder
++    {
++        $query = parent::getEloquentQuery();
++
++        return Auth::user()?->can('Update:Cupom') ? $query : $query->ativos();
++    }
++
++    public static function getPages(): array
++    {
++        return ['index' => ListCupons::route('/'), 'create' => CreateCupom::route('/create'), 'edit' => EditCupom::route('/{record}/edit')];
++    }
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/Cupons/Pages/CreateCupom.php
+@@ -0,0 +1,11 @@
++<?php
++
++namespace App\Filament\App\Resources\Cupons\Pages;
++
++use App\Filament\App\Resources\Cupons\CupomResource;
++use Filament\Resources\Pages\CreateRecord;
++
++class CreateCupom extends CreateRecord
++{
++    protected static string $resource = CupomResource::class;
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/Cupons/Pages/EditCupom.php
+@@ -0,0 +1,19 @@
++<?php
++
++namespace App\Filament\App\Resources\Cupons\Pages;
++
++use App\Filament\App\Resources\Cupons\CupomResource;
++use Filament\Actions\DeleteAction;
++use Filament\Resources\Pages\EditRecord;
++
++class EditCupom extends EditRecord
++{
++    protected static string $resource = CupomResource::class;
++
++    protected function getHeaderActions(): array
++    {
++        return [
++            DeleteAction::make(),
++        ];
++    }
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/Cupons/Pages/ListCupons.php
+@@ -0,0 +1,22 @@
++<?php
++
++namespace App\Filament\App\Resources\Cupons\Pages;
++
++use App\Filament\App\Resources\Cupons\CupomResource;
++use Asmit\ResizedColumn\HasResizableColumn;
++use Filament\Actions\CreateAction;
++use Filament\Resources\Pages\ListRecords;
++
++class ListCupons extends ListRecords
++{
++    use HasResizableColumn;
++
++    protected static string $resource = CupomResource::class;
++
++    protected function getHeaderActions(): array
++    {
++        return [
++            CreateAction::make(),
++        ];
++    }
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/SolicitacoesCompra/Pages/CreateSolicitacaoCompra.php
+@@ -0,0 +1,25 @@
++<?php
++
++namespace App\Filament\App\Resources\SolicitacoesCompra\Pages;
++
++use App\Enums\SituacaoSolicitacao;
++use App\Filament\App\Resources\SolicitacoesCompra\SolicitacaoCompraResource;
++use App\Models\SolicitacaoCompra;
++use Filament\Resources\Pages\CreateRecord;
++use Illuminate\Database\Eloquent\Model;
++use Illuminate\Support\Facades\Auth;
++
++class CreateSolicitacaoCompra extends CreateRecord
++{
++    protected static string $resource = SolicitacaoCompraResource::class;
++
++    protected function handleRecordCreation(array $data): Model
++    {
++        $record                 = new SolicitacaoCompra($data);
++        $record->solicitante_id = Auth::id();
++        $record->situacao       = SituacaoSolicitacao::Rascunho;
++        $record->save();
++
++        return $record;
++    }
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/SolicitacoesCompra/Pages/EditSolicitacaoCompra.php
+@@ -0,0 +1,26 @@
++<?php
++
++namespace App\Filament\App\Resources\SolicitacoesCompra\Pages;
++
++use App\Filament\App\Resources\SolicitacoesCompra\SolicitacaoCompraResource;
++use Filament\Actions\ViewAction;
++use Filament\Resources\Pages\EditRecord;
++use Illuminate\Database\Eloquent\Model;
++use Illuminate\Support\Facades\Auth;
++
++class EditSolicitacaoCompra extends EditRecord
++{
++    protected static string $resource = SolicitacaoCompraResource::class;
++
++    protected function handleRecordUpdate(Model $record, array $data): Model
++    {
++        $record->editar($data, Auth::user());
++
++        return $record;
++    }
++
++    protected function getHeaderActions(): array
++    {
++        return [ViewAction::make()];
++    }
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/SolicitacoesCompra/Pages/ListSolicitacoesCompra.php
+@@ -0,0 +1,22 @@
++<?php
++
++namespace App\Filament\App\Resources\SolicitacoesCompra\Pages;
++
++use App\Filament\App\Resources\SolicitacoesCompra\SolicitacaoCompraResource;
++use Asmit\ResizedColumn\HasResizableColumn;
++use Filament\Actions\CreateAction;
++use Filament\Resources\Pages\ListRecords;
++
++class ListSolicitacoesCompra extends ListRecords
++{
++    use HasResizableColumn;
++
++    protected static string $resource = SolicitacaoCompraResource::class;
++
++    protected function getHeaderActions(): array
++    {
++        return [
++            CreateAction::make(),
++        ];
++    }
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/SolicitacoesCompra/Pages/ViewSolicitacaoCompra.php
+@@ -0,0 +1,19 @@
++<?php
++
++namespace App\Filament\App\Resources\SolicitacoesCompra\Pages;
++
++use App\Filament\App\Resources\SolicitacoesCompra\SolicitacaoCompraResource;
++use Filament\Actions\EditAction;
++use Filament\Resources\Pages\ViewRecord;
++
++class ViewSolicitacaoCompra extends ViewRecord
++{
++    protected static string $resource = SolicitacaoCompraResource::class;
++
++    protected function getHeaderActions(): array
++    {
++        return [
++            EditAction::make(),
++        ];
++    }
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/SolicitacoesCompra/Schemas/SolicitacaoCompraForm.php
+@@ -0,0 +1,19 @@
++<?php
++
++namespace App\Filament\App\Resources\SolicitacoesCompra\Schemas;
++
++use Filament\Forms\Components\Select;
++use Filament\Forms\Components\TextInput;
++use Filament\Schemas\Schema;
++
++class SolicitacaoCompraForm
++{
++    public static function configure(Schema $schema): Schema
++    {
++        return $schema->components([
++            TextInput::make('descricao')->label('Descrição')->required()->maxLength(255),
++            TextInput::make('valor')->label('Valor')->required()->numeric()->minValue(0.01)->maxValue(9999999999.99)->rules(['decimal:0,2'])->prefix('R$'),
++            Select::make('centro_custo_id')->label('Centro de custo')->relationship('centroCusto', 'nome')->required()->searchable()->preload(),
++        ]);
++    }
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/SolicitacoesCompra/Schemas/SolicitacaoCompraInfolist.php
+@@ -0,0 +1,27 @@
++<?php
++
++namespace App\Filament\App\Resources\SolicitacoesCompra\Schemas;
++
++use Filament\Infolists\Components\RepeatableEntry;
++use Filament\Infolists\Components\TextEntry;
++use Filament\Schemas\Components\Section;
++use Filament\Schemas\Schema;
++
++class SolicitacaoCompraInfolist
++{
++    public static function configure(Schema $schema): Schema
++    {
++        return $schema->components([
++            Section::make('Solicitação')->columnSpanFull()->schema([
++                TextEntry::make('descricao')->label('Descrição'), TextEntry::make('valor')->label('Valor')->money('BRL'),
++                TextEntry::make('centroCusto.nome')->label('Centro de custo'), TextEntry::make('solicitante.name')->label('Solicitante'), TextEntry::make('situacao')->label('Situação')->badge(),
++            ]),
++            Section::make('Histórico de aprovação')->columnSpanFull()->schema([
++                RepeatableEntry::make('etapas')->label('Etapas')->schema([
++                    TextEntry::make('etapa')->label('Etapa'), TextEntry::make('decisao')->label('Decisão'), TextEntry::make('decididoPor.name')->label('Quem decidiu'),
++                    TextEntry::make('created_at')->label('Quando')->dateTime('d/m/Y H:i'), TextEntry::make('justificativa')->label('Justificativa')->placeholder('—'),
++                ]),
++            ]),
++        ]);
++    }
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/SolicitacoesCompra/SolicitacaoCompraResource.php
+@@ -0,0 +1,68 @@
++<?php
++
++namespace App\Filament\App\Resources\SolicitacoesCompra;
++
++use App\Enums\SituacaoSolicitacao;
++use App\Filament\App\Resources\SolicitacoesCompra\Pages\CreateSolicitacaoCompra;
++use App\Filament\App\Resources\SolicitacoesCompra\Pages\EditSolicitacaoCompra;
++use App\Filament\App\Resources\SolicitacoesCompra\Pages\ListSolicitacoesCompra;
++use App\Filament\App\Resources\SolicitacoesCompra\Pages\ViewSolicitacaoCompra;
++use App\Filament\App\Resources\SolicitacoesCompra\Schemas\SolicitacaoCompraForm;
++use App\Filament\App\Resources\SolicitacoesCompra\Schemas\SolicitacaoCompraInfolist;
++use App\Filament\App\Resources\SolicitacoesCompra\Tables\SolicitacoesCompraTable;
++use App\Filament\Concerns\BadgeContagemNavegacao;
++use App\Models\SolicitacaoCompra;
++use BackedEnum;
++use Filament\Resources\Resource;
++use Filament\Schemas\Schema;
++use Filament\Support\Icons\Heroicon;
++use Filament\Tables\Table;
++use Illuminate\Database\Eloquent\Model;
++use Illuminate\Support\Facades\Auth;
++
++class SolicitacaoCompraResource extends Resource
++{
++    use BadgeContagemNavegacao;
++
++    protected static ?string $model = SolicitacaoCompra::class;
++
++    protected static ?string $slug = 'solicitacoes-de-compra';
++
++    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingCart;
++
++    protected static ?string $modelLabel = 'solicitação de compra';
++
++    protected static ?string $pluralModelLabel = 'solicitações de compra';
++
++    protected static ?string $recordTitleAttribute = 'descricao';
++
++    public static function form(Schema $schema): Schema
++    {
++        return SolicitacaoCompraForm::configure($schema);
++    }
++
++    public static function infolist(Schema $schema): Schema
++    {
++        return SolicitacaoCompraInfolist::configure($schema);
++    }
++
++    public static function table(Table $table): Table
++    {
++        return SolicitacoesCompraTable::configure($table);
++    }
++
++    public static function canEdit(Model $record): bool
++    {
++        return $record->situacao === SituacaoSolicitacao::Rascunho && $record->solicitante_id === Auth::id() && parent::canEdit($record);
++    }
++
++    public static function canDelete(Model $record): bool
++    {
++        return $record->situacao === SituacaoSolicitacao::Rascunho && $record->solicitante_id === Auth::id() && parent::canDelete($record);
++    }
++
++    public static function getPages(): array
++    {
++        return ['index' => ListSolicitacoesCompra::route('/'), 'create' => CreateSolicitacaoCompra::route('/create'), 'view' => ViewSolicitacaoCompra::route('/{record}'), 'edit' => EditSolicitacaoCompra::route('/{record}/edit')];
++    }
++}
+--- /dev/null
++++ b/app/Filament/App/Resources/SolicitacoesCompra/Tables/SolicitacoesCompraTable.php
+@@ -0,0 +1,60 @@
++<?php
++
++namespace App\Filament\App\Resources\SolicitacoesCompra\Tables;
++
++use App\Enums\SituacaoSolicitacao;
++use App\Models\SolicitacaoCompra;
++use Closure;
++use Filament\Actions\Action;
++use Filament\Actions\DeleteAction;
++use Filament\Actions\EditAction;
++use Filament\Actions\ViewAction;
++use Filament\Forms\Components\Textarea;
++use Filament\Notifications\Notification;
++use Filament\Tables\Columns\TextColumn;
++use Filament\Tables\Filters\SelectFilter;
++use Filament\Tables\Table;
++use Illuminate\Support\Facades\Auth;
++use RuntimeException;
++
++class SolicitacoesCompraTable
++{
++    public static function configure(Table $table): Table
++    {
++        $enviar   = fn (SolicitacaoCompra $record): bool => $record->situacao === SituacaoSolicitacao::Rascunho && $record->solicitante_id === Auth::id();
++        $decidir  = fn (SolicitacaoCompra $record): bool => $record->podeSerDecididaPor(Auth::user());
++        $cancelar = fn (SolicitacaoCompra $record): bool => $record->situacao->emTransito() && $record->solicitante_id === Auth::id();
++
++        return $table->columns([
++            TextColumn::make('descricao')->label('Descrição')->searchable(), TextColumn::make('valor')->label('Valor')->money('BRL'),
++            TextColumn::make('centroCusto.nome')->label('Centro de custo'), TextColumn::make('solicitante.name')->label('Solicitante'), TextColumn::make('situacao')->label('Situação')->badge(),
++        ])->filters([SelectFilter::make('situacao')->label('Situação')->options(SituacaoSolicitacao::class)])
++            ->recordActions([
++                ViewAction::make(), EditAction::make(),
++                DeleteAction::make()->using(function (SolicitacaoCompra $record): bool {
++                    $record->excluir(Auth::user());
++
++                    return true;
++                }),
++                Action::make('enviar')->label('Enviar')->requiresConfirmation()->visible($enviar)->authorize($enviar)
++                    ->action(fn (SolicitacaoCompra $record, Action $action) => self::executar(fn () => $record->enviar(Auth::user()), $action))->successNotificationTitle('Solicitação enviada'),
++                Action::make('aprovar')->label('Aprovar')->requiresConfirmation()->visible($decidir)->authorize($decidir)
++                    ->action(fn (SolicitacaoCompra $record, Action $action) => self::executar(fn () => $record->aprovar(Auth::user()), $action))->successNotificationTitle('Etapa aprovada'),
++                Action::make('rejeitar')->label('Rejeitar')->color('danger')->modalHeading('Rejeitar solicitação')->schema([Textarea::make('justificativa')->label('Motivo da rejeição')->required()->rows(4)])
++                    ->visible($decidir)->authorize($decidir)->action(fn (SolicitacaoCompra $record, array $data, Action $action) => self::executar(fn () => $record->rejeitar(Auth::user(), $data['justificativa']), $action))->successNotificationTitle('Solicitação rejeitada'),
++                Action::make('cancelar')->label('Cancelar')->color('danger')->requiresConfirmation()->visible($cancelar)->authorize($cancelar)
++                    ->action(fn (SolicitacaoCompra $record, Action $action) => self::executar(fn () => $record->cancelar(Auth::user()), $action))->successNotificationTitle('Solicitação cancelada'),
++            ]);
++    }
++
++    private static function executar(Closure $operacao, Action $action): void
++    {
++        try {
++            $operacao();
++            $action->success();
++        } catch (RuntimeException $erro) {
++            Notification::make()->danger()->title($erro->getMessage())->send();
++            $action->halt();
++        }
++    }
++}
+--- /dev/null
++++ b/app/Models/CentroCusto.php
+@@ -0,0 +1,29 @@
++<?php
++
++namespace App\Models;
++
++use App\Traits\AuditsFillables;
++use App\Traits\BelongsToTenant;
++use App\Traits\TemUuid;
++use Database\Factories\CentroCustoFactory;
++use Illuminate\Database\Eloquent\Factories\HasFactory;
++use Illuminate\Database\Eloquent\Model;
++use Illuminate\Database\Eloquent\Relations\BelongsTo;
++use OwenIt\Auditing\Contracts\Auditable;
++
++class CentroCusto extends Model implements Auditable
++{
++    use AuditsFillables, BelongsToTenant, TemUuid;
++
++    /** @use HasFactory<CentroCustoFactory> */
++    use HasFactory;
++
++    protected $table = 'centros_custo';
++
++    protected $fillable = ['nome', 'gestor_id'];
++
++    public function gestor(): BelongsTo
++    {
++        return $this->belongsTo(User::class, 'gestor_id');
++    }
++}
+--- /dev/null
++++ b/app/Models/Cupom.php
+@@ -0,0 +1,95 @@
++<?php
++
++namespace App\Models;
++
++use App\Enums\TipoDeDesconto;
++use App\Traits\AuditsFillables;
++use App\Traits\BelongsToTenant;
++use App\Traits\TemUuid;
++use Database\Factories\CupomFactory;
++use Illuminate\Database\Eloquent\Builder;
++use Illuminate\Database\Eloquent\Casts\Attribute;
++use Illuminate\Database\Eloquent\Factories\HasFactory;
++use Illuminate\Database\Eloquent\Model;
++use Illuminate\Support\Facades\DB;
++use Illuminate\Support\Facades\Log;
++use InvalidArgumentException;
++use OwenIt\Auditing\Contracts\Auditable;
++use RuntimeException;
++
++class Cupom extends Model implements Auditable
++{
++    use AuditsFillables, BelongsToTenant, TemUuid;
++
++    /** @use HasFactory<CupomFactory> */
++    use HasFactory;
++
++    protected $table = 'cupons';
++
++    protected $fillable = ['codigo', 'tipo', 'valor', 'expira_em', 'limite_de_usos'];
++
++    protected function casts(): array
++    {
++        return ['tipo' => TipoDeDesconto::class, 'expira_em' => 'datetime', 'valor' => 'integer', 'usos' => 'integer', 'limite_de_usos' => 'integer'];
++    }
++
++    protected function codigo(): Attribute
++    {
++        return Attribute::set(fn (string $valor): string => mb_strtoupper(trim($valor)));
++    }
++
++    public function scopeAtivos(Builder $query): Builder
++    {
++        return $query->where('expira_em', '>', now())->whereColumn('usos', '<', 'limite_de_usos');
++    }
++
++    public function situacao(): string
++    {
++        return match (true) {
++            $this->usos >= $this->limite_de_usos       => 'Esgotado',
++            $this->expira_em->lessThanOrEqualTo(now()) => 'Expirado',
++            default                                    => 'Ativo',
++        };
++    }
++
++    public static function valido(?string $codigo): ?self
++    {
++        $cupom = blank($codigo) ? null : static::query()->where('codigo', mb_strtoupper(trim($codigo)))->ativos()->first();
++        if ($cupom === null) {
++            Log::channel('cupom')->info('[Cupom@valido] Código recusado', ['codigo' => $codigo, 'motivo' => blank($codigo) ? 'codigo_vazio' : 'nao_encontrado']);
++        }
++
++        return $cupom;
++    }
++
++    public function descontoSobre(int $valorTotalEmCentavos): int
++    {
++        if ($valorTotalEmCentavos < 0) {
++            throw new InvalidArgumentException('O total não pode ser negativo.');
++        }
++
++        return match ($this->tipo) {
++            TipoDeDesconto::Porcentagem => intdiv($valorTotalEmCentavos, 100) * $this->valor + intdiv(($valorTotalEmCentavos % 100) * $this->valor, 100),
++            TipoDeDesconto::Fixo        => $this->valor,
++        };
++    }
++
++    public function aplicarEm(int $valorTotalEmCentavos, ?User $aplicadoPor = null): int
++    {
++        $this->descontoSobre($valorTotalEmCentavos);
++
++        return DB::transaction(function () use ($valorTotalEmCentavos, $aplicadoPor): int {
++            $consumido = static::query()->whereKey($this->getKey())->ativos()->increment('usos');
++            if ($consumido !== 1) {
++                Log::channel('cupom')->warning('[Cupom@aplicarEm] Consumo recusado no UPDATE atômico', ['cupom_id' => $this->getKey(), 'motivo' => 'esgotado_ou_expirado']);
++                throw new RuntimeException('Este cupom não está mais disponível.');
++            }
++            $this->refresh();
++            $desconto = $this->descontoSobre($valorTotalEmCentavos);
++            CupomUso::create(['cupom_id' => $this->getKey(), 'aplicado_por_id' => $aplicadoPor?->getKey(), 'valor_original' => $valorTotalEmCentavos, 'valor_desconto' => $desconto]);
++            Log::channel('cupom')->info('[Cupom@aplicarEm] Desconto aplicado', ['cupom_id' => $this->getKey(), 'tenant_id' => $this->tenant_id, 'codigo' => $this->codigo, 'tipo' => $this->tipo->value, 'valor_original' => $valorTotalEmCentavos, 'valor_desconto' => $desconto, 'aplicado_por' => $aplicadoPor?->getKey(), 'usos_apos' => $this->usos, 'limite_de_usos' => $this->limite_de_usos]);
++
++            return max(0, $valorTotalEmCentavos - $desconto);
++        });
++    }
++}
+--- /dev/null
++++ b/app/Models/CupomUso.php
+@@ -0,0 +1,12 @@
++<?php
++
++namespace App\Models;
++
++use Illuminate\Database\Eloquent\Model;
++
++class CupomUso extends Model
++{
++    protected $table = 'cupom_usos';
++
++    protected $fillable = ['cupom_id', 'aplicado_por_id', 'valor_original', 'valor_desconto'];
++}
+--- /dev/null
++++ b/app/Models/EtapaAprovacao.php
+@@ -0,0 +1,23 @@
++<?php
++
++namespace App\Models;
++
++use Illuminate\Database\Eloquent\Model;
++use Illuminate\Database\Eloquent\Relations\BelongsTo;
++
++class EtapaAprovacao extends Model
++{
++    protected $table = 'etapas_aprovacao_compra';
++
++    protected $fillable = ['etapa', 'decisao', 'decidido_por_id', 'justificativa'];
++
++    public function solicitacao(): BelongsTo
++    {
++        return $this->belongsTo(SolicitacaoCompra::class, 'solicitacao_compra_id');
++    }
++
++    public function decididoPor(): BelongsTo
++    {
++        return $this->belongsTo(User::class, 'decidido_por_id');
++    }
++}
+--- /dev/null
++++ b/app/Models/SolicitacaoCompra.php
+@@ -0,0 +1,230 @@
++<?php
++
++namespace App\Models;
++
++use App\Enums\SituacaoSolicitacao;
++use App\Notifications\AprovacaoPendente;
++use App\Traits\AuditsFillables;
++use App\Traits\BelongsToTenant;
++use App\Traits\TemUuid;
++use Database\Factories\SolicitacaoCompraFactory;
++use Illuminate\Database\Eloquent\Factories\HasFactory;
++use Illuminate\Database\Eloquent\Model;
++use Illuminate\Database\Eloquent\Relations\BelongsTo;
++use Illuminate\Database\Eloquent\Relations\HasMany;
++use Illuminate\Support\Collection;
++use Illuminate\Support\Facades\DB;
++use Illuminate\Support\Facades\Log;
++use Illuminate\Support\Facades\Notification;
++use OwenIt\Auditing\Contracts\Auditable;
++use RuntimeException;
++use Spatie\Permission\PermissionRegistrar;
++
++class SolicitacaoCompra extends Model implements Auditable
++{
++    use AuditsFillables, BelongsToTenant, TemUuid;
++
++    /** @use HasFactory<SolicitacaoCompraFactory> */
++    use HasFactory;
++
++    protected $table = 'solicitacoes_compra';
++
++    protected $fillable = ['descricao', 'valor', 'centro_custo_id'];
++
++    protected $attributes = ['situacao' => 'rascunho'];
++
++    protected function casts(): array
++    {
++        return ['valor' => 'decimal:2', 'situacao' => SituacaoSolicitacao::class];
++    }
++
++    protected static function booted(): void
++    {
++        static::updating(function (self $registro): void {
++            $registro->exigirRascunhoPersistido('editar');
++        });
++        static::deleting(function (self $registro): void {
++            $registro->exigirRascunhoPersistido('excluir');
++        });
++    }
++
++    public function solicitante(): BelongsTo
++    {
++        return $this->belongsTo(User::class, 'solicitante_id');
++    }
++
++    public function centroCusto(): BelongsTo
++    {
++        return $this->belongsTo(CentroCusto::class, 'centro_custo_id');
++    }
++
++    public function etapas(): HasMany
++    {
++        return $this->hasMany(EtapaAprovacao::class, 'solicitacao_compra_id')->orderBy('created_at')->orderBy('id');
++    }
++
++    public function exigeDiretor(): bool
++    {
++        return (float) $this->valor > (float) config('kit.compras.limite_diretor', 5000.00);
++    }
++
++    public function etapaPendente(): ?string
++    {
++        return match ($this->situacao) {
++            SituacaoSolicitacao::AguardandoGestor => 'gestor', SituacaoSolicitacao::AguardandoDiretor => 'diretor', default => null,
++        };
++    }
++
++    public function podeSerDecididaPor(?User $user): bool
++    {
++        return $user !== null && $this->aprovadoresDaVez()->contains(fn (User $aprovador): bool => $aprovador->getKey() === $user->getKey());
++    }
++
++    public function aprovadoresDaVez(): Collection
++    {
++        if ($this->etapaPendente() === 'gestor') {
++            $gestor = $this->centroCusto?->gestor;
++
++            return collect($gestor ? [$gestor] : []);
++        }
++        if ($this->etapaPendente() !== 'diretor') {
++            return collect();
++        }
++        $registrar = app(PermissionRegistrar::class);
++        $anterior  = $registrar->getPermissionsTeamId();
++        try {
++            $registrar->setPermissionsTeamId($this->tenant_id ?? Tenant::CONTEXTO_GLOBAL);
++
++            return User::role('diretor')->get();
++        } finally {
++            $registrar->setPermissionsTeamId($anterior);
++        }
++    }
++
++    public function enviar(User $autor): void
++    {
++        $this->exigirSolicitante($autor, 'enviar');
++        $this->exigirSituacao(SituacaoSolicitacao::Rascunho, 'enviar');
++        if ($this->centroCusto?->gestor_id === null) {
++            $this->recusar('enviar', 'centro_sem_gestor', 'O centro de custo precisa de um gestor para enviar.');
++        }
++        $this->transicionar(SituacaoSolicitacao::Rascunho, SituacaoSolicitacao::AguardandoGestor, 'enviar');
++        $this->notificarProximaEtapa();
++        Log::channel('compras')->info('[SolicitacaoCompra@enviar] Solicitação enviada para aprovação', ['solicitacao_id' => $this->id, 'tenant_id' => $this->tenant_id, 'solicitante_id' => $this->solicitante_id, 'centro_custo_id' => $this->centro_custo_id, 'valor' => $this->valor, 'exige_diretor' => $this->exigeDiretor(), 'de' => 'rascunho', 'para' => $this->situacao->value, 'aprovadores' => $this->aprovadoresDaVez()->pluck('id')->all()]);
++    }
++
++    public function aprovar(User $aprovador): void
++    {
++        $this->exigirAprovador($aprovador, 'aprovar');
++        $etapa = $this->etapaPendente();
++        $de    = $this->situacao;
++        $para  = $etapa === 'gestor' && $this->exigeDiretor() ? SituacaoSolicitacao::AguardandoDiretor : SituacaoSolicitacao::Aprovada;
++        DB::transaction(function () use ($de, $para, $etapa, $aprovador): void {
++            $this->transicionar($de, $para, 'aprovar');
++            $this->etapas()->create(['etapa' => $etapa, 'decisao' => 'aprovada', 'decidido_por_id' => $aprovador->getKey(), 'justificativa' => null]);
++        });
++        $this->notificarProximaEtapa();
++        Log::channel('compras')->info('[SolicitacaoCompra@aprovar] Etapa aprovada', ['solicitacao_id' => $this->id, 'tenant_id' => $this->tenant_id, 'etapa' => $etapa, 'decidido_por_id' => $aprovador->id, 'de' => $de->value, 'para' => $para->value, 'final' => $para === SituacaoSolicitacao::Aprovada]);
++    }
++
++    public function rejeitar(User $aprovador, string $justificativa): void
++    {
++        $this->exigirAprovador($aprovador, 'rejeitar');
++        if (blank($justificativa)) {
++            $this->recusar('rejeitar', 'justificativa_vazia', 'Informe a justificativa da rejeição.');
++        }
++        $etapa = $this->etapaPendente();
++        $de    = $this->situacao;
++        DB::transaction(function () use ($de, $etapa, $aprovador, $justificativa): void {
++            $this->transicionar($de, SituacaoSolicitacao::Rascunho, 'rejeitar');
++            $this->etapas()->create(['etapa' => $etapa, 'decisao' => 'rejeitada', 'decidido_por_id' => $aprovador->getKey(), 'justificativa' => trim($justificativa)]);
++        });
++        Log::channel('compras')->warning('[SolicitacaoCompra@rejeitar] Solicitação devolvida ao rascunho', ['solicitacao_id' => $this->id, 'etapa' => $etapa, 'decidido_por_id' => $aprovador->id, 'justificativa_tamanho' => mb_strlen($justificativa), 'de' => $de->value, 'para' => 'rascunho']);
++    }
++
++    public function cancelar(User $autor): void
++    {
++        $this->exigirSolicitante($autor, 'cancelar');
++        if (! $this->situacao->emTransito()) {
++            $this->recusar('cancelar', 'situacao_invalida', 'Só é possível cancelar uma solicitação em aprovação.');
++        }
++        $de = $this->situacao;
++        $this->transicionar($de, SituacaoSolicitacao::Cancelada, 'cancelar');
++        Log::channel('compras')->warning('[SolicitacaoCompra@cancelar] Solicitação cancelada', ['solicitacao_id' => $this->id, 'autor_id' => $autor->id, 'de' => $de->value, 'para' => 'cancelada']);
++    }
++
++    public function editar(array $dados, User $autor): void
++    {
++        $this->exigirSolicitante($autor, 'editar');
++        $this->exigirSituacao(SituacaoSolicitacao::Rascunho, 'editar');
++        $this->fill($dados);
++        $mudou = static::query()->whereKey($this->id)->where('solicitante_id', $autor->id)->where('situacao', 'rascunho')->update([...array_intersect_key($this->getDirty(), array_flip($this->getFillable())), 'updated_at' => now()]);
++        if ($mudou !== 1) {
++            $this->recusar('editar', 'situacao_mudou', 'Esta solicitação já mudou de situação. Recarregue a tela.');
++        }
++        $this->refresh();
++    }
++
++    public function excluir(User $autor): void
++    {
++        $this->exigirSolicitante($autor, 'excluir');
++        $this->exigirSituacao(SituacaoSolicitacao::Rascunho, 'excluir');
++        $excluiu = static::query()->whereKey($this->id)->where('solicitante_id', $autor->id)->where('situacao', 'rascunho')->delete();
++        if ($excluiu !== 1) {
++            $this->recusar('excluir', 'situacao_mudou', 'Esta solicitação já mudou de situação. Recarregue a tela.');
++        }
++        $this->exists = false;
++    }
++
++    private function transicionar(SituacaoSolicitacao $de, SituacaoSolicitacao $para, string $metodo): void
++    {
++        $mudou = static::query()->whereKey($this->id)->where('situacao', $de->value)->update(['situacao' => $para->value, 'updated_at' => now()]);
++        if ($mudou !== 1) {
++            $this->recusar($metodo, 'situacao_mudou', 'Esta solicitação já mudou de situação. Recarregue a tela.');
++        }
++        $this->refresh();
++    }
++
++    private function exigirRascunhoPersistido(string $metodo): void
++    {
++        $atual = $this->fresh();
++        if ($atual === null) {
++            $this->recusar($metodo, 'situacao_mudou', 'Esta solicitação não está disponível neste contexto.');
++        }
++        $atual->exigirSituacao(SituacaoSolicitacao::Rascunho, $metodo);
++    }
++
++    private function exigirSolicitante(User $autor, string $metodo): void
++    {
++        if ($this->solicitante_id !== $autor->getKey()) {
++            $this->recusar($metodo, 'nao_e_solicitante', 'Somente o solicitante pode fazer esta operação.');
++        }
++    }
++
++    private function exigirSituacao(SituacaoSolicitacao $esperada, string $metodo): void
++    {
++        if ($this->situacao !== $esperada) {
++            $this->recusar($metodo, 'situacao_invalida', 'Esta operação não está disponível nesta situação.');
++        }
++    }
++
++    private function exigirAprovador(User $aprovador, string $metodo): void
++    {
++        if (! $this->podeSerDecididaPor($aprovador)) {
++            $this->recusar($metodo, 'nao_e_aprovador', 'Somente o aprovador da etapa atual pode decidir.');
++        }
++    }
++
++    private function notificarProximaEtapa(): void
++    {
++        if (($etapa = $this->etapaPendente()) !== null) {
++            Notification::send($this->aprovadoresDaVez(), new AprovacaoPendente($this, $etapa));
++        }
++    }
++
++    private function recusar(string $metodo, string $motivo, string $mensagem): never
++    {
++        Log::channel('compras')->warning("[SolicitacaoCompra@{$metodo}] Operação recusada", ['solicitacao_id' => $this->id, 'tenant_id' => $this->tenant_id, 'motivo' => $motivo, 'situacao' => $this->situacao->value]);
++        throw new RuntimeException($mensagem);
++    }
++}
+--- /dev/null
++++ b/app/Notifications/AprovacaoPendente.php
+@@ -0,0 +1,36 @@
++<?php
++
++namespace App\Notifications;
++
++use App\Filament\App\Resources\SolicitacoesCompra\SolicitacaoCompraResource;
++use App\Models\SolicitacaoCompra;
++use Illuminate\Bus\Queueable;
++use Illuminate\Contracts\Queue\ShouldQueue;
++use Illuminate\Notifications\Messages\MailMessage;
++use Illuminate\Notifications\Notification;
++
++class AprovacaoPendente extends Notification implements ShouldQueue
++{
++    use Queueable;
++
++    public function __construct(public readonly SolicitacaoCompra $solicitacao, public readonly string $etapa)
++    {
++        $this->afterCommit();
++    }
++
++    public function via(object $notifiable): array
++    {
++        return ['mail'];
++    }
++
++    public function toMail(object $notifiable): MailMessage
++    {
++        return (new MailMessage)->subject('Solicitação de compra aguardando aprovação')->greeting('Olá, '.$notifiable->name.'!')
++            ->line('Etapa de aprovação: '.$this->etapa.'.')
++            ->line('Solicitante: '.$this->solicitacao->solicitante->name)
++            ->line('Descrição: '.$this->solicitacao->descricao)
++            ->line('Valor: R$ '.number_format((float) $this->solicitacao->valor, 2, ',', '.'))
++            ->line('Centro de custo: '.$this->solicitacao->centroCusto->nome)
++            ->action('Ver solicitação', SolicitacaoCompraResource::getUrl('view', ['record' => $this->solicitacao], panel: 'app', tenant: $this->solicitacao->tenant));
++    }
++}
+--- /dev/null
++++ b/app/Policies/CentroCustoPolicy.php
+@@ -0,0 +1,74 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Policies;
++
++use App\Models\CentroCusto;
++use Illuminate\Auth\Access\HandlesAuthorization;
++use Illuminate\Foundation\Auth\User as AuthUser;
++
++class CentroCustoPolicy
++{
++    use HandlesAuthorization;
++
++    public function viewAny(AuthUser $authUser): bool
++    {
++        return $authUser->can('ViewAny:CentroCusto');
++    }
++
++    public function view(AuthUser $authUser, CentroCusto $registro): bool
++    {
++        return $authUser->can('View:CentroCusto');
++    }
++
++    public function create(AuthUser $authUser): bool
++    {
++        return $authUser->can('Create:CentroCusto');
++    }
++
++    public function update(AuthUser $authUser, CentroCusto $registro): bool
++    {
++        return $authUser->can('Update:CentroCusto');
++    }
++
++    public function delete(AuthUser $authUser, CentroCusto $registro): bool
++    {
++        return $authUser->can('Delete:CentroCusto');
++    }
++
++    public function deleteAny(AuthUser $authUser): bool
++    {
++        return $authUser->can('DeleteAny:CentroCusto');
++    }
++
++    public function restore(AuthUser $authUser, CentroCusto $registro): bool
++    {
++        return $authUser->can('Restore:CentroCusto');
++    }
++
++    public function forceDelete(AuthUser $authUser, CentroCusto $registro): bool
++    {
++        return $authUser->can('ForceDelete:CentroCusto');
++    }
++
++    public function forceDeleteAny(AuthUser $authUser): bool
++    {
++        return $authUser->can('ForceDeleteAny:CentroCusto');
++    }
++
++    public function restoreAny(AuthUser $authUser): bool
++    {
++        return $authUser->can('RestoreAny:CentroCusto');
++    }
++
++    public function replicate(AuthUser $authUser, CentroCusto $registro): bool
++    {
++        return $authUser->can('Replicate:CentroCusto');
++    }
++
++    public function reorder(AuthUser $authUser): bool
++    {
++        return $authUser->can('Reorder:CentroCusto');
++    }
++}
+--- /dev/null
++++ b/app/Policies/CupomPolicy.php
+@@ -0,0 +1,74 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Policies;
++
++use App\Models\Cupom;
++use Illuminate\Auth\Access\HandlesAuthorization;
++use Illuminate\Foundation\Auth\User as AuthUser;
++
++class CupomPolicy
++{
++    use HandlesAuthorization;
++
++    public function viewAny(AuthUser $authUser): bool
++    {
++        return $authUser->can('ViewAny:Cupom');
++    }
++
++    public function view(AuthUser $authUser, Cupom $registro): bool
++    {
++        return $authUser->can('View:Cupom');
++    }
++
++    public function create(AuthUser $authUser): bool
++    {
++        return $authUser->can('Create:Cupom');
++    }
++
++    public function update(AuthUser $authUser, Cupom $registro): bool
++    {
++        return $authUser->can('Update:Cupom');
++    }
++
++    public function delete(AuthUser $authUser, Cupom $registro): bool
++    {
++        return $authUser->can('Delete:Cupom');
++    }
++
++    public function deleteAny(AuthUser $authUser): bool
++    {
++        return $authUser->can('DeleteAny:Cupom');
++    }
++
++    public function restore(AuthUser $authUser, Cupom $registro): bool
++    {
++        return $authUser->can('Restore:Cupom');
++    }
++
++    public function forceDelete(AuthUser $authUser, Cupom $registro): bool
++    {
++        return $authUser->can('ForceDelete:Cupom');
++    }
++
++    public function forceDeleteAny(AuthUser $authUser): bool
++    {
++        return $authUser->can('ForceDeleteAny:Cupom');
++    }
++
++    public function restoreAny(AuthUser $authUser): bool
++    {
++        return $authUser->can('RestoreAny:Cupom');
++    }
++
++    public function replicate(AuthUser $authUser, Cupom $registro): bool
++    {
++        return $authUser->can('Replicate:Cupom');
++    }
++
++    public function reorder(AuthUser $authUser): bool
++    {
++        return $authUser->can('Reorder:Cupom');
++    }
++}
+--- /dev/null
++++ b/app/Policies/SolicitacaoCompraPolicy.php
+@@ -0,0 +1,79 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Policies;
++
++use App\Enums\SituacaoSolicitacao;
++use App\Models\SolicitacaoCompra;
++use Illuminate\Auth\Access\HandlesAuthorization;
++use Illuminate\Foundation\Auth\User as AuthUser;
++
++class SolicitacaoCompraPolicy
++{
++    use HandlesAuthorization;
++
++    public function viewAny(AuthUser $authUser): bool
++    {
++        return $authUser->can('ViewAny:SolicitacaoCompra');
++    }
++
++    public function view(AuthUser $authUser, SolicitacaoCompra $registro): bool
++    {
++        return $authUser->can('View:SolicitacaoCompra');
++    }
++
++    public function create(AuthUser $authUser): bool
++    {
++        return $authUser->can('Create:SolicitacaoCompra');
++    }
++
++    public function update(AuthUser $authUser, SolicitacaoCompra $registro): bool
++    {
++        return $authUser->can('Update:SolicitacaoCompra')
++            && $registro->situacao === SituacaoSolicitacao::Rascunho
++            && $registro->solicitante_id === $authUser->getAuthIdentifier();
++    }
++
++    public function delete(AuthUser $authUser, SolicitacaoCompra $registro): bool
++    {
++        return $authUser->can('Delete:SolicitacaoCompra')
++            && $registro->situacao === SituacaoSolicitacao::Rascunho
++            && $registro->solicitante_id === $authUser->getAuthIdentifier();
++    }
++
++    public function deleteAny(AuthUser $authUser): bool
++    {
++        return false;
++    }
++
++    public function restore(AuthUser $authUser, SolicitacaoCompra $registro): bool
++    {
++        return $authUser->can('Restore:SolicitacaoCompra');
++    }
++
++    public function forceDelete(AuthUser $authUser, SolicitacaoCompra $registro): bool
++    {
++        return $authUser->can('ForceDelete:SolicitacaoCompra');
++    }
++
++    public function forceDeleteAny(AuthUser $authUser): bool
++    {
++        return $authUser->can('ForceDeleteAny:SolicitacaoCompra');
++    }
++
++    public function restoreAny(AuthUser $authUser): bool
++    {
++        return $authUser->can('RestoreAny:SolicitacaoCompra');
++    }
++
++    public function replicate(AuthUser $authUser, SolicitacaoCompra $registro): bool
++    {
++        return $authUser->can('Replicate:SolicitacaoCompra');
++    }
++
++    public function reorder(AuthUser $authUser): bool
++    {
++        return $authUser->can('Reorder:SolicitacaoCompra');
++    }
++}
+--- a/config/kit.php
++++ b/config/kit.php
+@@ -128,6 +128,11 @@
+     | de rodar o `kit:install`.
+     */
+ 
++    // Valores estritamente acima deste limite exigem aprovação de diretor.
++    'compras' => [
++        'limite_diretor' => (float) env('KIT_COMPRAS_LIMITE_DIRETOR', 5000.00),
++    ],
++
+     'admin' => [
+         'name'     => env('KIT_ADMIN_NAME', 'Administrador'),
+         'email'    => env('KIT_ADMIN_EMAIL', 'admin@example.com'),
+--- a/config/logging.php
++++ b/config/logging.php
+@@ -106,6 +106,22 @@
+             'replace_placeholders' => true,
+         ],
+ 
++        'cupom' => [
++            'driver'               => 'daily',
++            'path'                 => storage_path('logs/cupom.log'),
++            'level'                => env('LOG_CUPOM_LEVEL', env('LOG_LEVEL', 'debug')),
++            'days'                 => 14,
++            'replace_placeholders' => true,
++        ],
++
++        'compras' => [
++            'driver'               => 'daily',
++            'path'                 => storage_path('logs/compras.log'),
++            'level'                => env('LOG_COMPRAS_LEVEL', env('LOG_LEVEL', 'debug')),
++            'days'                 => 14,
++            'replace_placeholders' => true,
++        ],
++
+         'monthly' => [
+             'driver'               => 'monthly',
+             'path'                 => storage_path('logs/laravel.log'),
+--- /dev/null
++++ b/contrato-publico.md
+@@ -0,0 +1,69 @@
++# Contrato público do laboratório
++
++Fonte: somente os requisitos `wikis/specs/oraculo/{cupons-de-desconto,aprovacao-de-compra}/00-requisito.md` e a arquitetura pública dos respectivos `01-plano-acao.md`. Nenhum conjunto derivado foi lido pelo implementador. Essa declaração descreve as ações executadas; o filesystem do host é irrestrito e não impõe isolamento de leitura.
++
++## Ambiente
++
++PHP 8.4.10; Laravel 13.25.0; Filament 5.7.6; Livewire 4.4.0. `Composer\\InstalledVersions` e `vendor/composer/installed.json` registram Pest 5.1.1; o CLI mostra 5.0.5 porque `vendor/pestphp/pest/src/Pest.php::version()` retorna esse literal. SQLite testing; sem alteração de dependências. MCP Boost e PhpStorm indisponíveis: APIs verificadas no vendor instalado e nas documentações oficiais Laravel 13 e Filament 5.
++
++## Cupons
++
++- `App\\Enums\\TipoDeDesconto`: `Porcentagem = 'porcentagem'`, `Fixo = 'fixo'`; `getLabel(): string`.
++- `App\\Models\\Cupom`: tabela `cupons`; `id`, `uuid`, `tenant_id` nullable, `codigo` string(40), `tipo` string(20), `valor` inteiro, `expira_em` timestamp, `limite_de_usos` inteiro, `usos` inteiro default 0, timestamps. Índice unique `(tenant_id,codigo)`. Route key `uuid`; código normalizado `mb_strtoupper(trim(...))`.
++- Fillable: `codigo`, `tipo`, `valor`, `expira_em`, `limite_de_usos`. `tipo` enum; `expira_em` datetime. `usos`, `uuid`, `tenant_id` protegidos do mass assignment.
++- `scopeAtivos(Builder $query): Builder`: validade estritamente futura e `usos < limite_de_usos`.
++- `situacao(): string`: `Esgotado`, `Expirado` ou `Ativo`.
++- `static valido(?string $codigo): ?self`: código normalizado, dentro do contexto de tenant; vazio/inexistente/inativo retorna null.
++- `descontoSobre(int $valorTotalEmCentavos): int`: fixo em centavos; percentual inteiro 1..100, truncado. Valores totais negativos são recusados.
++- `aplicarEm(int $valorTotalEmCentavos, ?User $aplicadoPor = null): int`: total final em centavos, mínimo zero; reconfere existência/validade/limite no UPDATE atômico e grava o uso na mesma transação. Falha de consumo lança `RuntimeException`.
++- `App\\Models\\CupomUso`: tabela `cupom_usos`; `id`, `cupom_id` FK cascade, `aplicado_por_id` nullable FK users nullOnDelete, `valor_original`, `valor_desconto`, timestamps. Sem rota.
++- `Database\\Factories\\CupomFactory`: default percentual 10%, validade +30 dias, limite100; estados `expirado()`, `esgotado()`, `fixo(int $centavos = 1000)`.
++- Resource `App\\Filament\\App\\Resources\\Cupons\\CupomResource`; páginas `ListCupons`, `CreateCupom`, `EditCupom`. Slug `cupons`; rotas `filament.app.resources.cupons.{index,create,edit}`. URLs `/app/cupons` ou `/app/{tenant}/cupons`, criação `/create`, edição `/{uuid}/edit`.
++- Policy pelas permissões Shield `ViewAny:Cupom`, `View:Cupom`, `Create:Cupom`, `Update:Cupom`, `Delete:Cupom` etc. `panel_user` e `diretor` recebem só leitura do cupom; listagem desses perfis contém só ativos. `admin_organizacao` recebe escrita no modo tenancy; `master_global` e `admin` mantêm herança Gate existente.
++
++## Aprovação de compra
++
++- `App\\Enums\\SituacaoSolicitacao`: `Rascunho`, `AguardandoGestor`, `AguardandoDiretor`, `Aprovada`, `Cancelada`, valores snake_case. `getLabel(): string`, `getColor(): string`, `emTransito(): bool` (apenas aguardando gestor/diretor). Rejeição é evento; retorna ao rascunho.
++- `App\\Models\\CentroCusto`: tabela `centros_custo`; `id`, `uuid`, `tenant_id` FK obrigatório, `nome` string120, `gestor_id` nullable FK users restrict, timestamps; unique `(tenant_id,nome)`. Fillable nome/gestor_id; `gestor(): BelongsTo`.
++- `App\\Models\\SolicitacaoCompra`: tabela `solicitacoes_compra`; `id`, `uuid`, `tenant_id`, `solicitante_id`, `centro_custo_id` FKs obrigatórias, `descricao` string255, `valor` decimal(12,2), `situacao` string30, timestamps; index `(tenant_id,situacao)`. Fillable `descricao`, `valor`, `centro_custo_id`. Casts valor decimal:2 e situação enum. Route key uuid. Relações `solicitante(): BelongsTo`, `centroCusto(): BelongsTo`, `etapas(): HasMany`, ordenadas por created_at/id.
++- `App\\Models\\EtapaAprovacao`: tabela `etapas_aprovacao_compra`; `id`, `solicitacao_compra_id` FK cascade, `etapa` string20 (`gestor`/`diretor`), `decisao` string20 (`aprovada`/`rejeitada`), `decidido_por_id` FK users, `justificativa` nullable text, timestamps. Fillable etapa/decisao/decidido_por_id/justificativa. Relações `solicitacao(): BelongsTo`, `decididoPor(): BelongsTo`. Sem rota.
++- `exigeDiretor(): bool`: valor estritamente maior que config `kit.compras.limite_diretor` (default5000.00).
++- `etapaPendente(): ?string`: gestor/diretor/null.
++- `podeSerDecididaPor(?User $user): bool`: gestor do centro na etapa gestor; diretor com papel atribuído na organização da solicitação na etapa diretor.
++- `aprovadoresDaVez(): Collection`: gestor ou todos os diretores da organização da solicitação; resolve no request, restaura o contexto anterior de permissões.
++- `enviar(User $autor): void`: exige solicitante+rascunho+gestor; aguarda gestor e notifica por e-mail o gestor. Sem gestor, RuntimeException e fica rascunho.
++- `aprovar(User $aprovador): void`: exige aprovador atual; grava etapa aprovada; aguarda diretor se acima do limite, senão aprova final; notifica só se houver próxima etapa.
++- `rejeitar(User $aprovador, string $justificativa): void`: exige aprovador atual e justificativa não vazia; grava rejeição e volta ao rascunho; histórico preservado.
++- `cancelar(User $autor): void`: exige solicitante e estado em trânsito; cancela sem etapa de aprovação.
++- `editar(array $dados, User $autor): void` e `excluir(User $autor): void`: exigem rascunho e solicitante; usados pelas páginas e ação de exclusão. UPDATE/DELETE condicionais e transições vencem só uma vez; recusa lança RuntimeException. Models também recusam save/delete de registro fora do rascunho.
++- `Database\\Factories\\CentroCustoFactory`, `SolicitacaoCompraFactory`: defaults válidos; podem receber tenant_id/solicitante_id/situacao explicitamente como fixtures, pois Factory é unguarded. Centro de custo default cria gestor e tenant; solicitação default cria solicitante+centro e herda o tenant desse centro, em rascunho.
++- Resource `App\\Filament\\App\\Resources\\CentrosCusto\\CentroCustoResource`: páginas `ListCentrosCusto`, `CreateCentroCusto`, `EditCentroCusto`; slug `centros-de-custo`; routes `filament.app.resources.centros-de-custo.{index,create,edit}`.
++- Resource `App\\Filament\\App\\Resources\\SolicitacoesCompra\\SolicitacaoCompraResource`: páginas `ListSolicitacoesCompra`, `CreateSolicitacaoCompra`, `ViewSolicitacaoCompra`, `EditSolicitacaoCompra`; schemas `SolicitacaoCompraForm`, `SolicitacaoCompraInfolist`; table `SolicitacoesCompraTable`. Slug `solicitacoes-de-compra`; routes `filament.app.resources.solicitacoes-de-compra.{index,create,view,edit}`. View `/{uuid}`, edit `/{uuid}/edit`; com tenancy, prefixo `/app/{tenant}`.
++- Ações de tabela `enviar`, `aprovar`, `rejeitar`, `cancelar`; rejeitar recebe `justificativa`. Form só descrição/valor/centro de custo. Histórico na view mostra etapa/decisão/decididoPor.name/created_at/justificativa.
++- `App\\Notifications\\AprovacaoPendente` implements ShouldQueue: `__construct(public readonly SolicitacaoCompra $solicitacao, public readonly string $etapa)`, `via(object $notifiable): array` = mail, `toMail(object $notifiable): MailMessage`. URL via Resource::getUrl com panel app e tenant explícito. Resolvem-se destinatários antes de enfileirar; afterCommit.
++- Policies `SolicitacaoCompraPolicy` e `CentroCustoPolicy` usam permissões Shield; update/delete solicitação exigem rascunho+dono. `panel_user`/`diretor` têm solicitação, sem administração de centro de custo. `diretor` tem roles.painel='app'.
++
++## Fixtures e execução
++
++Use os helpers existentes em tests/Pest.php, sem redefini-los: `tenant(...)`, `usuario(...)`, `usuarioCom(...)`, `papelNaOrganizacao(...)`, `usuarioComPapel(...)`, `noPainelDa(...)`. Para tenancy, use Tests\\TenancyTestCase antes das migrations, e fixe Filament::setCurrentPanel('app'), Filament::setTenant($tenant,isQuiet:true), PermissionRegistrar::setPermissionsTeamId($tenant->id). Associe usuários com `$tenant->users()->attach(...)` quando a tela exigir acesso ao tenant. Factories podem receber tenant_id, pois ignoram fillable; em model normal use forceFill para fixtures protegidas. Notificações podem ser observadas por Notification::fake, sem SMTP real.
++
++Comandos (exclusivamente neste runtime descartável): a .env mantém DB_DATABASE=:memory:. Para Artisan em processos CLI separados use o arquivo SQLite de validação, com variáveis somente do processo PowerShell; isso não altera .env nem interfere com os testes em :memory:.
++
++```powershell
++$env:DB_CONNECTION = 'sqlite'
++$env:DB_URL = ''
++$env:DB_DATABASE = Join-Path (Resolve-Path '.').Path 'validation/artisan-validacao.sqlite'
++if (-not (Test-Path -LiteralPath $env:DB_DATABASE)) { New-Item -ItemType File -Path $env:DB_DATABASE | Out-Null }
++php artisan migrate --force --no-interaction
++php artisan db:seed --class=Database\\Seeders\\ShieldPermissionsSeeder --no-interaction
++php artisan db:seed --class=Database\\Seeders\\PapeisSeeder --no-interaction
++php artisan route:list --path=app --except-vendor
++php vendor/bin/pest tests/Feature/LaboratorioContratoTest.php --no-coverage --compact
++php vendor/bin/pest tests/Kit/PaineisTest.php --no-coverage --compact
++```
++
++Suíte de contrato própria usa tests/Feature/LaboratorioContratoTest.php; logs de execução ficam validation/. Para os materializadores, use tests/ExperimentoReal ligada explicitamente a TenancyTestCase+RefreshDatabase em tests/Pest.php; a sessão root administra esse registro único. A pasta Feature continua usando TestCase singletenant do kit. O smoke próprio usa BrowserTenancy, já ligada ao TenancyTestCase. `KIT_TENANCY` deve estar decidido antes do bootstrap da aplicação; config permission.teams antes de migrar. Channels cupom e compras daily14; envs LOG_CUPOM_LEVEL, LOG_COMPRAS_LEVEL, KIT_COMPRAS_LIMITE_DIRETOR.
++
++Limites: unicidade SQL `(NULL,codigo)` em singletenant não evita concorrência de duplicação fora do formulário; o formulário aplica scopedUnique. Smoke Chromium real executado somente para listagem ativa e histórico, inclusive ausência de erros JavaScript. Criação, edição e envio foram testados por Livewire. SMTP real e concorrência multiprocesso continuam não medidos. A integração do cupom deve passar User para identificar o ator: a assinatura nullable do 01 permite aplicação com ator nulo. Nenhum resultado comportamental DDR/tokens foi medido por esta implementação.
++
++Fontes de API consultadas: vendor instalado, [Eloquent Laravel13](https://laravel.com/framework/docs/13.x/eloquent) e [Resources Filament5](https://filamentphp.com/docs/5.x/resources/overview).
+--- /dev/null
++++ b/database/factories/CentroCustoFactory.php
+@@ -0,0 +1,20 @@
++<?php
++
++namespace Database\Factories;
++
++use App\Models\CentroCusto;
++use App\Models\Tenant;
++use App\Models\User;
++use Filament\Facades\Filament;
++use Illuminate\Database\Eloquent\Factories\Factory;
++
++/** @extends Factory<CentroCusto> */
++class CentroCustoFactory extends Factory
++{
++    protected $model = CentroCusto::class;
++
++    public function definition(): array
++    {
++        return ['tenant_id' => Filament::getTenant()?->getKey() ?? Tenant::factory(), 'nome' => fake()->unique()->bothify('Centro ???? #####'), 'gestor_id' => User::factory()];
++    }
++}
+--- /dev/null
++++ b/database/factories/CupomFactory.php
+@@ -0,0 +1,33 @@
++<?php
++
++namespace Database\Factories;
++
++use App\Enums\TipoDeDesconto;
++use App\Models\Cupom;
++use Illuminate\Database\Eloquent\Factories\Factory;
++
++/** @extends Factory<Cupom> */
++class CupomFactory extends Factory
++{
++    protected $model = Cupom::class;
++
++    public function definition(): array
++    {
++        return ['codigo' => fake()->unique()->bothify('CUPOM-????-#####'), 'tipo' => TipoDeDesconto::Porcentagem, 'valor' => 10, 'expira_em' => now()->addDays(30), 'limite_de_usos' => 100];
++    }
++
++    public function expirado(): static
++    {
++        return $this->state(fn (): array => ['expira_em' => now()->subDay()]);
++    }
++
++    public function esgotado(): static
++    {
++        return $this->afterCreating(fn (Cupom $cupom) => $cupom->forceFill(['usos' => $cupom->limite_de_usos])->save());
++    }
++
++    public function fixo(int $centavos = 1000): static
++    {
++        return $this->state(fn (): array => ['tipo' => TipoDeDesconto::Fixo, 'valor' => $centavos]);
++    }
++}
+--- /dev/null
++++ b/database/factories/SolicitacaoCompraFactory.php
+@@ -0,0 +1,20 @@
++<?php
++
++namespace Database\Factories;
++
++use App\Enums\SituacaoSolicitacao;
++use App\Models\CentroCusto;
++use App\Models\SolicitacaoCompra;
++use App\Models\User;
++use Illuminate\Database\Eloquent\Factories\Factory;
++
++/** @extends Factory<SolicitacaoCompra> */
++class SolicitacaoCompraFactory extends Factory
++{
++    protected $model = SolicitacaoCompra::class;
++
++    public function definition(): array
++    {
++        return ['descricao' => 'Aquisição de equipamento', 'valor' => '100.00', 'centro_custo_id' => CentroCusto::factory(), 'tenant_id' => fn (array $dados): int => CentroCusto::query()->findOrFail($dados['centro_custo_id'])->tenant_id, 'solicitante_id' => User::factory(), 'situacao' => SituacaoSolicitacao::Rascunho];
++    }
++}
+--- /dev/null
++++ b/database/migrations/2026_10_09_235905_create_cupoms_table.php
+@@ -0,0 +1,31 @@
++<?php
++
++use Illuminate\Database\Migrations\Migration;
++use Illuminate\Database\Schema\Blueprint;
++use Illuminate\Support\Facades\Schema;
++
++return new class extends Migration
++{
++    public function up(): void
++    {
++        Schema::create('cupons', function (Blueprint $table): void {
++            $table->id();
++            $table->uuid('uuid')->unique();
++            $table->foreignId('tenant_id')->nullable()->constrained()->cascadeOnDelete();
++            $table->string('codigo', 40);
++            $table->string('tipo', 20);
++            $table->unsignedInteger('valor');
++            $table->timestamp('expira_em');
++            $table->unsignedInteger('limite_de_usos');
++            $table->unsignedInteger('usos')->default(0);
++            $table->timestamps();
++            // shortcut: NULL tenant_id não impõe unicidade em singletenant; revisar ao aceitar criação concorrente fora do formulário.
++            $table->unique(['tenant_id', 'codigo']);
++        });
++    }
++
++    public function down(): void
++    {
++        Schema::dropIfExists('cupons');
++    }
++};
+--- /dev/null
++++ b/database/migrations/2026_10_09_235906_create_cupom_usos_table.php
+@@ -0,0 +1,25 @@
++<?php
++
++use Illuminate\Database\Migrations\Migration;
++use Illuminate\Database\Schema\Blueprint;
++use Illuminate\Support\Facades\Schema;
++
++return new class extends Migration
++{
++    public function up(): void
++    {
++        Schema::create('cupom_usos', function (Blueprint $table): void {
++            $table->id();
++            $table->foreignId('cupom_id')->constrained('cupons')->cascadeOnDelete();
++            $table->foreignId('aplicado_por_id')->nullable()->constrained('users')->nullOnDelete();
++            $table->unsignedInteger('valor_original');
++            $table->unsignedInteger('valor_desconto');
++            $table->timestamps();
++        });
++    }
++
++    public function down(): void
++    {
++        Schema::dropIfExists('cupom_usos');
++    }
++};
+--- /dev/null
++++ b/database/migrations/2026_10_09_235908_create_centro_custos_table.php
+@@ -0,0 +1,26 @@
++<?php
++
++use Illuminate\Database\Migrations\Migration;
++use Illuminate\Database\Schema\Blueprint;
++use Illuminate\Support\Facades\Schema;
++
++return new class extends Migration
++{
++    public function up(): void
++    {
++        Schema::create('centros_custo', function (Blueprint $table): void {
++            $table->id();
++            $table->uuid('uuid')->unique();
++            $table->foreignId('tenant_id')->constrained();
++            $table->string('nome', 120);
++            $table->foreignId('gestor_id')->nullable()->constrained('users');
++            $table->timestamps();
++            $table->unique(['tenant_id', 'nome']);
++        });
++    }
++
++    public function down(): void
++    {
++        Schema::dropIfExists('centros_custo');
++    }
++};
+--- /dev/null
++++ b/database/migrations/2026_10_09_235910_create_solicitacao_compras_table.php
+@@ -0,0 +1,29 @@
++<?php
++
++use Illuminate\Database\Migrations\Migration;
++use Illuminate\Database\Schema\Blueprint;
++use Illuminate\Support\Facades\Schema;
++
++return new class extends Migration
++{
++    public function up(): void
++    {
++        Schema::create('solicitacoes_compra', function (Blueprint $table): void {
++            $table->id();
++            $table->uuid('uuid')->unique();
++            $table->foreignId('tenant_id')->constrained();
++            $table->foreignId('solicitante_id')->constrained('users');
++            $table->foreignId('centro_custo_id')->constrained('centros_custo');
++            $table->string('descricao', 255);
++            $table->decimal('valor', 12, 2);
++            $table->string('situacao', 30);
++            $table->timestamps();
++            $table->index(['tenant_id', 'situacao']);
++        });
++    }
++
++    public function down(): void
++    {
++        Schema::dropIfExists('solicitacoes_compra');
++    }
++};
+--- /dev/null
++++ b/database/migrations/2026_10_09_235912_create_etapa_aprovacaos_table.php
+@@ -0,0 +1,26 @@
++<?php
++
++use Illuminate\Database\Migrations\Migration;
++use Illuminate\Database\Schema\Blueprint;
++use Illuminate\Support\Facades\Schema;
++
++return new class extends Migration
++{
++    public function up(): void
++    {
++        Schema::create('etapas_aprovacao_compra', function (Blueprint $table): void {
++            $table->id();
++            $table->foreignId('solicitacao_compra_id')->constrained('solicitacoes_compra')->cascadeOnDelete();
++            $table->string('etapa', 20);
++            $table->string('decisao', 20);
++            $table->foreignId('decidido_por_id')->constrained('users');
++            $table->text('justificativa')->nullable();
++            $table->timestamps();
++        });
++    }
++
++    public function down(): void
++    {
++        Schema::dropIfExists('etapas_aprovacao_compra');
++    }
++};
+--- a/database/seeders/PapeisSeeder.php
++++ b/database/seeders/PapeisSeeder.php
+@@ -2,11 +2,14 @@
+ 
+ namespace Database\Seeders;
+ 
++use App\Filament\App\Resources\CentrosCusto\CentroCustoResource;
+ use App\Filament\App\Resources\Convites\ConviteResource;
++use App\Filament\App\Resources\Cupons\CupomResource;
+ use App\Filament\App\Resources\Users\UserResource;
+ use App\Support\Paineis;
+ use Illuminate\Database\Seeder;
+ use Illuminate\Support\Collection;
++use Illuminate\Support\Str;
+ use Spatie\Permission\Models\Permission;
+ use Spatie\Permission\Models\Role;
+ use Spatie\Permission\PermissionRegistrar;
+@@ -84,13 +87,16 @@
+         //
+         // No seu projeto, este seeder é o lugar da matriz de autorização: recorte mais o
+         // que o usuário comum pode fazer, ou crie papéis mais finos.
+-        $administracao = $this->permissoesDeAdministracaoDoApp();
++        $administracao = [...$this->permissoesDeAdministracaoDoApp(), ...Paineis::permissoesDe('app', [CupomResource::class])->reject(fn (string $permissao): bool => in_array(Str::before($permissao, ':'), ['ViewAny', 'View'], true))->all()];
+ 
+         $this->papel(config('filament-shield.panel_user.name', 'panel_user'), $guard, 'app')
+             ->syncPermissions(
+                 $this->permissoesDoPainel('app', $guard)
+                     ->reject(fn (string $permissao): bool => in_array($permissao, $administracao, true))
+             );
++
++        $this->papel('diretor', $guard, 'app')
++            ->syncPermissions($this->permissoesDoPainel('app', $guard)->reject(fn (string $permissao): bool => in_array($permissao, $administracao, true)));
+ 
+         app(PermissionRegistrar::class)->forgetCachedPermissions();
+     }
+@@ -119,6 +125,7 @@
+         return Paineis::permissoesDe('app', [
+             UserResource::class,
+             ConviteResource::class,
++            CentroCustoResource::class,
+         ])->all();
+     }
+ 
+--- /dev/null
++++ b/tests/BrowserTenancy/LaboratorioContratoBrowserTest.php
+@@ -0,0 +1,31 @@
++<?php
++
++use App\Models\CentroCusto;
++use App\Models\Cupom;
++use App\Models\SolicitacaoCompra;
++use App\Models\Tenant;
++use App\Models\User;
++use Database\Seeders\PapeisSeeder;
++use Database\Seeders\ShieldPermissionsSeeder;
++use Illuminate\Support\Facades\Notification;
++
++it('renderiza cupons ativos e o historico com quem aprovou em Chromium real', function (): void {
++    $this->seed([ShieldPermissionsSeeder::class, PapeisSeeder::class]);
++    $tenant      = Tenant::factory()->create();
++    $solicitante = usuarioComPapel('panel_user', $tenant);
++    $gestor      = User::factory()->create(['name' => 'Gestor visível no histórico']);
++    $tenant->users()->attach([$solicitante->id, $gestor->id]);
++    noPainelDa($tenant);
++    Cupom::factory()->create(['codigo' => 'CUPOMVISIVEL']);
++    Cupom::factory()->expirado()->create(['codigo' => 'CUPOMEXPIRADO']);
++    $centro      = CentroCusto::factory()->create(['gestor_id' => $gestor->id]);
++    $solicitacao = SolicitacaoCompra::factory()->create(['solicitante_id' => $solicitante->id, 'centro_custo_id' => $centro->id]);
++    Notification::fake();
++    $solicitacao->enviar($solicitante);
++    $solicitacao->aprovar($gestor);
++    $this->actingAs($solicitante);
++    $cupons = '/app/'.$tenant->slug.'/cupons';
++    visit($cupons)->assertPathIs($cupons)->assertSee('CUPOMVISIVEL')->assertDontSee('CUPOMEXPIRADO')->assertNoJavaScriptErrors();
++    $historico = '/app/'.$tenant->slug.'/solicitacoes-de-compra/'.$solicitacao->uuid;
++    visit($historico)->assertPathIs($historico)->assertSee('Aprovada')->assertSee('Gestor visível no histórico')->assertNoJavaScriptErrors();
++});
+--- /dev/null
++++ b/tests/Feature/LaboratorioContratoTest.php
+@@ -0,0 +1,133 @@
++<?php
++
++use App\Enums\SituacaoSolicitacao;
++use App\Filament\App\Resources\CentrosCusto\Pages\CreateCentroCusto;
++use App\Filament\App\Resources\Cupons\Pages\CreateCupom;
++use App\Filament\App\Resources\Cupons\Pages\ListCupons;
++use App\Filament\App\Resources\SolicitacoesCompra\Pages\CreateSolicitacaoCompra;
++use App\Filament\App\Resources\SolicitacoesCompra\Pages\EditSolicitacaoCompra;
++use App\Filament\App\Resources\SolicitacoesCompra\Pages\ListSolicitacoesCompra;
++use App\Filament\App\Resources\SolicitacoesCompra\Pages\ViewSolicitacaoCompra;
++use App\Models\CentroCusto;
++use App\Models\Cupom;
++use App\Models\CupomUso;
++use App\Models\SolicitacaoCompra;
++use App\Models\Tenant;
++use App\Models\User;
++use App\Notifications\AprovacaoPendente;
++use Database\Seeders\PapeisSeeder;
++use Database\Seeders\ShieldPermissionsSeeder;
++use Filament\Actions\Testing\TestAction;
++use Filament\Facades\Filament;
++use Illuminate\Support\Facades\Notification;
++use Livewire\Livewire;
++use Spatie\Permission\Models\Permission;
++
++beforeEach(function (): void {
++    Filament::setTenant(null, isQuiet: true);
++    $this->seed([ShieldPermissionsSeeder::class, PapeisSeeder::class]);
++    expect(Permission::query()->where('name', 'Create:SolicitacaoCompra')->exists())->toBeTrue();
++    $this->organizacao = Tenant::factory()->create();
++    noPainelDa($this->organizacao);
++    Notification::fake();
++});
++
++it('consome percentual truncado e registra ator horario e valores sem exceder o limite', function (): void {
++    $ator  = User::factory()->create();
++    $cupom = Cupom::factory()->create(['codigo' => ' bemvindo ', 'limite_de_usos' => 1]);
++    $copia = Cupom::query()->findOrFail($cupom->id);
++    expect(Cupom::valido('bemvindo')?->id)->toBe($cupom->id)
++        ->and($cupom->aplicarEm(9999, $ator))->toBe(9000)
++        ->and($cupom->fresh()->usos)->toBe(1);
++    $uso = CupomUso::query()->sole();
++    expect($uso->aplicado_por_id)->toBe($ator->id)->and($uso->valor_original)->toBe(9999)->and($uso->valor_desconto)->toBe(999)->and($uso->created_at)->not->toBeNull();
++    expect(fn () => $copia->aplicarEm(9999, $ator))->toThrow(RuntimeException::class);
++    expect(CupomUso::query()->count())->toBe(1)->and(Cupom::valido('BEMVINDO'))->toBeNull();
++});
++
++it('limita o total em zero e recusa cupons fora da validade', function (): void {
++    expect(Cupom::factory()->fixo(5000)->create()->aplicarEm(3000))->toBe(0);
++    $expirado = Cupom::factory()->expirado()->create();
++    expect(Cupom::valido($expirado->codigo))->toBeNull()->and(Cupom::valido('INEXISTENTE'))->toBeNull();
++    expect(fn () => $expirado->aplicarEm(10000))->toThrow(RuntimeException::class);
++    expect(fn () => Cupom::factory()->create()->aplicarEm(-1))->toThrow(InvalidArgumentException::class);
++});
++
++it('segue gestor e diretor acima do limite preservando ambas identidades no historico', function (): void {
++    $gestor      = User::factory()->create(['name' => 'Gestor do contrato']);
++    $diretor     = usuarioCom('diretor');
++    $centro      = CentroCusto::factory()->create(['gestor_id' => $gestor->id]);
++    $solicitacao = SolicitacaoCompra::factory()->create(['centro_custo_id' => $centro->id, 'valor' => '5000.01']);
++    $solicitacao->enviar($solicitacao->solicitante);
++    expect($solicitacao->situacao)->toBe(SituacaoSolicitacao::AguardandoGestor);
++    Notification::assertSentTo($gestor, AprovacaoPendente::class, fn (AprovacaoPendente $notificacao): bool => $notificacao->etapa === 'gestor');
++    $solicitacao->aprovar($gestor);
++    expect($solicitacao->situacao)->toBe(SituacaoSolicitacao::AguardandoDiretor);
++    Notification::assertSentTo($diretor, AprovacaoPendente::class, fn (AprovacaoPendente $notificacao): bool => $notificacao->etapa === 'diretor');
++    $solicitacao->aprovar($diretor);
++    expect($solicitacao->situacao)->toBe(SituacaoSolicitacao::Aprovada)->and($solicitacao->etapas()->pluck('decidido_por_id')->all())->toBe([$gestor->id, $diretor->id]);
++    expect(fn () => $solicitacao->editar(['descricao' => 'Alterada'], $solicitacao->solicitante))->toThrow(RuntimeException::class);
++    expect(fn () => $solicitacao->delete())->toThrow(RuntimeException::class);
++    expect(fn () => $solicitacao->update(['descricao' => 'Alterada']))->toThrow(RuntimeException::class);
++    noPainelDa(Tenant::factory()->create());
++    expect(fn () => $solicitacao->update(['descricao' => 'Fora do contexto']))->toThrow(RuntimeException::class);
++});
++
++it('aprova no gestor no limite exato e exige justificativa antes de retornar ao rascunho', function (): void {
++    $solicitacao = SolicitacaoCompra::factory()->create(['valor' => '5000.00']);
++    $autor       = $solicitacao->solicitante;
++    $gestor      = $solicitacao->centroCusto->gestor;
++    $solicitacao->enviar($autor);
++    expect(fn () => $solicitacao->rejeitar($gestor, '  '))->toThrow(RuntimeException::class);
++    $solicitacao->rejeitar($gestor, 'Sem verba');
++    expect($solicitacao->situacao)->toBe(SituacaoSolicitacao::Rascunho);
++    $solicitacao->editar(['descricao' => 'Correção feita'], $autor);
++    $solicitacao->enviar($autor);
++    $solicitacao->aprovar($gestor);
++    expect($solicitacao->situacao)->toBe(SituacaoSolicitacao::Aprovada)->and($solicitacao->etapas()->pluck('decisao')->all())->toBe(['rejeitada', 'aprovada']);
++});
++
++it('recusa pessoa errada e falta de gestor sem mudar o rascunho e cancela somente antes do final', function (): void {
++    $solicitacao = SolicitacaoCompra::factory()->create();
++    expect(fn () => $solicitacao->enviar(User::factory()->create()))->toThrow(RuntimeException::class);
++    $centro    = CentroCusto::factory()->create(['gestor_id' => null]);
++    $semGestor = SolicitacaoCompra::factory()->create(['centro_custo_id' => $centro->id]);
++    expect(fn () => $semGestor->enviar($semGestor->solicitante))->toThrow(RuntimeException::class);
++    expect($semGestor->fresh()->situacao)->toBe(SituacaoSolicitacao::Rascunho);
++    $solicitacao->enviar($solicitacao->solicitante);
++    expect(fn () => $solicitacao->aprovar(User::factory()->create()))->toThrow(RuntimeException::class);
++    $solicitacao->cancelar($solicitacao->solicitante);
++    expect($solicitacao->situacao)->toBe(SituacaoSolicitacao::Cancelada)->and($solicitacao->etapas()->count())->toBe(0);
++});
++
++it('grava cupom e centro pela tela e mantem o usuario comum somente na leitura ativa', function (): void {
++    $admin  = usuarioCom('master_global');
++    $gestor = User::factory()->create();
++    $this->organizacao->users()->attach([$admin->id, $gestor->id]);
++    $this->actingAs($admin);
++    Livewire::test(CreateCupom::class)->fillForm(['codigo' => ' tela10 ', 'tipo' => 'porcentagem', 'valor' => 10, 'expira_em' => now()->addDay()->format('Y-m-d H:i:s'), 'limite_de_usos' => 10])->call('create')->assertHasNoFormErrors();
++    $cupom = Cupom::query()->where('codigo', 'TELA10')->sole();
++    Livewire::test(CreateCentroCusto::class)->fillForm(['nome' => 'Engenharia', 'gestor_id' => $gestor->id])->call('create')->assertHasNoFormErrors();
++    expect(CentroCusto::query()->where('nome', 'Engenharia')->sole()->gestor_id)->toBe($gestor->id);
++    $comum = usuarioCom('panel_user');
++    $this->actingAs($comum);
++    expect($comum->can('ViewAny:Cupom'))->toBeTrue()->and($comum->can('Create:Cupom'))->toBeFalse()->and($comum->can('Update:CentroCusto'))->toBeFalse()->and($comum->can('Create:SolicitacaoCompra'))->toBeTrue();
++    $expirado = Cupom::factory()->expirado()->create();
++    Livewire::test(ListCupons::class)->call('loadTable')->assertCanSeeTableRecords([$cupom])->assertCanNotSeeTableRecords([$expirado]);
++});
++
++it('grava e edita solicitacao pela tela e a acao envia com status e historico visiveis', function (): void {
++    $solicitante = usuarioCom('panel_user');
++    $gestor      = User::factory()->create(['name' => 'Gestor da tela']);
++    $this->organizacao->users()->attach([$solicitante->id, $gestor->id]);
++    $centro = CentroCusto::factory()->create(['gestor_id' => $gestor->id]);
++    $this->actingAs($solicitante);
++    Livewire::test(CreateSolicitacaoCompra::class)->fillForm(['descricao' => 'Compra pela tela', 'valor' => '100.00', 'centro_custo_id' => $centro->id])->call('create')->assertHasNoFormErrors();
++    $solicitacao = SolicitacaoCompra::query()->where('descricao', 'Compra pela tela')->sole();
++    expect($solicitacao->solicitante_id)->toBe($solicitante->id)->and($solicitacao->situacao)->toBe(SituacaoSolicitacao::Rascunho);
++    Livewire::test(EditSolicitacaoCompra::class, ['record' => $solicitacao->uuid])->fillForm(['descricao' => 'Compra corrigida'])->call('save')->assertHasNoFormErrors();
++    Livewire::test(ListSolicitacoesCompra::class)->callAction(TestAction::make('enviar')->table($solicitacao))->assertNotified();
++    expect($solicitacao->fresh()->situacao)->toBe(SituacaoSolicitacao::AguardandoGestor);
++    $solicitacao->refresh()->aprovar($gestor);
++    Livewire::test(ViewSolicitacaoCompra::class, ['record' => $solicitacao->uuid])->assertSee('Aprovada')->assertSee('Gestor da tela');
++});

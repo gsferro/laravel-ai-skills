@@ -1,0 +1,840 @@
+{
+  "reference": "referencia-v3/manifest.json",
+  "reference_manifest_sha256": "9655ce2b8c61968acd3d75b3d0c9517fd97e085662c4a081ee1fa491b3f8b977",
+  "catalog_complete": false,
+  "full_mutation_score_measured": false,
+  "classification_review": "Root manually checked target business assertions and bootstrap. Failure alone is not a kill.",
+  "arms": [
+    {
+      "anonymous_id": "K7",
+      "arm": "A",
+      "evidence": "execucao-mutantes/k7v3/resultado.json",
+      "evidence_sha256": "525a61d5a114d13b9cbdb12e05f34de5de5f854c83a0d8be7bbfa8a53651cb85",
+      "control": {
+        "exit_code": 0,
+        "timed_out": false,
+        "cases": 33,
+        "assertions": 166,
+        "command": [
+          "php",
+          "vendor/bin/pest",
+          "tests/ExperimentoReal/K7/CuponsTest.php",
+          "--colors=never",
+          "--log-junit",
+          "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\k7v3\\control.xml"
+        ]
+      },
+      "mutants": [
+        {
+          "operator": "c1-float",
+          "selection": "initial exploratory preregistered selection",
+          "classification": "killed by target assertion",
+          "exit_code": 1,
+          "failed_cases": [
+            {
+              "case": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 100\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 100\"\"Failed asserting that 72 is identical to 71.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:65"
+            }
+          ],
+          "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+          "mutated_sha256": "496c884382a0cbe5605e3600a78df6d0ed553ad8b7a8a72568279997c8918a25"
+        },
+        {
+          "operator": "c1-negative",
+          "selection": "initial exploratory preregistered selection",
+          "classification": "killed by target assertion",
+          "exit_code": 1,
+          "failed_cases": [
+            {
+              "case": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 999\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 999\"\"Failed asserting that -1 is identical to 0.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:82"
+            },
+            {
+              "case": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 0\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 0\"\"Failed asserting that -1000 is identical to 0.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:82"
+            }
+          ],
+          "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+          "mutated_sha256": "04520882fd44b72da7001849287d24b469e7ee029415a3939e6870df5eabc21a"
+        },
+        {
+          "operator": "c1-no-increment",
+          "selection": "initial exploratory preregistered selection",
+          "classification": "killed by target assertion",
+          "exit_code": 1,
+          "failed_cases": [
+            {
+              "case": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 10000\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 10000\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:66"
+            },
+            {
+              "case": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 100\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"29 / 100\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:66"
+            },
+            {
+              "case": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"10 / 9999\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"10 / 9999\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:66"
+            },
+            {
+              "case": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"5 / 50\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"5 / 50\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:66"
+            },
+            {
+              "case": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"1 / 100\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"1 / 100\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:66"
+            },
+            {
+              "case": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"100 / 9999\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-31 [K7] percentual inteiro trunca a fração do desconto with data set \"dataset \"100 / 9999\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:66"
+            },
+            {
+              "case": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 999\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 999\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:83"
+            },
+            {
+              "case": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1000\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1000\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:83"
+            },
+            {
+              "case": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1001\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 1001\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:83"
+            },
+            {
+              "case": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1 / 1\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1 / 1\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:83"
+            },
+            {
+              "case": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 0\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-32 [K7] desconto fixo conserva piso zero with data set \"dataset \"1000 / 0\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:83"
+            },
+            {
+              "case": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T-1s\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T-1s\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:107"
+            },
+            {
+              "case": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:107"
+            },
+            {
+              "case": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T+1s\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T+1s\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:107"
+            },
+            {
+              "case": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T-1s\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T-1s\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:107"
+            },
+            {
+              "case": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:107"
+            },
+            {
+              "case": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T+1s\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T+1s\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:107"
+            },
+            {
+              "case": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 2 / 3\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 2 / 3\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:130"
+            },
+            {
+              "case": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 3 / 3\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 3 / 3\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:125"
+            },
+            {
+              "case": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 4 / 3 legado\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:125"
+            },
+            {
+              "case": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 2 / 3\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 2 / 3\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:130"
+            },
+            {
+              "case": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 3 / 3\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 3 / 3\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:125"
+            },
+            {
+              "case": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 4 / 3 legado\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 4 / 3 legado\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:125"
+            },
+            {
+              "case": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"porcentagem\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"porcentagem\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:148"
+            },
+            {
+              "case": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"fixo\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-35 [K7] aplicação incrementa uma vez e mantém as duas linhas anteriores with data set \"dataset \"fixo\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:148"
+            },
+            {
+              "case": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / ausente\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / ausente\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:167"
+            },
+            {
+              "case": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Beto\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Beto\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:167"
+            },
+            {
+              "case": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Ana\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"porcentagem / Ana\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:167"
+            },
+            {
+              "case": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / ausente\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / ausente\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:167"
+            },
+            {
+              "case": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Beto\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Beto\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:167"
+            },
+            {
+              "case": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Ana\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-36 [K7] argumento aplicadoPor identifica Beto e o instante com guard ausente igual ou distinto with data set \"dataset \"fixo / Ana\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:167"
+            },
+            {
+              "case": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"porcentagem\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"porcentagem\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:199"
+            },
+            {
+              "case": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"fixo\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-37 [K7] somente B ganha a aplicação de Beto preservando A e a história anterior with data set \"dataset \"fixo\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:199"
+            }
+          ],
+          "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+          "mutated_sha256": "d5a94401160b4a99c5ac78091d904a1e661328f36370d228be208e133d737571"
+        },
+        {
+          "operator": "c1-expiry-inclusive",
+          "selection": "initial exploratory preregistered selection",
+          "classification": "killed by target assertion",
+          "exit_code": 1,
+          "failed_cases": [
+            {
+              "case": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"porcentagem T\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:102"
+            },
+            {
+              "case": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-25 [K7] segundo exato da expiração recusa com controle anterior aceito with data set \"dataset \"fixo T\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:102"
+            }
+          ],
+          "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+          "mutated_sha256": "29d0e575936ffd0eff40130bbad09569b8f85a1dee7dec9f0984ca92b53d9b74"
+        },
+        {
+          "operator": "c1-limit-inclusive",
+          "selection": "initial exploratory preregistered selection",
+          "classification": "killed by target assertion",
+          "exit_code": 1,
+          "failed_cases": [
+            {
+              "case": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 3 / 3\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"porcentagem 3 / 3\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:125"
+            },
+            {
+              "case": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 3 / 3\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-28 [K7] limite atingido recusa com último uso disponível aceito with data set \"dataset \"fixo 3 / 3\"\"K7 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:54\nat tests\\ExperimentoReal\\K7\\CuponsTest.php:125"
+            }
+          ],
+          "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+          "mutated_sha256": "4a963d506c95ca24342af1154a85f30393a6703c2149d1a6a8eab67db14818b3"
+        },
+        {
+          "operator": "c1-negative-fixed-input-enum",
+          "selection": "post-hoc corrected operator",
+          "classification": "survived selected translation",
+          "exit_code": 0,
+          "failed_cases": [],
+          "original_sha256": "0996ea88ea0d012c39e7e6c582bf3e7baedec79eb2048e3a0901ffeacf941891",
+          "mutated_sha256": "62908a177abc6441517c6761a84add271b3a6f059de43f3b9dace6728e80bb26"
+        }
+      ]
+    },
+    {
+      "anonymous_id": "M4",
+      "arm": "B",
+      "evidence": "execucao-mutantes/m4v3/resultado.json",
+      "evidence_sha256": "8ab596e85a65323b40be11e900ac2202072f7c11f8acc93118493a5823923ff6",
+      "control": {
+        "exit_code": 0,
+        "timed_out": false,
+        "cases": 29,
+        "assertions": 103,
+        "command": [
+          "php",
+          "vendor/bin/pest",
+          "tests/ExperimentoReal/M4/CuponsTest.php",
+          "--colors=never",
+          "--log-junit",
+          "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\m4v3\\control.xml"
+        ]
+      },
+      "mutants": [
+        {
+          "operator": "c1-float",
+          "selection": "initial exploratory preregistered selection",
+          "classification": "killed by target assertion",
+          "exit_code": 1,
+          "failed_cases": [
+            {
+              "case": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 100\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 100\"\"Failed asserting that 72 is identical to 71.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:68"
+            }
+          ],
+          "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+          "mutated_sha256": "496c884382a0cbe5605e3600a78df6d0ed553ad8b7a8a72568279997c8918a25"
+        },
+        {
+          "operator": "c1-negative",
+          "selection": "initial exploratory preregistered selection",
+          "classification": "killed by target assertion",
+          "exit_code": 1,
+          "failed_cases": [
+            {
+              "case": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(999, 0)\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(999, 0)\"Failed asserting that -1 is identical to 0.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:90"
+            }
+          ],
+          "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+          "mutated_sha256": "04520882fd44b72da7001849287d24b469e7ee029415a3939e6870df5eabc21a"
+        },
+        {
+          "operator": "c1-no-increment",
+          "selection": "initial exploratory preregistered selection",
+          "classification": "killed by target assertion",
+          "exit_code": 1,
+          "failed_cases": [
+            {
+              "case": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem antes\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem antes\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:105"
+            },
+            {
+              "case": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem borda\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem borda\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:105"
+            },
+            {
+              "case": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem depois\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem depois\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:105"
+            },
+            {
+              "case": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo antes\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo antes\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:105"
+            },
+            {
+              "case": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo borda\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo borda\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:105"
+            },
+            {
+              "case": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo depois\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo depois\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:105"
+            },
+            {
+              "case": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 2 / 3\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 2 / 3\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:129"
+            },
+            {
+              "case": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 3 / 3\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 3 / 3\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:126"
+            },
+            {
+              "case": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 4 / 3 legado\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:126"
+            },
+            {
+              "case": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 2 / 3\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 2 / 3\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:129"
+            },
+            {
+              "case": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 3 / 3\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 3 / 3\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:126"
+            },
+            {
+              "case": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 4 / 3 legado\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 4 / 3 legado\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:126"
+            },
+            {
+              "case": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"porcentagem\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"porcentagem\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:149"
+            },
+            {
+              "case": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"fixo\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"fixo\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:149"
+            },
+            {
+              "case": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"porcentagem\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"porcentagem\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:169"
+            },
+            {
+              "case": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"fixo\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"fixo\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:169"
+            }
+          ],
+          "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+          "mutated_sha256": "d5a94401160b4a99c5ac78091d904a1e661328f36370d228be208e133d737571"
+        },
+        {
+          "operator": "c1-expiry-inclusive",
+          "selection": "initial exploratory preregistered selection",
+          "classification": "killed by target assertion",
+          "exit_code": 1,
+          "failed_cases": [
+            {
+              "case": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem borda\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem borda\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:102"
+            },
+            {
+              "case": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo borda\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo borda\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:102"
+            }
+          ],
+          "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+          "mutated_sha256": "29d0e575936ffd0eff40130bbad09569b8f85a1dee7dec9f0984ca92b53d9b74"
+        },
+        {
+          "operator": "c1-limit-inclusive",
+          "selection": "initial exploratory preregistered selection",
+          "classification": "killed by target assertion",
+          "exit_code": 1,
+          "failed_cases": [
+            {
+              "case": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 3 / 3\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 3 / 3\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:126"
+            },
+            {
+              "case": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 3 / 3\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 3 / 3\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:126"
+            }
+          ],
+          "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+          "mutated_sha256": "4a963d506c95ca24342af1154a85f30393a6703c2149d1a6a8eab67db14818b3"
+        },
+        {
+          "operator": "c1-negative-fixed-input-enum",
+          "selection": "post-hoc corrected operator",
+          "classification": "killed by target assertion",
+          "exit_code": 1,
+          "failed_cases": [
+            {
+              "case": "it CT-07 [M4] seleção posterior ao julgamento recusa criação por componente de fixo negativo",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-07 [M4] seleção posterior ao julgamento recusa criação por componente de fixo negativoComponent has no errors.\nFailed asserting that false is true.\r\nat vendor\\livewire\\livewire\\src\\Features\\SupportValidation\\TestsValidation.php:41\nat vendor\\filament\\forms\\src\\Testing\\TestsForms.php:103\nat vendor\\laravel\\framework\\src\\Illuminate\\Macroable\\Traits\\Macroable.php:132\nat vendor\\livewire\\livewire\\src\\Features\\SupportTesting\\Testable.php:414\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:206"
+            }
+          ],
+          "original_sha256": "0996ea88ea0d012c39e7e6c582bf3e7baedec79eb2048e3a0901ffeacf941891",
+          "mutated_sha256": "62908a177abc6441517c6761a84add271b3a6f059de43f3b9dace6728e80bb26"
+        }
+      ]
+    },
+    {
+      "anonymous_id": "H2",
+      "arm": "A",
+      "evidence": "execucao-mutantes/h2traducaov2/resultado.json",
+      "evidence_sha256": "4f3284a1e2f9a9293bc6e7f437f5c5b255397045082bf9b95b3898b7b7f89819",
+      "control": {
+        "exit_code": 0,
+        "timed_out": false,
+        "cases": 30,
+        "assertions": 236,
+        "command": [
+          "php",
+          "vendor/bin/pest",
+          "tests/ExperimentoReal/H2/ComprasTest.php",
+          "--colors=never",
+          "--log-junit",
+          "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\h2traducaov2\\control.xml"
+        ]
+      },
+      "mutants": [
+        {
+          "operator": "c2-director-at-limit",
+          "selection": "initial exploratory preregistered selection",
+          "classification": "killed by target assertion",
+          "exit_code": 1,
+          "failed_cases": [
+            {
+              "case": "H2 CT-15: o centavo determina a etapa depois do gestor with data set \"dataset \"5000.00\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "H2 CT-15: o centavo determina a etapa depois do gestor with data set \"dataset \"5000.00\"\"Failed asserting that two strings are identical.\r\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:134"
+            }
+          ],
+          "original_sha256": "220df322367a15469597a8c5eeaaca968481d135db685d256eaa5e77536581a4",
+          "mutated_sha256": "4bf69db085517278c856c3693a562e3848ec22343cb0502c7278ada9c787204e"
+        },
+        {
+          "operator": "c2-empty-rejection",
+          "selection": "initial exploratory preregistered selection",
+          "classification": "killed by target assertion",
+          "exit_code": 1,
+          "failed_cases": [
+            {
+              "case": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — vazia\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — vazia\"\"A operação de negócio não foi recusada.\r\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:103\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:215"
+            },
+            {
+              "case": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — três espaços\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — três espaços\"\"A operação de negócio não foi recusada.\r\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:103\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:215"
+            },
+            {
+              "case": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — U+0009 U+000A\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"gestor — U+0009 U+000A\"\"A operação de negócio não foi recusada.\r\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:103\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:215"
+            },
+            {
+              "case": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — vazia\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — vazia\"\"A operação de negócio não foi recusada.\r\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:103\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:215"
+            },
+            {
+              "case": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — três espaços\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — três espaços\"\"A operação de negócio não foi recusada.\r\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:103\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:215"
+            },
+            {
+              "case": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — U+0009 U+000A\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "H2 CT-19: justificativa sem conteúdo não grava rejeição with data set \"dataset \"diretor — U+0009 U+000A\"\"A operação de negócio não foi recusada.\r\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:103\nat tests\\ExperimentoReal\\H2\\ComprasTest.php:215"
+            }
+          ],
+          "original_sha256": "220df322367a15469597a8c5eeaaca968481d135db685d256eaa5e77536581a4",
+          "mutated_sha256": "d03e3381b0151398577ae895accb627f660d0aab04f02af98c00f2be6d0f477b"
+        }
+      ]
+    },
+    {
+      "anonymous_id": "V9",
+      "arm": "B",
+      "evidence": "execucao-mutantes/v9traducaov2/resultado.json",
+      "evidence_sha256": "49d16df6be3349f122cc2a1acf2f341b752bfc92be686e11641064d7bc16e7e7",
+      "control": {
+        "exit_code": 0,
+        "timed_out": false,
+        "cases": 17,
+        "assertions": 145,
+        "command": [
+          "php",
+          "vendor/bin/pest",
+          "tests/ExperimentoReal/V9/ComprasTest.php",
+          "--colors=never",
+          "--log-junit",
+          "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\v9traducaov2\\control.xml"
+        ]
+      },
+      "mutants": [
+        {
+          "operator": "c2-director-at-limit",
+          "selection": "initial exploratory preregistered selection",
+          "classification": "killed by target assertion",
+          "exit_code": 1,
+          "failed_cases": [
+            {
+              "case": "V9 CT-41: fronteira literal decide situação e pendência após gestor with data set \"dataset \"5000.00\"\"",
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "V9 CT-41: fronteira literal decide situação e pendência após gestor with data set \"dataset \"5000.00\"\"Failed asserting that two strings are identical.\r\nat tests\\ExperimentoReal\\V9\\ComprasTest.php:214"
+            }
+          ],
+          "original_sha256": "220df322367a15469597a8c5eeaaca968481d135db685d256eaa5e77536581a4",
+          "mutated_sha256": "4bf69db085517278c856c3693a562e3848ec22343cb0502c7278ada9c787204e"
+        },
+        {
+          "operator": "c2-empty-rejection",
+          "selection": "initial exploratory preregistered selection",
+          "classification": "survived selected translation",
+          "exit_code": 0,
+          "failed_cases": [],
+          "original_sha256": "220df322367a15469597a8c5eeaaca968481d135db685d256eaa5e77536581a4",
+          "mutated_sha256": "d03e3381b0151398577ae895accb627f660d0aab04f02af98c00f2be6d0f477b"
+        }
+      ]
+    }
+  ],
+  "other_controls": [
+    {
+      "scope": "A partial CT-B01",
+      "evidence": "execucao-derivada/browserk7v3/resultado.json",
+      "evidence_sha256": "e11c5ce92985fd77e6bb0139188a384f681f40e63cecdb7bbc9d3d2ab60c1457",
+      "exit_code": 0,
+      "timed_out": false,
+      "cases": 2,
+      "assertions": 8,
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/BrowserTenancy/ComparacaoK7Test.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-derivada\\browserk7v3\\control.xml"
+      ]
+    },
+    {
+      "scope": "B partial CT-B01",
+      "evidence": "execucao-derivada/browserm4v3/resultado.json",
+      "evidence_sha256": "50071d9024f0f6e9fd58d678e20355956c490165271a9752b81fea3f8411bb12",
+      "exit_code": 0,
+      "timed_out": false,
+      "cases": 1,
+      "assertions": 4,
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/BrowserTenancy/ComparacaoM4Test.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-derivada\\browserm4v3\\control.xml"
+      ]
+    },
+    {
+      "scope": "independent reference controls, not skill comparison",
+      "evidence": "execucao-derivada/referenciav3/resultado.json",
+      "evidence_sha256": "cf7e7d696f62455d7a447c5bd0c88eda26e4a063a30036138eb10477e74ebf7d",
+      "exit_code": 0,
+      "timed_out": false,
+      "cases": 32,
+      "assertions": 127,
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/Feature/LaboratorioContratoTest.php",
+        "tests/Kit/PaineisTest.php",
+        "tests/Kit/AdminDaOrganizacaoTest.php",
+        "tests/BrowserTenancy/LaboratorioContratoBrowserTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-derivada\\referenciav3\\control.xml"
+      ]
+    },
+    {
+      "scope": "independent percentage control, not skill comparison",
+      "evidence": "execucao-derivada/controleenumv3/resultado.json",
+      "evidence_sha256": "7ee2c105ab3d9499bbe0f60ae5a373109380261b3cb6420163797e6da85ab323",
+      "exit_code": 0,
+      "timed_out": false,
+      "cases": 1,
+      "assertions": 21,
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/ControleReferencia/CupomEnumTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-derivada\\controleenumv3\\control.xml"
+      ]
+    }
+  ],
+  "invalid_operator": {
+    "name": "c1-negative-fixed-input",
+    "classification": "ineffective enum/string condition, excluded from valid operators",
+    "evidence": [
+      "execucao-mutantes/k7v2/resultado.json",
+      "execucao-mutantes/m4v2/resultado.json",
+      "execucao-mutantes/m4formv2/resultado.json"
+    ]
+  },
+  "limitations": [
+    "Selected translations only; V9 CT-45 form was not materialized. CT-44 omits an argument and does not exercise blank content.",
+    "Post-hoc negative fixed input selection is not a preregistered complete catalog estimate.",
+    "Procedural read restrictions; paired translators saw public behavior contract.",
+    "No statistical causal or general superiority claim."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "project": "project-26",
+  "scenario": 1,
+  "anonymous_id": "conjunto-m4",
+  "redactions": [
+    {
+      "pattern": "\\b(?:4\\.0\\.0|4\\.1\\.0|1\\.16\\.0|1\\.17\\.0)\\b",
+      "replacement": "[VERSÃO ANONIMIZADA]",
+      "count": 2
+    },
+    {
+      "pattern": "/root/(?:blind|adversarial)_[a-z0-9_]+",
+      "replacement": "[EXECUTOR]",
+      "count": 4
+    }
+  ],
+  "sha256": {
+    "04-casos-de-teste.md": "1b2668d88bc2748393d158f3a6c5d19a12ff5384b2d91f7f2712678e8d67f1c2",
+    "05-casos-de-teste-browser.md": "0a5d3a5117a665b0ad31648f8d403f3dfb75ff6f4fdde0619d45d25a196bef03"
+  },
+  "anonymous_sha256": "bf5783f6cdea7ff5b96d4a22189beedf63a48cf528aba8c8675a1504c0d11aee"
+}

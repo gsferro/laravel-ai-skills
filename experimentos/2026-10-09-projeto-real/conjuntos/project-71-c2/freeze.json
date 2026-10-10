@@ -1,0 +1,22 @@
+{
+  "project": "project-71",
+  "scenario": 2,
+  "anonymous_id": "conjunto-h2",
+  "redactions": [
+    {
+      "pattern": "\\b(?:feature-wiki|feature-test-design)\\s+(?:v)?\\d+\\.\\d+\\.\\d+\\b",
+      "replacement": "[SKILL — VERSÃO ANONIMIZADA]",
+      "count": 2
+    },
+    {
+      "pattern": "\\b(?:4\\.0\\.0|4\\.1\\.0|1\\.16\\.0|1\\.17\\.0)\\b",
+      "replacement": "[VERSÃO ANONIMIZADA]",
+      "count": 2
+    }
+  ],
+  "sha256": {
+    "04-casos-de-teste.md": "59252c25ad1b601094caca2e2b980c61a7f484cd97c1fbf21427a4b400ab04e9",
+    "05-casos-de-teste-browser.md": "c778e672fd83aa8e48117deba0f8614a44eeb4704447640cad86d3424dd7a1b7"
+  },
+  "anonymous_sha256": "e83a09c025c390b0310efb4c0f9752a4156a6a87eb6245be0a967274c66a8d20"
+}

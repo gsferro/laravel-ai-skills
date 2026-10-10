@@ -1,0 +1,1527 @@
+{
+  "anonymous_id": "m4v2",
+  "catalog_complete": false,
+  "implementation_manifest": "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\referencia-v2\\manifest.json",
+  "control": {
+    "command": [
+      "php",
+      "vendor/bin/pest",
+      "tests/ExperimentoReal/M4/CuponsTest.php",
+      "--colors=never",
+      "--log-junit",
+      "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\m4v2\\control.xml"
+    ],
+    "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+    "exit_code": 0,
+    "timed_out": false,
+    "duration_seconds": 15.187,
+    "cases": [
+      {
+        "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"1 / 9999\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 1,
+        "problems": []
+      },
+      {
+        "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 10000\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 1,
+        "problems": []
+      },
+      {
+        "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 100\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 1,
+        "problems": []
+      },
+      {
+        "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"100 / 9999\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 1,
+        "problems": []
+      },
+      {
+        "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(49, 47)\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 2,
+        "problems": []
+      },
+      {
+        "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(50, 48)\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 2,
+        "problems": []
+      },
+      {
+        "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(51, 49)\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 2,
+        "problems": []
+      },
+      {
+        "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(999, 0)\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 1,
+        "problems": []
+      },
+      {
+        "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(1000, 0)\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 1,
+        "problems": []
+      },
+      {
+        "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(1001, 1)\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 1,
+        "problems": []
+      },
+      {
+        "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem antes\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem borda\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem depois\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo antes\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo borda\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo depois\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 2 / 3\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 3 / 3\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 2 / 3\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 4,
+        "problems": []
+      },
+      {
+        "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 3 / 3\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 4 / 3 legado\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"porcentagem\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 8,
+        "problems": []
+      },
+      {
+        "name": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"fixo\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 8,
+        "problems": []
+      },
+      {
+        "name": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"porcentagem\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 8,
+        "problems": []
+      },
+      {
+        "name": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"fixo\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 8,
+        "problems": []
+      },
+      {
+        "name": "it CT-41 [M4] pessoa aplicadora nula recusa sem consumir nem criar trilha with data set \"dataset \"porcentagem\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-41 [M4] pessoa aplicadora nula recusa sem consumir nem criar trilha with data set \"dataset \"fixo\"\"",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "it CT-07 [M4] seleção posterior ao julgamento recusa criação por componente de fixo negativo",
+        "class": "Tests.ExperimentoReal.M4.CuponsTest",
+        "assertions": 5,
+        "problems": []
+      }
+    ]
+  },
+  "mutants": [
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/M4/CuponsTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\m4v2\\c1-float.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 15.031,
+      "cases": [
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"1 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 10000\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 100\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 100\"\"Failed asserting that 72 is identical to 71.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:68"
+            }
+          ]
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"100 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(49, 47)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(50, 48)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(51, 49)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(999, 0)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(1000, 0)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(1001, 1)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem antes\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem borda\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem depois\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo antes\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo borda\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo depois\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-41 [M4] pessoa aplicadora nula recusa sem consumir nem criar trilha with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-41 [M4] pessoa aplicadora nula recusa sem consumir nem criar trilha with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-07 [M4] seleção posterior ao julgamento recusa criação por componente de fixo negativo",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        }
+      ],
+      "name": "c1-float",
+      "file": "app/Models/Cupom.php",
+      "before": "intdiv($valorTotalEmCentavos, 100) * $this->valor + intdiv(($valorTotalEmCentavos % 100) * $this->valor, 100)",
+      "after": "(int) ($valorTotalEmCentavos * ($this->valor / 100))",
+      "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+      "mutated_sha256": "496c884382a0cbe5605e3600a78df6d0ed553ad8b7a8a72568279997c8918a25"
+    },
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/M4/CuponsTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\m4v2\\c1-negative.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 15.094,
+      "cases": [
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"1 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 10000\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 100\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"100 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(49, 47)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(50, 48)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(51, 49)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(999, 0)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(999, 0)\"Failed asserting that -1 is identical to 0.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:90"
+            }
+          ]
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(1000, 0)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(1001, 1)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem antes\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem borda\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem depois\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo antes\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo borda\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo depois\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-41 [M4] pessoa aplicadora nula recusa sem consumir nem criar trilha with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-41 [M4] pessoa aplicadora nula recusa sem consumir nem criar trilha with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-07 [M4] seleção posterior ao julgamento recusa criação por componente de fixo negativo",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        }
+      ],
+      "name": "c1-negative",
+      "file": "app/Models/Cupom.php",
+      "before": "return max(0, $valorTotalEmCentavos - $desconto);",
+      "after": "return $valorTotalEmCentavos - $desconto;",
+      "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+      "mutated_sha256": "04520882fd44b72da7001849287d24b469e7ee029415a3939e6870df5eabc21a"
+    },
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/M4/CuponsTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\m4v2\\c1-no-increment.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 15.25,
+      "cases": [
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"1 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 10000\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 100\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"100 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(49, 47)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(50, 48)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(51, 49)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(999, 0)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(1000, 0)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(1001, 1)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem antes\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem antes\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:105"
+            }
+          ]
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem borda\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem borda\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:105"
+            }
+          ]
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem depois\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem depois\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:105"
+            }
+          ]
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo antes\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo antes\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:105"
+            }
+          ]
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo borda\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo borda\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:105"
+            }
+          ]
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo depois\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo depois\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:105"
+            }
+          ]
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 2 / 3\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:129"
+            }
+          ]
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 3 / 3\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:126"
+            }
+          ]
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 4 / 3 legado\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:126"
+            }
+          ]
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 2 / 3\"\"Failed asserting that 0 is identical to 3.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:129"
+            }
+          ]
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 3 / 3\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:126"
+            }
+          ]
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 4 / 3 legado\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:126"
+            }
+          ]
+        },
+        {
+          "name": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"porcentagem\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:149"
+            }
+          ]
+        },
+        {
+          "name": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"fixo\"\"Failed asserting that 0 is identical to 1.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:149"
+            }
+          ]
+        },
+        {
+          "name": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"porcentagem\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:169"
+            }
+          ]
+        },
+        {
+          "name": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"fixo\"\"Failed asserting that 0 is identical to 2.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:169"
+            }
+          ]
+        },
+        {
+          "name": "it CT-41 [M4] pessoa aplicadora nula recusa sem consumir nem criar trilha with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-41 [M4] pessoa aplicadora nula recusa sem consumir nem criar trilha with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-07 [M4] seleção posterior ao julgamento recusa criação por componente de fixo negativo",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        }
+      ],
+      "name": "c1-no-increment",
+      "file": "app/Models/Cupom.php",
+      "before": "->increment('usos');",
+      "after": "->increment('usos', 0);",
+      "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+      "mutated_sha256": "d5a94401160b4a99c5ac78091d904a1e661328f36370d228be208e133d737571"
+    },
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/M4/CuponsTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\m4v2\\c1-expiry-inclusive.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 15.641,
+      "cases": [
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"1 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 10000\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 100\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"100 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(49, 47)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(50, 48)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(51, 49)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(999, 0)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(1000, 0)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(1001, 1)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem antes\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem borda\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem borda\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:102"
+            }
+          ]
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem depois\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo antes\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo borda\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo borda\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:102"
+            }
+          ]
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo depois\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-41 [M4] pessoa aplicadora nula recusa sem consumir nem criar trilha with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-41 [M4] pessoa aplicadora nula recusa sem consumir nem criar trilha with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-07 [M4] seleção posterior ao julgamento recusa criação por componente de fixo negativo",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        }
+      ],
+      "name": "c1-expiry-inclusive",
+      "file": "app/Models/Cupom.php",
+      "before": "->where('expira_em', '>', now())",
+      "after": "->where('expira_em', '>=', now())",
+      "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+      "mutated_sha256": "29d0e575936ffd0eff40130bbad09569b8f85a1dee7dec9f0984ca92b53d9b74"
+    },
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/M4/CuponsTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\m4v2\\c1-limit-inclusive.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 15.297,
+      "cases": [
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"1 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 10000\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 100\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"100 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(49, 47)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(50, 48)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(51, 49)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(999, 0)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(1000, 0)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(1001, 1)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem antes\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem borda\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem depois\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo antes\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo borda\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo depois\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 3 / 3\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:126"
+            }
+          ]
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\AssertionFailedError",
+              "message": null,
+              "text": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 3 / 3\"\"M4 exige recusa sem retorno de total com desconto.\r\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:56\nat tests\\ExperimentoReal\\M4\\CuponsTest.php:126"
+            }
+          ]
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-41 [M4] pessoa aplicadora nula recusa sem consumir nem criar trilha with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-41 [M4] pessoa aplicadora nula recusa sem consumir nem criar trilha with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-07 [M4] seleção posterior ao julgamento recusa criação por componente de fixo negativo",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        }
+      ],
+      "name": "c1-limit-inclusive",
+      "file": "app/Models/Cupom.php",
+      "before": "->whereColumn('usos', '<', 'limite_de_usos')",
+      "after": "->whereColumn('usos', '<=', 'limite_de_usos')",
+      "original_sha256": "08b454c3a868388e38d593421c08335bd8ea7092baf2526345ee066bf6539ddb",
+      "mutated_sha256": "4a963d506c95ca24342af1154a85f30393a6703c2149d1a6a8eab67db14818b3"
+    },
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/M4/CuponsTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\m4v2\\c1-negative-fixed-input.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 15.641,
+      "cases": [
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"1 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 10000\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"29 / 100\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-10 [M4] percentual conserva o inteiro de centavos do Example with data set \"dataset \"100 / 9999\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(49, 47)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(50, 48)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-11 [M4] borda de meio centavo mantém desconto efetivo de dois centavos with data set \"(51, 49)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 2,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(999, 0)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(1000, 0)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-12 [M4] fixo de mil centavos conserva o piso do total with data set \"(1001, 1)\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 1,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem antes\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem borda\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"porcentagem depois\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo antes\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo borda\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-13 [M4] segundo exato da expiração recusa e segundo anterior aceita with data set \"dataset \"fixo depois\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"porcentagem 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 2 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 4,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 3 / 3\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-22 [M4] último uso aceita e limite atingido ou ultrapassado recusa with data set \"dataset \"fixo 4 / 3 legado\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-26 [M4] motor registra Beto e o instante sem atribuir a Ana ou autor nulo with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-28 [M4] aplicação de Carla acrescenta só sua linha e preserva Beto with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 8,
+          "problems": []
+        },
+        {
+          "name": "it CT-41 [M4] pessoa aplicadora nula recusa sem consumir nem criar trilha with data set \"dataset \"porcentagem\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-41 [M4] pessoa aplicadora nula recusa sem consumir nem criar trilha with data set \"dataset \"fixo\"\"",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "it CT-07 [M4] seleção posterior ao julgamento recusa criação por componente de fixo negativo",
+          "class": "Tests.ExperimentoReal.M4.CuponsTest",
+          "assertions": 5,
+          "problems": []
+        }
+      ],
+      "name": "c1-negative-fixed-input",
+      "file": "app/Filament/App/Resources/Cupons/CupomResource.php",
+      "before": "->minValue(1)->maxValue(fn (Get $get): ?int => $get('tipo') === TipoDeDesconto::Porcentagem->value ? 100 : null)",
+      "after": "->minValue(fn (Get $get): int => $get('tipo') === TipoDeDesconto::Fixo->value ? -1 : 1)->maxValue(fn (Get $get): ?int => $get('tipo') === TipoDeDesconto::Porcentagem->value ? 100 : null)",
+      "original_sha256": "46e2b4c45c5e2e0bdf381bf9da1c44deed9c0e772f0b278c1040008c4289acf9",
+      "mutated_sha256": "57a108ef0bd233696c621b4068a0fda19e336f67e2bf99c32809a7b5770ec40c"
+    }
+  ]
+}

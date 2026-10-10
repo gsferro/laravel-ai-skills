@@ -1,0 +1,380 @@
+{
+  "anonymous_id": "v9traducaov2",
+  "catalog_complete": false,
+  "implementation_manifest": "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\referencia-v3\\manifest.json",
+  "control": {
+    "command": [
+      "php",
+      "vendor/bin/pest",
+      "tests/ExperimentoReal/V9/ComprasTest.php",
+      "--colors=never",
+      "--log-junit",
+      "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\v9traducaov2\\control.xml"
+    ],
+    "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+    "exit_code": 0,
+    "timed_out": false,
+    "duration_seconds": 2.234,
+    "cases": [
+      {
+        "name": "V9 CT-11/CT-49: envio começa no gestor e notifica só G pelo canal mail with data set \"dataset \"3000.00 — abaixo\"\"",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 9,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-11/CT-49: envio começa no gestor e notifica só G pelo canal mail with data set \"dataset \"6000.00 — acima\"\"",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 9,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-16: gestor encerra a compra de 3000.00",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 10,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-20: rejeição da etapa corrente conserva campos e devolve a rascunho with data set \"dataset \"aguardando_gestor — G\"\"",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 9,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-20: rejeição da etapa corrente conserva campos e devolve a rascunho with data set \"dataset \"aguardando_diretor — D\"\"",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 9,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-23: centro corrigido usa H e avisa somente H no reenvio",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 9,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-24: reenvio após rejeição de diretor começa de novo no gestor",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 3,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-26 parcial: diretor não aprova antes do gestor",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 6,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-41: fronteira literal decide situação e pendência após gestor with data set \"dataset \"4999.99\"\"",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 9,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-41: fronteira literal decide situação e pendência após gestor with data set \"dataset \"5000.00\"\"",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 9,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-41: fronteira literal decide situação e pendência após gestor with data set \"dataset \"5000.01\"\"",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 9,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-42: diretor encerra depois da aprovação real de G",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 14,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-43: alçada configurada 7000.00 encerra 6000.00 depois do gestor",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 10,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-44: omitir argumento justificativa não grava rejeição with data set \"dataset \"gestor — argumento ausente\"\"",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 7,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-44: omitir argumento justificativa não grava rejeição with data set \"dataset \"diretor — argumento ausente\"\"",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 7,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-50: cada diretor de A recebe um mail e X de B não recebe with data set \"dataset \"D1 — cardinalidade um\"\"",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 7,
+        "problems": []
+      },
+      {
+        "name": "V9 CT-50: cada diretor de A recebe um mail e X de B não recebe with data set \"dataset \"D1 e D2 — cardinalidade N\"\"",
+        "class": "Tests.ExperimentoReal.V9.ComprasTest",
+        "assertions": 9,
+        "problems": []
+      }
+    ]
+  },
+  "mutants": [
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/V9/ComprasTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\v9traducaov2\\c2-director-at-limit.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 2.235,
+      "cases": [
+        {
+          "name": "V9 CT-11/CT-49: envio começa no gestor e notifica só G pelo canal mail with data set \"dataset \"3000.00 — abaixo\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-11/CT-49: envio começa no gestor e notifica só G pelo canal mail with data set \"dataset \"6000.00 — acima\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-16: gestor encerra a compra de 3000.00",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 10,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-20: rejeição da etapa corrente conserva campos e devolve a rascunho with data set \"dataset \"aguardando_gestor — G\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-20: rejeição da etapa corrente conserva campos e devolve a rascunho with data set \"dataset \"aguardando_diretor — D\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-23: centro corrigido usa H e avisa somente H no reenvio",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-24: reenvio após rejeição de diretor começa de novo no gestor",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-26 parcial: diretor não aprova antes do gestor",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-41: fronteira literal decide situação e pendência após gestor with data set \"dataset \"4999.99\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-41: fronteira literal decide situação e pendência após gestor with data set \"dataset \"5000.00\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 3,
+          "problems": [
+            {
+              "kind": "failure",
+              "type": "PHPUnit\\Framework\\ExpectationFailedException",
+              "message": null,
+              "text": "V9 CT-41: fronteira literal decide situação e pendência após gestor with data set \"dataset \"5000.00\"\"Failed asserting that two strings are identical.\r\nat tests\\ExperimentoReal\\V9\\ComprasTest.php:214"
+            }
+          ]
+        },
+        {
+          "name": "V9 CT-41: fronteira literal decide situação e pendência após gestor with data set \"dataset \"5000.01\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-42: diretor encerra depois da aprovação real de G",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 14,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-43: alçada configurada 7000.00 encerra 6000.00 depois do gestor",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 10,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-44: omitir argumento justificativa não grava rejeição with data set \"dataset \"gestor — argumento ausente\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-44: omitir argumento justificativa não grava rejeição with data set \"dataset \"diretor — argumento ausente\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-50: cada diretor de A recebe um mail e X de B não recebe with data set \"dataset \"D1 — cardinalidade um\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-50: cada diretor de A recebe um mail e X de B não recebe with data set \"dataset \"D1 e D2 — cardinalidade N\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        }
+      ],
+      "name": "c2-director-at-limit",
+      "file": "app/Models/SolicitacaoCompra.php",
+      "before": "return (float) $this->valor > (float) config('kit.compras.limite_diretor', 5000.00);",
+      "after": "return (float) $this->valor >= (float) config('kit.compras.limite_diretor', 5000.00);",
+      "original_sha256": "220df322367a15469597a8c5eeaaca968481d135db685d256eaa5e77536581a4",
+      "mutated_sha256": "4bf69db085517278c856c3693a562e3848ec22343cb0502c7278ada9c787204e"
+    },
+    {
+      "command": [
+        "php",
+        "vendor/bin/pest",
+        "tests/ExperimentoReal/V9/ComprasTest.php",
+        "--colors=never",
+        "--log-junit",
+        "D:\\PROJECTS\\SKILLS\\laravel-ai-skills\\experimentos\\2026-10-09-projeto-real\\execucao-mutantes\\v9traducaov2\\c2-empty-rejection.xml"
+      ],
+      "cwd": "D:\\PROJECTS\\SKILLS\\blind-20261009\\runtime",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 2.266,
+      "cases": [
+        {
+          "name": "V9 CT-11/CT-49: envio começa no gestor e notifica só G pelo canal mail with data set \"dataset \"3000.00 — abaixo\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-11/CT-49: envio começa no gestor e notifica só G pelo canal mail with data set \"dataset \"6000.00 — acima\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-16: gestor encerra a compra de 3000.00",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 10,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-20: rejeição da etapa corrente conserva campos e devolve a rascunho with data set \"dataset \"aguardando_gestor — G\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-20: rejeição da etapa corrente conserva campos e devolve a rascunho with data set \"dataset \"aguardando_diretor — D\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-23: centro corrigido usa H e avisa somente H no reenvio",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-24: reenvio após rejeição de diretor começa de novo no gestor",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 3,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-26 parcial: diretor não aprova antes do gestor",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 6,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-41: fronteira literal decide situação e pendência após gestor with data set \"dataset \"4999.99\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-41: fronteira literal decide situação e pendência após gestor with data set \"dataset \"5000.00\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-41: fronteira literal decide situação e pendência após gestor with data set \"dataset \"5000.01\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-42: diretor encerra depois da aprovação real de G",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 14,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-43: alçada configurada 7000.00 encerra 6000.00 depois do gestor",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 10,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-44: omitir argumento justificativa não grava rejeição with data set \"dataset \"gestor — argumento ausente\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-44: omitir argumento justificativa não grava rejeição with data set \"dataset \"diretor — argumento ausente\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-50: cada diretor de A recebe um mail e X de B não recebe with data set \"dataset \"D1 — cardinalidade um\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 7,
+          "problems": []
+        },
+        {
+          "name": "V9 CT-50: cada diretor de A recebe um mail e X de B não recebe with data set \"dataset \"D1 e D2 — cardinalidade N\"\"",
+          "class": "Tests.ExperimentoReal.V9.ComprasTest",
+          "assertions": 9,
+          "problems": []
+        }
+      ],
+      "name": "c2-empty-rejection",
+      "file": "app/Models/SolicitacaoCompra.php",
+      "before": "if (blank($justificativa)) {",
+      "after": "if (false) {",
+      "original_sha256": "220df322367a15469597a8c5eeaaca968481d135db685d256eaa5e77536581a4",
+      "mutated_sha256": "d03e3381b0151398577ae895accb627f660d0aab04f02af98c00f2be6d0f477b"
+    }
+  ]
+}
