@@ -8,11 +8,102 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 
 | Skill | Versão | Tag |
 |---|---|---|
-| `feature-wiki` | 4.0.0 | `feature-wiki-v4.0.0` |
-| `feature-test-design` | 1.16.0 | `feature-test-design-v1.16.0` |
-| `feature-quality-gate` | 1.7.0 | `feature-quality-gate-v1.7.0` |
-| `requirement-to-rule` | 1.4.0 | `requirement-to-rule-v1.4.0` |
-| `feature-tickets` | 1.0.0 | `feature-tickets-v1.0.0` |
+| `feature-wiki` | 4.1.1 | não publicada |
+| `feature-test-design` | 1.17.3 | não publicada |
+| `feature-quality-gate` | 1.8.0 | não publicada |
+| `requirement-to-rule` | 1.5.0 | não publicada |
+| `feature-tickets` | 1.1.0 | não publicada |
+
+## Não publicado — 2026-10-09 — feature-wiki 4.1.1 e feature-test-design 1.17.3
+
+### Validado e documentado
+
+- Comparação A/B em cópias do kit Laravel real: requisitos e tratamentos congelados,
+  perguntas explícitas, revisão adversarial e juízes cegos com conjuntos completos.
+- Conferência pareada secundária preserva os vereditos originais e registra mudança de critério.
+- Pest e Chromium executam traduções selecionadas; logs, JUnit, falhas de referência e fixture,
+  operadores ineficazes e restauração por hash permanecem arquivados. Sem MSI completo.
+- `.gitattributes` preserva os bytes dos dois diretórios datados de evidência, evitando
+  que a conversão de finais de linha pelo Git invalide os hashes arquivados.
+- Gate comportamental reprovado: ganho em cupons e perda em aprovação. Correções posteriores
+  não recebem pontuação dos snapshots. [Métricas e limites](experimentos/README.md#projeto-laravel-real--2026-10-09)
+  e [relatório completo](experimentos/2026-10-09-projeto-real/RELATORIO.md).
+
+### Corrigido
+
+- Revisão adversarial e checklist universal usam capacidades reais do host; rotas, instalação e
+  aliases Claude ficam condicionados. Aninhamento requer autorização/capacidade e mantém dono do fechamento.
+- Removida promessa de isolamento por hook, prompt ou permissão de escrita; controles e vias não
+  cobertas permanecem explícitos. O algoritmo do hook não mudou.
+- Referência de técnicas elimina dois bloqueios integrais de RQ residuais e preserva a tabela
+  ao colocar a nota numérica depois dela. Evidências na revisão independente da rodada real.
+  Entrevista, templates e retorno da delegação da feature-wiki também preservam o recorte determinado.
+- Taxonomia distingue intenção válida repetida de tentativa isolada fora da etapa; exige
+  cobertura por tipo de decisão, após lacuna encontrada pelo juiz cego na aprovação de compra.
+- Armadilhas de API documentam casts enum do Get no Filament 5.7.6 e erro de campo específico.
+  A comparação escalar afetou a referência executável e tornou ineficaz um operador exploratório.
+- Estas correções não alteram os tratamentos congelados FW4.0.0/FTD1.16.0 e FW4.1.0/FTD1.17.0;
+  os resultados comparativos não são medição das novas versões.
+
+## Não publicado — 2026-10-09 — feature-test-design 1.17.2
+
+### Corrigido
+
+- Pergunta nova bloqueia somente o recorte dependente da resposta; citar uma RQ em `afeta:`
+  não suspende obrigações já determinadas no 00. Template e contrato adversarial seguem a regra.
+- A descoberta vem da revisão independente da aprovação de compra. Esta versão é posterior
+  aos tratamentos congelados; não recebe os resultados da candidata 1.17.0 como se fossem seus.
+  Nova eficácia comportamental permanece não medida. Evidências na rodada de projeto real.
+
+## Não publicado — 2026-10-09 — feature-test-design 1.17.1
+
+### Corrigido
+
+- Contraexemplo percentual que não discriminava o mutante em PHP 8.4.10: 29% de 10.000
+  produz 2.900 nas duas implementações. A referência passa a 29% de 100, com descontos
+  28 por `float` e 29 por inteiro; a expressão publicada recebe regressão executável.
+- A correção é posterior aos snapshots da comparação real. Não altera os braços congelados
+  nem o prompt histórico do juiz. Evidências em `experimentos/2026-10-09-projeto-real/`.
+- Prompt publicado do juiz recebe versão 2 com o contraexemplo correto; a rodada comparativa
+  continua usando literalmente o instrumento anterior arquivado, igual nos quatro julgamentos.
+
+## Não publicado — 2026-10-09 — revisão integral e portabilidade
+
+### Adicionado
+
+- Contrato comum por capacidades e referência `feature-wiki/references/hosts-e-subagentes.md`.
+- Cinco perfis Codex TOML distribuídos nas skills donas, sem modelo comercial fixado; instalação
+  em `.codex/agents/` documentada no README. Os contratos Markdown continuam atendendo o Claude Code.
+- Política Codex de invocação explícita da `feature-tickets` em `agents/openai.yaml`.
+- Preferência local de esforço `ultra`, sem alterar modelo, permissões ou configuração global.
+- Regressões stdlib Python com fixtures temporárias; execução no CI e medição contra o checkout
+  original com instrumento idêntico. Evidências e limites em `experimentos/2026-10-09-auditoria-portabilidade/`.
+
+### Corrigido
+
+- Diff e conformidade com rules incluem commits, staged, unstaged e arquivos novos. Prova de
+  regressão usa cópia descartável e retira só o patch da correção, preservando trabalho existente.
+- IDs de CT vêm de chamadas Pest com nome literal; comentário, fixture, método, construtor e
+  atributo homônimo não satisfazem a conferência. União dos IDs de backend/browser no template.
+- Índice rejeita enum por prefixo e CT sem origem; espelho grava Issue em Status recuado e preserva
+  idempotência e LF/CRLF no simulador. Prova de arch confere directory/file, suffix e exclude XML.
+- Exemplo expand-contract rejeita conflito entre as duas colunas dirty antes de persistir.
+- Detector reconhece CSS dark inline; silêncio heurístico não prova ausência de tema.
+- QA aceita fallback completo; intermitência exige investigação; cobertura usa a camada mais barata
+  que prova. Independência não verificada também impede aprovação plena.
+- Mutantes equivalentes recebem triagem; duração considera cache/paralelismo/seleção; prova
+  indispensável pendente vira débito. Log sem requisito de auditoria pertence à observação da dimensão D.
+- Removidas quotas de achados/rejeições e confirmações repetidas quando a autorização já existe.
+- Exemplos de log usam allowlist segura; driver fictício `json` substituído por formatter suportado.
+- Corrigidos fatos sobre fake HTTP, afterCommit, relógio e browser, com versão/fontes e verificação
+  do vendor. Grep de propriedades Livewire passa a encontrar declarações tipadas e sem tipo.
+
+### Limites
+
+- Descrições reduzidas para descoberta; corpos longos não foram reescritos sem medição comportamental.
+- Testes mecânicos e simuladores não provam DDR, MSI real, economia de tokens ou equivalência entre
+  hosts. Laravel/Pest, GitHub real e carregamento vivo dos agentes nativos continuam não medidos.
+- Nenhuma tag, release, commit ou publicação foi criada nesta revisão.
 
 **Onde a versão está, desde a release 1 do roteiro (2026-09-26).** O frontmatter segue o
 [spec Agent Skills](https://agentskills.io/specification): a versão saiu do topo (`version:`) e

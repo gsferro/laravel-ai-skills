@@ -4,7 +4,173 @@
 
 Uma coletânea de diretrizes de inteligência artificial (Skills) personalizadas para o ecossistema Laravel, focada em boas práticas de arquitetura de software e design patterns.
 
-Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude Code, Cursor e Copilot) a gerarem códigos exatamente de acordo com os padrões definidos neste repositório.
+Estas skills instruem agentes de IA e IDEs como Codex, Claude Code, Cursor e Copilot a seguir os padrões definidos neste repositório.
+
+### Revisão de portabilidade — 2026-10-09
+
+O processo agora distingue **contrato comum** de **adaptador do host**. Claude Code mantém seus
+agentes Markdown e hooks. Codex recebe cinco perfis TOML, política de invocação explícita para
+`feature-tickets`, resolução de paths e instruções de contexto novo. Outros hosts executam o mesmo
+processo com as capacidades disponíveis e declaram as etapas não verificadas.
+
+Versões desta revisão: `feature-wiki 4.1.0`, `feature-test-design 1.17.0`,
+`feature-quality-gate 1.8.0`, `requirement-to-rule 1.5.0` e `feature-tickets 1.1.0`.
+Não houve reescrita dos requisitos históricos nem dos conjuntos julgados em `experimentos/`.
+
+**Antes/depois e avaliação completa:** [relatório da auditoria](experimentos/2026-10-09-auditoria-portabilidade/RELATORIO.md).
+Os testes desta rodada medem regressões mecânicas e contratos de distribuição; **não medem DDR,
+economia de tokens nem equivalência comportamental entre Claude e Codex**. A avaliação
+comportamental tem instrumentos e resultados próprios; suas contradições precisam ser declaradas.
+
+### Validação no projeto Laravel real — 2026-10-09
+
+A [rodada no projeto real](experimentos/2026-10-09-projeto-real/README.md) compara snapshots
+completos das versões antigas e da revisão de portabilidade. Usa requisitos congelados,
+perguntas e lacunas explícitas, revisão adversarial independente, juízes com conjuntos anônimos
+e implementação separada em Laravel/Filament/Livewire, com Pest e Chromium reais.
+O [pré-registro](experimentos/2026-10-09-projeto-real/PLANO.md) impede atribuir ganho sem medir;
+a [análise do instrumento](experimentos/2026-10-09-projeto-real/VALIDADE-INSTRUMENTO.md) expõe
+contradições entre catálogo e requisito, cegamento por contrato e limites da amostra.
+
+A execução também revelou um contraexemplo numérico errado nas duas referências e nos dois
+conjuntos preliminares. A correção factual `feature-test-design 1.17.1` usa uma expressão
+executada no PHP e tem regressão. Os snapshots comparativos preservam `1.16.0` e `1.17.0`;
+a correção posterior e o novo prompt do juiz não são atribuídos à candidata já congelada.
+Na `1.17.2`, perguntas novas bloqueiam somente o recorte indecidido, preservando regras já
+determinadas. Essa correção nasceu da revisão independente e também fica fora do tratamento medido.
+`feature-wiki 4.1.1` e `feature-test-design 1.17.3` corrigem resíduos de rotas Claude e promessas
+de isolamento nos procedimentos. São correções posteriores, com eficácia de nova derivação não medida.
+Hashes, fontes completas, comandos, saídas e falhas de preparação ficam arquivados na rodada.
+
+**Resultado honesto: o gate de evolução não passou.** Cupons ganhou uma detecção; aprovação
+perdeu cobertura, inclusive sob conferência pareada do critério. A execução física preserva
+controles verdes, operadores mortos, sobreviventes, tradução parcial e falhas anteriores.
+Leia a [avaliação completa](experimentos/2026-10-09-projeto-real/RELATORIO.md) e as
+[métricas centrais](experimentos/README.md#projeto-laravel-real--2026-10-09).
+As melhorias de portabilidade e as correções posteriores não são prova de superioridade geral.
+
+### Instalar e usar no Codex
+
+A fonte continua em `.ai/skills/`, preservando Laravel Boost. A descoberta local do Codex usa
+`.agents/skills/`. Faça um vínculo para a fonte em vez de manter duas cópias independentes.
+Os comandos abaixo são executados **no projeto consumidor**, depois de instalar/copiar as skills
+para `.ai/skills/`. Se o destino já existe, confira sua configuração; não sobrescreva instruções ou perfis locais.
+
+**PowerShell, com Git instalado:**
+
+```powershell
+New-Item -ItemType Directory -Path .agents -Force | Out-Null
+if (-not (Test-Path .agents/skills)) {
+    New-Item -ItemType Junction -Path .agents/skills -Target (Resolve-Path .ai/skills).Path | Out-Null
+}
+New-Item -ItemType Directory -Path .codex/agents -Force | Out-Null
+Get-ChildItem .ai/skills -Recurse -Filter '*.toml' |
+    Where-Object { $_.Directory.Name -eq 'codex' } |
+    ForEach-Object {
+        $destino = Join-Path .codex/agents $_.Name
+        if (-not (Test-Path -LiteralPath $destino)) {
+            Copy-Item -LiteralPath $_.FullName -Destination $destino
+        }
+    }
+```
+
+**Bash, Linux/macOS:**
+
+```bash
+mkdir -p .agents .codex/agents
+if [ ! -e .agents/skills ]; then ln -s ../.ai/skills .agents/skills; fi
+for perfil in .ai/skills/*/agents/codex/*.toml; do
+  [ -f "$perfil" ] || continue
+  destino=".codex/agents/$(basename "$perfil")"
+  [ -e "$destino" ] || cp "$perfil" "$destino"
+done
+```
+
+Atualização: o vínculo acompanha a fonte; os perfis copiados exigem comparação com os novos TOML e
+atualização explícita, preservando personalizações locais. Confira também `agents/openai.yaml` da
+`feature-tickets`. Evite instalar a mesma skill globalmente e no projeto: nomes iguais não são mesclados.
+
+Os perfis Codex são:
+
+| Perfil | Skill dona | Papel | Limite declarado |
+|---|---|---|---|
+| `fw-revisor-diff` | feature-wiki | revisão de correção sobre a árvore final | read-only efetivo + não ler plano/progresso |
+| `fw-executor-ct` | feature-wiki | testes backend do lote | workspace-write + contrato de arquivos donos |
+| `fw-executor-ctb` | feature-wiki | testes browser do lote | workspace-write + contrato de arquivos donos |
+| `fw-adversario-ct` | feature-test-design | defeitos que os cenários deixam passar | read-only + só requisito, CT/CT-B e glossário |
+| `fw-qa-gate` | feature-quality-gate | QA independente e relatório | read-only + não corrigir nem publicar |
+
+TOML define configuração do subagente; **não é uma skill adicional**. Cada perfil reutiliza o corpo do
+contrato Markdown existente. Aliases, frontmatter e hooks Claude não são executados no Codex.
+Os modelos e esforços são herdados da sessão, sem fixar uma família comercial. O adaptador foi
+conferido contra a documentação atual e o CLI local `codex-cli 0.162.0`; clientes antigos podem
+usar outro esquema. A sintaxe TOML é testada, mas isso não prova carregamento em toda versão do cliente.
+
+Para o esforço máximo solicitado nesta auditoria, este repositório inclui `.codex/config.toml` com
+`model_reasoning_effort = "ultra"`. **Isso não altera um turno em andamento nem a configuração global.**
+No projeto consumidor, mescle apenas a preferência de esforço se o modelo/cliente aceitar `ultra`;
+caso contrário, use o maior nível anunciado pelo modelo. Não copie permissões de outro projeto.
+Os subagentes desta auditoria foram despachados com `reasoning_effort: ultra`; o esforço efetivo da
+sessão principal não é ajustável pela ferramenta disponível nesta conversa.
+
+Invocações no Codex:
+
+```text
+$feature-wiki implemente a feature descrita neste requisito.
+$feature-test-design derive casos de teste deste 00-requisito.md.
+$feature-quality-gate revise esta wiki como QA, com a aplicação na URL informada.
+$feature-tickets fatie esta wiki em tickets verticais.
+$requirement-to-rule avalie estas decisões como candidatas a Project Rules.
+```
+
+**Uso eficiente:** leia a skill escolhida e as referências que a etapa exige. Checagens baratas rodam
+localmente; delegue investigação extensa, trabalho com arquivos disjuntos e julgamento independente.
+Não herde a conversa em revisão cega. Não invoque a esteira de feature Laravel para editar esta coletânea.
+Autorizações já dadas dispensam confirmações repetidas de nome, plano e costura; uma decisão material de
+requisito ou ação externa ainda sem autorização continua exigindo esclarecimento.
+
+**Limites de independência:** contexto novo não impede ler depois os arquivos do plano; `read-only`
+não restringe leitura por path. `workspace-write` não limita o executor a um único arquivo. Permissões
+efetivas podem sobrepor os defaults do perfil. Hooks heurísticos e `git status` são sinais limitados.
+Compare conteúdo/hashes, inclusive dos arquivos já modificados e novos, e registre os controles reais.
+Sem contexto independente, declare a perda; não chame autorrevisão de julgamento cego.
+
+Fonte do contrato operacional: [hosts e subagentes](.ai/skills/feature-wiki/references/hosts-e-subagentes.md).
+Fontes oficiais: [descoberta de skills](https://learn.chatgpt.com/docs/build-skills),
+[perfis e contexto dos subagentes](https://learn.chatgpt.com/docs/agent-configuration/subagents) e
+[configuração de esforço](https://learn.chatgpt.com/docs/config-file/config-reference).
+
+### Executar as regressões da coletânea
+
+Requisitos: **Python 3.11+**, Git, Bash e PHP no PATH. Nenhum pacote Python externo ou chave de API.
+No Windows, os testes usam Git Bash em `C:/Program Files/Git/bin/bash.exe`; WSL não é intercambiável
+com esse ambiente. O runner principal aceita `SKILLS_BASH` para um Bash instalado em outro path.
+
+```text
+python tests/run.py
+python -m unittest discover -s tests -p "test_*.py" -v
+```
+
+`tests/run.py` verifica os scripts, rastreabilidade, evidência, IDs de CT, todas as camadas Git,
+oráculos, tema, hook e distribuição Codex. `test_tickets.py` verifica estados, origem de CT e
+idempotência do espelho com `gh` simulado. `test_arch.py` verifica seleção XML de suíte/arquivo com
+runner Pest simulado. Tudo ocorre em fixtures temporárias; os simuladores não provam integração real.
+O CI executa esses comandos além das validações existentes.
+
+Para comparar outro checkout com **o mesmo instrumento**:
+
+```text
+python tests/run.py --root PATH_DO_CHECKOUT --report resultado.json
+```
+
+Para os testes auxiliares, defina `SKILLS_ROOT=PATH_DO_CHECKOUT` no ambiente antes do `unittest`.
+Os JSON desta rodada preservam quais testes passaram/falharam, duração e tamanho das skills.
+Uma falha no baseline é esperada nos casos que reproduzem os bugs corrigidos ou capacidades novas.
+
+`experimentos/` contém o protocolo comportamental e resultados históricos, não um runner de aplicação.
+Para DDR ou mutation score reais, execute a [rodada controlada](experimentos/protocolo/PROTOCOLO.md)
+num projeto Laravel isolado, mantendo catálogo e resultados invisíveis aos braços. Não substitua
+essa medição por teste de sintaxe, smoke test ou avaliação subjetiva.
 
 **Para começar:** [instalar pelo Laravel Boost](#️-como-instalar-no-laravel-boost-20) ·
 [instalar no Claude Code](#-como-instalar-no-claude-code) ·
@@ -15,15 +181,15 @@ Estas skills servem para instruir agentes de IA e IDEs avançadas (como Claude C
 
 | Skill | Versão | O que faz | Quando é invocada |
 |---|---|---|---|
-| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 4.0.0 | Cria a wiki da feature antes de implementar: requisito bruto (com perguntas ao solicitante e premissas), PRD, ADR e progresso, com padrão de log. Entrevista em três raias, delega os casos de teste e confere a wiki por scripts. No Claude Code, despacha para sub-agentes com modelo roteado, juiz cego e um hook que nega a leitura e a edição fora do perfil de cada agente | ao iniciar qualquer feature nova, ou uma refatoração larga |
-| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.16.0 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: costuras de teste declaradas, técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes, com a asserção que mata cada um | step 7 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
-| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.7.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita a consistência wiki × código × docs × rules e roteia cada achado para especificação, implementação ou teste. Com dimensão não verificada, o veredito máximo é `APROVADO COM DÉBITO` | step 11 da `feature-wiki`, depois da revisão do diff (9) e da reconciliação (10), **antes do PR** |
-| **[requirement-to-rule](.ai/skills/requirement-to-rule/README.md)** | 1.4.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com um prompt de aprovação do usuário; gera e prova o teste `arch()` quando a rule é mecânica | step 12 da `feature-wiki` (dona única do step) ou sob pedido |
-| **[feature-tickets](.ai/skills/feature-tickets/README.md)** | 1.0.0 | Fatia a wiki em **tickets verticais** — `RQ` do `00` + CT do `04` que ficam verdes + passos do `01` + bloqueio + status — quando o plano não cabe numa sessão; um ticket por sessão nova; quadro gerado por script (`07-tickets/README.md`, `wikis/specs/INDEX.md`); expand–contract para refatoração larga | **só pelo usuário** (`/feature-tickets`; a skill tem `disable-model-invocation: true`). O step 8 da `feature-wiki` sugere quando o plano não cabe numa sessão. Todas as invocações: [Como chamar](.ai/skills/feature-tickets/README.md#como-chamar) |
+| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 4.1.1 | Cria a wiki antes de implementar: requisito, PRD, ADR e progresso. Delega testes, revisão independente e QA por capacidades do host. Claude usa rotas e hooks com limites explícitos; Codex usa contratos e perfis TOML. | ao iniciar qualquer feature nova, ou uma refatoração larga |
+| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.17.3 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: costuras de teste declaradas, técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes, com a asserção que mata cada um | step 7 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
+| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.8.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita a consistência wiki × código × docs × rules e roteia cada achado para especificação, implementação ou teste. Com dimensão não verificada, o veredito máximo é `APROVADO COM DÉBITO` | step 11 da `feature-wiki`, depois da revisão do diff (9) e da reconciliação (10), **antes do PR** |
+| **[requirement-to-rule](.ai/skills/requirement-to-rule/README.md)** | 1.5.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com um prompt de aprovação do usuário; gera e prova o teste `arch()` quando a rule é mecânica | step 12 da `feature-wiki` (dona única do step) ou sob pedido |
+| **[feature-tickets](.ai/skills/feature-tickets/README.md)** | 1.1.0 | Fatia a wiki em **tickets verticais** — `RQ` do `00` + CT do `04` que ficam verdes + passos do `01` + bloqueio + status — quando o plano não cabe numa sessão; um ticket por sessão nova; quadro gerado por script (`07-tickets/README.md`, `wikis/specs/INDEX.md`); expand–contract para refatoração larga | **só pelo usuário** (`/feature-tickets`; a skill tem `disable-model-invocation: true`). O step 8 da `feature-wiki` sugere quando o plano não cabe numa sessão. Todas as invocações: [Como chamar](.ai/skills/feature-tickets/README.md#como-chamar) |
 
 O ciclo completo: **planejar** (`feature-wiki`, steps 0–6) → **especificar teste** (`feature-test-design`, step 7) → **fatiar** (`feature-tickets`, step 8 — **só quando o plano não cabe numa sessão**) → **executar** (Ponytail; os passos do `01`, ou um ticket por sessão) → **comunicar** (Caveman) → **testar** (Pest 5) → **revisar o diff** (step 9) → **reconciliar** (step 10) → **validar** (`feature-quality-gate`, step 11) → **memorizar** (`requirement-to-rule`, step 12).
 
-O fluxo da `feature-wiki` 4.0.0, com a numeração da 3.x em "era N":
+O fluxo da `feature-wiki` 4.1.0 mantém a numeração da 4.0.0, com a da 3.x em "era N":
 
 ```mermaid
 flowchart TD
@@ -335,9 +501,9 @@ php artisan boost:add-skill gsferro/laravel-ai-skills \
 > **Atenção**: as skills são encadeadas pela wiki. A `feature-test-design`, a `feature-quality-gate`
 > e a `feature-tickets` leem o `00-requisito.md` que a `feature-wiki` cria — é o oráculo delas —, e
 > instalar qualquer uma sem a `feature-wiki` não funciona. A `requirement-to-rule` lê `01`, `02`, `03`
-> e o checklist de taxonomia do `04`. E o hook dos cinco agentes `fw-*` — inclusive o
+> e o checklist de taxonomia do `04`. No Claude Code, o hook dos cinco agentes `fw-*` — inclusive o
 > `fw-adversario-ct` da `feature-test-design` e o `fw-qa-gate` da `feature-quality-gate` — é um script
-> da `feature-wiki`: sem ela, esses agentes negam toda ferramenta
+> da `feature-wiki`: sem o arquivo, o hook recusa as ferramentas cobertas por ele
 > ([Hooks dos agentes e scripts](#hooks-dos-agentes-e-scripts-onde-precisam-estar)). A
 > `feature-tickets` é opcional: só entra quando uma feature não cabe numa sessão.
 
@@ -347,11 +513,11 @@ README de cada skill.
 
 | Skill | `metadata.requires` |
 |---|---|
-| `feature-wiki` 4.0.0 | `feature-test-design>=1.16.0; feature-quality-gate>=1.7.0; laravel/boost>=2.4.12` |
-| `feature-test-design` 1.16.0 | `feature-wiki>=4.0.0` |
-| `feature-quality-gate` 1.7.0 | `feature-wiki>=4.0.0` |
-| `requirement-to-rule` 1.4.0 | `laravel/boost>=2.4.12; feature-wiki>=4.0.0` |
-| `feature-tickets` 1.0.0 | `feature-wiki>=4.0.0; feature-test-design>=1.16.0` |
+| `feature-wiki` 4.1.1 | `feature-test-design>=1.17.0; feature-quality-gate>=1.8.0; laravel/boost>=2.4.12` |
+| `feature-test-design` 1.17.3 | `feature-wiki>=4.1.0` |
+| `feature-quality-gate` 1.8.0 | `feature-wiki>=4.1.0` |
+| `requirement-to-rule` 1.5.0 | `laravel/boost>=2.4.12; feature-wiki>=4.1.0` |
+| `feature-tickets` 1.1.0 | `feature-wiki>=4.1.0; feature-test-design>=1.17.0` |
 
 Na prática, instale as cinco juntas, na mesma versão da coletânea: a `feature-wiki` 4.0.0 renumerou
 os steps, e as outras quatro citam os números novos (step 7 = derivação do `04`, 8 = tickets,
@@ -732,8 +898,9 @@ curl -o .github/copilot-instructions.md https://raw.githubusercontent.com/Dietri
 ```
 
 **AGENTS.md (universal — CodeWhale, Codex, VS Code):**
+Baixe a referência separadamente. Leia e mescle somente as instruções pertinentes ao `AGENTS.md` existente; não sobrescreva convenções do projeto.
 ```bash
-curl -o AGENTS.md https://raw.githubusercontent.com/DietrichGebert/ponytail/main/AGENTS.md
+curl -o ponytail-agents-reference.md https://raw.githubusercontent.com/DietrichGebert/ponytail/main/AGENTS.md
 ```
 
 **Caveman — Claude Code:**
@@ -806,7 +973,7 @@ A partir de agora, para cada feature nova:
 │  • wikis/glossario.md → termo decidido na feature   │
 │  • Revisão profunda pós-escrita (step 5)            │
 │  • Auditoria: /ponytail:ponytail-review (step 6)    │
-│  • Confirmar plano com usuário                      │
+│  • Confirmar decisões materiais ainda pendentes     │
 │  ⚠️ Caveman OFF nos arquivos wiki                   │
 └──────────────────────┬──────────────────────────────┘
                        │
