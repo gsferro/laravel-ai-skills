@@ -6,6 +6,27 @@ Uma coletânea de diretrizes de inteligência artificial (Skills) personalizadas
 
 Estas skills instruem agentes de IA e IDEs como Codex, Claude Code, Cursor e Copilot a seguir os padrões definidos neste repositório.
 
+### Roteiro de teste manual opcional — 2026-10-20
+
+A `feature-wiki` **4.2.0** pode entregar o `08-roteiro-teste-manual.md`: decisão no step 4,
+pergunta não bloqueante e registro só no `03`. Sem resposta até o fim do step 4, em qualquer
+modo, registra `não — sem resposta a Qn`. Geração após a reconciliação do step 10 e auditoria
+**L8** pelo `feature-quality-gate` **1.9.0**,
+dentro das mesmas 12 dimensões. É um caminho para revisão humana, homologação ou operação, com
+esperado rastreado aos CT/CT-B/RQ/P-nn existentes. `feature-test-design` **1.17.4** continua
+pré-código e não escreve o `08`; `feature-tickets` **1.1.1** esclarece que há um roteiro por
+feature concluída, com o `Ticket` em cada RM. [Decisão, exemplos e limites](.ai/skills/feature-wiki/README.md#atualização-420--roteiro-de-teste-manual-opcional).
+
+Pedido antes do step 10 só atualiza a decisão; depois do 10 gera na hora. A L8 executa apenas
+RM não destrutivos no app local servido, com gravação só em ambiente descartável confirmado.
+
+Publicação conjunta em **2026-10-20**: `feature-wiki-v4.2.0`, `feature-test-design-v1.17.4`,
+`feature-quality-gate-v1.9.0` e `feature-tickets-v1.1.1`. A [rodada de medição](experimentos/2026-10-20-roteiro-manual/RELATORIO.md)
+(Codex, N = 1) não encontrou regressão na derivação do `04` — mesmos defeitos detectados que a
+4.1.1 nos dois cenários — e confirmou a pergunta do step 4 em cinco células, depois de corrigir
+um exemplo que uma delas copiou. Qualidade do `08` gerado, L8 e Claude Code não foram medidos.
+Detalhes no [CHANGELOG](CHANGELOG.md#2026-10-20--roteiro-de-teste-manual-opcional).
+
 ### Revisão de portabilidade — 2026-10-09
 
 O processo agora distingue **contrato comum** de **adaptador do host**. Claude Code mantém seus
@@ -224,15 +245,15 @@ essa medição por teste de sintaxe, smoke test ou avaliação subjetiva.
 
 | Skill | Versão | O que faz | Quando é invocada |
 |---|---|---|---|
-| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 4.1.1 | Cria a wiki antes de implementar: requisito, PRD, ADR e progresso. Delega testes, revisão independente e QA por capacidades do host. Claude usa rotas e hooks com limites explícitos; Codex usa contratos e perfis TOML. | ao iniciar qualquer feature nova, ou uma refatoração larga |
-| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.17.3 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: costuras de teste declaradas, técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes, com a asserção que mata cada um | step 7 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
-| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.8.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita a consistência wiki × código × docs × rules e roteia cada achado para especificação, implementação ou teste. Com dimensão não verificada, o veredito máximo é `APROVADO COM DÉBITO` | step 11 da `feature-wiki`, depois da revisão do diff (9) e da reconciliação (10), **antes do PR** |
+| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 4.2.0 | Cria a wiki antes de implementar: requisito, PRD, ADR e progresso. Delega testes, revisão independente e QA por capacidades do host. Pode gerar o `08` opcional após o step 10, com roteiro manual rastreado à especificação. | ao iniciar qualquer feature nova, ou uma refatoração larga |
+| **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.17.4 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: costuras de teste declaradas, técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes, com a asserção que mata cada um. Fornece o oráculo, sem escrever o `08`. | step 7 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
+| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.9.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita wiki × código × docs × rules e o `08` opcional em **L8**, dentro das 12 dimensões. Roteia achados; com dimensão não verificada, o veredito máximo é `APROVADO COM DÉBITO`. | step 11 da `feature-wiki`, depois da revisão do diff (9) e da reconciliação (10), **antes do PR** |
 | **[requirement-to-rule](.ai/skills/requirement-to-rule/README.md)** | 1.5.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com um prompt de aprovação do usuário; gera e prova o teste `arch()` quando a rule é mecânica | step 12 da `feature-wiki` (dona única do step) ou sob pedido |
-| **[feature-tickets](.ai/skills/feature-tickets/README.md)** | 1.1.0 | Fatia a wiki em **tickets verticais** — `RQ` do `00` + CT do `04` que ficam verdes + passos do `01` + bloqueio + status — quando o plano não cabe numa sessão; um ticket por sessão nova; quadro gerado por script (`07-tickets/README.md`, `wikis/specs/INDEX.md`); expand–contract para refatoração larga | **só pelo usuário** (`/feature-tickets`; a skill tem `disable-model-invocation: true`). O step 8 da `feature-wiki` sugere quando o plano não cabe numa sessão. Todas as invocações: [Como chamar](.ai/skills/feature-tickets/README.md#como-chamar) |
+| **[feature-tickets](.ai/skills/feature-tickets/README.md)** | 1.1.1 | Fatia a wiki em **tickets verticais** — `RQ` do `00` + CT do `04` que ficam verdes + passos do `01` + bloqueio + status — quando o plano não cabe numa sessão; um ticket por sessão nova; quadro gerado por script (`07-tickets/README.md`, `wikis/specs/INDEX.md`); expand–contract para refatoração larga. O `08` opcional é único por feature, depois do último ticket `concluído`. | **só pelo usuário** (`/feature-tickets`; a skill tem `disable-model-invocation: true`). O step 8 da `feature-wiki` sugere quando o plano não cabe numa sessão. Todas as invocações: [Como chamar](.ai/skills/feature-tickets/README.md#como-chamar) |
 
-O ciclo completo: **planejar** (`feature-wiki`, steps 0–6) → **especificar teste** (`feature-test-design`, step 7) → **fatiar** (`feature-tickets`, step 8 — **só quando o plano não cabe numa sessão**) → **executar** (Ponytail; os passos do `01`, ou um ticket por sessão) → **comunicar** (Caveman) → **testar** (Pest 5) → **revisar o diff** (step 9) → **reconciliar** (step 10) → **validar** (`feature-quality-gate`, step 11) → **memorizar** (`requirement-to-rule`, step 12).
+O ciclo completo: **planejar** (`feature-wiki`, steps 0–6) → **especificar teste** (`feature-test-design`, step 7) → **fatiar** (`feature-tickets`, step 8 — **só quando o plano não cabe numa sessão**) → **executar** (Ponytail; os passos do `01`, ou um ticket por sessão) → **comunicar** (Caveman) → **testar** (Pest 5) → **revisar o diff** (step 9) → **reconciliar** (step 10) → **gerar e conferir o `08`, se decidido** (sem número) → **validar** (`feature-quality-gate`, step 11) → **memorizar** (`requirement-to-rule`, step 12).
 
-O fluxo da `feature-wiki` 4.1.0 mantém a numeração da 4.0.0, com a da 3.x em "era N":
+O fluxo da `feature-wiki` 4.2.0 mantém a numeração da 4.0.0, com a da 3.x em "era N":
 
 ```mermaid
 flowchart TD
@@ -247,12 +268,15 @@ flowchart TD
     IMP --> S9["9 · Revisão do diff<br/>era 6.5"]
     IMPT --> S9
     S9 --> S10["10 · Reconciliação<br/>era 7"]
-    S10 --> S11["11 · Quality gate e PR<br/>era 8"]
+    S10 --> D08{"Roteiro manual: sim?"}
+    D08 -- sim --> RM08["Roteiro manual 08<br/>sem número, opcional"]
+    RM08 --> S11["11 · Quality gate e PR<br/>era 8"]
+    D08 -- não --> S11
     S11 --> S12["12 · Candidatos a rule<br/>era 9, delegado"]
     classDef movido fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#0b1f44
     classDef condicional stroke-dasharray:5 4
     class S7 movido
-    class S8 condicional
+    class S8,RM08 condicional
 ```
 
 A derivação dos casos de teste saiu do step 4 e virou o 7, **depois** do corte do Ponytail: o `04`
@@ -364,6 +388,10 @@ vereditos de cada rodada — vive em **[`experimentos/`](experimentos/README.md)
 a medição a cada evolução em vez de discutir a mudança.
 
 ### Limites e o que ainda não foi medido
+
+- **Roteiro de teste manual (2026-10-20)**: medidos só a pergunta do step 4 e a não regressão do
+  `04`, num host (Codex) e N = 1 ([relatório](experimentos/2026-10-20-roteiro-manual/RELATORIO.md)).
+  A qualidade do `08` gerado e a L8 do gate não foram medidas.
 
 - **As versões de 2026-09-26/27 não foram medidas.** A `feature-wiki` 3.6.0 e 4.0.0, a
   `feature-test-design` 1.15.0 e 1.16.0, o gate 1.7.0, a `requirement-to-rule` 1.4.0 e a
@@ -556,11 +584,11 @@ README de cada skill.
 
 | Skill | `metadata.requires` |
 |---|---|
-| `feature-wiki` 4.1.1 | `feature-test-design>=1.17.0; feature-quality-gate>=1.8.0; laravel/boost>=2.4.12` |
-| `feature-test-design` 1.17.3 | `feature-wiki>=4.1.0` |
-| `feature-quality-gate` 1.8.0 | `feature-wiki>=4.1.0` |
+| `feature-wiki` 4.2.0 | `feature-test-design>=1.17.0; feature-quality-gate>=1.9.0; laravel/boost>=2.4.12` |
+| `feature-test-design` 1.17.4 | `feature-wiki>=4.1.0` |
+| `feature-quality-gate` 1.9.0 | `feature-wiki>=4.2.0` |
 | `requirement-to-rule` 1.5.0 | `laravel/boost>=2.4.12; feature-wiki>=4.1.0` |
-| `feature-tickets` 1.1.0 | `feature-wiki>=4.1.0; feature-test-design>=1.17.0` |
+| `feature-tickets` 1.1.1 | `feature-wiki>=4.1.0; feature-test-design>=1.17.0` |
 
 Na prática, instale as cinco juntas, na mesma versão da coletânea: a `feature-wiki` 4.0.0 renumerou
 os steps, e as outras quatro citam os números novos (step 7 = derivação do `04`, 8 = tickets,
@@ -874,7 +902,7 @@ A integração é natural porque cada skill opera em uma **camada complementar**
 
 | Camada | Skill | Responsabilidade | Boundary |
 |--------|-------|------------------|----------|
-| **Comunicação** (agent ↔ usuário) | Caveman | Prosa terse — corta fluff, artigos, fillers | **NÃO aplica em arquivos wiki** (00-06), código, commits, PRs |
+| **Comunicação** (agent ↔ usuário) | Caveman | Prosa terse — corta fluff, artigos, fillers | **NÃO aplica em arquivos wiki** (00–08, quando presentes), código, commits, PRs |
 | **Planejamento** (documentação) | feature-wiki | Define o **o quê** e o **porquê**: requisito, PRD, ADR, tracking, padrão de log, channel por feature | Arquivos wiki são detalhados por design — compressão cria ambiguidade |
 | **Especificação de teste** | feature-test-design | Define **o que provaria que está errado**: técnica formal por regra, e o gate de mutantes | Deriva do requisito, nunca do plano — testar o plano confirma o plano |
 | **Execução** (código) | Ponytail | Define o **como**: mínimo código possível, sem over-engineering, reutilização antes de criação | Não corta validação, segurança, tratamento de erros |
@@ -996,7 +1024,7 @@ A partir de agora, para cada feature nova:
 │  ─────────────────────────────────                  │
 │  • Invocar feature-wiki ao iniciar a feature        │
 │  • Criar wikis/specs/{branch}/{feature}/            │
-│    (00 a 06 — 04/05/06 chegam nos passos abaixo)    │
+│    (00 a 06; 08 opcional depois do step 10)         │
 │  • 00-requisito.md → requisito bruto (verbatim)     │
 │    - Decomposição em cláusulas RQ-## + Estado       │
 │    - Perguntas ao Solicitante · Premissas (P-nn)    │
@@ -1143,6 +1171,17 @@ A partir de agora, para cada feature nova:
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
+│  ROTEIRO MANUAL OPCIONAL (sem número)              │
+│  ─────────────────────────────────                  │
+│  • Decisão do step 4, com fonte registrada no 03    │
+│  • Wiki gera 08 após 10, antes do 11               │
+│  • Esperado dos CT/CT-B/RQ/P; código dá o caminho   │
+│  • Um por feature; Ticket por RM quando fatiada    │
+│  • Conferência n/m; não executado tem motivo       │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
 │  VALIDAR (feature-quality-gate, step 11)            │
 │  ─────────────────────────────────                  │
 │  • Confronta 00-requisito × PRD × app rodando       │
@@ -1150,6 +1189,7 @@ A partir de agora, para cada feature nova:
 │  • Matriz de Rastreabilidade → omissão silenciosa   │
 │    (RQ, P-nn e, se fatiado, a coluna Ticket)        │
 │  • 12 dimensões (perfil por risco: mín/padrão/full) │
+│  • L8 audita o 08 opcional dentro das 12 dimensões │
 │  • Dimensão não verificada → teto APROVADO COM      │
 │    DÉBITO (APROVADO só no perfil Completo)          │
 │  • Roteia achado: especificação | código | teste    │
@@ -1199,7 +1239,7 @@ Ao escrever o `01-plano-acao.md`, incluir uma nota de filosofia de implementaç�
 > Após implementação, rodar `/ponytail:ponytail-review` no diff.
 >
 > **Caveman ativo em modo `ultra`** (padrão) na comunicação agent ↔ usuário.
-> Arquivos wiki (00-06) são boundary do Caveman — escrever em prosa normal.
+> Arquivos wiki (00–08, quando presentes) são boundary do Caveman — escrever em prosa normal.
 > Código, commits e PRs também são boundary do Caveman.
 ```
 
@@ -1287,7 +1327,7 @@ Este README é o índice da coletânea. O detalhe de cada skill vive com ela:
 
 | Documento | O que você encontra |
 |---|---|
-| [**feature-wiki**](.ai/skills/feature-wiki/README.md) | por que a skill existe e o que entrega, os arquivos da wiki (00 a 06), quando usar, dependências com versão mínima e o que degrada sem cada uma, como chamar os tickets de uma feature fatiada, a numeração dos steps 3.x → 4.0.0, instalação dos agentes, o hook dos agentes e o teste dele, como ela está organizada (`SKILL.md` × `references/` × `scripts/` × `agents/`), limites, e o porquê das escolhas: sub-agentes no Claude Code, entrevista em três raias, requisito verbatim (card colado, `.pdf`/`.docx`/`.md`), arquivo próprio para teste de browser, `search-docs` como primeira fonte |
+| [**feature-wiki**](.ai/skills/feature-wiki/README.md) | por que a skill existe e o que entrega, os arquivos da wiki (00 a 06, 07 condicional e 08 opcional), quando usar, dependências com versão mínima e o que degrada sem cada uma, como chamar os tickets de uma feature fatiada, a numeração dos steps 3.x → 4.0.0, instalação dos agentes, o hook dos agentes e o teste dele, como ela está organizada (`SKILL.md` × `references/` × `scripts/` × `agents/`), limites, e o porquê das escolhas: sub-agentes, entrevista em três raias, requisito verbatim, CT-B, `search-docs` e roteiro manual opcional sem nova skill |
 | [**feature-test-design**](.ai/skills/feature-test-design/README.md) | o problema medido (a auditoria de 9 wikis reais, em [O que a auditoria mediu](.ai/skills/feature-test-design/README.md#o-que-a-auditoria-mediu)), o pipeline de 8 passos (0 a 7), costuras de teste e perguntas em raias, **por que Gherkin sem runner**, por que uma skill separada da `feature-wiki`, a camada de componente Livewire que faltava, onde estão os fatos do `pest-plugin-browser` ([`references/pest-plugin-browser.md`](.ai/skills/feature-test-design/references/pest-plugin-browser.md), fonte única da coletânea), o que foi medido (com link para [`experimentos/`](experimentos/README.md#histórico)), o que a skill não faz e dependências |
 | [**feature-quality-gate**](.ai/skills/feature-quality-gate/README.md) | quando usar, o que ela entrega (omissão silenciosa, veredito, destino por achado), limites, dependências com versão mínima, instalação do sub-agente **e** o estudo de viabilidade completo: pesquisa de mercado, lacuna verificada, achados técnicos e critério eliminatório |
 | [**requirement-to-rule**](.ai/skills/requirement-to-rule/README.md) | por que existe (wiki da feature × rule × guideline), quando usar e quando não usar, relação com o `infer-conventions`, limites, dependências com versão mínima; gates, escada, prova do `arch()`, índice, poda e modelo da rule ficam no `SKILL.md` e em `references/` |

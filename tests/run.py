@@ -108,6 +108,365 @@ Cenário: [CT-01] total exato
         self.assert_exit(result, 1)
         self.assertIn("RQ-01 sem CT", result.stdout)
 
+    def manual_fixture(self, decision="sim", expected="O total exibido é 10", origin="RQ-01, P-01, CT-01, CT-B01"):
+        self.write("wikis/specs/feature/demo/00-requisito.md", """# Requisito
+## Decomposição em Cláusulas
+| ID | Cláusula | Estado |
+|---|---|---|
+| RQ-01 | Total exato | fechada |
+## Premissas
+| ID | Premissa | Estado |
+|---|---|---|
+| P-01 | Exibir o total | vigente |
+""")
+        self.write("wikis/specs/feature/demo/03-progresso.md",
+                   f"# Progresso\n\n- **Roteiro manual**: {decision} — fluxo pelo terminal\n")
+        self.write("wikis/specs/feature/demo/04-casos-de-teste.md", """```gherkin
+Cenário: [CT-01] total exato
+  Então recebo 10
+```
+""")
+        self.write("wikis/specs/feature/demo/05-casos-de-teste-browser.md", "## CT-B01: Consultar total\n")
+        self.write("wikis/specs/feature/demo/08-roteiro-teste-manual.md", f"""# Roteiro de teste manual
+## Fluxos
+### RM-01 — Consultar total · Via: terminal
+**Origem**: CT-01, CT-B01
+
+| # | Ação | Resultado esperado | Origem |
+|---|---|---|---|
+| 1 | Consultar total | {expected} | {origin} |
+""")
+
+    def test_manual_valid(self):
+        self.manual_fixture()
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 0)
+        self.assertEqual(result.stdout + result.stderr, "")
+
+    def test_manual_yes_without_script(self):
+        self.manual_fixture()
+        (self.wiki / "08-roteiro-teste-manual.md").unlink()
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 1)
+        self.assertIn("03-progresso.md:3: Roteiro manual: sim", result.stdout)
+
+    def test_manual_no_with_script(self):
+        self.manual_fixture(decision="não")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 1)
+        self.assertIn("03-progresso.md:3: Roteiro manual: não", result.stdout)
+
+    def test_manual_empty_expected_result(self):
+        self.manual_fixture(expected=" ")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 1)
+        self.assertIn("08-roteiro-teste-manual.md:8: Resultado esperado vazio", result.stdout)
+
+    def test_manual_origin_without_id(self):
+        self.manual_fixture(origin="fluxo principal")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 1)
+        self.assertIn("08-roteiro-teste-manual.md:8: Origem sem ID", result.stdout)
+
+    def test_manual_unknown_ct(self):
+        self.manual_fixture(origin="CT-99")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 1)
+        self.assertIn("CT-99 citado no 08, sem cenário", result.stdout)
+
+    def test_manual_obsolete_ct(self):
+        for definition in ("@obsoleto\nCenário: [CT-01] total antigo\n",
+                           "| ~~CT-01~~ | R1 |\n", "| CT-01 | fundido em CT-02 |\n"):
+            with self.subTest(definition=definition):
+                self.manual_fixture()
+                self.write("wikis/specs/feature/demo/04-casos-de-teste.md", definition)
+                result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+                self.assert_exit(result, 1)
+                self.assertIn("CT-01 citado no 08, mas o cenário está @obsoleto/riscado/fundido", result.stdout)
+
+    def test_manual_obsolete_browser_title(self):
+        self.manual_fixture()
+        self.write("wikis/specs/feature/demo/05-casos-de-teste-browser.md",
+                   "@obsoleto\n## CT-B01: Consultar total antigo\n")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 1)
+        self.assertIn("CT-B01 citado no 08, mas o cenário está @obsoleto/riscado/fundido", result.stdout)
+
+    def test_manual_commented_ct_is_not_definition(self):
+        for filename, definition, identifier in (
+                ("04-casos-de-teste.md", "Cenário: [CT-01] total", "CT-01"),
+                ("05-casos-de-teste-browser.md", "## CT-B01: Consultar total", "CT-B01")):
+            with self.subTest(identifier=identifier):
+                self.manual_fixture()
+                self.write(f"wikis/specs/feature/demo/{filename}", f"<!--\n{definition}\n-->\n")
+                result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+                self.assert_exit(result, 1)
+                self.assertIn(f"{identifier} citado no 08, sem cenário", result.stdout)
+
+    def test_manual_duplicate_rm(self):
+        self.manual_fixture()
+        path = self.wiki / "08-roteiro-teste-manual.md"
+        path.write_text(path.read_text(encoding="utf-8") + "\n### RM-01 — Repetido\n", encoding="utf-8")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 1)
+        self.assertIn("RM-01 duplicado — definido antes na linha 3", result.stdout)
+
+    def test_manual_legacy_without_decision_or_script(self):
+        self.write("wikis/specs/feature/demo/03-progresso.md", "# Progresso legado\n")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 0)
+        self.assertEqual(result.stdout + result.stderr, "")
+
+    def test_manual_missing_wiki(self):
+        self.assert_exit(self.script("feature-wiki", "roteiro-manual.sh", self.work / "ausente"), 2)
+
+    def test_manual_usage(self):
+        self.assert_exit(self.script("feature-wiki", "roteiro-manual.sh"), 2)
+        self.assert_exit(self.script("feature-wiki", "roteiro-manual.sh", self.wiki, "extra"), 2)
+
+    def test_manual_last_decision_wins(self):
+        for previous, current in (("não", "sim"), ("sim", "não")):
+            with self.subTest(previous=previous, current=current):
+                self.manual_fixture()
+                self.write("wikis/specs/feature/demo/03-progresso.md",
+                           f"Roteiro manual: {previous} — decisão anterior\n\n"
+                           f"Roteiro manual: {current} — pedido tardio\n")
+                if current == "não":
+                    (self.wiki / "08-roteiro-teste-manual.md").unlink()
+                self.assert_exit(self.script("feature-wiki", "roteiro-manual.sh", self.wiki), 0)
+
+    def test_manual_comments_and_examples_are_not_decisions(self):
+        self.write("wikis/specs/feature/demo/03-progresso.md", """Roteiro manual: não — sem necessidade
+## Verificação Final
+<!-- só com roteiro manual: sim -->
+<!-- Exemplo:
+Roteiro manual: sim
+-->
+```markdown
+Roteiro manual: sim — exemplo
+```
+""")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 0)
+        self.assertEqual(result.stdout + result.stderr, "")
+
+    def test_manual_missing_php(self):
+        path = ROOT / ".ai/skills/feature-wiki/scripts/roteiro-manual.sh"
+        result = subprocess.run([BASH, str(path), str(self.wiki)], cwd=self.work,
+                                env=dict(os.environ, PATH=str(self.work)),
+                                text=True, encoding="utf-8", capture_output=True, timeout=60)
+        self.assert_exit(result, 2)
+        self.assertIn("php não está no PATH", result.stderr)
+
+    def test_manual_scenario_definition_formats(self):
+        for definition in ("Esquema do Cenário: [CT-01] total\n", "| CT-01 | R1 |\n"):
+            with self.subTest(definition=definition):
+                self.manual_fixture()
+                self.write("wikis/specs/feature/demo/04-casos-de-teste.md", definition)
+                self.assert_exit(self.script("feature-wiki", "roteiro-manual.sh", self.wiki), 0)
+
+    def test_manual_ct_in_prose_must_exist(self):
+        self.manual_fixture()
+        path = self.wiki / "08-roteiro-teste-manual.md"
+        path.write_text(path.read_text(encoding="utf-8") + "\nFora deste roteiro: CT-B99.\n", encoding="utf-8")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 1)
+        self.assertIn("CT-B99 citado no 08, sem cenário", result.stdout)
+
+    def test_manual_rq_and_p_need_definition_in_correct_section(self):
+        self.manual_fixture(origin="RQ-99, P-99")
+        self.write("wikis/specs/feature/demo/00-requisito.md", """## Decomposição em Cláusulas
+| ID | Cláusula |
+|---|---|
+| RQ-01 | Total |
+| P-99 | Premissa fora da seção |
+## Perguntas ao Solicitante
+| ID | Afeta |
+|---|---|
+| RQ-99 | Só menção, não definição |
+""")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 1)
+        self.assertIn("RQ-99 citado no 08, sem definição na decomposição do 00", result.stdout)
+        self.assertIn("P-99 citado no 08, sem definição em ## Premissas do 00", result.stdout)
+
+    def test_manual_commented_rq_and_p_are_not_definitions(self):
+        self.manual_fixture()
+        self.write("wikis/specs/feature/demo/00-requisito.md", """## Decomposição em Cláusulas
+<!--
+| ID | Cláusula | Estado |
+|---|---|---|
+| RQ-01 | Total exato | fechada |
+-->
+## Premissas
+<!--
+| ID | Premissa | Estado |
+|---|---|---|
+| P-01 | Exibir o total | vigente |
+-->
+""")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 1)
+        self.assertIn("RQ-01 citado no 08, sem definição na decomposição do 00", result.stdout)
+        self.assertIn("P-01 citado no 08, sem definição em ## Premissas do 00", result.stdout)
+
+    def test_manual_rq_from_addendum(self):
+        self.manual_fixture(origin="RQ-02")
+        path = self.wiki / "00-requisito.md"
+        path.write_text(path.read_text(encoding="utf-8") + """
+## Adendo 1 — 2026-10-20
+### Texto Original
+> Aceitar o total.
+### Decomposição
+| ID | Cláusula | Substitui |
+|---|---|---|
+| RQ-02 | Aceitar total | — |
+""", encoding="utf-8")
+        self.assert_exit(self.script("feature-wiki", "roteiro-manual.sh", self.wiki), 0)
+
+    def test_manual_escaped_pipe_and_no_command_execution(self):
+        self.manual_fixture(expected="A saída é 10 \\| total")
+        path = self.wiki / "08-roteiro-teste-manual.md"
+        path.write_text(path.read_text(encoding="utf-8") + "\n```bash\ntouch executou-comando\n```\n",
+                        encoding="utf-8")
+        self.assert_exit(self.script("feature-wiki", "roteiro-manual.sh", self.wiki), 0)
+        self.assertFalse((self.work / "executou-comando").exists())
+
+    def test_manual_noncurrent_rq(self):
+        for state in ("substituída por RQ-02 (Adendo 1)", "decomposta em RQ-02, RQ-03"):
+            with self.subTest(state=state):
+                self.manual_fixture()
+                path = self.wiki / "00-requisito.md"
+                path.write_text(path.read_text(encoding="utf-8").replace("fechada", state), encoding="utf-8")
+                result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+                self.assert_exit(result, 1)
+                self.assertEqual(len(result.stdout.splitlines()), 1)
+                self.assertIn("RQ-01 citado no 08, mas não vigente", result.stdout)
+
+    def test_manual_noncurrent_p(self):
+        for state in ("substituída por P-02", "promovida a RQ-02 (Adendo 1)", "revogada — sem efeito"):
+            with self.subTest(state=state):
+                self.manual_fixture()
+                path = self.wiki / "00-requisito.md"
+                path.write_text(path.read_text(encoding="utf-8").replace("vigente", state), encoding="utf-8")
+                result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+                self.assert_exit(result, 1)
+                self.assertEqual(len(result.stdout.splitlines()), 1)
+                self.assertIn("P-01 citado no 08, mas não vigente", result.stdout)
+
+    def test_manual_open_rq_is_reading_only(self):
+        self.manual_fixture()
+        path = self.wiki / "00-requisito.md"
+        path.write_text(path.read_text(encoding="utf-8").replace("fechada", "aberta — Q1"), encoding="utf-8")
+        self.assert_exit(self.script("feature-wiki", "roteiro-manual.sh", self.wiki), 0)
+
+    def test_manual_addendum_replaces_rq(self):
+        for replacement, code in (("RQ-01", 1), ("RQ-01 (parcial)", 0)):
+            with self.subTest(replacement=replacement):
+                self.manual_fixture()
+                path = self.wiki / "00-requisito.md"
+                path.write_text(path.read_text(encoding="utf-8") + f"""
+## Adendo 1 — 2026-10-20
+### Decomposição
+| ID | Cláusula | Substitui |
+|---|---|---|
+| RQ-02 | Novo total | {replacement} |
+""", encoding="utf-8")
+                result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+                self.assert_exit(result, code)
+                if code:
+                    self.assertIn("RQ-01 citado no 08, mas não vigente", result.stdout)
+
+    def test_manual_struck_decision_below_current_is_history(self):
+        for current, old in (("sim", "não"), ("não", "sim")):
+            with self.subTest(current=current):
+                self.manual_fixture()
+                self.write("wikis/specs/feature/demo/03-progresso.md",
+                           f"Roteiro manual: {current}\n~~Roteiro manual: {old}~~\n")
+                if current == "não":
+                    (self.wiki / "08-roteiro-teste-manual.md").unlink()
+                self.assert_exit(self.script("feature-wiki", "roteiro-manual.sh", self.wiki), 0)
+
+    def test_manual_ids_in_comments_and_fences_are_ignored(self):
+        self.manual_fixture()
+        path = self.wiki / "08-roteiro-teste-manual.md"
+        path.write_text(path.read_text(encoding="utf-8") + """
+<!-- RQ-99 P-99 CT-99 CT-B99 -->
+<!--
+### RM-01 — Exemplo comentado CT-98
+| Resultado esperado | Origem |
+|-|-|
+| | |
+-->
+```markdown
+RQ-97 P-97 CT-97 CT-B97
+### RM-01 — Exemplo cercado
+| Resultado esperado | Origem |
+|-|-|
+| | |
+```
+~~~text
+RQ-96 P-96 CT-96 CT-B96
+~~~
+````markdown
+```text
+RQ-95 P-95 CT-95 CT-B95
+```
+~~~~
+RQ-94 P-94 CT-94 CT-B94
+````
+""", encoding="utf-8")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 0)
+        self.assertEqual(result.stdout + result.stderr, "")
+
+    def test_manual_header_prefixes(self):
+        self.manual_fixture(expected=" ")
+        path = self.wiki / "08-roteiro-teste-manual.md"
+        path.write_text(path.read_text(encoding="utf-8").replace("Resultado esperado | Origem",
+                        "Resultado esperado (Então) | Origem (CT/RQ)"), encoding="utf-8")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 1)
+        self.assertEqual(len(result.stdout.splitlines()), 1)
+        self.assertIn("Resultado esperado vazio", result.stdout)
+
+    def test_manual_single_dash_separator(self):
+        self.manual_fixture(expected=" ")
+        self.write("wikis/specs/feature/demo/08-roteiro-teste-manual.md",
+                   "| Resultado esperado | Origem |\n|-|-|\n| | RQ-01 |\n")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 1)
+        self.assertEqual(len(result.stdout.splitlines()), 1)
+        self.assertIn("Resultado esperado vazio", result.stdout)
+
+    def test_manual_table_decision_without_08(self):
+        self.write("wikis/specs/feature/demo/03-progresso.md", "| Roteiro manual | sim |\n")
+        result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+        self.assert_exit(result, 1)
+        self.assertEqual(len(result.stdout.splitlines()), 1)
+        self.assertIn("Roteiro manual: sim, mas 08-roteiro-teste-manual.md não existe", result.stdout)
+
+    def test_manual_08_without_decision(self):
+        for progress in ("# Progresso\n", None):
+            with self.subTest(progress=progress):
+                self.manual_fixture()
+                path = self.wiki / "03-progresso.md"
+                if progress is None:
+                    path.unlink()
+                else:
+                    path.write_text(progress, encoding="utf-8")
+                result = self.script("feature-wiki", "roteiro-manual.sh", self.wiki)
+                self.assert_exit(result, 1)
+                self.assertEqual(len(result.stdout.splitlines()), 1)
+                self.assertIn("08 existe, mas não há decisão Roteiro manual no 03", result.stdout)
+
+    def test_manual_template_03_model_is_not_decision(self):
+        template = (ROOT / ".ai/skills/feature-wiki/references/template-03-progresso.md").read_text(encoding="utf-8")
+        body = template.split("```markdown\n", 1)[1].rsplit("```", 1)[0]
+        self.assertRegex(body, r"(?s)<!--(?:(?!-->).)*Roteiro manual:.*?-->")
+        self.write("wikis/specs/feature/demo/03-progresso.md", body)
+        self.assert_exit(self.script("feature-wiki", "roteiro-manual.sh", self.wiki), 0)
+
     def test_checkbox_evidence(self):
         self.write("wikis/specs/feature/demo/03-progresso.md", "- [x] Teste — comando: exit 0\n")
         self.assert_exit(self.script("feature-wiki", "checkbox-sem-evidencia.sh", self.wiki), 0)

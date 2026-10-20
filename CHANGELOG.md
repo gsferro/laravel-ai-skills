@@ -8,15 +8,123 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 
 | Skill | Versão | Tag |
 |---|---|---|
-| `feature-wiki` | 4.1.1 | `feature-wiki-v4.1.1` |
-| `feature-test-design` | 1.17.3 | `feature-test-design-v1.17.3` |
-| `feature-quality-gate` | 1.8.0 | `feature-quality-gate-v1.8.0` |
+| `feature-wiki` | 4.2.0 | `feature-wiki-v4.2.0` |
+| `feature-test-design` | 1.17.4 | `feature-test-design-v1.17.4` |
+| `feature-quality-gate` | 1.9.0 | `feature-quality-gate-v1.9.0` |
 | `requirement-to-rule` | 1.5.0 | `requirement-to-rule-v1.5.0` |
-| `feature-tickets` | 1.1.0 | `feature-tickets-v1.1.0` |
+| `feature-tickets` | 1.1.1 | `feature-tickets-v1.1.1` |
+
+## 2026-10-20 — roteiro de teste manual opcional
+
+Publicação conjunta de `feature-wiki` 4.2.0, `feature-test-design` 1.17.4,
+`feature-quality-gate` 1.9.0 e `feature-tickets` 1.1.1, com tags namespaced no mesmo commit.
+`requirement-to-rule` 1.5.0 não mudou.
+
+### Adicionado
+
+- `feature-wiki` **4.2.0** passa a ser dona do `08-roteiro-teste-manual.md` opcional e de sua
+  referência condicional `references/template-08-roteiro-manual.md`. O artefato atende revisão
+  de PR, QA humano, homologação e operação; não é uma skill nova nem substitui Pest, CT-B ou gate.
+- Decisão no step 4, numa rodada da raia de desenho dirigida ao desenvolvedor, com recomendação
+  sim para UI, aceite humano, integração externa não automatizável, comando/job operado por
+  pessoa ou deploy manual; nos demais casos, não. Pedido explícito antecipado ou tardio e
+  instrução de `AGENTS.md`/`CLAUDE.md` dispensam nova pergunta, registrando a fonte no `03`.
+  Pergunta não bloqueante: não integra a fronteira de `Entendimento confirmado`/step 5; consome
+  um `Qn`, mas é meta-processo isento do filtro de oráculo (`afeta: —`). Sem resposta até o fim
+  do step 4, em qualquer modo, registrar `não — sem resposta a Qn`. Pergunta e decisão só no
+  `03`, sem entrada no `00`/`01`/`02`, no formato:
+  `Roteiro manual: {sim | não} — {YYYY-MM-DD} — {fonte: resposta a Qn | instrução explícita do desenvolvedor | convenção {arquivo} | sem resposta a Qn} — {sinal ou motivo}`.
+  Mudança sempre acrescenta linha abaixo; as anteriores ficam riscadas com `~~…~~`.
+- `scripts/roteiro-manual.sh` confere decisão, campos de resultado/origem e existência/vigência
+  dos IDs citados, com contrato de silêncio + exit 0, achados + exit 1, uso/ambiente + exit 2.
+  RQ/P não vigente por `Estado` ou `Substitui` integral de Adendo gera achado; `aberta` fica
+  para leitura. A última decisão não riscada vale; forma em tabela é aceita na conferência
+  sim/não × `08`, sem achado de formato. `08` sem decisão gera achado. Comentários HTML e
+  blocos cercados não fornecem IDs do `08`; cabeçalhos esperado/origem casam por prefixo,
+  separador aceita um hífen e a linha-modelo do `03` fica em comentário.
+- Geração e conferência sem número, depois do step 10 e antes do 11. Um RM por fluxo de valor,
+  com variações pertinentes, esperado observável rastreado a CT/CT-B/RQ/P-nn, dados de exemplo
+  e caminho de execução confirmado na implementação. O código informa como chegar, sem criar
+  o oráculo. Sem origem, o comportamento volta ao step 9 (`P-nn` → CT → correção, quando não
+  há RQ) e repete o step 10 antes de retomar o roteiro.
+- Conferência por RM com `conferido pela sessão {data}` e evidência ou `não executado — {motivo}`,
+  contagem n/m no cabeçalho do `08`, terminal não destrutivo e aplicação via Playwright MCP
+  quando o ambiente permitir. Comando destrutivo exige ambiente descartável confirmado e aviso;
+  os exemplos não incluem senha real nem execução inventada. A L8 **nunca executa RM com comando
+  destrutivo nem RM que grava estado fora de ambiente descartável confirmado**: registra
+  `Não Verificado — destrutivo/ambiente não confirmado`. Só executa RM não destrutivos contra
+  app local servido; perfil completo executa todos os elegíveis. Sem `08` e sem decisão `sim`,
+  registrar `L8 n/a — sem 08`; a dimensão L continua obrigatória, sem `⏭️` no template do `06`.
+- `feature-quality-gate` **1.9.0** audita o roteiro em **L8**, dentro das **12 dimensões existentes**.
+  Pedido depois do gate recebe `Auditoria: não auditado pelo quality gate (gerado depois do
+  ciclo {N})`; o veredito anterior não cobre o arquivo novo.
+
+### Alterado
+
+- Correção de código pedida pelo gate retorna ao step 10, reconciliando também o `08` antes da
+  nova auditoria. A numeração dos steps 0–12 e o limite do gate permanecem os mesmos.
+- Pedido tardio antes do step 10 só atualiza a decisão no `03`; a geração ocorre na etapa normal.
+  Depois do step 10, gera na hora. Sinais da recomendação ficam na entrevista; procedimento,
+  segurança, credenciais, tickets e atualização ficam no template do `08`, com ponteiros no
+  `SKILL.md` e checklist reduzido. Custo de tokens/manutenção/deriva permanece hipótese não medida.
+- `feature-test-design` **1.17.4** esclarece no README que não escreve o `08`: deriva CT/CT-B
+  antes do código; um `Então` bem escrito fornece o esperado com sua origem. No `SKILL.md`,
+  somente `metadata.version` muda.
+- `feature-tickets` **1.1.1** esclarece no README que a wiki produz um único `08` por feature,
+  depois do último ticket `concluído`, com `Ticket` em cada RM. No
+  `SKILL.md`, somente `metadata.version` muda; nenhum roteiro por ticket ou perfil novo.
+- README raiz atualiza as versões correntes e o fluxo, incluindo o `08` opcional entre 10 e 11.
+  README da wiki explica decisão, responsáveis, exemplos de terminal/aplicação, custo de tokens
+  e manutenção, risco de drift e por que uma skill adicional duplicaria leitura e dependências.
+
+### Validado
+
+- `python tests/run.py`: **79 testes, OK**, incluindo `test_codex_roles`, que mantém
+  os cinco perfis TOML, e sintaxe Bash do novo script.
+- `python -m unittest discover -s tests -p 'test_*.py'`: **13 testes, OK**.
+- `roteiro-manual.sh` e **33 regressões**, com fixtures temporárias: decisão × presença,
+  esperado e origem, CT/RQ/P inexistente, CT obsoleto/riscado/fundido, RM duplicado, legado,
+  uso/ambiente e decisões tardias. Comentários e exemplos não viram decisão; definições
+  comentadas não contam; título CT-B herda `@obsoleto`. Novas regressões cobrem RQ/P não vigente,
+  substituição integral/parcial em Adendo, `aberta`, decisão riscada, tabela de decisão, ausência
+  de decisão, modelo comentado, IDs em comentários/fences (inclusive cercas internas), prefixos
+  de colunas e separador `|-|-|`. O verificador não executa o roteiro.
+- Template completo do `08` conferido em fixture temporária com suas RQ/CT definidos:
+  silêncio + exit 0. Script sem bytes CR; referências alteradas refletem as versões não publicadas;
+  `git diff --check` sem saída. Somente versões mudaram nos SKILLs de test-design e tickets.
+- Revisão independente antes da medição (revisor de contexto novo, sem edição): 3 Blockers,
+  6 Majors e 8 Minors, todos corrigidos antes de congelar o tratamento B — pergunta que podia
+  travar o step 5, destino da decisão contraditório, gate que podia executar RM destrutivo,
+  pedido tardio antes de existir implementação, vigência de RQ/P, falsos positivos do script.
+
+### Medido — [rodada 2026-10-20](experimentos/2026-10-20-roteiro-manual/RELATORIO.md)
+
+- **Regressão do `04`** (protocolo e juiz v2 literais, A = 4.1.1, B = 4.2.0, Codex `gpt-6.1-sol`,
+  N = 1): cupons 14/18 em A e B, aprovação 15/18 em A e B, **mesmo conjunto de defeitos
+  detectados** e mesmas lacunas cegas (E08, E12). Sem regressão no critério estrito.
+- **Pergunta do step 4** (instrumento novo, pré-registrado): B reprovou numa das cinco células —
+  copiou o exemplo da semente e justificou a recomendação com um sinal ausente do card.
+
+### Corrigido após a medição
+
+- `entrevista-tres-raias.md`: o exemplo da semente virou placeholder e a recomendação precisa
+  citar o sinal desta feature, com a cláusula onde aparece; a decisão não pode ser mencionada em
+  nenhuma seção do `00`. A reexecução única pré-registrada da célula reprovada passou nos cinco
+  critérios. A proibição de menção no `00` nasceu de um desvio de outra célula e **não** foi
+  reexecutada nela. Nenhum braço da regressão abriu esse arquivo.
+
+### Não medido
+
+- Qualidade do `08` gerado, fidelidade dos resultados esperados, honestidade da conferência e a
+  L8 do gate; uso de roteiros por pessoas e efeito sobre defeitos entregues; economia de tokens.
+- Desenvolvedor disponível respondendo à pergunta; variância entre gerações (N = 1).
+- Equivalência entre hosts: a rodada usou só Codex; Claude Code não foi medido.
 
 ## 2026-10-10 — publicação da revisão de portabilidade
 
-- Publicação conjunta das cinco versões da tabela, com tags namespaced no mesmo commit.
+- Publicação conjunta de `feature-wiki` 4.1.1, `feature-test-design` 1.17.3,
+  `feature-quality-gate` 1.8.0, `requirement-to-rule` 1.5.0 e `feature-tickets` 1.1.0,
+  com tags namespaced no mesmo commit.
 - README oferece o roteiro de instalação no projeto consumidor: skills, descoberta Codex,
   cinco agentes TOML, configuração, nova sessão e verificação de uso.
 - As entradas de 2026-10-09 abaixo registram a preparação ainda não publicada naquele dia.
