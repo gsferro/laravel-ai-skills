@@ -1,0 +1,84 @@
+{
+  "lab": "D:\\PROJECTS\\SKILLS\\blind-20261020",
+  "source": "D:\\PROJECTS\\SKILLS\\demo-r8",
+  "baseline": "27f89eb",
+  "cells": {
+    "R-A-C1": "proj-a6856d",
+    "R-A-C2": "proj-5f7c81",
+    "R-B-C1": "proj-05b17d",
+    "R-B-C2": "proj-641a92",
+    "P1": "proj-81bb37",
+    "P2": "proj-4154f9",
+    "P3": "proj-9be2e4",
+    "P4": "proj-7e3c7c",
+    "P5": "proj-fd95b1",
+    "P1-A": "proj-bed40b",
+    "P2-A": "proj-219120",
+    "P1-Bp": "proj-a46afe"
+  },
+  "cell_spec": {
+    "R-A-C1": [
+      "A",
+      "R",
+      1
+    ],
+    "R-A-C2": [
+      "A",
+      "R",
+      2
+    ],
+    "R-B-C1": [
+      "B",
+      "R",
+      1
+    ],
+    "R-B-C2": [
+      "B",
+      "R",
+      2
+    ],
+    "P1": [
+      "B",
+      "P",
+      1
+    ],
+    "P2": [
+      "B",
+      "P",
+      2
+    ],
+    "P3": [
+      "B",
+      "P",
+      3
+    ],
+    "P4": [
+      "B",
+      "P",
+      1
+    ],
+    "P5": [
+      "B",
+      "P",
+      2
+    ],
+    "P1-A": [
+      "A",
+      "P",
+      1
+    ],
+    "P2-A": [
+      "A",
+      "P",
+      2
+    ],
+    "P1-Bp": [
+      "Bp",
+      "P",
+      1
+    ]
+  },
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "read_isolation": "procedural only: fresh context, prompt contract and copies; filesystem not sandboxed"
+}

@@ -1,0 +1,175 @@
+{
+  "R-A-C1": {
+    "n_cmds": 47,
+    "suspeitos": [
+      "\"\" -NoProfile -Command \"composer show --direct; php -v; if (Test-Path vendor) { Get-Item vendor | Select-Object FullName,LinkType,Target }; rg --files tests/Kit tests/Tenancy tests/BrowserTenancy database/factories .ai/skills/feature-test-design/agents .claude/agents .codex/agents -g '\"'!Exp*'\"' -g ",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program"
+    ],
+    "web": [],
+    "collab": 4
+  },
+  "R-A-C2": {
+    "n_cmds": 39,
+    "suspeitos": [
+      "\"\" -NoProfile -Command \"composer show --direct; Get-Content -LiteralPath 'package.json' -Raw; Get-Content -LiteralPath 'composer.json' -Raw; Get-Content -LiteralPath 'tests/Pest.php' -TotalCount 35; rg --files database/factories tests/Feature tests/Unit tests/Kit tests/Browser tests/Tenancy -g '\"'!E"
+    ],
+    "web": [
+      "{\"type\": \"web_search\", \"query\": \"https://filamentphp.com/docs/5.x/testing/testing-resources/\", \"action\": {\"type\": \"open_page\", \"url\": \"https://filamentphp.com/docs/5.x/testing/testing-resources/\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"filamentphp.com\", \"ref_id\": \"turn0view0\", \"snippet\": \"T",
+      "{\"type\": \"web_search\", \"query\": \"'TestAction::make'\", \"action\": {\"type\": \"find_in_page\", \"pattern\": \"TestAction::make\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"filamentphp.com\", \"ref_id\": \"turn1view0\", \"snippet\": \"Total lines: 774\", \"thumbnail_url\": \"https://images.openai.com/static-rsc-1/-8",
+      "{\"type\": \"web_search\", \"query\": \"'assertVisible'\", \"action\": {\"type\": \"find_in_page\", \"pattern\": \"assertVisible\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"pestphp.com\", \"ref_id\": \"turn2view0\", \"snippet\": \"Total lines: 1455\", \"thumbnail_url\": \"https://images.openai.com/static-rsc-1/bJvusVKSPoh"
+    ],
+    "collab": 5
+  },
+  "R-B-C1": {
+    "n_cmds": 36,
+    "suspeitos": [
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program"
+    ],
+    "web": [
+      "{\"type\": \"web_search\", \"query\": \"https://filamentphp.com/docs/5.x/testing/testing-resources\", \"action\": {\"type\": \"open_page\", \"url\": \"https://filamentphp.com/docs/5.x/testing/testing-resources\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"filamentphp.com\", \"ref_id\": \"turn0view0\", \"snippet\": \"Tot",
+      "{\"type\": \"web_search\", \"query\": \"'fillForm'\", \"action\": {\"type\": \"find_in_page\", \"pattern\": \"fillForm\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"filamentphp.com\", \"ref_id\": \"turn1view0\", \"snippet\": \"Total lines: 866\", \"thumbnail_url\": \"https://images.openai.com/static-rsc-1/5hbtba5K9f0csN8wUm"
+    ],
+    "collab": 3
+  },
+  "R-B-C2": {
+    "n_cmds": 42,
+    "suspeitos": [
+      "\"\" -NoProfile -Command \"composer show --direct; Get-Content -Raw package.json; Get-Content -Raw phpunit.xml; rg --files database/factories tests/Kit tests/Tenancy tests/Browser .codex/agents .ai/skills/feature-test-design/agents/codex -g '\"'!**/Exp*/**'\"' -g '\"'!**/exp-*/**'\"' -g '\"'!**/04-casos-de-",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program",
+      "ABS C:/Program"
+    ],
+    "web": [
+      "{\"type\": \"web_search\", \"query\": \"https://filamentphp.com/docs/5.x/testing/testing-resources\", \"action\": {\"type\": \"open_page\", \"url\": \"https://filamentphp.com/docs/5.x/testing/testing-resources\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"filamentphp.com\", \"ref_id\": \"turn0view0\", \"snippet\": \"Tot",
+      "{\"type\": \"web_search\", \"query\": \"'fillForm'\", \"action\": {\"type\": \"find_in_page\", \"pattern\": \"fillForm\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"filamentphp.com\", \"ref_id\": \"turn1view0\", \"snippet\": \"Total lines: 866\", \"thumbnail_url\": \"https://images.openai.com/static-rsc-1/vMKtJggexNR9V76qgv"
+    ],
+    "collab": 7
+  },
+  "P1": {
+    "n_cmds": 34,
+    "suspeitos": [
+      "\"\" -NoProfile -Command \"rg --files app database routes config tests -g '\"'!Feature/Exp*'\"' -g '\"'!**/Exp*/**'\"'; rg -n -i 'cupom|cupons|coupon|pedido|order|desconto|discount' app database routes config resources lang composer.json; if (Test-Path wikis/glossario.md) { Get-Content -Raw wikis/glossario",
+      "ABS s://raw.githubusercontent.com/filamentphp/filament/v5.7.6/",
+      "ABS s://raw.githubusercontent.com/filamentphp/filament/v5.7.6/"
+    ],
+    "web": [
+      "{\"type\": \"web_search\", \"query\": \"site.laravel.com/docs/13.x authorization validation unique transactions lockForUpdate ...\", \"action\": {\"type\": \"search\", \"queries\": [\"site.laravel.com/docs/13.x authorization validation unique transactions lockForUpdate\", \"site.filamentphp.com/docs/5.x resources auth",
+      "{\"type\": \"web_search\", \"query\": \"https://filamentphp.com/docs/5.x/resources/overview\", \"action\": {\"type\": \"open_page\", \"url\": \"https://filamentphp.com/docs/5.x/resources/overview\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"filamentphp.com\", \"ref_id\": \"turn1view0\", \"snippet\": \"Total lines: 1084",
+      "{\"type\": \"web_search\", \"query\": \"'getEloquentQuery'\", \"action\": {\"type\": \"find_in_page\", \"pattern\": \"getEloquentQuery\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"pestphp.com\", \"ref_id\": \"turn2view0\", \"snippet\": \"Total lines: 308\", \"thumbnail_url\": \"https://images.openai.com/static-rsc-1/6WaYtp",
+      "{\"type\": \"web_search\", \"query\": \"https://laravel.com/docs/13.x/migrations\", \"action\": {\"type\": \"open_page\", \"url\": \"https://laravel.com/docs/13.x/migrations\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"laravel.com\", \"ref_id\": \"turn3view0\", \"snippet\": \"Total lines: 2480\", \"thumbnail_url\": \"https"
+    ],
+    "collab": 0
+  },
+  "P2": {
+    "n_cmds": 32,
+    "suspeitos": [
+      "\"\" -NoProfile -Command '$trackedPaths = rg --files --hidden -g '\"'\"'!wikis/specs/exp-*/**'\"' -g '\"'!tests/Feature/Exp*/**'\"' -g '\"'!tests/Feature/Exp*'\"' -g '\"'!wikis/specs/saida-p2/**'\"'; \"'$hashSnapshot = @{}; foreach ($filePath in $trackedPaths) { $hashSnapshot[$filePath] = (Get-FileHash -Literal",
+      "\"\" -NoProfile -Command '$trackedPaths = rg --files --hidden -g '\"'\"'!wikis/specs/exp-*/**'\"' -g '\"'!tests/Feature/Exp*/**'\"' -g '\"'!tests/Feature/Exp*'\"' -g '\"'!wikis/specs/saida-p2/**'\"'; \"'$hashSnapshot = @{}; foreach ($filePath in $trackedPaths) { $hashSnapshot[$filePath] = (Get-FileHash -Literal"
+    ],
+    "web": [
+      "{\"type\": \"web_search\", \"query\": \"https://laravel.com/docs/13.x/authorization\", \"action\": {\"type\": \"open_page\", \"url\": \"https://laravel.com/docs/13.x/authorization\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"laravel.com\", \"ref_id\": \"turn0view0\", \"snippet\": \"Total lines: 2011\", \"thumbnail_url\": ",
+      "{\"type\": \"web_search\", \"query\": \"https://pestphp.com/docs/pest-v5\", \"action\": {\"type\": \"open_page\", \"url\": \"https://pestphp.com/docs/pest-v5\"}, \"results\": [{\"type\": \"text_result\", \"ref_id\": \"turn1view0\", \"snippet\": \"Total lines: 1\", \"title\": \"Internal Error\"}, {\"type\": \"text_result\", \"domain\": \"lara",
+      "{\"type\": \"web_search\", \"query\": \"site:pestphp.com/docs \\\"Pest 5\\\" \\\"PHP 8.4\\\"\", \"action\": {\"type\": \"search\", \"query\": \"site:pestphp.com/docs \\\"Pest 5\\\" \\\"PHP 8.4\\\"\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"pestphp.com\", \"ref_id\": \"turn2search0\", \"snippet\": \"Note that Pest 5 requires PHP 8.4 ",
+      "{\"type\": \"web_search\", \"query\": \"https://pestphp.com/docs/test-impact-analysis\", \"action\": {\"type\": \"open_page\", \"url\": \"https://pestphp.com/docs/test-impact-analysis\"}, \"results\": [{\"type\": \"text_result\", \"ref_id\": \"turn3view0\", \"snippet\": \"Total lines: 1\", \"title\": \"Internal Error\"}, {\"type\": \"tex",
+      "{\"type\": \"web_search\", \"query\": \"'parameters'\", \"action\": {\"type\": \"find_in_page\", \"pattern\": \"parameters\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"pestphp.com\", \"ref_id\": \"turn4view0\", \"snippet\": \"Total lines: 325\", \"thumbnail_url\": \"https://images.openai.com/static-rsc-1/-7npQcvF4wb4EcHyYu",
+      "{\"type\": \"web_search\", \"query\": \"https://laravel.com/docs/13.x/validation\", \"action\": {\"type\": \"open_page\", \"url\": \"https://laravel.com/docs/13.x/validation\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"laravel.com\", \"ref_id\": \"turn5view0\", \"snippet\": \"Total lines: 5529\", \"thumbnail_url\": \"https"
+    ],
+    "collab": 0
+  },
+  "P3": {
+    "n_cmds": 24,
+    "suspeitos": [
+      "\"\" -NoProfile -Command \"rg -n -i 'pii|REDIGIDO|redact' app config routes tests/Unit tests/Feature -g '*.php' -g '\"'!Exp*/**'\"' -g '\"'!Exp*'\"' -g '\"'!**/Exp*/**'\"'; rg --files wikis/specs/main wikis/specs/feature; rg --files .ai/skills -g SKILL.md; Get-Command php,composer -ErrorAction SilentlyContin",
+      "\"\" -NoProfile -Command \"rg --files tests -g '\"'!Feature/Exp*'\"' -g '\"'!**/Exp*/**'\"' -g '*Ai*' -g '*Guard*' -g '*Pii*'; Get-Content -LiteralPath 'tests/Kit/AiTest.php' -ErrorAction SilentlyContinue; Get-Content -LiteralPath '.ai/rules/testes-browser.md' -Raw; Get-Content -LiteralPath 'tests/Browser/",
+      "ABS C:/Users/CASA/.codex/skills/ai-sdk-development/SKILL.md",
+      "ABS C:/Users/CASA/.agents/skills/ai-sdk-development/SKILL.md"
+    ],
+    "web": [
+      "{\"type\": \"web_search\", \"query\": \"https://laravel.com/docs/13.x/configuration\", \"action\": {\"type\": \"open_page\", \"url\": \"https://laravel.com/docs/13.x/configuration\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"laravel.com\", \"ref_id\": \"turn0view0\", \"snippet\": \"Total lines: 750\", \"thumbnail_url\": \"",
+      "{\"type\": \"web_search\", \"query\": \"https://www.php.net/manual/en/function.preg-match.php\", \"action\": {\"type\": \"open_page\", \"url\": \"https://www.php.net/manual/en/function.preg-match.php\"}, \"results\": [{\"type\": \"text_result\", \"ref_id\": \"turn1view0\", \"snippet\": \"Total lines: 1\", \"title\": \"Internal Error\"",
+      "{\"type\": \"web_search\", \"query\": \"https://raw.githubusercontent.com/php/doc-en/master/reference/pcre/functions/preg-match.xml\", \"action\": {\"type\": \"open_page\", \"url\": \"https://raw.githubusercontent.com/php/doc-en/master/reference/pcre/functions/preg-match.xml\"}, \"results\": [{\"type\": \"text_result\", \"r"
+    ],
+    "collab": 0
+  },
+  "P4": {
+    "n_cmds": 28,
+    "suspeitos": [
+      "\"\" -NoProfile -Command '$paths = rg --files app database config routes tests -g '\"'\"'!tests/Feature/Exp*'\"' -g '\"'!tests/Feature/Exp*/**'\"'; \"'$result = foreach ($path in $paths) { $hash = Get-FileHash -LiteralPath $path -Algorithm SHA256; [pscustomobject]@{ Path = $path; Hash = $hash.Hash } }; $res",
+      "\"\" -NoProfile -Command '$paths = rg --files app database config routes tests -g '\"'\"'!tests/Feature/Exp*'\"' -g '\"'!tests/Feature/Exp*/**'\"'; \"'$result = foreach ($path in $paths) { $hash = Get-FileHash -LiteralPath $path -Algorithm SHA256; [pscustomobject]@{ Path = $path; Hash = $hash.Hash } }; $res",
+      "\"\" -NoProfile -Command '$paths = rg --files app database config routes tests -g '\"'\"'!tests/Feature/Exp*'\"' -g '\"'!tests/Feature/Exp*/**'\"'; \"'$result = foreach ($path in $paths) { $hash = Get-FileHash -LiteralPath $path -Algorithm SHA256; [pscustomobject]@{ Path = $path; Hash = $hash.Hash } }; $res"
+    ],
+    "web": [
+      "{\"type\": \"web_search\", \"query\": \"https://laravel.com/docs/13.x/authorization\", \"action\": {\"type\": \"open_page\", \"url\": \"https://laravel.com/docs/13.x/authorization\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"laravel.com\", \"ref_id\": \"turn0view0\", \"snippet\": \"Total lines: 2011\", \"thumbnail_url\": ",
+      "{\"type\": \"web_search\", \"query\": \"https://filamentphp.com/docs/5.x/testing/testing-resources\", \"action\": {\"type\": \"open_page\", \"url\": \"https://filamentphp.com/docs/5.x/testing/testing-resources\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"filamentphp.com\", \"ref_id\": \"turn1view0\", \"snippet\": \"Tot",
+      "{\"type\": \"web_search\", \"query\": \"https://filamentphp.com/docs/5.x/resources/creating-records\", \"action\": {\"type\": \"open_page\", \"url\": \"https://filamentphp.com/docs/5.x/resources/creating-records\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"filamentphp.com\", \"ref_id\": \"turn2view0\", \"snippet\": \"T",
+      "{\"type\": \"web_search\", \"query\": \"https://livewire.laravel.com/docs/4.x/testing\", \"action\": {\"type\": \"open_page\", \"url\": \"https://livewire.laravel.com/docs/4.x/testing\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"livewire.laravel.com\", \"ref_id\": \"turn3view0\", \"snippet\": \"Total lines: 1013\", \"thu"
+    ],
+    "collab": 0
+  },
+  "P5": {
+    "n_cmds": 25,
+    "suspeitos": [
+      "\"\" -NoProfile -Command \"Get-ChildItem -Name; rg --files app routes database config tests wikis/specs/main wikis/specs/feature -g '\"'!tests/Feature/Exp*'\"' -g '\"'!tests/Feature/Exp*/**'\"'; Get-Content -Raw composer.json; if (Test-Path package.json) { Get-Content -Raw package.json }; if (Test-Path wik"
+    ],
+    "web": [
+      "{\"type\": \"web_search\", \"query\": \"https://laravel.com/docs/13.x/authorization\", \"action\": {\"type\": \"open_page\", \"url\": \"https://laravel.com/docs/13.x/authorization\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"laravel.com\", \"ref_id\": \"turn0view0\", \"snippet\": \"Total lines: 2011\", \"thumbnail_url\": ",
+      "{\"type\": \"web_search\", \"query\": \"https://filamentphp.com/docs/5.x/actions/modals\", \"action\": {\"type\": \"open_page\", \"url\": \"https://filamentphp.com/docs/5.x/actions/modals\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"filamentphp.com\", \"ref_id\": \"turn1view0\", \"snippet\": \"Total lines: 2850\", \"thum",
+      "{\"type\": \"web_search\", \"query\": \"'schema('\", \"action\": {\"type\": \"find_in_page\", \"pattern\": \"schema(\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"pestphp.com\", \"ref_id\": \"turn2view0\", \"snippet\": \"Total lines: 325\", \"thumbnail_url\": \"https://images.openai.com/static-rsc-1/oCMZ6rbJybOwopIgfKplvYYL"
+    ],
+    "collab": 0
+  },
+  "P1-A": {
+    "n_cmds": 25,
+    "suspeitos": [
+      "\"\" -NoProfile -Command \"Test-Path .git; Test-Path wikis/specs/saida-p1-a/cupons-de-desconto; rg -n -i 'cupom|cupon|coupon|pedido|order|admin|monet|descont|audit' .ai/rules; Get-Content -Raw .ai/rules/filament.md; Get-Content -Raw .ai/rules/testes.md; Get-Content -Raw composer.json; Get-Content -Raw ",
+      "\"\" -NoProfile -Command \"@'\nfrom pathlib import Path\nimport re, json\nroot = Path(r'D:\\\\PROJECTS\\\\SKILLS\\\\blind-20261020\\\\proj-bed40b')\nwiki = root / 'wikis/specs/saida-p1-a/cupons-de-desconto'\nnames = ['00-requisito.md', '01-plano-acao.md', '02-decisoes-arquiteturais.md', '03-progresso.md']\nassert so"
+    ],
+    "web": [
+      "{\"type\": \"web_search\", \"query\": \"site.laravel.com/docs/13.x authorization policies before Gate ...\", \"action\": {\"type\": \"search\", \"queries\": [\"site.laravel.com/docs/13.x authorization policies before Gate\", \"site.filamentphp.com/docs/5.x resources authorization getEloquentQuery\", \"site.livewire.lara",
+      "{\"type\": \"web_search\", \"query\": \"https://laravel.com/docs/13.x/authorization\", \"action\": {\"type\": \"open_page\", \"url\": \"https://laravel.com/docs/13.x/authorization\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"laravel.com\", \"ref_id\": \"turn1view0\", \"snippet\": \"Total lines: 2011\", \"thumbnail_url\": ",
+      "{\"type\": \"web_search\", \"query\": \"https://filamentphp.com/docs/5.x/resources/creating-records\", \"action\": {\"type\": \"open_page\", \"url\": \"https://filamentphp.com/docs/5.x/resources/creating-records\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"filamentphp.com\", \"ref_id\": \"turn2view0\", \"snippet\": \"T",
+      "{\"type\": \"web_search\", \"query\": \"'handleRecordCreation'\", \"action\": {\"type\": \"find_in_page\", \"pattern\": \"handleRecordCreation\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"pestphp.com\", \"ref_id\": \"turn3view0\", \"snippet\": \"Total lines: 325\", \"thumbnail_url\": \"https://images.openai.com/static-rsc-"
+    ],
+    "collab": 0
+  },
+  "P2-A": {
+    "n_cmds": 21,
+    "suspeitos": [
+      "\"\" -NoProfile -Command \"Get-Content -LiteralPath 'AGENTS.md','.ai/rules/filament.md','.ai/rules/testes.md' -Raw; if (Test-Path 'wikis/glossario.md') { Get-Content 'wikis/glossario.md' -Raw }; Get-ChildItem -LiteralPath '.ai/skills' -Directory -Name; rg --files app database routes config tests -g '\"'"
+    ],
+    "web": [
+      "{\"type\": \"web_search\", \"query\": \"site.laravel.com/docs/13.x authorization notifications afterCommit database transactions ...\", \"action\": {\"type\": \"search\", \"queries\": [\"site.laravel.com/docs/13.x authorization notifications afterCommit database transactions\", \"site.filamentphp.com/docs/5.x resource",
+      "{\"type\": \"web_search\", \"query\": \"https://laravel.com/docs/13.x/authorization\", \"action\": {\"type\": \"open_page\", \"url\": \"https://laravel.com/docs/13.x/authorization\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"laravel.com\", \"ref_id\": \"turn1view0\", \"snippet\": \"Total lines: 2011\", \"thumbnail_url\": ",
+      "{\"type\": \"web_search\", \"query\": \"'getPages'\", \"action\": {\"type\": \"find_in_page\", \"pattern\": \"getPages\"}, \"results\": [{\"type\": \"text_result\", \"domain\": \"filamentphp.com\", \"ref_id\": \"turn2view0\", \"snippet\": \"Total lines: 1084\", \"thumbnail_url\": \"https://images.openai.com/static-rsc-1/l8aFCQwJ3Gt3gi2-t"
+    ],
+    "collab": 0
+  },
+  "P1-Bp": {
+    "suspeitos": [],
+    "web": [
+      "https://laravel.com/docs/13.x/authorization",
+      "https://livewire.laravel.com/docs/4.x/security",
+      "https://pestphp.com/docs/browser-testing",
+      "https://laravel-auditing.com/guide/audit-configuration.html",
+      "'locked'"
+    ]
+  }
+}

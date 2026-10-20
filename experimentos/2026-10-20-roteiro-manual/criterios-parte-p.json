@@ -1,0 +1,208 @@
+{
+  "P1": {
+    "wikis": [
+      "wikis\\specs\\saida-p1\\cupons-de-desconto"
+    ],
+    "files": [
+      "00-requisito.md",
+      "01-plano-acao.md",
+      "02-decisoes-arquiteturais.md",
+      "03-progresso.md"
+    ],
+    "decision_lines": [
+      "Roteiro manual: não — 2026-10-20 — sem resposta a Q17 — há UI, mas o desenvolvedor está indisponível; aplicar o fallback não bloqueante da skill."
+    ],
+    "decision_values": [
+      "não"
+    ],
+    "roteiro_no_00": [],
+    "forbidden_files": [],
+    "script": {
+      "exit": 0,
+      "out": ""
+    },
+    "retorno_roteiro": [
+      "Quer gerar o roteiro de teste manual (`08`) depois da implementação?",
+      "Sem resposta: perguntas abertas, entendimento pendente, P-01 mantendo escopo estreito sem inventar pedidos e **roteiro manual: não — sem resposta a Q17**."
+    ]
+  },
+  "P2": {
+    "wikis": [
+      "wikis\\specs\\saida-p2\\aprovacao-solicitacao-compra"
+    ],
+    "files": [
+      "00-requisito.md",
+      "01-plano-acao.md",
+      "02-decisoes-arquiteturais.md",
+      "03-progresso.md"
+    ],
+    "decision_lines": [
+      "Roteiro manual: não — 2026-10-20 — sem resposta a Q19 — há UI e aceite humano; aplicar o fallback não bloqueante determinado pela skill."
+    ],
+    "decision_values": [
+      "não"
+    ],
+    "roteiro_no_00": [],
+    "forbidden_files": [],
+    "script": {
+      "exit": 0,
+      "out": ""
+    },
+    "retorno_roteiro": [
+      "Quer gerar o roteiro de teste manual (`08`) depois da implementação?",
+      "Sem resposta: registrado **“Roteiro manual: não — 2026-10-20 — sem resposta a Q19”**, conforme fallback não bloqueante."
+    ]
+  },
+  "P3": {
+    "wikis": [
+      "wikis\\specs\\saida-p3\\padroes-pii-configuraveis"
+    ],
+    "files": [
+      "00-requisito.md",
+      "01-plano-acao.md",
+      "02-decisoes-arquiteturais.md",
+      "03-progresso.md",
+      "05-security.md"
+    ],
+    "decision_lines": [
+      "Roteiro manual: não — 2026-10-20 — sem resposta a Q3 — desenvolvedor indisponível; decisão não bloqueante conforme a regra do step 4."
+    ],
+    "decision_values": [
+      "não"
+    ],
+    "roteiro_no_00": [],
+    "forbidden_files": [
+      "05-security.md"
+    ],
+    "script": {
+      "exit": 0,
+      "out": ""
+    },
+    "retorno_roteiro": [
+      "Quer gerar o roteiro de teste manual (`08`) depois da implementação?",
+      "Sem resposta: roteiro registrado como `não — sem resposta a Q3`; Q1/Q2 permanecem abertas, bloqueando somente seus recortes. Entendimento não declarado confirmado."
+    ]
+  },
+  "P4": {
+    "wikis": [
+      "wikis\\specs\\saida-p4\\cupons-de-desconto"
+    ],
+    "files": [
+      "00-requisito.md",
+      "01-plano-acao.md",
+      "02-decisoes-arquiteturais.md",
+      "03-progresso.md"
+    ],
+    "decision_lines": [
+      "Roteiro manual: sim — 2026-10-20 — instrução explícita do desenvolvedor — “gere também o roteiro de teste manual”; há UI e aceite humano."
+    ],
+    "decision_values": [
+      "sim"
+    ],
+    "roteiro_no_00": [
+      "- A instrução do desenvolvedor sobre roteiro manual é meta-processo e está registrada somente no `03-progresso.md`."
+    ],
+    "forbidden_files": [],
+    "script": {
+      "exit": 1,
+      "out": "D:/PROJECTS/SKILLS/blind-20261020/proj-7e3c7c/wikis/specs/saida-p4/cupons-de-desconto/03-progresso.md:138: Roteiro manual: sim, mas 08-roteiro-teste-manual.md nÃ£o existe"
+    },
+    "retorno_roteiro": [
+      "Perguntas ao desenvolvedor: **nenhuma**. Fatos foram pesquisados; desenho seguiu convenções; roteiro já tinha instrução explícita.",
+      "Roteiro manual: **sim**, registrado somente no `03`. O `08` não foi criado: a skill determina geração “depois do step 10, antes do 11”."
+    ]
+  },
+  "P5": {
+    "wikis": [
+      "wikis\\specs\\saida-p5\\aprovacao-solicitacao-compra"
+    ],
+    "files": [
+      "00-requisito.md",
+      "01-plano-acao.md",
+      "02-decisoes-arquiteturais.md",
+      "03-progresso.md"
+    ],
+    "decision_lines": [
+      "Roteiro manual: não — 2026-10-20 — fonte: instrução explícita do desenvolvedor — “não quero roteiro de teste manual nesta feature”."
+    ],
+    "decision_values": [
+      "não"
+    ],
+    "roteiro_no_00": [],
+    "forbidden_files": [],
+    "script": {
+      "exit": 0,
+      "out": ""
+    },
+    "retorno_roteiro": [
+      "Perguntas ao desenvolvedor: **nenhuma**; escolhas técnicas resolvidas pelas convenções existentes. A instrução explícita dispensou perguntar sobre roteiro manual; decisão registrada somente no `03`."
+    ]
+  },
+  "P1-A": {
+    "wikis": [
+      "wikis\\specs\\saida-p1-a\\cupons-de-desconto"
+    ],
+    "files": [
+      "00-requisito.md",
+      "01-plano-acao.md",
+      "02-decisoes-arquiteturais.md",
+      "03-progresso.md"
+    ],
+    "decision_lines": [],
+    "decision_values": [],
+    "roteiro_no_00": [],
+    "forbidden_files": [],
+    "script": {
+      "exit": 0,
+      "out": ""
+    },
+    "retorno_roteiro": []
+  },
+  "P2-A": {
+    "wikis": [
+      "wikis\\specs\\saida-p2-a\\aprovacao-solicitacao-compra"
+    ],
+    "files": [
+      "00-requisito.md",
+      "01-plano-acao.md",
+      "02-decisoes-arquiteturais.md",
+      "03-progresso.md"
+    ],
+    "decision_lines": [],
+    "decision_values": [],
+    "roteiro_no_00": [],
+    "forbidden_files": [],
+    "script": {
+      "exit": 0,
+      "out": ""
+    },
+    "retorno_roteiro": []
+  },
+  "P1-Bp": {
+    "wikis": [
+      "wikis\\specs\\saida-p1-bp\\cupons-de-desconto"
+    ],
+    "files": [
+      "00-requisito.md",
+      "01-plano-acao.md",
+      "02-decisoes-arquiteturais.md",
+      "03-progresso.md"
+    ],
+    "decision_lines": [
+      "Roteiro manual: não — 2026-10-20 — sem resposta a Q1 — sinal de UI em RQ-01; ausência de resposta encerra a decisão provisória, sem bloquear o entendimento ou gerar 08 nesta etapa."
+    ],
+    "decision_values": [
+      "não"
+    ],
+    "roteiro_no_00": [],
+    "forbidden_files": [],
+    "script": {
+      "exit": 0,
+      "out": ""
+    },
+    "retorno_roteiro": [
+      "Quer gerar o roteiro de teste manual (`08`) depois da implementação?",
+      "Sem resposta: registrado `Roteiro manual: não — sem resposta a Q1`. Entendimento funcional permanece pendente. P-01 preserva escopo estreito: não criar pedidos nem motor substituto. Aplicação/auditoria ficam bloqueadas por Q2; definição de ativo, por Q5."
+    ]
+  }
+}

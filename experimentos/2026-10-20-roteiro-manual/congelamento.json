@@ -1,0 +1,35 @@
+{
+  "judge_prompt_sha256": "4e0b40203804620d045eb80202fbb9e64214d962a7d676dbe3d5e11141a9e2c5",
+  "sets": {
+    "R-A-C1": {
+      "anon": "j-915f76",
+      "sha256": {
+        "04-casos-de-teste.md": "c483a1b7b811106ebe45cdf46057741512683566a9d1a2b667271ecc75f5e918"
+      },
+      "anonymous_sha256": "32b53ff32db5f7d51f278fe4dab1afa37dc661960dc65d2d4dc15d578928ef13"
+    },
+    "R-A-C2": {
+      "anon": "j-19f129",
+      "sha256": {
+        "04-casos-de-teste.md": "e5f699cd6f0459a254cdfc3dcd00928626a106e00d50ac374500f5b3b5689ed5",
+        "05-casos-de-teste-browser.md": "1414d843921d9a1c1c1c2fb45fbcccb7494adaf8225061bb2fc49358b2c400b0"
+      },
+      "anonymous_sha256": "f14a137871f5d12f06a64c2ff13bc689ca003a2bbb05af627128dccefdc3995c"
+    },
+    "R-B-C1": {
+      "anon": "j-7d4f81",
+      "sha256": {
+        "04-casos-de-teste.md": "ed685fa4bb1dd1a7513a26abe7eea408d5394af1b485e1c8dee8753e25e15d6e"
+      },
+      "anonymous_sha256": "8e9793c7cdafb7abb156849c2a609b113471bf48f2c23e542e9ece66b25832d1"
+    },
+    "R-B-C2": {
+      "anon": "j-6fcfc8",
+      "sha256": {
+        "04-casos-de-teste.md": "2a40c4278cc7c2aed9f3aeb2c25e026b09da1494d4a61a3773193d6a1c28830e",
+        "05-casos-de-teste-browser.md": "9f16193ff25a5dc92e33382486a7c793f0510c1bb94d9fbb5487dd86159b05b4"
+      },
+      "anonymous_sha256": "8b838ff9bd302477ab478626a126856a87991d010bba869d2071360dbdad8800"
+    }
+  }
+}

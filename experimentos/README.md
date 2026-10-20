@@ -3,6 +3,30 @@
 Esta pasta guarda **as medições** que motivaram as versões das skills desta coletânea, e o
 material necessário para **repetir a medição** a cada evolução relevante.
 
+## Roteiro de teste manual — 2026-10-20
+
+[Relatório](2026-10-20-roteiro-manual/RELATORIO.md) · [pré-registro](2026-10-20-roteiro-manual/PLANO.md).
+A = FW4.1.1/FTD1.17.3 (`27f89eb`); B = FW4.2.0/FTD1.17.4, working tree normalizada para LF e
+congelada com hashes; B' = B + correção da semente da entrevista (versão publicada). Codex CLI
+0.162.1, `gpt-6.1-sol`, esforço `high`, mesmos modelo e esforço em braços e juízes. N = 1.
+
+**Regressão do `04`** (protocolo e juiz v2 literais, oráculo sem `02`):
+
+| Cenário | A | B | Diferença no conjunto detectado | Cegas A / B |
+|---|---:|---:|---|---|
+| Cupons | 14/18 (77,78%), 58 CT | 14/18 (77,78%), 55 CT | nenhuma | 0 / 0 |
+| Aprovação | 15/18 (83,33%), 75 CT + 2 CT-B | 15/18 (83,33%), 69 CT + 1 CT-B | nenhuma | E08, E12 / E08, E12 |
+
+Sem regressão no critério estrito; 58 citações de DETECTA conferidas no conjunto. O gate de
+evolução (≥ 85% nos dois cenários) segue não atingido nas duas versões.
+
+**Pergunta do step 4** (instrumento novo, cinco células B pré-registradas): B reprovou em P1, que
+copiou o exemplo da semente e justificou ➡️ sim com "aceite humano" inexistente no card. B' trocou o
+exemplo por placeholder e exigiu o sinal da feature; a reexecução única de P1 passou nos cinco
+critérios. P2–P5 passaram em B: P3 recomendou `não` sem sinal, P4/P5 obedeceram instrução explícita
+sem perguntar, inclusive o `não` contra os sinais de P5. P4 anotou a decisão no `00`; a proibição
+entrou em B' sem reexecução. Qualidade do `08`, L8, outros hosts e variância não foram medidos.
+
 ## Auditoria de portabilidade — 2026-10-09
 
 A [rodada de auditoria](2026-10-09-auditoria-portabilidade/RELATORIO.md) preserva baseline, candidata,

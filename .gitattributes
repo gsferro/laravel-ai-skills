@@ -21,3 +21,4 @@
 # Logs e snapshots históricos não são reformados para satisfazer lint de whitespace.
 /experimentos/2026-10-09-auditoria-portabilidade/** -text -whitespace
 /experimentos/2026-10-09-projeto-real/** -text -whitespace
+/experimentos/2026-10-20-roteiro-manual/** -text -whitespace
