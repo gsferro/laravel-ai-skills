@@ -1,5 +1,23 @@
 # feature-wiki — Documentação Antes de Implementar
 
+## Correção 4.2.1 — esperado completo no roteiro
+
+A [Parte 2 da rodada 2026-10-20](../../../experimentos/2026-10-20-roteiro-manual/RELATORIO-PARTE-2.md) gerou o `08` sobre uma implementação real. Os dois
+roteiros mantiveram o oráculo — nenhum esperado divergente ou sem respaldo, e a divergência do app
+registrada sem rebaixar o CT —, mas 43 de 72 esperados eram **parciais**: preparação citando o CT
+como verificação e pós-condições do `Então` resumidas. A reference do `08` ganhou a seção
+*Esperado completo, preparação separada*:
+
+- o passo que verifica reproduz **todas** as pós-condições observáveis do `Então` (valor exato,
+  estado, contagem, unicidade, ausência de efeito colateral);
+- preparação leva `prep ·` na Origem e descreve só o estado que o `Dado` pede;
+- passo negativo diz o motivo esperado da recusa e, conferido, registra a classe ou mensagem;
+- preparação documentada é a executada: corrigida no meio, reexecutar desde o início.
+
+Numa réplica exploratória (fora do pré-registro, uma geração), o esperado fiel ao CT subiu de 38%
+para 98% das linhas; o roteiro ficou 17% mais longo. A auditoria do log confirmou que todas as
+conferências declaradas pela 4.2.0 rodaram de fato.
+
 ## Atualização 4.2.0 — roteiro de teste manual opcional
 
 A wiki pode entregar o **`08-roteiro-teste-manual.md`**, um caminho de execução para quem vai
@@ -91,12 +109,13 @@ grava estado fora de ambiente descartável confirmado: registra **Não Verificad
 destrutivo/ambiente não confirmado**. O gate só executa RM não destrutivos contra app local servido.
 
 O procedimento e o formato do arquivo ficam na [referência do roteiro manual](references/template-08-roteiro-manual.md).
-**Medido na [rodada 2026-10-20](../../../experimentos/2026-10-20-roteiro-manual/RELATORIO.md)** (Codex, N = 1): a inclusão do roteiro não alterou a derivação do `04` — mesmos
+**Parte 1 da [rodada 2026-10-20](../../../experimentos/2026-10-20-roteiro-manual/RELATORIO.md)** (Codex, N = 1): a inclusão do roteiro não alterou a derivação do `04` — mesmos
 defeitos detectados que a 4.1.1 nos dois cenários do protocolo. A pergunta do step 4 foi feita na
 raia de desenho, registrada só no `03` e dispensada diante de instrução explícita, inclusive um
 `não` contra os sinais. Uma célula copiou o exemplo da semente e inventou o sinal; o exemplo virou
 placeholder e a reexecução passou. **Não medidos**: qualidade do `08` gerado, a L8 do gate, uso por
-pessoas, custo de tokens e equivalência com Claude Code.
+pessoas, custo de tokens e equivalência com Claude Code. A [Parte 2](../../../experimentos/2026-10-20-roteiro-manual/RELATORIO-PARTE-2.md) mediu o `08`
+gerado e a L8: ver a *Correção 4.2.1* acima.
 
 ## Correção 4.1.1 — controles proporcionais à capacidade do host
 
@@ -119,12 +138,13 @@ Regressões e avaliação antes/depois: [README da coletânea](../../../README.m
 e [relatório da rodada](../../../experimentos/2026-10-09-auditoria-portabilidade/RELATORIO.md).
 Os testes mecânicos não substituem a medição DDR num projeto Laravel real.
 
-> **Skill**: [`SKILL.md`](SKILL.md) · versão **4.2.0** · referências sob demanda em [`references/`](references/)
+> **Skill**: [`SKILL.md`](SKILL.md) · versão **4.2.1** · referências sob demanda em [`references/`](references/)
 > Este README fala com a **pessoa**: por que a skill existe, quando usar, dependências e limites. O
 > procedimento que o agente segue está no `SKILL.md` e nas `references/`, e não é repetido aqui.
 
 ## Índice
 
+- [Correção 4.2.1 — esperado completo no roteiro](#correção-421--esperado-completo-no-roteiro)
 - [Atualização 4.2.0 — roteiro manual opcional](#atualização-420--roteiro-de-teste-manual-opcional)
 - [Por que a skill existe](#por-que-a-skill-existe)
 - [Os arquivos que ela cria](#os-arquivos-que-ela-cria)
@@ -328,7 +348,7 @@ a `feature-quality-gate` — sem ela o PR não abre.
 | Dependência | Versão mínima | O que habilita | Sem ela |
 |---|---|---|---|
 | [`feature-test-design`](https://github.com/gsferro/laravel-ai-skills/blob/main/.ai/skills/feature-test-design/README.md) | 1.17.0 | step 7: derivação do `04`/`05` a partir do requisito, com técnica formal, gate de mutantes e contrato portável. CT/CT-B continuam a fornecer o oráculo; a 1.17.4 esclarece no README que a skill não escreve o `08` | o `04` é derivado em linha do `00`, declarando a perda da skill especializada e da independência no `03`; o PRD continua sem autoridade sobre o comportamento esperado. Abaixo da 1.15.0 falta o `pest-plugin-browser.md`: o `fw-executor-ctb` para sem escrever CT-B, e no step 3 restam só os dois fatos que o `SKILL.md` guarda (servidor próprio, `npm run build`) |
-| [`feature-quality-gate`](https://github.com/gsferro/laravel-ai-skills/blob/main/.ai/skills/feature-quality-gate/README.md) | 1.9.0 | step 11: QA confrontando requisito × plano × app. Inclui L6 (alegações do `03`), L7 (vocabulário × glossário) e L8 (consistência do `08`, quando decidido), dentro das mesmas 12 dimensões | o PR não abre: o `06-relatorio-qa.md` é blocker |
+| [`feature-quality-gate`](https://github.com/gsferro/laravel-ai-skills/blob/main/.ai/skills/feature-quality-gate/README.md) | 1.9.1 | step 11: QA confrontando requisito × plano × app. Inclui L6 (alegações do `03`), L7 (vocabulário × glossário) e L8 (consistência do `08`, quando decidido), dentro das mesmas 12 dimensões | o PR não abre: o `06-relatorio-qa.md` é blocker |
 | `laravel/boost` (MCP) | 2.4.12 | `search-docs`, `database-schema`, `database-query`, `browser-logs` e `record-rule` — a tool que o step 12 usa nasceu na 2.4.12 | a pesquisa cai para doc oficial e `Grep`; o step 12 não grava rule |
 | [`requirement-to-rule`](https://github.com/gsferro/laravel-ai-skills/blob/main/.ai/skills/requirement-to-rule/README.md) | 1.4.0 | step 12 inteiro: coleta os candidatos, aplica os 4 gates, faz o único prompt de aprovação, grava pelo `record-rule` e confere o índice. A 1.4.0 é a que assume o step 12 sozinha e traz a definição única de *Vale virar rule*; antes dela a wiki coletava e perguntava, e a skill perguntava de novo. Fica fora de `metadata.requires` porque o step 12 roda depois do veredito e a feature fecha sem ele | o step 12 não roda: o `03` registra a ausência, e a decisão continua na ADR |
 | [`feature-tickets`](https://github.com/gsferro/laravel-ai-skills/blob/main/.ai/skills/feature-tickets/README.md) | 1.0.0 | step 8: fatiar em tickets verticais a wiki que não cabe numa sessão (só o usuário invoca — ver [Feature fatiada](#feature-fatiada--como-chamar-os-tickets)); step 10: `indice.sh --check`, a fonte única da alocação a ticket; step 11: regenerar `wikis/specs/INDEX.md`. Fora de `metadata.requires`: o step 8 é condicional | a feature roda numa sessão, pelos passos do `01`; o `INDEX.md` não é gerado |

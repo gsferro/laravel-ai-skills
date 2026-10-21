@@ -6,8 +6,8 @@ license: MIT
 compatibility: >-
   Laravel com git, Bash e PHP; Boost MCP e Pest conforme versão instalada. Subagentes opcionais em qualquer host; sem contexto novo, independência não verificada. Claude usa Agent/hooks; Codex usa ferramentas expostas e perfis TOML. Ponytail/Caveman opcionais. Leia references/hosts-e-subagentes.md.
 metadata:
-  version: "4.2.0"
-  requires: "feature-test-design>=1.17.0; feature-quality-gate>=1.9.0; laravel/boost>=2.4.12"
+  version: "4.2.1"
+  requires: "feature-test-design>=1.17.0; feature-quality-gate>=1.9.1; laravel/boost>=2.4.12"
 ---
 
 # Feature Wiki — Documentação Antes de Implementar

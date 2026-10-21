@@ -8,10 +8,10 @@ Estas skills instruem agentes de IA e IDEs como Codex, Claude Code, Cursor e Cop
 
 ### Roteiro de teste manual opcional — 2026-10-20
 
-A `feature-wiki` **4.2.0** pode entregar o `08-roteiro-teste-manual.md`: decisão no step 4,
+A `feature-wiki` **4.2.1** pode entregar o `08-roteiro-teste-manual.md`: decisão no step 4,
 pergunta não bloqueante e registro só no `03`. Sem resposta até o fim do step 4, em qualquer
 modo, registra `não — sem resposta a Qn`. Geração após a reconciliação do step 10 e auditoria
-**L8** pelo `feature-quality-gate` **1.9.0**,
+**L8** pelo `feature-quality-gate` **1.9.1**,
 dentro das mesmas 12 dimensões. É um caminho para revisão humana, homologação ou operação, com
 esperado rastreado aos CT/CT-B/RQ/P-nn existentes. `feature-test-design` **1.17.4** continua
 pré-código e não escreve o `08`; `feature-tickets` **1.1.1** esclarece que há um roteiro por
@@ -24,7 +24,10 @@ Publicação conjunta em **2026-10-20**: `feature-wiki-v4.2.0`, `feature-test-de
 `feature-quality-gate-v1.9.0` e `feature-tickets-v1.1.1`. A [rodada de medição](experimentos/2026-10-20-roteiro-manual/RELATORIO.md)
 (Codex, N = 1) não encontrou regressão na derivação do `04` — mesmos defeitos detectados que a
 4.1.1 nos dois cenários — e confirmou a pergunta do step 4 em cinco células, depois de corrigir
-um exemplo que uma delas copiou. Qualidade do `08` gerado, L8 e Claude Code não foram medidos.
+um exemplo que uma delas copiou. A [Parte 2](experimentos/2026-10-20-roteiro-manual/RELATORIO-PARTE-2.md) gerou o `08` sobre uma
+implementação real: oráculo preservado e conferências verdadeiras, mas esperados parciais, corrigidos
+na `feature-wiki-v4.2.1`; a L8 pegou 4 de 5 defeitos plantados, e o que faltou entrou na
+`feature-quality-gate-v1.9.1`. Claude Code e execução de RM pela aplicação não foram medidos.
 Detalhes no [CHANGELOG](CHANGELOG.md#2026-10-20--roteiro-de-teste-manual-opcional).
 
 ### Revisão de portabilidade — 2026-10-09
@@ -245,15 +248,15 @@ essa medição por teste de sintaxe, smoke test ou avaliação subjetiva.
 
 | Skill | Versão | O que faz | Quando é invocada |
 |---|---|---|---|
-| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 4.2.0 | Cria a wiki antes de implementar: requisito, PRD, ADR e progresso. Delega testes, revisão independente e QA por capacidades do host. Pode gerar o `08` opcional após o step 10, com roteiro manual rastreado à especificação. | ao iniciar qualquer feature nova, ou uma refatoração larga |
+| **[feature-wiki](.ai/skills/feature-wiki/README.md)** | 4.2.1 | Cria a wiki antes de implementar: requisito, PRD, ADR e progresso. Delega testes, revisão independente e QA por capacidades do host. Pode gerar o `08` opcional após o step 10, com roteiro manual rastreado à especificação. | ao iniciar qualquer feature nova, ou uma refatoração larga |
 | **[feature-test-design](.ai/skills/feature-test-design/README.md)** | 1.17.4 | Deriva casos de teste **que matam defeito**, a partir do requisito e nunca do plano: costuras de teste declaradas, técnica formal por regra, checklist de taxonomia, Gherkin pt-BR e gate de falsificabilidade por mutantes, com a asserção que mata cada um. Fornece o oráculo, sem escrever o `08`. | step 7 da `feature-wiki`, no destino 3 do quality gate, ou para regressão de bug |
-| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.9.0 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita wiki × código × docs × rules e o `08` opcional em **L8**, dentro das 12 dimensões. Roteia achados; com dimensão não verificada, o veredito máximo é `APROVADO COM DÉBITO`. | step 11 da `feature-wiki`, depois da revisão do diff (9) e da reconciliação (10), **antes do PR** |
+| **[feature-quality-gate](.ai/skills/feature-quality-gate/README.md)** | 1.9.1 | **QA no agente**: confronta requisito × plano × app rodando, detecta omissão silenciosa, audita wiki × código × docs × rules e o `08` opcional em **L8**, dentro das 12 dimensões. Roteia achados; com dimensão não verificada, o veredito máximo é `APROVADO COM DÉBITO`. | step 11 da `feature-wiki`, depois da revisão do diff (9) e da reconciliação (10), **antes do PR** |
 | **[requirement-to-rule](.ai/skills/requirement-to-rule/README.md)** | 1.5.0 | Transforma decisão/restrição do requisito em **Project Rule** do Laravel Boost (`.ai/rules/`), com um prompt de aprovação do usuário; gera e prova o teste `arch()` quando a rule é mecânica | step 12 da `feature-wiki` (dona única do step) ou sob pedido |
 | **[feature-tickets](.ai/skills/feature-tickets/README.md)** | 1.1.1 | Fatia a wiki em **tickets verticais** — `RQ` do `00` + CT do `04` que ficam verdes + passos do `01` + bloqueio + status — quando o plano não cabe numa sessão; um ticket por sessão nova; quadro gerado por script (`07-tickets/README.md`, `wikis/specs/INDEX.md`); expand–contract para refatoração larga. O `08` opcional é único por feature, depois do último ticket `concluído`. | **só pelo usuário** (`/feature-tickets`; a skill tem `disable-model-invocation: true`). O step 8 da `feature-wiki` sugere quando o plano não cabe numa sessão. Todas as invocações: [Como chamar](.ai/skills/feature-tickets/README.md#como-chamar) |
 
 O ciclo completo: **planejar** (`feature-wiki`, steps 0–6) → **especificar teste** (`feature-test-design`, step 7) → **fatiar** (`feature-tickets`, step 8 — **só quando o plano não cabe numa sessão**) → **executar** (Ponytail; os passos do `01`, ou um ticket por sessão) → **comunicar** (Caveman) → **testar** (Pest 5) → **revisar o diff** (step 9) → **reconciliar** (step 10) → **gerar e conferir o `08`, se decidido** (sem número) → **validar** (`feature-quality-gate`, step 11) → **memorizar** (`requirement-to-rule`, step 12).
 
-O fluxo da `feature-wiki` 4.2.0 mantém a numeração da 4.0.0, com a da 3.x em "era N":
+O fluxo da `feature-wiki` 4.2.1 mantém a numeração da 4.0.0, com a da 3.x em "era N":
 
 ```mermaid
 flowchart TD
@@ -390,8 +393,9 @@ a medição a cada evolução em vez de discutir a mudança.
 ### Limites e o que ainda não foi medido
 
 - **Roteiro de teste manual (2026-10-20)**: medidos só a pergunta do step 4 e a não regressão do
-  `04`, num host (Codex) e N = 1 ([relatório](experimentos/2026-10-20-roteiro-manual/RELATORIO.md)).
-  A qualidade do `08` gerado e a L8 do gate não foram medidas.
+  `04`, a qualidade do `08` e a L8, num host (Codex) e N = 1 ([Parte 1](experimentos/2026-10-20-roteiro-manual/RELATORIO.md),
+  [Parte 2](experimentos/2026-10-20-roteiro-manual/RELATORIO-PARTE-2.md)). As correções 4.2.1 (template) e 1.9.1 (L8)
+  têm só réplica exploratória ou nenhuma; RM pela aplicação e Claude Code não foram medidos.
 
 - **As versões de 2026-09-26/27 não foram medidas.** A `feature-wiki` 3.6.0 e 4.0.0, a
   `feature-test-design` 1.15.0 e 1.16.0, o gate 1.7.0, a `requirement-to-rule` 1.4.0 e a
@@ -584,9 +588,9 @@ README de cada skill.
 
 | Skill | `metadata.requires` |
 |---|---|
-| `feature-wiki` 4.2.0 | `feature-test-design>=1.17.0; feature-quality-gate>=1.9.0; laravel/boost>=2.4.12` |
+| `feature-wiki` 4.2.1 | `feature-test-design>=1.17.0; feature-quality-gate>=1.9.1; laravel/boost>=2.4.12` |
 | `feature-test-design` 1.17.4 | `feature-wiki>=4.1.0` |
-| `feature-quality-gate` 1.9.0 | `feature-wiki>=4.2.0` |
+| `feature-quality-gate` 1.9.1 | `feature-wiki>=4.2.0` |
 | `requirement-to-rule` 1.5.0 | `laravel/boost>=2.4.12; feature-wiki>=4.1.0` |
 | `feature-tickets` 1.1.1 | `feature-wiki>=4.1.0; feature-test-design>=1.17.0` |
 

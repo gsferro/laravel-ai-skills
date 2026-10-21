@@ -1,5 +1,16 @@
 # feature-quality-gate — QA no Agente
 
+## Correção 1.9.1 — L8 acusa comando destrutivo sem aviso
+
+Na [Parte 2 da rodada 2026-10-20](https://github.com/gsferro/laravel-ai-skills/blob/main/experimentos/2026-10-20-roteiro-manual/RELATORIO-PARTE-2.md),
+a L8 recebeu um `08` real com cinco defeitos plantados, sem saber deles, e um controle intacto.
+Detectou **4 de 5** — CT inexistente, esperado que contradiz o `Então`, conferência declarada sem
+execução e comando Artisan inexistente — e **nenhum falso positivo** no controle. Perdeu o
+`migrate:fresh --seed --force` sem aviso: viu a linha e se recusou a executá-la, mas a lista de
+achados da L8 não mandava acusar. A 1.9.1 acrescenta como achado **Major, destino 1**: comando
+destrutivo sem aviso de ambiente descartável, ou credencial que parece real, mesmo quando o gate
+não o executa. Essa correção não foi reexecutada.
+
 ## Atualização 1.9.0 — 2026-10-20
 
 A L8 audita o `08-roteiro-teste-manual.md` opcional da `feature-wiki` 4.2.0, dentro da consistência
@@ -26,7 +37,7 @@ Regressões e avaliação antes/depois: [README da coletânea](../../../README.m
 e [relatório da rodada](../../../experimentos/2026-10-09-auditoria-portabilidade/RELATORIO.md).
 Os testes mecânicos não substituem a medição DDR num projeto Laravel real.
 
-> **Status: implementada — [`SKILL.md`](SKILL.md) v1.9.0.**
+> **Status: implementada — [`SKILL.md`](SKILL.md) v1.9.1.**
 > Requer `feature-wiki` ≥ **4.2.0** (que traz a `feature-test-design` ≥ 1.17.0) — o porquê de cada versão mínima, e o que degrada sem cada item, está em [Dependências](#dependências).
 >
 > **`SKILL.md` fala com o agente; este README fala com a pessoa**: por que a skill existe, quando usar, o que ela não faz e do que depende. Procedimento, dimensões, roteamento, convergência e o template do `06` estão só no [`SKILL.md`](SKILL.md) — aqui eles são explicados e apontados, não copiados.
@@ -39,7 +50,7 @@ Os testes mecânicos não substituem a medição DDR num projeto Laravel real.
 > (número da Verificação Final sem comando que o reproduza; degradação declarada com a ferramenta
 > presente). A checagem **L6** e a regra de plausibilidade do `--mutate` na dimensão K nasceram daí.
 >
-> **Medição.** A L8 (roteiro manual, 1.9.0) não foi exercitada pela [rodada 2026-10-20](https://github.com/gsferro/laravel-ai-skills/blob/main/experimentos/2026-10-20-roteiro-manual/RELATORIO.md), que mediu só a pergunta do step 4 e a regressão do `04`. A skill ainda não tem rodada própria no protocolo de [`experimentos/`](https://github.com/gsferro/laravel-ai-skills/blob/main/experimentos/README.md), que mede a derivação dos casos de teste. A execução acima é uso real, não rodada controlada. O custo do gate antes e depois da 1.7.0 (scripts no lugar de grep reescrito, teto por cobertura) também não foi medido — fica pendente lá. A fonte das tabelas de medição da coletânea é [`experimentos/README.md`](https://github.com/gsferro/laravel-ai-skills/blob/main/experimentos/README.md).
+> **Medição.** A L8 foi medida na [Parte 2 da rodada 2026-10-20](https://github.com/gsferro/laravel-ai-skills/blob/main/experimentos/2026-10-20-roteiro-manual/RELATORIO-PARTE-2.md): 4 de 5 defeitos plantados, zero falsos positivos; ver a *Correção 1.9.1*. A skill ainda não tem rodada própria no protocolo de [`experimentos/`](https://github.com/gsferro/laravel-ai-skills/blob/main/experimentos/README.md), que mede a derivação dos casos de teste. A execução acima é uso real, não rodada controlada. O custo do gate antes e depois da 1.7.0 (scripts no lugar de grep reescrito, teto por cobertura) também não foi medido — fica pendente lá. A fonte das tabelas de medição da coletânea é [`experimentos/README.md`](https://github.com/gsferro/laravel-ai-skills/blob/main/experimentos/README.md).
 
 ---
 

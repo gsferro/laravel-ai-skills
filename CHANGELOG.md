@@ -8,11 +8,41 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 
 | Skill | Versão | Tag |
 |---|---|---|
-| `feature-wiki` | 4.2.0 | `feature-wiki-v4.2.0` |
+| `feature-wiki` | 4.2.1 | `feature-wiki-v4.2.1` |
 | `feature-test-design` | 1.17.4 | `feature-test-design-v1.17.4` |
-| `feature-quality-gate` | 1.9.0 | `feature-quality-gate-v1.9.0` |
+| `feature-quality-gate` | 1.9.1 | `feature-quality-gate-v1.9.1` |
 | `requirement-to-rule` | 1.5.0 | `requirement-to-rule-v1.5.0` |
 | `feature-tickets` | 1.1.1 | `feature-tickets-v1.1.1` |
+
+## 2026-10-20 — feature-wiki 4.2.1 e feature-quality-gate 1.9.1 — qualidade do `08` medida
+
+### Medido — [Parte 2 da rodada 2026-10-20](experimentos/2026-10-20-roteiro-manual/RELATORIO-PARTE-2.md)
+
+- `08` gerado pela 4.2.0 sobre a implementação de referência de 2026-10-09 (cupons e aprovação,
+  Codex `gpt-6.1-sol`, N = 1). Critérios pré-registrados cumpridos nos dois: script exit 0, zero
+  esperados divergentes ou sem respaldo, toda RQ coberta, negativos de permissão, segurança e
+  integridade. Juiz cego: 43 de 72 esperados **parciais**, 1 com origem errada.
+- Auditoria do log: as 17 conferências declaradas têm comandos e saídas correspondentes; nenhum
+  não executado com resultado preenchido. Os roteiros mantiveram o esperado do CT quando o app
+  divergiu e registraram seis defeitos reais da implementação de referência.
+- L8 do gate 1.9.0 sobre o `08` com cinco defeitos plantados: **4 de 5** detectados, zero falsos
+  positivos no controle. Perdeu o comando destrutivo sem aviso.
+
+### Corrigido
+
+- `feature-wiki` **4.2.1**: `template-08-roteiro-manual.md` ganha *Esperado completo, preparação
+  separada* — todas as pós-condições do `Então` no passo que verifica, preparação marcada `prep ·`
+  e fiel ao `Dado`, motivo da recusa nos negativos, preparação documentada igual à executada.
+  Réplica exploratória fora do pré-registro (N = 1): esperado fiel ao CT de 38% para 98% das
+  linhas, roteiro 17% mais longo. `requires` passa a `feature-quality-gate>=1.9.1`.
+- `feature-quality-gate` **1.9.1**: a L8 acusa comando destrutivo sem aviso de ambiente
+  descartável, ou credencial que parece real, como Major destino 1, mesmo sem executá-lo.
+  **Não reexecutado.**
+
+### Não medido
+
+- Execução de RM pela aplicação (sem navegador na sessão Codex), a L8 1.9.1, o template 4.2.1 no
+  cenário de aprovação, variância, Claude Code, uso do `08` por pessoas e custo de tokens.
 
 ## 2026-10-20 — roteiro de teste manual opcional
 

@@ -1,4 +1,4 @@
-> Referência da feature-wiki 4.2.0. Lida em: etapa Roteiro de Teste Manual (entre os steps 10 e 11) e ao pedido tardio do usuário. Fonte única de: template, conferência, execução, segurança, tickets e atualização do 08-roteiro-teste-manual.md.
+> Referência da feature-wiki 4.2.1. Lida em: etapa Roteiro de Teste Manual (entre os steps 10 e 11) e ao pedido tardio do usuário. Fonte única de: template, conferência, execução, segurança, tickets e atualização do 08-roteiro-teste-manual.md.
 
 # Template do `08-roteiro-teste-manual.md`
 
@@ -106,6 +106,22 @@ só atualiza a decisão no `03`; gerar na etapa normal. Depois do step 10, gerar
 <!-- Preenchido por quem executa à mão. A sessão só preenche a linha da própria conferência;
      sem execução, não criar linha de execução nem preencher Resultado obtido como se tivesse rodado. -->
 ```
+
+## Esperado completo, preparação separada
+
+- **Passo que verifica** reproduz **todas** as pós-condições observáveis do `Então` citado: valor
+  exato, estado, contagem, unicidade e ausência de efeito colateral (o que "não muda", "não cria",
+  "não consome"). Resumir o `Então` perde verificação: quem executa à mão confere menos do que o CT
+  exige. Se o RM só exercita parte dos Exemplos do CT, dizer qual linha e manter as pós-condições dela.
+- **Passo de preparação** leva `prep ·` na Origem (`prep · CT-03`) e descreve só o estado de partida
+  que o `Dado` do CT pede. Não apresentar preparação como verificação do CT.
+- **Passo negativo** diz o motivo esperado da recusa (estado, permissão, validação de qual campo) e,
+  conferido, registra a classe ou mensagem observada. Recusa pelo motivo errado não confere o RM.
+- **Preparação documentada é a executada.** Corrigida durante a conferência, reexecutar o bloco
+  corrigido desde o início antes de marcar qualquer RM que dependa dela.
+- Rodada 2026-10-20: o juiz cego classificou 43 de 72 esperados como parciais — preparação citando o
+  CT como oráculo e pós-condições omitidas — sem nenhum divergente; a auditoria do log achou recusas
+  sem motivo registrado e uma preparação diferente da que rodou.
 
 ## Conferência e limites
 
