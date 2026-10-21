@@ -25,7 +25,14 @@ copiou o exemplo da semente e justificou ➡️ sim com "aceite humano" inexiste
 exemplo por placeholder e exigiu o sinal da feature; a reexecução única de P1 passou nos cinco
 critérios. P2–P5 passaram em B: P3 recomendou `não` sem sinal, P4/P5 obedeceram instrução explícita
 sem perguntar, inclusive o `não` contra os sinais de P5. P4 anotou a decisão no `00`; a proibição
-entrou em B' sem reexecução. Qualidade do `08`, L8, outros hosts e variância não foram medidos.
+entrou em B' sem reexecução.
+
+**Qualidade do `08` e L8** ([Parte 2](2026-10-20-roteiro-manual/RELATORIO-PARTE-2.md), sobre a
+implementação de referência de 2026-10-09). Os `08` de cupons e aprovação cumprem os seis critérios
+pré-registrados; o juiz cego classifica 43 de 72 esperados como parciais e nenhum divergente. As 17
+conferências declaradas batem com o log. A L8 detecta 4 de 5 defeitos plantados (perde o comando
+destrutivo sem aviso), sem falso positivo. Réplica exploratória com o template corrigido (4.2.1):
+FIEL de 38% para 98%. RM pela aplicação, a L8 1.9.1, outros hosts e variância não foram medidos.
 
 ## Auditoria de portabilidade — 2026-10-09
 

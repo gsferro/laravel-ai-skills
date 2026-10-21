@@ -1,0 +1,129 @@
+{
+  "cells": {
+    "G1": {
+      "label": "proj-658d54",
+      "wiki": "wikis\\specs\\saida-g1\\cupons-de-desconto",
+      "judge": "j-c2c53c",
+      "judge_sha256": {
+        "casos.md": "ae4fb0adebe5482f8ab2ae1288ba3e1318dff699166d78cfd50e89598da483bd",
+        "requisito.md": "37130a6e4ab8d2eab76f28f21dcdfdea65e1d436ff3359a583bdc68086c5b943",
+        "roteiro.md": "8eb302ca0402bdff8e01ae57ef69ff9554c3e3b2a59289d33b96742853bad2e2"
+      }
+    },
+    "G2": {
+      "label": "proj-9794e2",
+      "wiki": "wikis\\specs\\saida-g2\\aprovacao-de-compra",
+      "judge": "j-91dcc5",
+      "judge_sha256": {
+        "casos.md": "87ebaad9026b2a6dfec1f5d464862cfe2a457e22d314f7fb7446eddbd8ec6d51",
+        "requisito.md": "31436038d2887b728dc41118c2bb7a246e8b65b11d479ddcacd7440560f9a0e2",
+        "roteiro.md": "9dc008264905db657fd8ac0285a1a041cc1683e0cd84a6a76df28bb0a8e40abb"
+      }
+    },
+    "L8-C": {
+      "label": "proj-04270d",
+      "wiki": "wikis\\specs\\saida-g1\\cupons-de-desconto",
+      "roteiro_sha256": "63b9a418d7b51aa2337180204d57601b21d07f446659516fca4150a8a4cec4c1"
+    },
+    "L8-P": {
+      "label": "proj-92b7af",
+      "wiki": "wikis\\specs\\saida-g1\\cupons-de-desconto",
+      "roteiro_sha256": "a4ab48598dad8818d1d8e8c497be1f3d6ab9b96cf6e2483b8bbc948f658a9fc2"
+    },
+    "G1R": {
+      "label": "proj-273d38",
+      "wiki": "wikis\\specs\\saida-g1\\cupons-de-desconto",
+      "treatment": "B'' = B' + template-08 da working tree",
+      "template_sha256": "75deb2f4af85d39f6693c2e0d02d46701a94c7698a564c25ed941346d603bb45",
+      "judge": "j-e5c273",
+      "judge_sha256": {
+        "casos.md": "ae4fb0adebe5482f8ab2ae1288ba3e1318dff699166d78cfd50e89598da483bd",
+        "requisito.md": "37130a6e4ab8d2eab76f28f21dcdfdea65e1d436ff3359a583bdc68086c5b943",
+        "roteiro.md": "5094bb7910b33ae072c64de3a6507dbec827a856d2adee3d1f77f46818ec3055"
+      }
+    }
+  },
+  "lab": "D:\\PROJECTS\\SKILLS\\blind-20261020-p2",
+  "treatment": "cb2b45e",
+  "reference": "experimentos\\2026-10-09-projeto-real\\referencia-v3",
+  "skills_sha256": {
+    ".ai/skills/feature-quality-gate/README.md": "ba90f8ea45f262ceaeab5f56cdb9aaac1057c17e795954cc56380b79829f8f4a",
+    ".ai/skills/feature-quality-gate/SKILL.md": "8c2bebbc74cd969010b2c2826c1620d45bee825c17a8aee9b08919e61aa707dc",
+    ".ai/skills/feature-quality-gate/agents/fw-qa-gate.md": "bed5b4e6a01e06bd03b02e7451a0baa598a5c7606414e6d08ae592ac092251a0",
+    ".ai/skills/feature-quality-gate/agents/codex/fw-qa-gate.toml": "b54fe2d407cbef27bfd85e4350c8b1eb06aa54ec2f72c32b98413a9c692fefa9",
+    ".ai/skills/feature-quality-gate/references/delegacao-e-playwright.md": "0609a7d3ad4e768849f36fe4f7c607a622b1408aaaff3c69511c6d8dec312db0",
+    ".ai/skills/feature-quality-gate/references/template-06.md": "289d699e5748c74af9b3dcba8ee9c53ba84c6a77b277cc6bbc04d733b163d071",
+    ".ai/skills/feature-quality-gate/scripts/dark-mode.sh": "ee73f4011387acc465929e966dd0f2aed063eaf5b7444a2bbe835307781ab8e4",
+    ".ai/skills/feature-quality-gate/scripts/k1-oraculo-fraco.sh": "f9bce2746fd40a167cf23e1a3672e3df29a53fff18c035a43fe4864b2b17b67a",
+    ".ai/skills/feature-test-design/README.md": "28abc13bc898334f5afb15f908db25a38fc11d9b22c1f85ec60d8fc041cd204d",
+    ".ai/skills/feature-test-design/SKILL.md": "59641dacfe390e0d5ab49541f416082b62ff485675b417b52f719601b3f0e1e1",
+    ".ai/skills/feature-test-design/agents/fw-adversario-ct.md": "c13eb0ebdfe92ed21bb2dcadd58fd7e9df911fcdb11e28e81fcaba7ae457b1e1",
+    ".ai/skills/feature-test-design/agents/codex/fw-adversario-ct.toml": "ecdeff23466e38e59d6e0a6baf5b0d3a3f4d861e22e3b46c98300014f2c01c96",
+    ".ai/skills/feature-test-design/references/armadilhas-de-api.md": "c4066413da9cecc84ad663dadab243db1417a863f2141bc76edddb935b96026e",
+    ".ai/skills/feature-test-design/references/casos-medidos.md": "e052ab8908b142a4e9dc74b94ab0e518423a15074c2df4a7882ade3e7e82f57c",
+    ".ai/skills/feature-test-design/references/escolha-de-camada.md": "4838169b749395c3ec035fa20459524fed28f5735bee87a3acf22da31a268a3e",
+    ".ai/skills/feature-test-design/references/gherkin.md": "439e8603ed0f857269fc08413f4a62e7acb0b955b904033e50a86f7513043864",
+    ".ai/skills/feature-test-design/references/mutation-testing.md": "81d5c48772ee63283eecd62f47e09b8c01e446564d49b56136723af5ed4412a2",
+    ".ai/skills/feature-test-design/references/pest-plugin-browser.md": "66dcc4fe08ea59f8bc58a0c1a0acb8516ecc7c857e2ea2eb8e7471bcd2baaa1e",
+    ".ai/skills/feature-test-design/references/revisao-adversarial.md": "31ea4c48e0ab1021a4c5469e4f1ca51ac666a0689ae47a4c4625ac571ec69bf0",
+    ".ai/skills/feature-test-design/references/taxonomia-de-defeito.md": "fc3a4dc823821486b69ab4b47c5f91322fd0713bdcff032eba8c76ddf8a1a1eb",
+    ".ai/skills/feature-test-design/references/tecnicas-por-regra.md": "8af27ceb58f3d2470d29a8d4d4a8b66705ef10ef18d588f591e4e7afecdc6bae",
+    ".ai/skills/feature-test-design/references/template-04.md": "ec56df53a1c06c6c5816b58d11421782f081706a3b5c65c71c5c3cd11c134197",
+    ".ai/skills/feature-test-design/references/template-05.md": "92f716638c1558599a52ba64ac0ba0f7a177494f40d27ba282ed6f21a5d01cc7",
+    ".ai/skills/feature-tickets/README.md": "fe4d665f4acaea70b51697293e7826db5ab1ff31707b8351395c38931b032c94",
+    ".ai/skills/feature-tickets/SKILL.md": "b275cea73b90ee2fcd59444a9ef11d7fa4242ee4b7b44ae8f1c4d63ff517f0b8",
+    ".ai/skills/feature-tickets/agents/openai.yaml": "83e74e87bc251a1b91bbb4bc6b020e7b0e2f80df8ba48c940046c5531cb4ea6e",
+    ".ai/skills/feature-tickets/references/despacho-e-fechamento.md": "5230b9ba766248a1705e324e498fee21388d82c843e6806624637bf7edef2a61",
+    ".ai/skills/feature-tickets/references/exemplo-de-fatiamento.md": "757d3821cf90410e2681e5833a77ba06cd1fafea9513f2dbd8a53ec749b25a03",
+    ".ai/skills/feature-tickets/references/expand-contract.md": "9fa7c009998ac570a2eef570b819788e6528de710f13548d8e955e583a94b744",
+    ".ai/skills/feature-tickets/references/template-ticket.md": "005d897a52b539c7aa26b5c24a78f00ad24ae590ff80dd0e7735edaada0e9c2f",
+    ".ai/skills/feature-tickets/references/visualizacao.md": "1aa654f0a0e8fbc85bcbac698a4c29110dfdf4cf1cef098b28002eea35322592",
+    ".ai/skills/feature-tickets/scripts/espelho-gh.sh": "189fe01154a55fbe8e1c3e9edc9b32b146475d67a51dcf1ac2e4b143ac57ce82",
+    ".ai/skills/feature-tickets/scripts/indice.sh": "c0b6fd9354983ae5074d002749126004de714eca8d2d051da2c1a532ebeba4e0",
+    ".ai/skills/feature-wiki/README.md": "bc3cae7148fa571adbeb88e22f1055c2da8d99b105e5307b4d481d893d300ae3",
+    ".ai/skills/feature-wiki/SKILL.md": "14b56d3f173c3806532f611c5ab9ba2ec2520d4d298e789d9134fee2555308bf",
+    ".ai/skills/feature-wiki/agents/fw-executor-ct.md": "abc81ce5ffa449775ea5f94d51461969434ea269e8d2eadf63e3ccd4510c1628",
+    ".ai/skills/feature-wiki/agents/fw-executor-ctb.md": "1ae92d47f0365c9ccbfcd82ac2eaef9924f73fe1d1121dbec1c5117650076a63",
+    ".ai/skills/feature-wiki/agents/fw-revisor-diff.md": "8efae60ff4f6bb1221c208749a29412047bb44036bea5f0f337590cdf5d02f01",
+    ".ai/skills/feature-wiki/agents/codex/fw-executor-ct.toml": "f7a720afb655ba9796e6f43fe185741d5469a5f96cfd362e39098082b0cd33c3",
+    ".ai/skills/feature-wiki/agents/codex/fw-executor-ctb.toml": "a15f7bd308f28f40b529dfbb61928db881191c586e5b0bf7c0335c9e04b67f68",
+    ".ai/skills/feature-wiki/agents/codex/fw-revisor-diff.toml": "395da5bd67f0e076a165b032a3ab839e845b4d1818f94070a2182cb43f9ecdcb",
+    ".ai/skills/feature-wiki/references/casos-medidos.md": "91b0d3bc73ec6be2ac7a41a71ecfa65a3701828d42a769e9481c6f101bd0d653",
+    ".ai/skills/feature-wiki/references/citacoes-de-codigo.md": "b06bb0e3e4f13a33bf8be21bfeab1ddc7271973669d19c282145119f431729f0",
+    ".ai/skills/feature-wiki/references/delegacao-casos-de-teste.md": "8faa256cd56f049e56f97e74b2093bd2b469543c2a648f4802c326ca6a42c6f2",
+    ".ai/skills/feature-wiki/references/entrevista-tres-raias.md": "c332f5fa7ef7484008cc4a3926f68252d695c7b8a9fbc8c057a35900239fa39e",
+    ".ai/skills/feature-wiki/references/estrutura-criada.md": "78b4de2e93bb2929d5af4805c75b3ad40dd6f00fcad94670e8e550afe567b74b",
+    ".ai/skills/feature-wiki/references/glossario.md": "b435edd904488f0a2a772a852f6eb2e8a52c58b8a858ffd9a6440957ff368a0d",
+    ".ai/skills/feature-wiki/references/hosts-e-subagentes.md": "0633f78033711aa04e46d1d51284754a04c7ae7978e67e37f57e07e0b3087f0d",
+    ".ai/skills/feature-wiki/references/padrao-de-log.md": "473780087c6cc1ea622d93b10e9f5fc02a1c7db42fbe1dafd40b5faf8c3759cb",
+    ".ai/skills/feature-wiki/references/pesquisa-step-3.md": "b7e00e6f7dff48762c0d1c19869107b0fa81f1375a18547effca6564262c816e",
+    ".ai/skills/feature-wiki/references/pest-5.md": "4d0bbc6cf95c4c23506de135c17365989d1c0e527919889ea921b741d0627aea",
+    ".ai/skills/feature-wiki/references/playwright-mcp.md": "a7a352a52c12e0fc9b883aa4ede0d7469dac7277066b8315b2a8580775e310ef",
+    ".ai/skills/feature-wiki/references/ponytail-caveman.md": "104208fcdc81e832944a179fee5c8a50b66a53e4d32f408a7abfb1a81dba137a",
+    ".ai/skills/feature-wiki/references/roteamento-e-despacho.md": "743ffaae71e674c22d196c764f4469d278fd249400899708f2495067119b6017",
+    ".ai/skills/feature-wiki/references/template-00-requisito.md": "3b23e7ab9372eb3af022498af4adc1963bf9a75ac76c09565146f3cb71e506ed",
+    ".ai/skills/feature-wiki/references/template-01-plano.md": "4e28ecfe6ffe54cc268d5cbdf11b626cd68ae93829874a69fcadc05d1bd474d7",
+    ".ai/skills/feature-wiki/references/template-02-adr.md": "977b8aca8bf55cbcd496d9372b8e026a39f598f581956f903f272ef62664c038",
+    ".ai/skills/feature-wiki/references/template-03-progresso.md": "4be0baf37b749dd6661f110c920287b9faceda6e9d2dce818e94c5145ed65027",
+    ".ai/skills/feature-wiki/references/template-08-roteiro-manual.md": "af81037be5d0086d8421d918d4e9e6e03471ec0e54d237515f6154ff3b63f0ec",
+    ".ai/skills/feature-wiki/scripts/checkbox-sem-evidencia.sh": "4b98441ef2112b37864355c585438d670c2251c2caef68ea75dc36edeb353204",
+    ".ai/skills/feature-wiki/scripts/citacoes.sh": "62347a36f60fc53a979f7dbff085a8936935924084673ab3bd7f026a6015904f",
+    ".ai/skills/feature-wiki/scripts/conformidade-rules.sh": "dbcc1bf04a0be36e303eba272238c0a92f1ca9715673e148f8be1e98e00763ea",
+    ".ai/skills/feature-wiki/scripts/guarda-subagente.sh": "4705ade9095e808f1dee931a4aa3b1fc36cc17f64d19c394a20bd882869c7e5d",
+    ".ai/skills/feature-wiki/scripts/ids-ct.sh": "d6a2d56e1cca0fb3851919dfce2090082cb0c2ea0e0da234329fd98f60928c35",
+    ".ai/skills/feature-wiki/scripts/pestw.cmd": "fbcd3b2a1fe1dcbd292b4b374064fdf9ad4056257231962e92ffc556df99da40",
+    ".ai/skills/feature-wiki/scripts/rastreabilidade.sh": "f6e0462d56210b4c84df80ba4926fa644dc03dfa136db8e8e34bfccee2a224c5",
+    ".ai/skills/feature-wiki/scripts/roteiro-manual.sh": "eb34811fe5d3e95d7761ea6f95c612ee24f2427df63eb176083e819158721350",
+    ".ai/skills/requirement-to-rule/README.md": "d7c5f342ea0c27ece0269765d0e66bb5b866086ee227b9b8d008b6046015758d",
+    ".ai/skills/requirement-to-rule/SKILL.md": "ff4523938837c6578b80399c6dca2b2d10accf79ce1e0b9bfafd969b80f6b6ff",
+    ".ai/skills/requirement-to-rule/references/coleta-e-apresentacao.md": "03e70421c47756083b4b6c83fb524d9e6c110745a4a16eb28606f213b9567d26",
+    ".ai/skills/requirement-to-rule/references/enforcement-arch.md": "4f5893c774186390f43ec8acd5a97ec8c7b0126ea3b89b5888c383f24bf3f8af",
+    ".ai/skills/requirement-to-rule/references/indice-e-record-rule.md": "f43deb6264f000df26a011e1b8b5da902f81b46c14bb97e43d973bd853b3d929",
+    ".ai/skills/requirement-to-rule/scripts/prova-arch.sh": "8fc65f1a9703fdf2625bfca878731fb541f8fb69b0053c081e29569de06b49f7"
+  },
+  "roteiro_sha256": {
+    "G1": "63b9a418d7b51aa2337180204d57601b21d07f446659516fca4150a8a4cec4c1",
+    "G2": "61f02b0bf2b833e876a6febb8df4c7dd517033faaa4302cfb6a6e279e840892f",
+    "G1R": "2258e91f708a61bfc50142880fa2cf55766d1c94047fce65f6ec4ddb5c5ad8ce"
+  }
+}

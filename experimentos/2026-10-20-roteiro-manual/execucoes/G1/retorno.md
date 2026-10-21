@@ -1,0 +1,10 @@
+- `metadata.version`: **4.2.0**. Host: Codex/Windows/PowerShell. Modelo: GPT-6; variante exata não exposta.
+- Arquivo: [08-roteiro-teste-manual.md](D:/PROJECTS/SKILLS/blind-20261020-p2/proj-658d54/wikis/specs/saida-g1/cupons-de-desconto/08-roteiro-teste-manual.md).
+- **12 RM; 7 conferidos:** quatro conformes, três divergentes. Cinco de aplicação não executados: navegador indisponível.
+- Divergências: código vazio, percentual inválido, limite fracionário, duplicidade com tenant nulo e CRUD direto permitido a leitor/infra.
+- Registrei **D1–D5**, preservei os esperados e reverti tentativas negativas. Correção e nova reconciliação ficaram pendentes pelas restrições.
+- `roteiro-manual.sh`: **saída vazia; exit 0**.
+- References abertas: `hosts-e-subagentes.md`, `template-08-roteiro-manual.md` e `playwright-mcp.md`.
+- Degradações: sem Git, Boost MCP ou navegador. Registros ficaram no `08`, pois o `03` era imutável.
+- Integridade: **307 arquivos protegidos intactos; nenhum novo nesses caminhos**.
+- **Step 11 não executado.**
